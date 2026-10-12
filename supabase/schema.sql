@@ -202,7 +202,7 @@ VALUES
     'Kulübün efsanevi tam kare (Full Frame) amiral gemisi gövdesi. 21.1 MP çözünürlük, sinematik Canon renkleri ve 1080p Full HD video kabiliyeti ile stüdyo ve dış mekan portrelerinin vazgeçilmezi.',
     '{"sensor": "Full Frame 21.1 MP CMOS", "mount": "Canon EF Mount", "video": "1080p 30fps Full HD", "iso": "100 - 6400", "weight": "810g"}'::jsonb,
     ARRAY['Canon EOS 5D Mark II Gövde', '2x Orijinal LP-E6 Batarya', 'LC-E6 Hızlı Şarj Cihazı', 'SanDisk 32GB CF Kart', 'USB CF Kart Okuyucu', 'Omuz Askısı', 'Taşıma Çantası'],
-    'https://upload.wikimedia.org/wikipedia/commons/b/bd/Appareil_photo_reflex_num%C3%A9rique_Canon_EOS_5D_%28de_face%29.jpg',
+    '/equipment/canon-5d-mark2.jpg',
     'available',
     'Kusursuz / Sensör temizliği yeni yapıldı'
 ),
@@ -244,7 +244,7 @@ VALUES
     'Canon''un ilk elektronik otomatik odaklamalı (AF) 35mm film SLR fotoğraf makinesi (1987 klasiği). Kulübün tüm modern EF lensleriyle tam uyumludur; analog film çekip karanlık odada tab etmek isteyen üyelerimiz içindir.',
     '{"film_type": "35mm Film (135)", "mount": "Canon EF Mount (Elektronik AF)", "shutter": "1/2000s - 30s + Bulb", "battery": "2CR5 6V Lityum"}'::jsonb,
     ARRAY['Canon EOS 650 Analog Gövde', '2CR5 Lityum Pil (Dolu takılı)', 'Gövde Süngü Kapağı', 'Vintage Omuz Askısı'],
-    'https://upload.wikimedia.org/wikipedia/commons/c/ce/Canon_EOS650_BL.jpg',
+    '/equipment/canon-eos-650.jpg',
     'available',
     'Karanlık oda testleri yapıldı / Perde ve sarma motoru kusursuz'
 ),
@@ -398,7 +398,7 @@ VALUES
     'Kompakt 35mm film analog fotoğraf makinesi ("Point & Shoot"). Otomatik film sarma, dahili flaş ve sabit odaklı Fujinon lensi ile sokakta analog ruhunu yakalamak isteyen üyelerimiz için.',
     '{"film_type": "35mm Film (135)", "lens": "Fujinon Sabit Lens", "flash": "Dahili Otomatik / Manuel Flaş", "battery": "2x AA Pil"}'::jsonb,
     ARRAY['Fujifilm Clear Shot M Makine (No: 1)', 'Bilek Askısı', '2x AA Pil'],
-    'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    '/equipment/fujifilm-clear-shot-m.jpg',
     'available',
     'Perde ve flaş test edildi / Sorunsuz çalışıyor'
 ),
@@ -412,7 +412,7 @@ VALUES
     'Kompakt 35mm film analog fotoğraf makinesi. Kulüp gezilerinde ve analog atölyelerinde kullanılmak üzere hazır bekleyen 2 numaralı demirbaş.',
     '{"film_type": "35mm Film (135)", "lens": "Fujinon Sabit Lens", "flash": "Dahili Flaş", "battery": "2x AA Pil"}'::jsonb,
     ARRAY['Fujifilm Clear Shot M Makine (No: 2)', 'Bilek Askısı', '2x AA Pil'],
-    'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    '/equipment/fujifilm-clear-shot-m.jpg',
     'available',
     'Çalışır durumda'
 ),
@@ -426,7 +426,7 @@ VALUES
     'Kompakt 35mm film analog fotoğraf makinesi. Otomatik film sarma mekanizmalı 3 numaralı kulüp makinesi.',
     '{"film_type": "35mm Film (135)", "lens": "Fujinon Sabit Lens", "flash": "Dahili Flaş", "battery": "2x AA Pil"}'::jsonb,
     ARRAY['Fujifilm Clear Shot M Makine (No: 3)', 'Bilek Askısı', '2x AA Pil'],
-    'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    '/equipment/fujifilm-clear-shot-m.jpg',
     'available',
     'Çalışır durumda'
 ),
@@ -440,7 +440,7 @@ VALUES
     'Kompakt 35mm film analog fotoğraf makinesi. 4 numaralı analog kulüp demirbaşı.',
     '{"film_type": "35mm Film (135)", "lens": "Fujinon Sabit Lens", "flash": "Dahili Flaş", "battery": "2x AA Pil"}'::jsonb,
     ARRAY['Fujifilm Clear Shot M Makine (No: 4)', 'Bilek Askısı', '2x AA Pil'],
-    'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    '/equipment/fujifilm-clear-shot-m.jpg',
     'available',
     'Çalışır durumda'
 ),
@@ -454,7 +454,7 @@ VALUES
     'Kompakt 35mm film analog fotoğraf makinesi. 5 numaralı analog kulüp demirbaşı.',
     '{"film_type": "35mm Film (135)", "lens": "Fujinon Sabit Lens", "flash": "Dahili Flaş", "battery": "2x AA Pil"}'::jsonb,
     ARRAY['Fujifilm Clear Shot M Makine (No: 5)', 'Bilek Askısı', '2x AA Pil'],
-    'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    '/equipment/fujifilm-clear-shot-m.jpg',
     'available',
     'Çalışır durumda'
 ),

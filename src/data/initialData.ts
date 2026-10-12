@@ -11239,7 +11239,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Canon Orijinal Geniş Omuz Askısı',
       'Sert Koruyucu Taşıma Çantası'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Appareil_photo_reflex_num%C3%A9rique_Canon_EOS_5D_%28de_face%29.jpg',
+    image_url: '/equipment/canon-5d-mark2.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11319,7 +11319,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Gövde Süngü Kapağı',
       'Vintage Hakiki Kumaş Omuz Askısı'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Canon_EOS650_BL.jpg',
+    image_url: '/equipment/canon-eos-650.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11618,7 +11618,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Güç': '2x AA Kalem Pil'
     },
     package_contents: ['Fujifilm Clear Shot M Makine (No: 1)', 'Bilek Askısı', '2x AA Pil'],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    image_url: '/equipment/fujifilm-clear-shot-m.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11637,7 +11637,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Güç': '2x AA Pil'
     },
     package_contents: ['Fujifilm Clear Shot M Makine (No: 2)', 'Bilek Askısı', '2x AA Pil'],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    image_url: '/equipment/fujifilm-clear-shot-m.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11656,7 +11656,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Güç': '2x AA Pil'
     },
     package_contents: ['Fujifilm Clear Shot M Makine (No: 3)', 'Bilek Askısı', '2x AA Pil'],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    image_url: '/equipment/fujifilm-clear-shot-m.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11675,7 +11675,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Güç': '2x AA Pil'
     },
     package_contents: ['Fujifilm Clear Shot M Makine (No: 4)', 'Bilek Askısı', '2x AA Pil'],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    image_url: '/equipment/fujifilm-clear-shot-m.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11694,7 +11694,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Güç': '2x AA Pil'
     },
     package_contents: ['Fujifilm Clear Shot M Makine (No: 5)', 'Bilek Askısı', '2x AA Pil'],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
+    image_url: '/equipment/fujifilm-clear-shot-m.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },

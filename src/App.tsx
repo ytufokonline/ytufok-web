@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
-import { SupabaseBanner } from './components/SupabaseBanner';
 import { HomePage } from './pages/HomePage';
 import { EquipmentPage } from './pages/EquipmentPage';
 import { ReservationPage } from './pages/ReservationPage';
@@ -38,15 +37,8 @@ export function App() {
     setPreselectedEquipmentId(equipmentId);
   };
 
-  const handleOpenSupabaseGuide = () => {
-    setActiveTab('admin');
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-[#12080f] text-[#f4f5f8] selection:bg-[#657796] selection:text-white font-sans">
-      {/* Top Supabase Connection Banner */}
-      <SupabaseBanner onOpenGuide={handleOpenSupabaseGuide} />
-
       {/* Main Navigation Bar */}
       <Navbar
         activeTab={activeTab}

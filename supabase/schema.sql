@@ -518,7 +518,7 @@ VALUES
 -- Vitrin Galerisi
 INSERT INTO public.gallery_items (title, photographer_name, camera_used, location, image_url)
 VALUES
-('Tarihi Hamam Gölgeleri', 'Zeynep Kaya', 'Canon EOS 5D Mark II + 50mm f/1.4', 'Davutpaşa Kışlası', 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=80'),
-('Karanlık Oda & Tane Dokusu', 'Emre Demir', 'Canon EOS 650 (35mm Analog)', 'Davutpaşa Karanlık Oda', 'https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?auto=format&fit=crop&w=1000&q=80'),
-('Gece Saati & Mimari Çizgiler', 'Ahmet Yılmaz', 'Canon EOS 6D + 17-40mm f/4L', 'Merkez Bina Taşkışla Girişi', 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1000&q=80'),
-('Sokakta Analog Ruh', 'Selin Öztürk', 'Fujifilm Clear Shot M', 'Ortaköy İskelesi', 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1000&q=80');
+('En kısa zamanda yüklenecek', 'YTÜFOK', 'Kulüp Demirbaşı', 'YTÜ Davutpaşa', ''),
+('En kısa zamanda yüklenecek', 'YTÜFOK', 'Kulüp Demirbaşı', 'YTÜ Davutpaşa', ''),
+('En kısa zamanda yüklenecek', 'YTÜFOK', 'Kulüp Demirbaşı', 'YTÜ Davutpaşa', ''),
+('En kısa zamanda yüklenecek', 'YTÜFOK', 'Kulüp Demirbaşı', 'YTÜ Davutpaşa', '');

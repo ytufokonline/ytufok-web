@@ -379,41 +379,75 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {gallery.map((photo) => (
-            <div
-              key={photo.id}
-              onClick={() => setSelectedPhoto(photo)}
-              className="relative h-64 rounded-xl overflow-hidden group cursor-pointer border border-[#657796]/20 hover:border-[#657796] transition-all shadow-md bg-black"
-            >
-              <img
-                src={photo.image_url}
-                alt={photo.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#12080f] via-[#12080f]/40 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
-              
-              <div className="absolute bottom-0 inset-x-0 p-4 space-y-1 transform group-hover:-translate-y-1 transition-transform">
-                <span className="text-[10px] text-[#8193b2] font-semibold uppercase tracking-wider block">
-                  {photo.camera_used}
-                </span>
-                <h4 className="text-xs font-bold text-white leading-tight font-club">
-                  {photo.title}
-                </h4>
-                <div className="flex items-center justify-between text-[11px] text-[#dce4ef] pt-1">
-                  <span>{photo.photographer_name}</span>
-                  <div className="flex items-center gap-1 text-[10px] text-[#a9b9d3]">
-                    <MapPin className="w-3 h-3 text-[#8193b2]" />
-                    <span className="truncate max-w-[80px]">{photo.location}</span>
+          {(gallery.length > 0 ? gallery : [
+            { id: 'g-1', title: 'En kısa zamanda yüklenecek', photographer_name: 'YTÜFOK', camera_used: 'Kulüp Demirbaşı', location: 'YTÜ Davutpaşa', image_url: '', created_at: '' },
+            { id: 'g-2', title: 'En kısa zamanda yüklenecek', photographer_name: 'YTÜFOK', camera_used: 'Kulüp Demirbaşı', location: 'YTÜ Davutpaşa', image_url: '', created_at: '' },
+            { id: 'g-3', title: 'En kısa zamanda yüklenecek', photographer_name: 'YTÜFOK', camera_used: 'Kulüp Demirbaşı', location: 'YTÜ Davutpaşa', image_url: '', created_at: '' },
+            { id: 'g-4', title: 'En kısa zamanda yüklenecek', photographer_name: 'YTÜFOK', camera_used: 'Kulüp Demirbaşı', location: 'YTÜ Davutpaşa', image_url: '', created_at: '' },
+          ]).map((photo, idx) => {
+            const hasRealImage = Boolean(photo.image_url && photo.image_url.trim().length > 0);
+
+            if (!hasRealImage) {
+              return (
+                <div
+                  key={photo.id || idx}
+                  className="relative h-64 rounded-2xl overflow-hidden border border-dashed border-[#657796]/35 bg-gradient-to-b from-[#1c0f18] to-[#12080f] p-5 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:border-[#657796]/60 shadow-lg"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-[#301322] border border-[#657796]/30 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-inner">
+                    <Camera className="w-6 h-6 text-[#8193b2]" />
+                  </div>
+
+                  <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-[#301322] text-[#8193b2] border border-[#657796]/30 mb-2">
+                    YAKINDA
+                  </span>
+
+                  <h4 className="text-xs sm:text-sm font-bold text-white font-club leading-snug">
+                    En kısa zamanda yüklenecek
+                  </h4>
+
+                  <p className="text-[11px] text-[#a9b9d3]/70 mt-1.5 max-w-[200px] leading-relaxed">
+                    Kulüp üyelerimizin vizöründen fotoğraflar yakında burada sergilenecektir.
+                  </p>
+                </div>
+              );
+            }
+
+            return (
+              <div
+                key={photo.id}
+                onClick={() => setSelectedPhoto(photo)}
+                className="relative h-64 rounded-xl overflow-hidden group cursor-pointer border border-[#657796]/20 hover:border-[#657796] transition-all shadow-md bg-black"
+              >
+                <img
+                  src={photo.image_url}
+                  alt={photo.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#12080f] via-[#12080f]/40 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
+                
+                <div className="absolute bottom-0 inset-x-0 p-4 space-y-1 transform group-hover:-translate-y-1 transition-transform">
+                  <span className="text-[10px] text-[#8193b2] font-semibold uppercase tracking-wider block">
+                    {photo.camera_used}
+                  </span>
+                  <h4 className="text-xs font-bold text-white leading-tight font-club">
+                    {photo.title}
+                  </h4>
+                  <div className="flex items-center justify-between text-[11px] text-[#dce4ef] pt-1">
+                    <span>{photo.photographer_name}</span>
+                    <div className="flex items-center gap-1 text-[10px] text-[#a9b9d3]">
+                      <MapPin className="w-3 h-3 text-[#8193b2]" />
+                      <span className="truncate max-w-[80px]">{photo.location}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* Lightbox Modal */}
-      {selectedPhoto && (
+      {selectedPhoto && Boolean(selectedPhoto.image_url) && (
         <div 
           onClick={() => setSelectedPhoto(null)}
           className="fixed inset-0 z-50 bg-[#12080f]/95 backdrop-blur-md flex items-center justify-center p-4"

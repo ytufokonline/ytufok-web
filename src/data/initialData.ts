@@ -11740,39 +11740,39 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
 export const INITIAL_GALLERY: GalleryItem[] = [
   {
     id: 'g-1',
-    title: 'Tarihi Hamam Gölgeleri',
-    photographer_name: 'Sıla Dönmez',
-    camera_used: 'Canon EOS 5D Mark II + EF 24-105mm f/4L',
-    location: 'Davutpaşa Kışlası Yerleşkesi',
-    image_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80',
-    created_at: '2026-09-20'
+    title: 'En kısa zamanda yüklenecek',
+    photographer_name: 'YTÜFOK',
+    camera_used: 'Kulüp Demirbaşı',
+    location: 'YTÜ Davutpaşa',
+    image_url: '',
+    created_at: '2026-10-12'
   },
   {
     id: 'g-2',
-    title: 'Yıldız Parkı & Sonbahar Renkleri',
-    photographer_name: 'Yavuz Selim Bahadır',
-    camera_used: 'Canon EOS 6D + EF 50mm f/1.4 USM',
-    location: 'Yıldız Korusu, Beşiktaş',
-    image_url: 'https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?auto=format&fit=crop&w=1200&q=80',
-    created_at: '2026-09-25'
+    title: 'En kısa zamanda yüklenecek',
+    photographer_name: 'YTÜFOK',
+    camera_used: 'Kulüp Demirbaşı',
+    location: 'YTÜ Davutpaşa',
+    image_url: '',
+    created_at: '2026-10-12'
   },
   {
     id: 'g-3',
-    title: 'Analog Sokak Enstantanesi',
-    photographer_name: 'Alara Tezelli',
-    camera_used: 'Fujifilm Clear Shot M (Ilford HP5 Plus)',
-    location: 'Kadıköy Çarşı',
-    image_url: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80',
-    created_at: '2026-10-02'
+    title: 'En kısa zamanda yüklenecek',
+    photographer_name: 'YTÜFOK',
+    camera_used: 'Kulüp Demirbaşı',
+    location: 'YTÜ Davutpaşa',
+    image_url: '',
+    created_at: '2026-10-12'
   },
   {
     id: 'g-4',
-    title: 'Mimari Çizgiler & Taşkışla Girişi',
-    photographer_name: 'Duru Anlar',
-    camera_used: 'Canon EOS 5D Mark II + EF 17-40mm f/4L USM',
-    location: 'Davutpaşa Merkez Bina',
-    image_url: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1200&q=80',
-    created_at: '2026-10-05'
+    title: 'En kısa zamanda yüklenecek',
+    photographer_name: 'YTÜFOK',
+    camera_used: 'Kulüp Demirbaşı',
+    location: 'YTÜ Davutpaşa',
+    image_url: '',
+    created_at: '2026-10-12'
   }
 ];
 

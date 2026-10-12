@@ -9,7 +9,7 @@ const STORAGE_KEYS = {
   EQUIPMENT: 'ytufok_equipment_v8',
   RESERVATIONS: 'ytufok_reservations_v8',
   ANNOUNCEMENTS: 'ytufok_announcements_v6',
-  GALLERY: 'ytufok_gallery_v3',
+  GALLERY: 'ytufok_gallery_v4',
   ADMIN_PROFILES: 'ytufok_admin_profiles_v8',
   ACTIVE_ADMIN_ID: 'ytufok_active_admin_id_v8',
   DARKROOM: 'ytufok_darkroom_v4',

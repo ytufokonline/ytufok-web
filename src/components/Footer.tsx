@@ -76,9 +76,13 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-[#657796]/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#a9b9d3]">
+        <div className="pt-8 border-t border-[#657796]/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#a9b9d3]">
           <div>
             &copy; {new Date().getFullYear()} Yıldız Teknik Üniversitesi Fotoğraf Kulübü (YTÜFOK).
+          </div>
+          <div className="flex items-center gap-1.5 text-[11px] text-[#8193b2]">
+            <span>Geliştiren:</span>
+            <span className="text-[#dce4ef] font-medium tracking-wide">Yavuz Selim Bahadır</span>
           </div>
         </div>
       </div>

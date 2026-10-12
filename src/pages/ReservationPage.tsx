@@ -382,7 +382,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
-                placeholder="Öğrenci No (örn: 25093029, 21011045, 22052018)..."
+                placeholder="Öğrenci Numaranız..."
                 value={studentNumber}
                 onChange={(e) => {
                   setStudentNumber(e.target.value);
@@ -399,16 +399,6 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
               >
                 {verifying ? 'Sorgulanıyor...' : <><UserCheck className="w-4 h-4" /><span>Doğrula</span></>}
               </button>
-            </div>
-
-            {/* Test numbers */}
-            <div className="text-[11px] text-[#a9b9d3] flex flex-wrap items-center gap-2">
-              <span className="text-[#8193b2]">Hızlı test:</span>
-              <button type="button" onClick={() => setStudentNumber('25093029')} className="text-[#8193b2] underline font-mono hover:text-[#dce4ef]">25093029 (Aktif Üye - 5 Gün & Bireysel)</button>
-              <span>•</span>
-              <button type="button" onClick={() => setStudentNumber('21011045')} className="text-[#8193b2] underline font-mono hover:text-[#dce4ef]">21011045 (Başkan - 5 Gün & Bireysel)</button>
-              <span>•</span>
-              <button type="button" onClick={() => setStudentNumber('26084006')} className="text-[#8193b2] underline font-mono hover:text-[#dce4ef]">26084006 (Aktif Üye)</button>
             </div>
 
             {/* Verified Member Badge Card */}

@@ -888,7 +888,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
-                placeholder="Örn: 22052018"
+                placeholder="Öğrenci Numaranız..."
                 value={studentNumber}
                 onChange={(e) => {
                   setStudentNumber(e.target.value);

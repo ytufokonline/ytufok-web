@@ -11239,7 +11239,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Canon Orijinal Geniş Omuz Askısı',
       'Sert Koruyucu Taşıma Çantası'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/5/52/Canon_EOS_5D_mk_II-IMG_2439.jpg',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Appareil_photo_reflex_num%C3%A9rique_Canon_EOS_5D_%28de_face%29.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11267,7 +11267,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Canon 6D Orijinal Boyun Askısı',
       'Gövde Ön Kapağı'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Canon_EOS_6D_front.JPG',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/Canon_EOS_6D_body.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11294,7 +11294,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       '⚠️ SD Kart Dahil Değildir (Üye yanında getirmelidir / not düşülmeli)',
       'Canon Boyun Askısı'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Canon_EOS_1000D_IMG_2001b.jpg',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/4/48/Canon_EOS_1000D_01.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11319,7 +11319,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Gövde Süngü Kapağı',
       'Vintage Hakiki Kumaş Omuz Askısı'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Canon_EOS_650.jpg',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Canon_EOS650_BL.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },

@@ -202,7 +202,7 @@ VALUES
     'Kulübün efsanevi tam kare (Full Frame) amiral gemisi gövdesi. 21.1 MP çözünürlük, sinematik Canon renkleri ve 1080p Full HD video kabiliyeti ile stüdyo ve dış mekan portrelerinin vazgeçilmezi.',
     '{"sensor": "Full Frame 21.1 MP CMOS", "mount": "Canon EF Mount", "video": "1080p 30fps Full HD", "iso": "100 - 6400", "weight": "810g"}'::jsonb,
     ARRAY['Canon EOS 5D Mark II Gövde', '2x Orijinal LP-E6 Batarya', 'LC-E6 Hızlı Şarj Cihazı', 'SanDisk 32GB CF Kart', 'USB CF Kart Okuyucu', 'Omuz Askısı', 'Taşıma Çantası'],
-    'https://upload.wikimedia.org/wikipedia/commons/5/52/Canon_EOS_5D_mk_II-IMG_2439.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/b/bd/Appareil_photo_reflex_num%C3%A9rique_Canon_EOS_5D_%28de_face%29.jpg',
     'available',
     'Kusursuz / Sensör temizliği yeni yapıldı'
 ),
@@ -216,7 +216,7 @@ VALUES
     'Kompakt ve hafif tam kare gövde. -3 EV düşük ışık odaklama kabiliyeti, dahili Wi-Fi ve GPS özelliğiyle gece çekimleri, kulüp gezileri ve konser fotoğrafları için ideal.',
     '{"sensor": "Full Frame 20.2 MP CMOS", "mount": "Canon EF Mount", "iso": "100 - 25600", "storage": "SD / SDHC / SDXC", "weight": "755g"}'::jsonb,
     ARRAY['Canon EOS 6D Gövde', '2x Orijinal LP-E6 Batarya', 'LC-E6 Şarj Cihazı', 'SanDisk 64GB SD Kart', 'Orijinal Boyun Askısı'],
-    'https://upload.wikimedia.org/wikipedia/commons/1/12/Canon_EOS_6D_front.JPG',
+    'https://upload.wikimedia.org/wikipedia/commons/0/0c/Canon_EOS_6D_body.jpg',
     'available',
     'Temiz / Ekranda nano cam koruyucu mevcut'
 ),
@@ -230,7 +230,7 @@ VALUES
     'Kulübe yeni katılan üyeler ve temel diyafram-enstantane-ISO eğitim atölyeleri için pratik, hafif ve dayanıklı APS-C DSLR gövde.',
     '{"sensor": "APS-C 10.1 MP CMOS", "mount": "Canon EF / EF-S Mount", "iso": "100 - 1600", "screen": "2.5 inç Live View LCD", "weight": "450g"}'::jsonb,
     ARRAY['Canon EOS 1000D Gövde', '2x LP-E5 Batarya', 'Orijinal Şarj Cihazı', 'Kingston 32GB SD Kart', 'Boyun Askısı'],
-    'https://upload.wikimedia.org/wikipedia/commons/b/be/Canon_EOS_1000D_IMG_2001b.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/4/48/Canon_EOS_1000D_01.jpg',
     'available',
     'Çalışır durumda / Temel eğitim kullanımına hazır'
 ),
@@ -244,7 +244,7 @@ VALUES
     'Canon''un ilk elektronik otomatik odaklamalı (AF) 35mm film SLR fotoğraf makinesi (1987 klasiği). Kulübün tüm modern EF lensleriyle tam uyumludur; analog film çekip karanlık odada tab etmek isteyen üyelerimiz içindir.',
     '{"film_type": "35mm Film (135)", "mount": "Canon EF Mount (Elektronik AF)", "shutter": "1/2000s - 30s + Bulb", "battery": "2CR5 6V Lityum"}'::jsonb,
     ARRAY['Canon EOS 650 Analog Gövde', '2CR5 Lityum Pil (Dolu takılı)', 'Gövde Süngü Kapağı', 'Vintage Omuz Askısı'],
-    'https://upload.wikimedia.org/wikipedia/commons/c/cc/Canon_EOS_650.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/c/ce/Canon_EOS650_BL.jpg',
     'available',
     'Karanlık oda testleri yapıldı / Perde ve sarma motoru kusursuz'
 ),

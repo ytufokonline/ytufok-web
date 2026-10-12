@@ -150,7 +150,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
 
                 <div className="relative h-56 rounded-xl overflow-hidden bg-black border border-[#657796]/20">
                   <img 
-                    src="https://upload.wikimedia.org/wikipedia/commons/1/12/Canon_EOS_6D_front.JPG" 
+                    src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Canon_EOS_6D_body.jpg" 
                     alt="Canon EOS 6D Gövde"
                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                   />

@@ -6,7 +6,7 @@ import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUti
 // Local storage keys for seamless offline/demo functionality
 const STORAGE_KEYS = {
   MEMBERS: 'ytufok_members_v14',
-  EQUIPMENT: 'ytufok_equipment_v8',
+  EQUIPMENT: 'ytufok_equipment_v9',
   RESERVATIONS: 'ytufok_reservations_v8',
   ANNOUNCEMENTS: 'ytufok_announcements_v6',
   GALLERY: 'ytufok_gallery_v4',

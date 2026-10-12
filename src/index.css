@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Century Gothic Web Font and System Fallback */
+@font-face {
+  font-family: 'Century Gothic';
+  src: local('Century Gothic'),
+       local('CenturyGothic'),
+       local('AppleGothic'),
+       url('/fonts/club-font.woff2') format('woff2'),
+       url('/fonts/club-font.ttf') format('truetype'),
+       url('/fonts/century-gothic.woff2') format('woff2'),
+       url('/fonts/century-gothic.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  /* Century Gothic is globally applied to every element */
+  *,
+  *::before,
+  *::after {
+    font-family: 'Century Gothic', CenturyGothic, AppleGothic, 'ITC Avant Garde Gothic', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  html,
+  body {
+    font-family: 'Century Gothic', CenturyGothic, AppleGothic, 'ITC Avant Garde Gothic', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background-color: #12080f;
+    color: #f4f5f8;
+  }
+
+  h1, h2, h3, h4, h5, h6,
+  p, span, a, label, strong,
+  button, input, select, textarea,
+  table, th, td, div {
+    font-family: 'Century Gothic', CenturyGothic, AppleGothic, 'ITC Avant Garde Gothic', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+}
+
+/* Custom Scrollbar in YTÜFOK 2026 Colors */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #180b14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4e3b52;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #657796;
+}
+
+/* Glassmorphism with Plum (#301322) and Steel Blue (#657796) glow */
+.glass-panel {
+  background: rgba(28, 15, 24, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(101, 119, 150, 0.2);
+}
+
+.glass-card {
+  background: rgba(24, 13, 21, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(101, 119, 150, 0.15);
+}
+
+.glass-card:hover {
+  border-color: rgba(101, 119, 150, 0.4);
+  box-shadow: 0 10px 30px -10px rgba(48, 19, 34, 0.6), 0 0 20px -5px rgba(101, 119, 150, 0.2);
+}
+
+/* Gradient accents */
+.ytufok-gradient {
+  background: linear-gradient(135deg, #657796 0%, #4e3b52 50%, #301322 100%);
+}
+
+.ytufok-border-gradient {
+  border-image: linear-gradient(to right, #657796, #301322) 1;
+}

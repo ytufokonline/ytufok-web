@@ -11697,6 +11697,34 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Fuji_Mini_wide_DL-500_wide_date_%2851887701012%29.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
+  },
+
+  // ==========================================
+  // FİLTRE & AKSESUARLAR
+  // ==========================================
+  {
+    id: 'e-tianya-77',
+    name: 'Tianya 77mm Soft Diffuser Filtre',
+    category: 'accessory',
+    brand: 'Tianya',
+    model: '77mm Soft Diffuser',
+    serial_number: 'YTU-FLTR-TIANYA-77',
+    description: '77mm filtre çapına sahip lenslerle (Canon EF 24-105mm f/4L ve Canon EF 17-40mm f/4L) tam uyumlu yumuşatıcı (Soft Focus / Mist Diffuser) optik efekt filtresi. Güçlü ışık kaynaklarında ve vurgularda sinematik, masalsı bir ışık halesi (glow/bloom) oluşturarak kontrastı yumuşatır, portre ve sokak çekimlerinde pürüzsüz estetik tonlar sağlar.',
+    specs: {
+      'Filtre Çapı': '77 mm (Canon 24-105mm f/4L & 17-40mm f/4L Uyumlu)',
+      'Filtre Tipi': 'Soft Diffuser (Yumuşatıcı / Mist Efekt Filtresi)',
+      'Optik Etki': 'Parlak ışıklarda yumuşak hale (bloom/glow) & sinematik yumuşatma',
+      'Çerçeve': 'İnce (Slim) Metal Vidalı Çerçeve',
+      'Cam': 'Özel kaplamalı optik cam'
+    },
+    package_contents: [
+      'Tianya 77mm Soft Diffuser Filtre',
+      'Sert Koruyucu Plastik Taşıma Kutusu',
+      'Mikrofiber Filtre Bezi'
+    ],
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/3/37/B%2BW_Camera_Lens_Filter_%2845476356054%29.jpg',
+    status: 'available',
+    current_condition: 'değerlendirilecek'
   }
 ];
 

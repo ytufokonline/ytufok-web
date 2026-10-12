@@ -79,7 +79,7 @@ export const AdminDashboard: React.FC = () => {
   const [newEquipBrand, setNewEquipBrand] = useState('Canon');
   const [newEquipModel, setNewEquipModel] = useState('');
   const [newEquipSerial, setNewEquipSerial] = useState('');
-  const [newEquipCategory, setNewEquipCategory] = useState<'camera' | 'analog' | 'lens' | 'tripod' | 'lighting'>('camera');
+  const [newEquipCategory, setNewEquipCategory] = useState<'camera' | 'analog' | 'lens' | 'tripod' | 'lighting' | 'accessory'>('camera');
 
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [newMemberNo, setNewMemberNo] = useState('');
@@ -2453,6 +2453,7 @@ export const AdminDashboard: React.FC = () => {
                   <option value="lens">Lens / Objektif</option>
                   <option value="lighting">Flaş & Aydınlatma</option>
                   <option value="tripod">Tripod & Destek</option>
+                  <option value="accessory">Filtre & Aksesuar</option>
                 </select>
               </div>
               <input

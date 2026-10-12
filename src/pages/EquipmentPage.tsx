@@ -45,7 +45,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
       item.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.serial_number.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    const matchesCategory = 
+      selectedCategory === 'all' || 
+      item.category === selectedCategory ||
+      (selectedCategory === 'accessory' && (item.category === 'accessory' || item.category === 'tripod'));
     const matchesStatus = selectedStatus === 'all' || item.status === selectedStatus;
 
     return matchesSearch && matchesCategory && matchesStatus;
@@ -57,7 +60,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
     { id: 'analog', label: 'Analog Makineler' },
     { id: 'lens', label: 'Objektifler (Lensler)' },
     { id: 'lighting', label: 'Flaş & Işık' },
-    { id: 'tripod', label: 'Tripod & Aksesuar' },
+    { id: 'accessory', label: 'Filtre & Aksesuar' },
   ];
 
   const getCategoryLabel = (category: string) => {
@@ -67,6 +70,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
       case 'lens': return 'Objektif (Lens)';
       case 'lighting': return 'Flaş & Aydınlatma';
       case 'tripod': return 'Tripod & Destek';
+      case 'accessory': return 'Filtre & Aksesuar';
       default: return category;
     }
   };

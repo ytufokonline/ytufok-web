@@ -19,6 +19,10 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
   const [showChangePasswordModal, setShowChangePasswordModal] = useState<boolean>(false);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
+  useEffect(() => {
     setLocalProfiles(adminProfiles);
   }, [adminProfiles]);
 
@@ -49,6 +53,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
 
     setTimeout(() => {
       setIsSubmitting(false);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       onLogin(selectedProfile);
     }, 200);
   };

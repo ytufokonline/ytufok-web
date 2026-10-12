@@ -15,6 +15,11 @@ export function App() {
   const [preselectedEquipmentId, setPreselectedEquipmentId] = useState<string | undefined>();
   const [pendingCount, setPendingCount] = useState<number>(0);
 
+  // Automatically scroll to the top of the window on every page/tab change
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [activeTab]);
+
   // Poll pending count for the admin badge
   useEffect(() => {
     const fetchPending = async () => {

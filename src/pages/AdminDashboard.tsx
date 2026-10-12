@@ -133,6 +133,10 @@ export const AdminDashboard: React.FC = () => {
     loadAllData();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [activeAdmin, activeTab]);
+
   const getAdminStamp = () => {
     if (!activeAdmin) return 'YTÜFOK Yönetim Kurulu';
     return `${activeAdmin.full_name} (${activeAdmin.short_title})`;
@@ -565,6 +569,7 @@ export const AdminDashboard: React.FC = () => {
         onLogin={async (profile) => {
           setActiveAdmin(profile);
           await api.setActiveAdmin(profile.id);
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
         }}
         onProfilesUpdate={(updated) => setAdminProfiles(updated)}
       />

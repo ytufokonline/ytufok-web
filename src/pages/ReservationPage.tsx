@@ -210,6 +210,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
       if (response.success && response.reservation) {
         setSubmittedReservation(response.reservation);
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       } else {
         alert(response.message);
       }

@@ -105,7 +105,13 @@ VALUES
   ('2602E019', 'Merve İstek', '2602e019@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2026, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
   ('2602D029', 'Serra Çelik', '2602d029@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2026, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
   ('23017019', 'Muhammed Mahmut Tilki', '23017019@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2023, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
-  ('26084006', 'Zeynep Durukan', '26084006@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2026, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)')
+  ('26084006', 'Zeynep Durukan', '26084006@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2026, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
+  ('2408A015', 'Elif Su Gürbüz', '2408a015@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2024, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
+  ('25037036', 'Aysude Nur Ergün', '25037036@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2025, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
+  ('260B037', 'Sude Naz Cansız', '260b037@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2026, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
+  ('26028048', 'Elif Nisan Dumlupunar', '26028048@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2026, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
+  ('2608B026', 'Betül Akdeniz', '2608b026@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2026, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)'),
+  ('24041501', 'Işıl Hümeyra Mete', '24041501@std.yildiz.edu.tr', '+90 5XX XXX XX XX', 'Yıldız Teknik Üniversitesi', 2024, 'active', 0, 'member', 'YTÜFOK Aktif Üyesi (2025-2026 Dönemi)')
 ON CONFLICT (student_number) DO UPDATE SET
   full_name = EXCLUDED.full_name,
   status = EXCLUDED.status,

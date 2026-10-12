@@ -8,7 +8,7 @@ import { Member, DarkroomSlot, DarkroomReservation, DarkroomProcessType } from '
 import { api } from '../lib/api';
 
 interface DarkroomPageProps {
-  onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin' | 'darkroom') => void;
+  onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin' | 'darkroom', extraParam?: string) => void;
 }
 
 export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
@@ -1545,8 +1545,9 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               <button
                 type="button"
                 onClick={() => {
+                  const code = submittedReservation?.reservation_code;
                   resetForm();
-                  onNavigate('status');
+                  onNavigate('status', code);
                 }}
                 className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 text-white text-xs font-semibold transition-colors cursor-pointer"
               >

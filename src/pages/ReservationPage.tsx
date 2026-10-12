@@ -6,7 +6,7 @@ import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDat
 
 interface ReservationPageProps {
   preselectedEquipmentId?: string;
-  onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin') => void;
+  onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin', extraParam?: string) => void;
 }
 
 export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEquipmentId, onNavigate }) => {
@@ -344,7 +344,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
-              onClick={() => onNavigate('status')}
+              onClick={() => onNavigate('status', submittedReservation.reservation_code)}
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:from-[#7589aa] hover:to-[#5e4766] text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-md"
             >
               <FileText className="w-4 h-4" />

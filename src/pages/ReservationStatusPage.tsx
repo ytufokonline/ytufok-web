@@ -15,11 +15,8 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
   const [darkroomResults, setDarkroomResults] = useState<DarkroomReservation[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanQuery = query.trim().toUpperCase();
+  const executeSearch = React.useCallback(async (cleanQuery: string) => {
     if (!cleanQuery) return;
-
     setSearching(true);
     setHasSearched(true);
 
@@ -48,6 +45,26 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
     } finally {
       setSearching(false);
     }
+  }, []);
+
+  // Auto-search if kod or code query param is present on mount
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('kod') || params.get('code');
+    if (code) {
+      const cleanCode = code.trim().toUpperCase();
+      setQuery(cleanCode);
+      executeSearch(cleanCode);
+    }
+  }, [executeSearch]);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanQuery = query.trim().toUpperCase();
+    if (!cleanQuery) return;
+
+    window.history.replaceState(null, '', `/talep-sorgula?kod=${encodeURIComponent(cleanQuery)}`);
+    executeSearch(cleanQuery);
   };
 
   const totalFound = equipmentResults.length + darkroomResults.length;

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Camera, Calendar, Search, ShieldCheck, Menu, X, Sparkles, Droplets } from 'lucide-react';
+import { TabType, TAB_PATHS } from '../lib/routes';
 
 interface NavbarProps {
-  activeTab: 'home' | 'equipment' | 'reserve' | 'darkroom' | 'status' | 'admin';
-  setActiveTab: (tab: 'home' | 'equipment' | 'reserve' | 'darkroom' | 'status' | 'admin') => void;
+  activeTab: TabType;
+  setActiveTab: (tab: TabType) => void;
   pendingCount?: number;
 }
 
@@ -11,17 +12,23 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'home', label: 'Ana Sayfa', icon: Sparkles },
-    { id: 'equipment', label: 'Kamera & Lens Havuzu', icon: Camera },
-    { id: 'reserve', label: 'Rezervasyon Yap', icon: Calendar },
-    { id: 'darkroom', label: 'Karanlık Oda', icon: Droplets },
-    { id: 'status', label: 'Talep Sorgula', icon: Search },
-  ] as const;
+    { id: 'home' as const, label: 'Ana Sayfa', icon: Sparkles, path: TAB_PATHS.home },
+    { id: 'equipment' as const, label: 'Kamera & Lens Havuzu', icon: Camera, path: TAB_PATHS.equipment },
+    { id: 'reserve' as const, label: 'Rezervasyon Yap', icon: Calendar, path: TAB_PATHS.reserve },
+    { id: 'darkroom' as const, label: 'Karanlık Oda', icon: Droplets, path: TAB_PATHS.darkroom },
+    { id: 'status' as const, label: 'Talep Sorgula', icon: Search, path: TAB_PATHS.status },
+  ];
 
-  const handleNavClick = (tab: 'home' | 'equipment' | 'reserve' | 'darkroom' | 'status' | 'admin') => {
+  const handleNavClick = (tab: TabType, e?: React.MouseEvent) => {
+    if (e) {
+      // If user Cmd+Click, Ctrl+Click, Shift+Click, or middle click, let the browser open in new tab
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) {
+        return;
+      }
+      e.preventDefault();
+    }
     setActiveTab(tab);
     setMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -30,8 +37,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
         <div className="flex items-center justify-between h-20">
           
           {/* Logo & Brand */}
-          <div 
-            onClick={() => handleNavClick('home')}
+          <a 
+            href={TAB_PATHS.home}
+            onClick={(e) => handleNavClick('home', e)}
             className="flex items-center gap-3.5 cursor-pointer group"
           >
             {/* 100% Transparent Official YTÜFOK Logo */}
@@ -53,7 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
                 Fotoğraf Kulübü Ekipman & Zimmet Sistemi
               </p>
             </div>
-          </div>
+          </a>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1.5">
@@ -61,9 +69,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               return (
-                <button
+                <a
                   key={item.id}
-                  onClick={() => handleNavClick(item.id)}
+                  href={item.path}
+                  onClick={(e) => handleNavClick(item.id, e)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                     isActive
                       ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-md shadow-[#301322]/40 border border-[#8193b2]/30'
@@ -72,15 +81,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
                 >
                   <Icon className="w-3.5 h-3.5" />
                   {item.label}
-                </button>
+                </a>
               );
             })}
           </nav>
 
           {/* Admin CTA Button */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={() => handleNavClick('admin')}
+            <a
+              href={TAB_PATHS.admin}
+              onClick={(e) => handleNavClick('admin', e)}
               className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
                 activeTab === 'admin'
                   ? 'bg-white text-[#301322] border-white shadow-lg'
@@ -94,21 +104,23 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
                   {pendingCount}
                 </span>
               )}
-            </button>
+            </a>
           </div>
 
           {/* Mobile menu button */}
           <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={() => handleNavClick('admin')}
+            <a
+              href={TAB_PATHS.admin}
+              onClick={(e) => handleNavClick('admin', e)}
               className="p-2 rounded-xl bg-[#301322] text-[#dce4ef] border border-[#657796]/30"
               aria-label="Admin Paneli"
             >
               <ShieldCheck className="w-4 h-4" />
-            </button>
+            </a>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-xl text-[#a9b9d3] hover:text-white hover:bg-[#301322] focus:outline-none"
+              aria-label="Menüyü Aç/Kapat"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -123,9 +135,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
             const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
-              <button
+              <a
                 key={item.id}
-                onClick={() => handleNavClick(item.id)}
+                href={item.path}
+                onClick={(e) => handleNavClick(item.id, e)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-xs font-semibold ${
                   isActive
                     ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white'
@@ -134,11 +147,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
               >
                 <Icon className="w-4 h-4" />
                 {item.label}
-              </button>
+              </a>
             );
           })}
-          <button
-            onClick={() => handleNavClick('admin')}
+          <a
+            href={TAB_PATHS.admin}
+            onClick={(e) => handleNavClick('admin', e)}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left text-xs font-bold border ${
               activeTab === 'admin'
                 ? 'bg-white text-[#301322] border-white'
@@ -154,7 +168,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
                 {pendingCount} Bekleyen
               </span>
             )}
-          </button>
+          </a>
         </div>
       )}
     </header>

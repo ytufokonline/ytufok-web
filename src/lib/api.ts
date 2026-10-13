@@ -48,8 +48,9 @@ interface AdminPinRecord {
 type AdminPinMap = Record<string, AdminPinRecord>;
 
 interface EquipmentStateDelta {
-  overrides: Record<string, { status: EquipmentStatus; current_condition?: string }>;
+  overrides: Record<string, Partial<Equipment>>;
   added: Equipment[];
+  deleted?: string[];
 }
 
 interface MemberDeltas {
@@ -371,18 +372,24 @@ function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   const cols = envelope.collections || {};
 
   // 1. Equipment
-  const eqDelta: EquipmentStateDelta = cols.equipment_state || { overrides: {}, added: [] };
-  const baseEq = INITIAL_EQUIPMENT.map((item) => {
+  const eqDelta: EquipmentStateDelta = cols.equipment_state || { overrides: {}, added: [], deleted: [] };
+  const deletedEqSet = new Set(Array.isArray(eqDelta.deleted) ? eqDelta.deleted : []);
+  const baseEq = INITIAL_EQUIPMENT.filter((item) => !deletedEqSet.has(item.id)).map((item) => {
     const ov = eqDelta.overrides?.[item.id];
     if (!ov) return item;
     return {
       ...item,
-      status: ov.status ?? item.status,
-      current_condition: ov.current_condition ?? item.current_condition
+      ...ov
     };
   });
+  const addedEq = (Array.isArray(eqDelta.added) ? eqDelta.added : [])
+    .filter((item) => !deletedEqSet.has(item.id))
+    .map((item) => {
+      const ov = eqDelta.overrides?.[item.id];
+      return ov ? { ...item, ...ov } : item;
+    });
   const equipmentList: Equipment[] = [
-    ...(Array.isArray(eqDelta.added) ? eqDelta.added : []),
+    ...addedEq,
     ...baseEq
   ];
 
@@ -646,8 +653,8 @@ export const api = {
           const baseDescMap = new Map(INITIAL_EQUIPMENT.map((e) => [e.id, e.description]));
           return (data as Equipment[]).map((e) => ({
             ...e,
-            image_url: baseImgMap.get(e.id) || e.image_url,
-            description: baseDescMap.get(e.id) || e.description
+            image_url: e.image_url || baseImgMap.get(e.id) || '',
+            description: e.description || baseDescMap.get(e.id) || ''
           }));
         }
       } catch (err) {
@@ -698,42 +705,87 @@ export const api = {
     return newEquipment;
   },
 
-  async updateEquipmentStatus(
+  async updateEquipment(
     id: string,
-    status: EquipmentStatus,
-    conditionNotes?: string
+    updates: Partial<Equipment>
   ): Promise<boolean> {
     if (isSupabaseConfigured()) {
       try {
-        const updatePayload: Record<string, unknown> = { status };
-        if (conditionNotes) updatePayload.current_condition = conditionNotes;
-
-        const { error } = await supabase.from('equipment').update(updatePayload).eq('id', id);
-        if (!error) return true;
+        const { error } = await supabase.from('equipment').update(updates).eq('id', id);
+        if (!error) {
+          const delta = await readCloudCollection<EquipmentStateDelta>('equipment_state', {
+            overrides: {},
+            added: [],
+            deleted: []
+          });
+          const overrides = { ...(delta.overrides || {}) };
+          overrides[id] = { ...(overrides[id] || {}), ...updates };
+          const added = (Array.isArray(delta.added) ? delta.added : []).map((e) =>
+            e.id === id ? { ...e, ...updates } : e
+          );
+          await writeCloudCollection('equipment_state', { ...delta, overrides, added });
+          return true;
+        }
       } catch (err) {
-        console.warn('Supabase updateEquipmentStatus error:', err);
+        console.warn('Supabase updateEquipment error:', err);
       }
     }
 
     const delta = await readCloudCollection<EquipmentStateDelta>('equipment_state', {
       overrides: {},
-      added: []
+      added: [],
+      deleted: []
     });
 
     const overrides = { ...(delta.overrides || {}) };
-    const existingOv = overrides[id] || { status };
-    overrides[id] = {
-      status,
-      current_condition: conditionNotes || existingOv.current_condition
-    };
+    overrides[id] = { ...(overrides[id] || {}), ...updates };
 
     const added = (Array.isArray(delta.added) ? delta.added : []).map((item) =>
-      item.id === id
-        ? { ...item, status, current_condition: conditionNotes || item.current_condition }
-        : item
+      item.id === id ? { ...item, ...updates } : item
     );
 
-    return await writeCloudCollection('equipment_state', { overrides, added });
+    return await writeCloudCollection('equipment_state', { ...delta, overrides, added });
+  },
+
+  async deleteEquipment(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('equipment').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Supabase deleteEquipment error:', err);
+      }
+    }
+
+    const delta = await readCloudCollection<EquipmentStateDelta>('equipment_state', {
+      overrides: {},
+      added: [],
+      deleted: []
+    });
+
+    const deleted = new Set(delta.deleted || []);
+    deleted.add(id);
+
+    const added = (Array.isArray(delta.added) ? delta.added : []).filter((e) => e.id !== id);
+    const overrides = { ...(delta.overrides || {}) };
+    delete overrides[id];
+
+    return await writeCloudCollection('equipment_state', {
+      overrides,
+      added,
+      deleted: Array.from(deleted)
+    });
+  },
+
+  async updateEquipmentStatus(
+    id: string,
+    status: EquipmentStatus,
+    conditionNotes?: string
+  ): Promise<boolean> {
+    const payload: Partial<Equipment> = { status };
+    if (conditionNotes !== undefined) {
+      payload.current_condition = conditionNotes;
+    }
+    return this.updateEquipment(id, payload);
   },
 
   // ==========================================

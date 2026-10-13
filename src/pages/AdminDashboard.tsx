@@ -8,7 +8,7 @@ import {
   Trash2, Calendar, CalendarPlus, Info, Compass, MapPin,
   KeyRound, Bell, Pencil
 } from 'lucide-react';
-import { Reservation, Equipment, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement } from '../types';
+import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement } from '../types';
 import { api } from '../lib/api';
 import { getSupabaseConfigStatus } from '../lib/supabase';
 import { StatusBadge } from '../components/StatusBadge';
@@ -82,7 +82,20 @@ export const AdminDashboard: React.FC = () => {
   const [newEquipBrand, setNewEquipBrand] = useState('Canon');
   const [newEquipModel, setNewEquipModel] = useState('');
   const [newEquipSerial, setNewEquipSerial] = useState('');
-  const [newEquipCategory, setNewEquipCategory] = useState<'camera' | 'analog' | 'lens' | 'tripod' | 'lighting' | 'accessory'>('camera');
+  const [newEquipCategory, setNewEquipCategory] = useState<EquipmentCategory>('camera');
+
+  // Edit Equipment State
+  const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(null);
+  const [editEquipName, setEditEquipName] = useState('');
+  const [editEquipBrand, setEditEquipBrand] = useState('Canon');
+  const [editEquipModel, setEditEquipModel] = useState('');
+  const [editEquipSerial, setEditEquipSerial] = useState('');
+  const [editEquipCategory, setEditEquipCategory] = useState<EquipmentCategory>('camera');
+  const [editEquipDescription, setEditEquipDescription] = useState('');
+  const [editEquipCondition, setEditEquipCondition] = useState('');
+  const [editEquipStatus, setEditEquipStatus] = useState<EquipmentStatus>('available');
+  const [editEquipImageUrl, setEditEquipImageUrl] = useState('');
+  const [editEquipPackageContents, setEditEquipPackageContents] = useState('');
 
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [newMemberNo, setNewMemberNo] = useState('');
@@ -355,6 +368,66 @@ export const AdminDashboard: React.FC = () => {
     setShowAddEquipmentModal(false);
     setNewEquipName('');
     setNewEquipSerial('');
+    await loadAllData();
+  };
+
+  const handleOpenEditEquipment = (item: Equipment) => {
+    setEditingEquipment(item);
+    setEditEquipName(item.name || '');
+    setEditEquipBrand(item.brand || 'Canon');
+    setEditEquipModel(item.model || '');
+    setEditEquipSerial(item.serial_number || '');
+    setEditEquipCategory(item.category || 'camera');
+    setEditEquipDescription(item.description || '');
+    setEditEquipCondition(item.current_condition || '');
+    setEditEquipStatus(item.status || 'available');
+    setEditEquipImageUrl(item.image_url || '');
+    setEditEquipPackageContents(
+      Array.isArray(item.package_contents) ? item.package_contents.join('\n') : ''
+    );
+  };
+
+  const handleSaveEditEquipment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingEquipment || !editEquipName.trim() || !editEquipSerial.trim()) return;
+
+    const parsedContents = editEquipPackageContents
+      .split(/[\n,]/)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    await api.updateEquipment(editingEquipment.id, {
+      name: editEquipName.trim(),
+      brand: editEquipBrand.trim(),
+      model: editEquipModel.trim() || editEquipName.trim(),
+      serial_number: editEquipSerial.trim(),
+      category: editEquipCategory,
+      description: editEquipDescription.trim(),
+      current_condition: editEquipCondition.trim(),
+      status: editEquipStatus,
+      image_url: editEquipImageUrl.trim(),
+      package_contents: parsedContents.length > 0 ? parsedContents : editingEquipment.package_contents
+    });
+
+    setEditingEquipment(null);
+    await loadAllData();
+  };
+
+  const handleDeleteEquipment = async (item: Equipment) => {
+    const activeRes = reservations.filter(
+      r => r.equipment_id === item.id && (r.status === 'in_use' || r.status === 'approved')
+    );
+    if (activeRes.length > 0) {
+      alert(`Bu ekipman şu anda zimmette veya onaylı rezervasyonda (${activeRes.length} aktif talep). Silinemez!`);
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `"${item.name}" (${item.serial_number}) demirbaşını envanterden tamamen silmek istediğinize emin misiniz?`
+    );
+    if (!confirmed) return;
+
+    await api.deleteEquipment(item.id);
     await loadAllData();
   };
 
@@ -1145,8 +1218,15 @@ export const AdminDashboard: React.FC = () => {
             {equipmentList.map(item => (
               <div key={item.id} className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-2 flex flex-col justify-between">
                 <div>
-                  <div className="h-32 rounded-xl overflow-hidden bg-black mb-2">
+                  <div className="h-32 rounded-xl overflow-hidden bg-black mb-2 relative group">
                     <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => handleOpenEditEquipment(item)}
+                      title="Ekipmanı Düzenle"
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/75 hover:bg-[#301322] text-white/80 hover:text-white border border-white/10 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                   <h4 className="text-xs font-bold text-white font-club">{item.name}</h4>
                   <div className="text-[11px] font-mono text-[#a9b9d3]">{item.serial_number}</div>
@@ -1169,9 +1249,27 @@ export const AdminDashboard: React.FC = () => {
                   </button>
                 </div>
 
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <button
+                    onClick={() => handleOpenEditEquipment(item)}
+                    className="py-1.5 rounded-xl bg-[#12080f] hover:bg-[#301322] text-[11px] text-[#dce4ef] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Pencil className="w-3 h-3 text-[#8193b2]" />
+                    <span>Düzenle</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteEquipment(item)}
+                    className="py-1.5 rounded-xl bg-[#12080f] hover:bg-rose-950/60 text-[11px] text-[#8193b2] hover:text-rose-300 font-medium border border-[#657796]/30 hover:border-rose-500/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Sil</span>
+                  </button>
+                </div>
+
                 <button
                   onClick={() => setSelectedEquipmentForHistory(item)}
-                  className="w-full mt-2 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] text-[#dce4ef] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full mt-1 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] text-[#dce4ef] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <History className="w-3.5 h-3.5 text-[#8193b2]" />
                   <span>Kullanım Geçmişi ({reservations.filter(r => r.equipment_id === item.id).length})</span>
@@ -2841,6 +2939,174 @@ export const AdminDashboard: React.FC = () => {
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setShowAddEquipmentModal(false)} className="px-3 py-1.5 rounded-lg bg-[#301322] text-[#dce4ef]">İptal</button>
                 <button type="submit" className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold">Kaydet</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Equipment Modal */}
+      {editingEquipment && (
+        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
+              <div className="flex items-center gap-2">
+                <Pencil className="w-4 h-4 text-[#8193b2]" />
+                <h3 className="text-sm font-bold text-white font-club">Ekipmanı Düzenle</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingEquipment(null)}
+                className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditEquipment} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Ekipman Adı *</label>
+                  <input
+                    type="text"
+                    value={editEquipName}
+                    onChange={e => setEditEquipName(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Seri / Demirbaş No *</label>
+                  <input
+                    type="text"
+                    value={editEquipSerial}
+                    onChange={e => setEditEquipSerial(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono focus:outline-none focus:border-[#657796]"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Kategori</label>
+                  <select
+                    value={editEquipCategory}
+                    onChange={e => setEditEquipCategory(e.target.value as EquipmentCategory)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  >
+                    <option value="camera">Dijital Gövde</option>
+                    <option value="analog">Analog Makine</option>
+                    <option value="lens">Lens / Objektif</option>
+                    <option value="lighting">Flaş & Aydınlatma</option>
+                    <option value="tripod">Tripod & Destek</option>
+                    <option value="accessory">Filtre & Aksesuar</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Marka</label>
+                  <input
+                    type="text"
+                    value={editEquipBrand}
+                    onChange={e => setEditEquipBrand(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Model</label>
+                  <input
+                    type="text"
+                    value={editEquipModel}
+                    onChange={e => setEditEquipModel(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Müsaitlik Durumu</label>
+                  <select
+                    value={editEquipStatus}
+                    onChange={e => setEditEquipStatus(e.target.value as EquipmentStatus)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  >
+                    <option value="available">🟢 Müsait (Rezerve Edilebilir)</option>
+                    <option value="in_use">🔵 Kullanımda / Zimmette</option>
+                    <option value="reserved">🟡 Rezerve Edildi</option>
+                    <option value="maintenance">🔴 Bakımda / Serviste</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Kondisyon Notu</label>
+                  <input
+                    type="text"
+                    value={editEquipCondition}
+                    onChange={e => setEditEquipCondition(e.target.value)}
+                    placeholder="Örn: Kusursuz, vizörde hafif toz"
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-[#8193b2] block">Görsel URL / Dosya Yolu</label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={editEquipImageUrl}
+                    onChange={e => setEditEquipImageUrl(e.target.value)}
+                    placeholder="/equipment/canon-eos-1000d.jpg veya https://..."
+                    className="flex-1 p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono text-[11px] focus:outline-none focus:border-[#657796]"
+                  />
+                  {editEquipImageUrl && (
+                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-black shrink-0 border border-[#657796]/30">
+                      <img src={editEquipImageUrl} alt="Önizleme" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-[#8193b2] block">Açıklama</label>
+                <textarea
+                  rows={2}
+                  value={editEquipDescription}
+                  onChange={e => setEditEquipDescription(e.target.value)}
+                  placeholder="Ekipman tanıtımı ve kullanım bilgisi..."
+                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-[#8193b2] block">Çanta & Paket İçeriği (Virgül veya yeni satırla ayırın)</label>
+                <textarea
+                  rows={2}
+                  value={editEquipPackageContents}
+                  onChange={e => setEditEquipPackageContents(e.target.value)}
+                  placeholder="Gövde, 1x LP-E5 Batarya, Şarj Aleti, Askı..."
+                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#657796]/20">
+                <button
+                  type="button"
+                  onClick={() => setEditingEquipment(null)}
+                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] transition-colors cursor-pointer"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 text-white font-bold transition-all shadow-md cursor-pointer"
+                >
+                  Değişiklikleri Kaydet
+                </button>
               </div>
             </form>
           </div>

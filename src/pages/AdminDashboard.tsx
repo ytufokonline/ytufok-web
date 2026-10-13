@@ -694,6 +694,7 @@ export const AdminDashboard: React.FC = () => {
   });
 
   const filteredHistoryReservations = reservations.filter(r => {
+    if (r.status === 'rejected') return false;
     const matchesMember = historyMemberFilter === 'all' || r.member_id === historyMemberFilter || r.student_number === historyMemberFilter;
     const matchesEquipment = historyEquipmentFilter === 'all' || r.equipment_id === historyEquipmentFilter;
     const matchesStatus = historyStatusFilter === 'all' || r.status === historyStatusFilter;
@@ -963,7 +964,7 @@ export const AdminDashboard: React.FC = () => {
           }`}
         >
           <History className="w-3.5 h-3.5" />
-          <span>Tüm Kullanım Geçmişi ({reservations.length})</span>
+          <span>Tüm Kullanım Geçmişi ({reservations.filter(r => r.status !== 'rejected').length})</span>
         </button>
         <button
           onClick={() => setActiveTab('darkroom')}
@@ -1305,7 +1306,7 @@ export const AdminDashboard: React.FC = () => {
                   className="w-full mt-1 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] text-[#dce4ef] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <History className="w-3.5 h-3.5 text-[#8193b2]" />
-                  <span>Kullanım Geçmişi ({reservations.filter(r => r.equipment_id === item.id).length})</span>
+                  <span>Kullanım Geçmişi ({reservations.filter(r => r.equipment_id === item.id && r.status !== 'rejected').length})</span>
                 </button>
               </div>
             ))}
@@ -1413,7 +1414,7 @@ export const AdminDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-[#657796]/15">
                 {filteredMembers.map(m => {
-                  const mReservations = reservations.filter(r => r.member_id === m.id || r.student_number === m.student_number);
+                  const mReservations = reservations.filter(r => (r.member_id === m.id || r.student_number === m.student_number) && r.status !== 'rejected');
                   const mInUse = mReservations.filter(r => r.status === 'in_use').length;
                   const isBoard = isBoardMemberObj(m);
                   const isAudit = Boolean(m.role === 'audit' || m.member_type === 'audit');
@@ -1609,8 +1610,8 @@ export const AdminDashboard: React.FC = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
               <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Zimmet Hareketi</span>
-              <div className="text-2xl font-bold text-white font-club mt-1">{reservations.length}</div>
-              <span className="text-[11px] text-[#a9b9d3]">Kayıtlı tüm talepler</span>
+              <div className="text-2xl font-bold text-white font-club mt-1">{reservations.filter(r => r.status !== 'rejected').length}</div>
+              <span className="text-[11px] text-[#a9b9d3]">Kayıtlı tüm zimmetler</span>
             </div>
             <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
               <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Başarıyla İade Edilen</span>
@@ -3619,7 +3620,7 @@ export const AdminDashboard: React.FC = () => {
                 <div>
                   <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Zimmet</span>
                   <strong className="text-white text-base font-club">
-                    {reservations.filter(r => r.equipment_id === selectedEquipmentForHistory.id).length} Kez
+                    {reservations.filter(r => r.equipment_id === selectedEquipmentForHistory.id && r.status !== 'rejected').length} Kez
                   </strong>
                 </div>
                 <div>
@@ -3636,7 +3637,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {reservations.filter(r => r.equipment_id === selectedEquipmentForHistory.id).length > 0 ? (
+              {reservations.filter(r => r.equipment_id === selectedEquipmentForHistory.id && r.status !== 'rejected').length > 0 ? (
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8193b2] flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5" />
@@ -3644,7 +3645,7 @@ export const AdminDashboard: React.FC = () => {
                   </h4>
 
                   {reservations
-                    .filter(r => r.equipment_id === selectedEquipmentForHistory.id)
+                    .filter(r => r.equipment_id === selectedEquipmentForHistory.id && r.status !== 'rejected')
                     .sort((a, b) => new Date(b.pickup_date).getTime() - new Date(a.pickup_date).getTime())
                     .map(res => (
                       <div
@@ -3728,7 +3729,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Member Usage History Modal (Admin) */}
       {selectedMemberForHistory && (() => {
         const memberResList = reservations
-          .filter(r => r.member_id === selectedMemberForHistory.id || r.student_number === selectedMemberForHistory.student_number)
+          .filter(r => (r.member_id === selectedMemberForHistory.id || r.student_number === selectedMemberForHistory.student_number) && r.status !== 'rejected')
           .sort((a, b) => new Date(b.pickup_date).getTime() - new Date(a.pickup_date).getTime());
         const completedReturns = memberResList.filter(r => r.status === 'returned').length;
         const currentInUse = memberResList.filter(r => r.status === 'in_use').length;

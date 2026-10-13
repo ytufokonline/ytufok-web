@@ -294,7 +294,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                     : 'text-white/60 hover:text-white'
                 }`}
               >
-                Zimmet Geçmişi ({allReservations.filter(r => r.equipment_id === selectedItemForModal.id).length})
+                Zimmet Geçmişi ({allReservations.filter(r => r.equipment_id === selectedItemForModal.id && r.status !== 'rejected').length})
               </button>
             </div>
 
@@ -340,10 +340,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               </div>
             ) : (
               <div className="p-6 overflow-y-auto space-y-4">
-                {allReservations.filter(r => r.equipment_id === selectedItemForModal.id).length > 0 ? (
+                {allReservations.filter(r => r.equipment_id === selectedItemForModal.id && r.status !== 'rejected').length > 0 ? (
                   <div className="space-y-2.5">
                     {allReservations
-                      .filter(r => r.equipment_id === selectedItemForModal.id)
+                      .filter(r => r.equipment_id === selectedItemForModal.id && r.status !== 'rejected')
                       .sort((a, b) => new Date(b.pickup_date).getTime() - new Date(a.pickup_date).getTime())
                       .map((res) => (
                         <div key={res.id} className="p-3.5 rounded-lg bg-[#140a12] border border-white/[0.06] space-y-1.5 text-xs">

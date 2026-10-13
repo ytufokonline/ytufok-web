@@ -95,7 +95,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
           <button
             type="submit"
             disabled={searching}
-            className="px-5 py-2.5 rounded-md bg-white hover:bg-[#dce4ef] text-[#12080f] font-semibold text-xs cursor-pointer transition-all disabled:opacity-50"
+            className="px-5 py-2.5 rounded-md bg-white hover:bg-[#dce4ef] text-[#1c0e19] font-semibold text-xs cursor-pointer transition-all disabled:opacity-50"
           >
             {searching ? 'Aranıyor...' : 'Sorgula'}
           </button>

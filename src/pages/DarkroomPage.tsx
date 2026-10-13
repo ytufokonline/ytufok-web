@@ -425,7 +425,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
       
       {/* Hero & Intro Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1c0f18] via-[#2d1222] to-[#12080f] border border-[#657796]/30 p-6 sm:p-10 shadow-2xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1c0f18] via-[#2d1222] to-[#1c0e19] border border-[#657796]/30 p-6 sm:p-10 shadow-2xl">
         <div className="absolute -right-16 -top-16 w-80 h-80 bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -left-16 -bottom-16 w-80 h-80 bg-[#4b253b]/20 rounded-full blur-3xl pointer-events-none" />
 
@@ -445,7 +445,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
           {/* Highlights */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
-            <div className="p-3 rounded-2xl bg-[#12080f]/80 border border-[#657796]/20">
+            <div className="p-3 rounded-2xl bg-[#1c0e19]/80 border border-[#657796]/20">
               <span className="text-[10px] text-[#8193b2] uppercase font-bold block">Seans Süresi</span>
               <strong className="text-white text-sm font-semibold flex items-center gap-1.5 mt-0.5 font-mono">
                 <Clock className="w-3.5 h-3.5 text-[#8193b2]" />
@@ -453,7 +453,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               </strong>
             </div>
 
-            <div className="p-3 rounded-2xl bg-[#12080f]/80 border border-[#657796]/20">
+            <div className="p-3 rounded-2xl bg-[#1c0e19]/80 border border-[#657796]/20">
               <span className="text-[10px] text-[#8193b2] uppercase font-bold block">Konum & Teslim</span>
               <strong className="text-white text-sm font-semibold flex items-center gap-1.5 mt-0.5">
                 <MapPin className="w-3.5 h-3.5 text-rose-400" />
@@ -461,7 +461,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               </strong>
             </div>
 
-            <div className="p-3 rounded-2xl bg-[#12080f]/80 border border-[#657796]/20">
+            <div className="p-3 rounded-2xl bg-[#1c0e19]/80 border border-[#657796]/20">
               <span className="text-[10px] text-[#8193b2] uppercase font-bold block">Aynı Gün Kuralı</span>
               <strong className="text-[#dce4ef] text-xs font-semibold flex items-center gap-1.5 mt-0.5">
                 <AlertTriangle className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
@@ -469,7 +469,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               </strong>
             </div>
 
-            <div className="p-3 rounded-2xl bg-[#12080f]/80 border border-[#657796]/20">
+            <div className="p-3 rounded-2xl bg-[#1c0e19]/80 border border-[#657796]/20">
               <span className="text-[10px] text-[#8193b2] uppercase font-bold block">Öncelik Durumu</span>
               <strong className="text-emerald-400 text-sm font-semibold flex items-center gap-1.5 mt-0.5">
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -491,11 +491,11 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           className={`flex-1 p-4 rounded-xl text-left transition-all flex items-center gap-3.5 cursor-pointer ${
             activeMode === 'wash'
               ? 'bg-gradient-to-r from-rose-950 to-[#301322] border border-rose-500/60 shadow-lg text-white'
-              : 'hover:bg-[#12080f] text-[#8193b2] hover:text-white border border-transparent'
+              : 'hover:bg-[#1c0e19] text-[#8193b2] hover:text-white border border-transparent'
           }`}
         >
           <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
-            activeMode === 'wash' ? 'bg-rose-600 text-white shadow-md' : 'bg-[#12080f] text-[#8193b2]'
+            activeMode === 'wash' ? 'bg-rose-600 text-white shadow-md' : 'bg-[#1c0e19] text-[#8193b2]'
           }`}>
             <Droplets className="w-5 h-5" />
           </div>
@@ -525,11 +525,11 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           className={`flex-1 p-4 rounded-xl text-left transition-all flex items-center gap-3.5 cursor-pointer ${
             activeMode === 'print'
               ? 'bg-gradient-to-r from-purple-950 to-[#301322] border border-purple-500/60 shadow-lg text-white'
-              : 'hover:bg-[#12080f] text-[#8193b2] hover:text-white border border-transparent'
+              : 'hover:bg-[#1c0e19] text-[#8193b2] hover:text-white border border-transparent'
           }`}
         >
           <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
-            activeMode === 'print' ? 'bg-purple-600 text-white shadow-md' : 'bg-[#12080f] text-[#8193b2]'
+            activeMode === 'print' ? 'bg-purple-600 text-white shadow-md' : 'bg-[#1c0e19] text-[#8193b2]'
           }`}>
             <ImageIcon className="w-5 h-5" />
           </div>
@@ -554,7 +554,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
       {/* Notice when no slots are open in the system */}
       {slots.length === 0 && (
         <div className="p-4 rounded-2xl bg-[#301322]/80 border border-[#657796]/40 flex items-start gap-3.5 text-xs text-[#dce4ef] shadow-lg">
-          <div className="p-2 rounded-xl bg-[#12080f] text-[#8193b2] border border-[#657796]/30 shrink-0">
+          <div className="p-2 rounded-xl bg-[#1c0e19] text-[#8193b2] border border-[#657796]/30 shrink-0">
             <Clock className="w-5 h-5" />
           </div>
           <div>
@@ -592,7 +592,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                 >
                   Bugün
                 </button>
-                <div className="flex items-center gap-1 bg-[#12080f] p-1 rounded-xl border border-[#657796]/30">
+                <div className="flex items-center gap-1 bg-[#1c0e19] p-1 rounded-xl border border-[#657796]/30">
                   <button
                     type="button"
                     onClick={handlePrevMonth}
@@ -650,10 +650,10 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                           ? 'bg-gradient-to-br from-[#2a1334] to-[#1a0a22] border-purple-500 shadow-lg shadow-purple-950/40 ring-2 ring-purple-500/30'
                           : 'bg-gradient-to-br from-[#3a1529] to-[#250d1b] border-rose-500 shadow-lg shadow-rose-950/40 ring-2 ring-rose-500/30'
                         : cell.isPast || !cell.isCurrentMonth
-                        ? 'bg-[#12080f]/40 border-transparent opacity-30 cursor-not-allowed text-[#657796]'
+                        ? 'bg-[#1c0e19]/40 border-transparent opacity-30 cursor-not-allowed text-[#657796]'
                         : hasOpen
-                        ? 'bg-[#12080f] hover:bg-[#20101b] border-[#657796]/40 hover:border-[#657796]/80 text-white shadow-sm'
-                        : 'bg-[#12080f]/50 hover:bg-[#1a0c16] border-[#657796]/15 text-[#8193b2]'
+                        ? 'bg-[#1c0e19] hover:bg-[#20101b] border-[#657796]/40 hover:border-[#657796]/80 text-white shadow-sm'
+                        : 'bg-[#1c0e19]/50 hover:bg-[#1a0c16] border-[#657796]/15 text-[#8193b2]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -747,7 +747,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
             {/* Slots List */}
             {slotsOnSelectedDate.length === 0 ? (
-              <div className="p-6 rounded-2xl bg-[#12080f] border border-[#657796]/20 text-center space-y-3">
+              <div className="p-6 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 text-center space-y-3">
                 <div className="w-12 h-12 rounded-2xl bg-[#301322] border border-[#657796]/30 text-rose-300 flex items-center justify-center mx-auto shadow-inner">
                   <Clock className="w-6 h-6" />
                 </div>
@@ -786,8 +786,8 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                             ? 'bg-[#291334] border-purple-500 shadow-md ring-2 ring-purple-500/30'
                             : 'bg-[#301322] border-rose-500 shadow-md ring-2 ring-rose-500/30'
                           : isBooked
-                          ? 'bg-[#12080f]/50 border-[#657796]/15 opacity-50 cursor-not-allowed'
-                          : 'bg-[#12080f] hover:bg-[#20101b] border-[#657796]/25 hover:border-[#657796]/60 text-white'
+                          ? 'bg-[#1c0e19]/50 border-[#657796]/15 opacity-50 cursor-not-allowed'
+                          : 'bg-[#1c0e19] hover:bg-[#20101b] border-[#657796]/25 hover:border-[#657796]/60 text-white'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -880,7 +880,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* Whitelist Verification Field */}
-          <div className="p-5 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-3">
+          <div className="p-5 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 space-y-3">
             <label className="text-xs font-semibold text-white block">
               Öğrenci Numarası (Whitelist Doğrulaması) *
             </label>
@@ -956,7 +956,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               placeholder="Örn: Fotoğraf ve Video, Mimarlık, Bilgisayar Mühendisliği, İletişim..."
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c0e19] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
             />
           </div>
 
@@ -973,7 +973,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
           {/* MODE 1: FILM YIKAMA & TARAMA SPECIFIC FIELDS */}
           {activeMode === 'wash' && (
-            <div className="p-5 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-5">
+            <div className="p-5 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 space-y-5">
               <div className="border-b border-[#657796]/20 pb-3">
                 <span className="text-xs font-bold text-rose-300 uppercase tracking-wider block">
                   Film Yıkama / Tarama İşlemi
@@ -1152,7 +1152,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         placeholder="Örn: 1. Film: Kodak Tri-X 400, 2. Film: Ilford HP5+ 400"
                         value={filmBrandsAndAsa}
                         onChange={(e) => setFilmBrandsAndAsa(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c0e19] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
                       />
 
                       {/* ÖNEMLİ KURAL: AYNI DEĞİLSE İŞLEM SÜRESİ UZAR */}
@@ -1170,7 +1170,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                             id="differentAsaAck"
                             checked={differentAsaAck}
                             onChange={(e) => setDifferentAsaAck(e.target.checked)}
-                            className="w-4 h-4 rounded text-[#657796] focus:ring-[#657796] bg-[#12080f] border-[#657796]/40 cursor-pointer"
+                            className="w-4 h-4 rounded text-[#657796] focus:ring-[#657796] bg-[#1c0e19] border-[#657796]/40 cursor-pointer"
                           />
                           <label htmlFor="differentAsaAck" className="text-xs text-white font-medium cursor-pointer">
                             Filmlerimin marka/ASA durumunu biliyorum; farklı olmaları halinde sürenin uzayacağını onaylıyorum. *
@@ -1214,7 +1214,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
           {/* MODE 2: KAĞIDA FOTOĞRAF BASKISI SPECIFIC FIELDS */}
           {activeMode === 'print' && (
-            <div className="p-5 rounded-2xl bg-[#12080f] border border-purple-500/30 space-y-5">
+            <div className="p-5 rounded-2xl bg-[#1c0e19] border border-purple-500/30 space-y-5">
               <div className="border-b border-[#657796]/20 pb-3">
                 <span className="text-xs font-bold text-purple-300 uppercase tracking-wider block">
                   Kağıda Fotoğraf Baskısı (Agrandisör Seansı)
@@ -1390,7 +1390,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           )}
 
           {/* Assistance Option (Rehberlik Desteği) */}
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20">
+          <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#1c0e19] border border-[#657796]/20">
             <input
               type="checkbox"
               id="needsAssistance"
@@ -1416,7 +1416,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               placeholder="Örn: Push banyo yapılacak, kendi kağıdımı getireceğim..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c0e19] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
             />
           </div>
 
@@ -1506,7 +1506,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Reservation Code Card */}
-            <div className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 text-center space-y-2">
+            <div className="p-4 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 text-center space-y-2">
               <span className="text-[10px] text-[#8193b2] uppercase font-bold tracking-wider block">
                 Takip & Randevu Kodunuz
               </span>
@@ -1526,7 +1526,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Details Summary */}
-            <div className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 text-xs space-y-2">
+            <div className="p-4 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 text-xs space-y-2">
               <div className="flex justify-between py-1 border-b border-[#657796]/15">
                 <span className="text-[#8193b2]">Tarih & Seans:</span>
                 <strong className="text-white font-mono">{submittedReservation.date} • {submittedReservation.slot_time} (1,5 Saat)</strong>
@@ -1580,21 +1580,21 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-          <div className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1.5">
+          <div className="p-4 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 space-y-1.5">
             <strong className="text-white text-sm block font-club">Film Yıkama Tankları</strong>
             <p className="text-[#a9b9d3]">
               3 adet çiftli/tekli spiral film tankı, 35mm ve 120 orta format ayarlanabilir spiraller mevcuttur.
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1.5">
+          <div className="p-4 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 space-y-1.5">
             <strong className="text-white text-sm block font-club">S/B Agrandisör</strong>
             <p className="text-[#a9b9d3]">
               35mm ve 6x6 orta format kondansatörlü agrandisör, 50mm ve 75mm agrandisör lensleri ve ayarlanabilir marjör (kadraj).
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1.5">
+          <div className="p-4 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 space-y-1.5">
             <strong className="text-white text-sm block font-club">Negatif Film Tarayıcı</strong>
             <p className="text-[#a9b9d3]">
               35mm ve 120 orta format negatif tutucular, yüksek optik çözünürlüklü dijital film tarama ve arşivleme istasyonu.

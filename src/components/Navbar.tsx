@@ -31,7 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#12080f]/90 backdrop-blur-md border-b border-white/[0.08] transition-all">
+    <header className="sticky top-0 z-40 bg-[#1c0e19]/90 backdrop-blur-md border-b border-white/[0.08] transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           
@@ -79,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
               onClick={(e) => handleNavClick('admin', e)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'admin'
-                  ? 'bg-white text-[#12080f]'
+                  ? 'bg-white text-[#1c0e19]'
                   : 'bg-white/[0.05] hover:bg-white/[0.1] text-white/90 hover:text-white border border-white/[0.1]'
               }`}
             >
@@ -142,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
               onClick={(e) => handleNavClick('admin', e)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium border transition-all ${
                 activeTab === 'admin'
-                  ? 'bg-white text-[#12080f] border-white'
+                  ? 'bg-white text-[#1c0e19] border-white'
                   : 'bg-white/[0.05] text-white/80 border-white/[0.08]'
               }`}
             >

@@ -119,7 +119,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 border-b border-[#657796]/20 bg-[#12080f] flex items-center justify-between">
+        <div className="p-6 border-b border-[#657796]/20 bg-[#1c0e19] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-[#301322] border border-[#657796]/40 flex items-center justify-center text-[#dce4ef] shadow-inner">
               <KeyRound className="w-5 h-5 text-[#8193b2]" />
@@ -159,7 +159,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                   setSelectedAdminId(e.target.value);
                   setError(null);
                 }}
-                className="w-full px-4 py-3 rounded-2xl bg-[#12080f] border border-[#657796]/30 text-white text-xs focus:outline-none focus:border-[#657796]"
+                className="w-full px-4 py-3 rounded-2xl bg-[#1c0e19] border border-[#657796]/30 text-white text-xs focus:outline-none focus:border-[#657796]"
               >
                 {adminProfiles.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -168,7 +168,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 ))}
               </select>
             ) : selectedAdmin ? (
-              <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/30 flex items-center gap-3">
+              <div className="p-3.5 rounded-2xl bg-[#1c0e19] border border-[#657796]/30 flex items-center gap-3">
                 <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${selectedAdmin.avatar_color} flex items-center justify-center text-white text-xs font-bold font-club shadow-inner border border-white/10 shrink-0`}>
                   {selectedAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
@@ -212,7 +212,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 }}
                 placeholder="Mevcut şifrenizi giriniz..."
                 autoFocus
-                className="w-full px-4 py-3 rounded-2xl bg-[#12080f] border border-[#657796]/40 text-white text-sm placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] transition-all font-mono"
+                className="w-full px-4 py-3 rounded-2xl bg-[#1c0e19] border border-[#657796]/40 text-white text-sm placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] transition-all font-mono"
               />
               <button
                 type="button"
@@ -239,7 +239,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                   if (error) setError(null);
                 }}
                 placeholder="Yeni şifrenizi belirleyiniz..."
-                className="w-full px-4 py-3 rounded-2xl bg-[#12080f] border border-[#657796]/40 text-white text-sm placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] transition-all font-mono"
+                className="w-full px-4 py-3 rounded-2xl bg-[#1c0e19] border border-[#657796]/40 text-white text-sm placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] transition-all font-mono"
               />
               <button
                 type="button"
@@ -266,7 +266,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                   if (error) setError(null);
                 }}
                 placeholder="Yeni şifrenizi tekrar giriniz..."
-                className="w-full px-4 py-3 rounded-2xl bg-[#12080f] border border-[#657796]/40 text-white text-sm placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] transition-all font-mono"
+                className="w-full px-4 py-3 rounded-2xl bg-[#1c0e19] border border-[#657796]/40 text-white text-sm placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] transition-all font-mono"
               />
               <button
                 type="button"
@@ -280,7 +280,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
           </div>
 
           {/* Security Notice */}
-          <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20 flex items-start gap-2.5 text-[11px] text-[#a9b9d3] leading-relaxed">
+          <div className="p-3.5 rounded-2xl bg-[#1c0e19] border border-[#657796]/20 flex items-start gap-2.5 text-[11px] text-[#a9b9d3] leading-relaxed">
             <ShieldCheck className="w-4 h-4 text-[#8193b2] shrink-0 mt-0.5" />
             <span>
               Şifreniz yalnızca bu yönetici hesabı için geçerli olur. Kulüp odasında diğer yöneticilerin yetkilerini etkilemez.

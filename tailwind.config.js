@@ -25,11 +25,11 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Century Gothic"', 'CenturyGothic', 'AppleGothic', '"ITC Avant Garde Gothic"', 'sans-serif'],
-        club: ['"Century Gothic"', 'CenturyGothic', 'AppleGothic', '"ITC Avant Garde Gothic"', 'sans-serif'],
-        mono: ['"Century Gothic"', 'CenturyGothic', 'AppleGothic', 'sans-serif'],
-        heading: ['"Century Gothic"', 'CenturyGothic', 'AppleGothic', 'sans-serif'],
-        body: ['"Century Gothic"', 'CenturyGothic', 'AppleGothic', 'sans-serif']
+        sans: ['Satoshi', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        body: ['Satoshi', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        heading: ['"Clash Display"', 'sans-serif'],
+        club: ['"Clash Display"', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       }
     },
   },

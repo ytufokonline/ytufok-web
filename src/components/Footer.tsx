@@ -62,7 +62,7 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
-                <span>Maksimum rezervasyon: 4 gündür.</span>
+                <span>Maksimum rezervasyon: 2 gündür.</span>
               </li>
               <li className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />

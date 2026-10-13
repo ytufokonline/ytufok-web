@@ -154,7 +154,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                   </div>
                   <div className="flex justify-between py-1 border-b border-[#657796]/20">
                     <span className="text-[#a9b9d3]">Kullanım Süresi:</span>
-                    <span className="text-white">Maks. 4 Gün</span>
+                    <span className="text-white">Maks. 2 Gün</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-[#657796]/20">
                     <span className="text-[#a9b9d3]">Teslim & İade Noktası:</span>
@@ -191,7 +191,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             <div className="text-xs text-[#a9b9d3] mt-1">Profesyonel Gövde & Lens</div>
           </div>
           <div className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 text-center hover:border-[#657796]/50 transition-colors">
-            <div className="text-2xl sm:text-3xl font-bold text-[#8193b2] font-club">Maks. 4 Gün</div>
+            <div className="text-2xl sm:text-3xl font-bold text-[#8193b2] font-club">Maks. 2 Gün</div>
             <div className="text-xs text-[#a9b9d3] mt-1">Standart Kullanım Süresi</div>
           </div>
           <div className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 text-center hover:border-[#657796]/50 transition-colors">

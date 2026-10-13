@@ -11755,8 +11755,8 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
   },
   {
     id: 'a-1',
-    title: 'Tüm ekipman teslim ve iadeleri yalnızca Kulüpler Vadisi Davutpaşa Kampüsü noktasından yapılmaktadır (maksimum standart rezervasyon süresi 4 gündür).',
-    content: 'Tüm ekipman teslim ve iadeleri yalnızca Kulüpler Vadisi Davutpaşa Kampüsü noktasından yapılmaktadır (maksimum standart rezervasyon süresi 4 gündür).',
+    title: 'Tüm ekipman teslim ve iadeleri yalnızca Kulüpler Vadisi Davutpaşa Kampüsü noktasından yapılmaktadır (maksimum standart rezervasyon süresi 2 gündür).',
+    content: 'Tüm ekipman teslim ve iadeleri yalnızca Kulüpler Vadisi Davutpaşa Kampüsü noktasından yapılmaktadır (maksimum standart rezervasyon süresi 2 gündür).',
     category: 'Kural & Yönetmelik',
     is_pinned: true,
     created_at: '2026-10-01T09:00:00Z'

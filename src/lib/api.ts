@@ -28,7 +28,7 @@ import {
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
 const UNIFIED_NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
-const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v11';
+const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v12';
 
 type CloudCollectionKey =
   | 'admin_profiles'
@@ -794,6 +794,18 @@ export const api = {
           message:
             'Bireysel ekipman rezervasyonu kulüp kuralları gereğince yalnızca YTÜFOK Aktif ve Fahri Aktif Üyelerine açıktır. Normal ve Fahri üyelerimiz ekipman rezervasyonunu Kulüp Gezileri için (geziden 3 gün önce) yapabilir.'
         };
+      }
+
+      if (memberTier !== 'board' && memberTier !== 'audit') {
+        const pDate = new Date(payload.pickup_date).getTime();
+        const rDate = new Date(payload.return_date).getTime();
+        const diffDays = Math.round((rDate - pDate) / (1000 * 60 * 60 * 24));
+        if (diffDays > 2) {
+          return {
+            success: false,
+            message: 'Maksimum rezervasyon süresi 2 gündür. Lütfen iade tarihinizi teslim tarihinden en fazla 2 gün sonraya seçiniz.'
+          };
+        }
       }
     }
 

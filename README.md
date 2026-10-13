@@ -23,7 +23,7 @@
    - Cezalı veya askıya alınmış üyelere gecikme gerekçesi gösterilerek yeni talep hakkı kısıtlanır.
 
 4. **⏳ Rezervasyon & Admin Onay Akışı:**
-   - Üye tarih aralığı (maksimum 4 gün) ve çekim amacını girerek formu gönderir.
+   - Üye tarih aralığı (maksimum 2 gün) ve çekim amacını girerek formu gönderir.
    - Talep veritabanına **"Onay Bekliyor"** (`pending`) statüsünde kaydedilir ve benzersiz bir takip kodu (`YTU-2026-XXXX`) üretilir.
    - Yönetim kurulu panelden talebi inceler; **[Onayla]** dendiğinde kamera otomatik olarak `reserved` durumuna geçer.
 

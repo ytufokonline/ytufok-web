@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, UserPlus, Info, Sparkles, Lock, Award } from 'lucide-react';
 import { Equipment, Member, Reservation, Trip } from '../types';
 import { api } from '../lib/api';
-import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString } from '../utils/tripUtils';
+import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference } from '../utils/tripUtils';
 
 interface ReservationPageProps {
   preselectedEquipmentId?: string;
@@ -40,7 +40,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
   // Dates & Purpose
   const todayStr = getLocalDateString();
-  const defaultReturnDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const defaultReturnDate = getLocalDateString(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000));
 
   const [pickupDate, setPickupDate] = useState(
     initialSync.activeTrips[0]?.start_date || todayStr
@@ -192,6 +192,14 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
       if (!purpose.trim()) {
         alert('Lütfen kullanım amacınızı belirtiniz.');
         return;
+      }
+      const isUnrestricted = memberTier === 'board' || memberTier === 'audit';
+      if (!isUnrestricted && pickupDate && returnDate) {
+        const diffDays = getDaysDifference(returnDate, pickupDate);
+        if (diffDays > 2) {
+          alert('Maksimum rezervasyon süresi 2 gündür. Lütfen iade tarihinizi teslim tarihinden en fazla 2 gün sonraya seçiniz.');
+          return;
+        }
       }
     }
 
@@ -650,7 +658,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     <p className="text-[11px] text-[#8193b2] leading-relaxed">
                       {verifiedMember && !hasActivePrivileges
                         ? '🔒 Normal ve Fahri üyelere kapalıdır. Yalnızca YTÜFOK Aktif ve Fahri Aktif Üyeleri bireysel ekipman alabilir.'
-                        : 'Fakülte dersi, portre, serbest proje ve sergi hazırlığı (Maks 4 gün).'}
+                        : 'Fakülte dersi, portre, serbest proje ve sergi hazırlığı (Maks 2 gün).'}
                     </p>
                   </div>
                 </button>
@@ -885,17 +893,38 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                           type="date"
                           value={pickupDate}
                           min={todayStr}
-                          onChange={(e) => setPickupDate(e.target.value)}
+                          onChange={(e) => {
+                            const newPickup = e.target.value;
+                            setPickupDate(newPickup);
+                            const isUnrestricted = memberTier === 'board' || memberTier === 'audit';
+                            if (!isUnrestricted && newPickup) {
+                              const p = parseDate(newPickup);
+                              p.setDate(p.getDate() + 2);
+                              const maxRet = getLocalDateString(p);
+                              if (returnDate > maxRet || returnDate < newPickup) {
+                                setReturnDate(maxRet);
+                              }
+                            }
+                          }}
                           className="w-full px-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
                           required
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">İade Tarihi (Maks 4 Gün):</label>
+                        <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">İade Tarihi (Maks 2 Gün):</label>
                         <input
                           type="date"
                           value={returnDate}
                           min={pickupDate}
+                          max={
+                            memberTier === 'board' || memberTier === 'audit' || !pickupDate
+                              ? undefined
+                              : (() => {
+                                  const p = parseDate(pickupDate);
+                                  p.setDate(p.getDate() + 2);
+                                  return getLocalDateString(p);
+                                })()
+                          }
                           onChange={(e) => setReturnDate(e.target.value)}
                           className="w-full px-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
                           required

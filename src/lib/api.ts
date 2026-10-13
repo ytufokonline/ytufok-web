@@ -30,21 +30,27 @@ import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUti
 // ==========================================
 // ORTAK BULUT VERİTABANI (REAL-TIME CLOUD DB)
 // Tüm cihazlar (bilgisayar, telefon, tablet, gizli sekme)
-// verileri doğrudan bu ortak bulut koleksiyonlarından okur ve yazar.
+// verileri doğrudan ortak bulut kanallarından anlık okur ve yazar.
 // ==========================================
-const CLOUD_DB_BASE = 'https://api.restful-api.dev/objects';
+const CLOUD_SYNC_BASE = 'https://ntfy.sh';
+const TOPIC_PREFIX = 'ytufok_prod_db_v5_948172_';
+const BACKUP_PREFIX = 'ytufok_cloud_snap_v5_';
 
-const CLOUD_COLLECTION_IDS = {
-  admin_profiles: 'ff808181a09d98f701a133d68d235093',
-  reservations: 'ff808181a09d98f701a133d68d325095',
-  equipment_state: 'ff808181a09d98f701a133d68e5e5098',
-  darkroom: 'ff808181a09d98f701a133d68d2c5094',
-  darkroom_slots: 'ff808181a09d98f701a133d68d3d5096',
-  trips: 'ff808181a09d98f701a133d68d1d5092',
-  member_deltas: 'ff808181a09d98f701a133d68d455097'
-} as const;
+type CloudCollectionKey =
+  | 'admin_profiles'
+  | 'reservations'
+  | 'equipment_state'
+  | 'darkroom'
+  | 'darkroom_slots'
+  | 'trips'
+  | 'member_deltas';
 
-type CloudCollectionKey = keyof typeof CLOUD_COLLECTION_IDS;
+interface AdminPinRecord {
+  pin: string;
+  pin_updated_at?: string;
+}
+
+type AdminPinMap = Record<string, AdminPinRecord>;
 
 interface EquipmentStateDelta {
   overrides: Record<string, { status: EquipmentStatus; current_condition?: string }>;
@@ -56,11 +62,11 @@ interface MemberDeltas {
   added: Member[];
 }
 
-// Eski localStorage verilerini temizle (artık tüm veriler ortak bulut veritabanında tutulur)
+// Eski localStorage anahtarlarını temizle (yalnızca bulut yedeği korunur)
 try {
   if (typeof window !== 'undefined' && window.localStorage) {
     Object.keys(window.localStorage).forEach((k) => {
-      if (k.startsWith('ytufok_')) {
+      if (k.startsWith('ytufok_') && !k.startsWith(BACKUP_PREFIX)) {
         window.localStorage.removeItem(k);
       }
     });
@@ -69,7 +75,7 @@ try {
   // ignore
 }
 
-// Aktif yönetici oturumu yalnızca mevcut sekme belleğinde tutulur
+// Aktif yönetici oturumu yalnızca mevcut sekmede (sessionStorage) tutulur
 let activeSessionAdminId: string | null = null;
 try {
   if (typeof window !== 'undefined' && window.sessionStorage) {
@@ -79,12 +85,37 @@ try {
   // ignore
 }
 
-// Aynı anda yapılan paralel okumaları birleştirmek için kısa süreli (1.2 sn) bellek tamponu
 const inFlightReads: Partial<Record<CloudCollectionKey, Promise<any>>> = {};
 const shortTermCache: Partial<Record<CloudCollectionKey, { timestamp: number; value: any }>> = {};
-const CACHE_TTL_MS = 1200;
+const CACHE_TTL_MS = 1000;
 
-async function readCloudCollection<T>(key: CloudCollectionKey, defaultValue: T, forceFresh = false): Promise<T> {
+function saveCloudSnapshot<T>(key: CloudCollectionKey, value: T): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(BACKUP_PREFIX + key, JSON.stringify(value));
+    }
+  } catch {
+    // ignore
+  }
+}
+
+function loadCloudSnapshot<T>(key: CloudCollectionKey): T | null {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const raw = window.localStorage.getItem(BACKUP_PREFIX + key);
+      if (raw) return JSON.parse(raw) as T;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+async function readCloudCollection<T>(
+  key: CloudCollectionKey,
+  defaultValue: T,
+  forceFresh = false
+): Promise<T> {
   const now = Date.now();
   if (!forceFresh && shortTermCache[key] && now - shortTermCache[key]!.timestamp < CACHE_TTL_MS) {
     return shortTermCache[key]!.value as T;
@@ -94,28 +125,66 @@ async function readCloudCollection<T>(key: CloudCollectionKey, defaultValue: T, 
     return inFlightReads[key] as Promise<T>;
   }
 
-  const objectId = CLOUD_COLLECTION_IDS[key];
+  const topic = `${TOPIC_PREFIX}${key}`;
   const fetchPromise = (async (): Promise<T> => {
     try {
-      const res = await fetch(`${CLOUD_DB_BASE}/${objectId}?_t=${Date.now()}`, {
+      const res = await fetch(`${CLOUD_SYNC_BASE}/${topic}/json?poll=1&since=12h`, {
         method: 'GET',
-        cache: 'no-store',
-        headers: {
-          Accept: 'application/json'
-        }
+        cache: 'no-store'
       });
 
       if (res.ok) {
-        const json = await res.json();
-        const items = json?.data?.items;
-        if (items !== undefined && items !== null) {
-          shortTermCache[key] = { timestamp: Date.now(), value: items };
-          return items as T;
+        const text = await res.text();
+        if (text && text.trim().length > 0) {
+          const lines = text
+            .trim()
+            .split('\n')
+            .filter(Boolean)
+            .map((line) => {
+              try {
+                return JSON.parse(line);
+              } catch {
+                return null;
+              }
+            })
+            .filter(
+              (evt) =>
+                evt &&
+                evt.event === 'message' &&
+                typeof evt.message === 'string' &&
+                evt.message.startsWith('YTUFOK:')
+            );
+
+          if (lines.length > 0) {
+            const latestEvt = lines[lines.length - 1];
+            const parsed = JSON.parse(latestEvt.message.slice(7)) as T;
+            shortTermCache[key] = { timestamp: Date.now(), value: parsed };
+            saveCloudSnapshot(key, parsed);
+
+            // Kayıt 2 saatten eskiyse bulut TTL süresini otomatik yenile
+            const nowSec = Math.floor(Date.now() / 1000);
+            if (latestEvt.time && nowSec - latestEvt.time > 7200) {
+              writeCloudCollection(key, parsed).catch(() => {});
+            }
+
+            return parsed;
+          }
+        }
+
+        // Bulut kanalı henüz boşsa ve cihazda daha önce senkronize edilmiş yedek varsa buluta geri yükle
+        const snapshot = loadCloudSnapshot<T>(key);
+        if (snapshot !== null) {
+          shortTermCache[key] = { timestamp: Date.now(), value: snapshot };
+          writeCloudCollection(key, snapshot).catch(() => {});
+          return snapshot;
         }
       }
     } catch (err) {
-      console.error(`Cloud DB read error (${key}):`, err);
+      console.error(`Cloud sync read error (${key}):`, err);
+      const snapshot = loadCloudSnapshot<T>(key);
+      if (snapshot !== null) return snapshot;
     }
+
     return defaultValue;
   })();
 
@@ -128,27 +197,21 @@ async function readCloudCollection<T>(key: CloudCollectionKey, defaultValue: T, 
 }
 
 async function writeCloudCollection<T>(key: CloudCollectionKey, items: T): Promise<boolean> {
-  const objectId = CLOUD_COLLECTION_IDS[key];
+  const topic = `${TOPIC_PREFIX}${key}`;
   shortTermCache[key] = { timestamp: Date.now(), value: items };
+  saveCloudSnapshot(key, items);
 
   try {
-    const res = await fetch(`${CLOUD_DB_BASE}/${objectId}`, {
-      method: 'PUT',
+    const res = await fetch(`${CLOUD_SYNC_BASE}/${topic}`, {
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
+        'Content-Type': 'text/plain;charset=UTF-8'
       },
-      body: JSON.stringify({
-        name: `ytufok_${key}`,
-        data: {
-          updatedAt: Date.now(),
-          items
-        }
-      })
+      body: 'YTUFOK:' + JSON.stringify(items)
     });
     return res.ok;
   } catch (err) {
-    console.error(`Cloud DB write error (${key}):`, err);
+    console.error(`Cloud sync write error (${key}):`, err);
     return false;
   }
 }
@@ -652,20 +715,33 @@ export const api = {
   // Doğrudan ortak bulut veritabanından okunur ve yazılır.
   // ==========================================
   async getAdminProfiles(): Promise<AdminProfile[]> {
-    const cloudProfiles = await readCloudCollection<AdminProfile[]>(
+    const pinMap = await readCloudCollection<AdminPinMap | AdminProfile[]>(
       'admin_profiles',
-      INITIAL_ADMIN_PROFILES,
+      {},
       true
     );
 
-    if (Array.isArray(cloudProfiles) && cloudProfiles.length > 0) {
+    if (Array.isArray(pinMap)) {
       return INITIAL_ADMIN_PROFILES.map((defaultProfile) => {
-        const cloudMatch = cloudProfiles.find((cp) => cp.id === defaultProfile.id);
-        return cloudMatch
+        const found = pinMap.find((cp) => cp.id === defaultProfile.id);
+        return found
           ? {
               ...defaultProfile,
-              pin: cloudMatch.pin || defaultProfile.pin,
-              pin_updated_at: cloudMatch.pin_updated_at
+              pin: found.pin || defaultProfile.pin,
+              pin_updated_at: found.pin_updated_at
+            }
+          : defaultProfile;
+      });
+    }
+
+    if (pinMap && typeof pinMap === 'object') {
+      return INITIAL_ADMIN_PROFILES.map((defaultProfile) => {
+        const rec = (pinMap as AdminPinMap)[defaultProfile.id];
+        return rec && rec.pin
+          ? {
+              ...defaultProfile,
+              pin: rec.pin,
+              pin_updated_at: rec.pin_updated_at
             }
           : defaultProfile;
       });
@@ -723,15 +799,25 @@ export const api = {
       return { success: false, message: 'Mevcut şifrenizi hatalı girdiniz.' };
     }
 
+    const nowIso = new Date().toISOString();
     const updatedProfile: AdminProfile = {
       ...currentProfile,
       pin: cleanNew,
-      pin_updated_at: new Date().toISOString()
+      pin_updated_at: nowIso
     };
 
     profiles[targetIndex] = updatedProfile;
 
-    const saved = await writeCloudCollection('admin_profiles', profiles);
+    // Kompakt şifre haritası oluştur (tüm cihazlarda hızlı senkronizasyon için)
+    const pinMap: AdminPinMap = {};
+    profiles.forEach((p) => {
+      pinMap[p.id] = {
+        pin: p.pin,
+        ...(p.pin_updated_at ? { pin_updated_at: p.pin_updated_at } : {})
+      };
+    });
+
+    const saved = await writeCloudCollection('admin_profiles', pinMap);
     if (!saved) {
       return {
         success: false,

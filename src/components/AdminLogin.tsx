@@ -143,14 +143,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-xs font-bold text-white truncate block">
-                          {profile.full_name}
-                        </span>
-                        <span className="text-[10px] font-bold text-[#dce4ef] bg-[#657796]/25 px-2 py-0.5 rounded-full border border-[#657796]/40">
-                          {profile.short_title}
-                        </span>
-                      </div>
+                      <span className="text-xs font-bold text-white truncate block">
+                        {profile.full_name}
+                      </span>
                       <div className="text-[11px] text-[#a9b9d3] mt-0.5 line-clamp-1">
                         {profile.title}
                       </div>

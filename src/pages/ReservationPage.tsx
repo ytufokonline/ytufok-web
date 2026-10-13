@@ -346,7 +346,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Öğrenci No (örn: 22052018)..."
+                  placeholder="Öğrenci Numarası..."
                   value={studentNumber}
                   onChange={(e) => {
                     setStudentNumber(e.target.value);

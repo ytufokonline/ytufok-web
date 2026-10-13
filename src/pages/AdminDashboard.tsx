@@ -3381,14 +3381,9 @@ export const AdminDashboard: React.FC = () => {
                         {profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <strong className="text-white text-sm font-semibold group-hover:text-[#dce4ef] transition-colors">
-                            {profile.full_name}
-                          </strong>
-                          <span className="text-[10px] font-bold text-[#dce4ef] bg-[#657796]/20 px-2 py-0.5 rounded-full border border-[#657796]/35">
-                            {profile.short_title}
-                          </span>
-                        </div>
+                        <strong className="text-white text-sm font-semibold group-hover:text-[#dce4ef] transition-colors block">
+                          {profile.full_name}
+                        </strong>
                         <div className="text-[11px] text-[#a9b9d3] mt-0.5">
                           {profile.title}
                         </div>

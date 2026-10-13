@@ -511,7 +511,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               )}
             </div>
             <p className="text-xs text-[#a9b9d3] mt-0.5">
-              Paterson tankı ile S/B film banyosu veya Epson V600 ile negatif tarama
+              Film tankı ile S/B film banyosu veya negatif tarama
             </p>
           </div>
         </button>
@@ -996,7 +996,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                 >
                   <div>
                     <strong className="text-xs block text-white font-semibold">S/B Film Yıkama</strong>
-                    <span className="text-[11px] text-[#8193b2] block mt-0.5">Paterson tankı & D-76/Fiksaj kimyasalları</span>
+                    <span className="text-[11px] text-[#8193b2] block mt-0.5">Film tankı & banyo/fiksaj kimyasalları</span>
                   </div>
                   {processType === 'bw_film' && <Check className="w-4 h-4 text-rose-400" />}
                 </button>
@@ -1190,8 +1190,8 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                       onChange={(e) => setChemicalSource(e.target.value as any)}
                       className="w-full p-2.5 rounded-xl bg-[#1c0f18] border border-[#657796]/30 text-white text-xs"
                     >
-                      <option value="club">Kulübün Hazır Kimyasalları (D-76 / Stop / Fiksaj Stok)</option>
-                      <option value="personal">Kendi Özel Kimyasallarımı Getireceğim (Rodinal, Ilfotec vb.)</option>
+                      <option value="club">Kulübün Hazır Kimyasalları (Geliştirici / Stop / Fiksaj)</option>
+                      <option value="personal">Kendi Özel Kimyasallarımı Getireceğim</option>
                     </select>
                   </div>
                 </div>
@@ -1581,14 +1581,14 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
           <div className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1.5">
-            <strong className="text-white text-sm block font-club">Paterson Universal Tankları</strong>
+            <strong className="text-white text-sm block font-club">Film Yıkama Tankları</strong>
             <p className="text-[#a9b9d3]">
-              3 adet çiftli/tekli spiral Paterson tankı, 35mm ve 120 orta format ayarlanabilir spiraller mevcuttur.
+              3 adet çiftli/tekli spiral film tankı, 35mm ve 120 orta format ayarlanabilir spiraller mevcuttur.
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1.5">
-            <strong className="text-white text-sm block font-club">Durst S/B Agrandisör</strong>
+            <strong className="text-white text-sm block font-club">S/B Agrandisör</strong>
             <p className="text-[#a9b9d3]">
               35mm ve 6x6 orta format kondansatörlü agrandisör, 50mm ve 75mm agrandisör lensleri ve ayarlanabilir marjör (kadraj).
             </p>

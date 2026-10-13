@@ -367,6 +367,24 @@ function normalizeMemberRecord(m: Member): Member {
   return m;
 }
 
+function sanitizeEquipmentItem(item: Equipment): Equipment {
+  if (item.category === 'lens') {
+    let desc = item.description || '';
+    if (desc.toLowerCase().includes('parasol')) {
+      desc = desc.replace(/,?\s*parasoley[i|ı|ü|u]?\s*,?/gi, '').replace(/\s+/g, ' ').trim();
+    }
+    const contents = Array.isArray(item.package_contents)
+      ? item.package_contents.filter((c) => !c.toLowerCase().includes('parasol'))
+      : [];
+    return {
+      ...item,
+      description: desc,
+      package_contents: contents
+    };
+  }
+  return item;
+}
+
 // Senkron başlangıç verisi üreticisi (Sıfır gecikmeli ilk ekran çizimi için)
 function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   const cols = envelope.collections || {};
@@ -391,7 +409,7 @@ function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   const equipmentList: Equipment[] = [
     ...addedEq,
     ...baseEq
-  ];
+  ].map(sanitizeEquipmentItem);
 
   // 2. Members
   const memDelta: MemberDeltas = cols.member_deltas || { overrides: {}, added: [], deleted: [] };
@@ -553,8 +571,7 @@ export const api = {
         const eqDelta = envelope.collections?.equipment_state || { overrides: {}, added: [], deleted: [] };
         const deletedEqSet = new Set(Array.isArray(eqDelta.deleted) ? eqDelta.deleted : []);
         const unseeded = INITIAL_EQUIPMENT.filter((e) => !dbSerials.has(e.serial_number) && !deletedEqSet.has(e.id));
-
-        equipmentList = [...fetchedList, ...unseeded];
+        equipmentList = [...fetchedList, ...unseeded].map(sanitizeEquipmentItem);
       }
 
       // Fast lookup map for equipment matching (by UUID, custom ID, and serial)
@@ -805,7 +822,7 @@ export const api = {
 
           const dbSerials = new Set(fetchedList.map((e) => e.serial_number).filter(Boolean));
           const unseeded = INITIAL_EQUIPMENT.filter((e) => !dbSerials.has(e.serial_number));
-          return [...fetchedList, ...unseeded];
+          return [...fetchedList, ...unseeded].map(sanitizeEquipmentItem);
         }
       } catch (err) {
         console.warn('Supabase getEquipment error:', err);

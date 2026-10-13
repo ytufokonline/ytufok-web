@@ -11416,7 +11416,6 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     package_contents: [
       'Canon EF 50mm f/1.4 Lens',
       'Ön ve Arka Kapaklar',
-      'Orijinal Parasoley',
       '58mm UV Koruma Filtresi',
       'Mikrofiber Lens Bezi'
     ],
@@ -11442,7 +11441,6 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     },
     package_contents: [
       'Canon EF 85mm f/1.8 Lens',
-      'ET-65 III Orijinal Parasoley',
       'Ön & Arka Süngü Kapakları',
       '58mm İnce Çerçeve Koruyucu Filtre',
       'Yumuşak Taşıma Kılıfı'
@@ -11470,7 +11468,6 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     },
     package_contents: [
       'Canon EF 100mm f/2.8 Macro Lens',
-      'ET-67 Orijinal Silindirik Derin Parasoley',
       'Ön ve Arka Kapaklar',
       '58mm Slim UV Koruma Filtresi',
       'Dolgulu Koruyucu Taşıma Kılıfı'
@@ -11496,7 +11493,6 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     },
     package_contents: [
       'Canon EF 70-200mm f/4L Lens',
-      'ET-74 Orijinal Beyaz Parasoley',
       'Ön ve Arka Kapaklar',
       '67mm UV Koruyucu Filtre',
       'Canon Orijinal Sert Dolgulu Çanta'
@@ -11523,7 +11519,6 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     },
     package_contents: [
       'Canon EF 17-40mm f/4L Lens',
-      'EW-83E Geniş Petal Parasoley',
       '77mm Slim UV Koruma Filtresi',
       'Ön ve Arka Kapaklar',
       'Dolgulu Lens Çantası'
@@ -11550,7 +11545,6 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     },
     package_contents: [
       'Canon EF 24-105mm f/4L IS Lens',
-      'EW-83H Orijinal Parasoley',
       '77mm B+W UV Filtre',
       'Ön ve Arka Kapaklar'
     ],
@@ -11575,7 +11569,6 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     },
     package_contents: [
       'Sigma 10-20mm f/3.5 EX Lens',
-      'Orijinal Petal Parasoley',
       'Ön ve Arka Kapaklar',
       'Fermuarlı Dolgulu Sigma Taşıma Çantası'
     ],

@@ -314,7 +314,7 @@ VALUES
     'YTU-LENS-50MM',
     'Kulübün en çok talep gören standart prime portre ve sokak lensi. f/1.4 geniş diyaframı sayesinde loş ışıkta harikalar yaratır ve kremsi bokeh sunar.',
     '{"aperture": "f/1.4 - f/22", "mount": "Canon EF Mount", "filter_size": "58mm", "motor": "Mikro USM", "weight": "290g"}'::jsonb,
-    ARRAY['Canon EF 50mm f/1.4 Lens', 'Ön ve Arka Kapaklar', 'Orijinal Parasoley', '58mm UV Filtre'],
+    ARRAY['Canon EF 50mm f/1.4 Lens', 'Ön ve Arka Kapaklar', '58mm UV Filtre'],
     'https://upload.wikimedia.org/wikipedia/commons/c/c5/Canon_EF_50mm_f1.4_Front_%26_Rear.jpg',
     'available',
     'Optikler kusursuz / Diyafram bıçakları yağsız ve hızlı'
@@ -328,7 +328,7 @@ VALUES
     'YTU-LENS-85MM',
     'Jilet keskinliğinde profesyonel portre lensi. Ring USM ultra hızlı netleme ve muazzam bokeh ayrımı.',
     '{"aperture": "f/1.8 - f/22", "mount": "Canon EF Mount", "filter_size": "58mm", "weight": "425g"}'::jsonb,
-    ARRAY['Canon EF 85mm f/1.8 Lens', 'ET-65 III Parasoley', 'Ön & Arka Kapaklar', '58mm Koruyucu Filtre'],
+    ARRAY['Canon EF 85mm f/1.8 Lens', 'Ön & Arka Kapaklar', '58mm Koruyucu Filtre'],
     'https://upload.wikimedia.org/wikipedia/commons/8/81/Canon_85mm_comparison_%28front%29.jpg',
     'available',
     'Kusursuz / Portre çekimleri için hazır'
@@ -342,7 +342,7 @@ VALUES
     'YTU-LENS-100-MACRO',
     '1:1 gerçek boyutlu büyütme oranına sahip efsanevi profesyonel makro lensi. Doğa, ürün, böcek, çiçek ve detay çekimlerinin yanı sıra 100mm odak uzaklığı ve f/2.8 diyaframıyla mükemmel bir portre lensidir.',
     '{"ratio": "1:1 Macro", "aperture": "f/2.8 - f/32", "mount": "Canon EF Mount", "filter_size": "58mm", "motor": "Ring USM", "weight": "600g"}'::jsonb,
-    ARRAY['Canon EF 100mm f/2.8 Macro Lens', 'ET-67 Silindirik Derin Parasoley', 'Ön ve Arka Kapaklar', '58mm UV Filtre', 'Dolgulu Kılıf'],
+    ARRAY['Canon EF 100mm f/2.8 Macro Lens', 'Ön ve Arka Kapaklar', '58mm UV Filtre', 'Dolgulu Kılıf'],
     'https://upload.wikimedia.org/wikipedia/commons/c/c0/Canon_EF_100mm_f2.8_Macro_USM.jpg',
     'available',
     'Optikler pırıl pırıl / USM motoru ve 1:1 netleme kusursuz'
@@ -356,7 +356,7 @@ VALUES
     'YTU-LENS-70-200L',
     'Efsanevi kırmızı halkalı beyaz L serisi telefoto zoom lens. Konser, spor ve detay çekimleri için köşeden köşeye üst düzey keskinlik.',
     '{"aperture": "f/4 sabit", "mount": "Canon EF L Serisi", "filter_size": "67mm", "weight": "705g"}'::jsonb,
-    ARRAY['Canon EF 70-200mm f/4L Lens', 'ET-74 Beyaz Parasoley', 'Ön ve Arka Kapaklar', '67mm UV Filtre', 'Dolgulu Çanta'],
+    ARRAY['Canon EF 70-200mm f/4L Lens', 'Ön ve Arka Kapaklar', '67mm UV Filtre', 'Dolgulu Çanta'],
     'https://upload.wikimedia.org/wikipedia/commons/5/53/Canon_EF_70-200mm_f2.8L_IS_II_USM_with_lens_hood%2C_2013_November.jpg',
     'available',
     'Optikler pırıl pırıl / Yakınlaştırma halkası akıcı'
@@ -370,7 +370,7 @@ VALUES
     'YTU-LENS-17-40L',
     'L serisi profesyonel ultra geniş açı zoom lens. Mimarlık Fakültesi öğrenci projeleri, Davutpaşa Kışlası iç mekanları ve manzara çekimleri için 1 numaralı tercih.',
     '{"aperture": "f/4 sabit", "mount": "Canon EF L Serisi", "filter_size": "77mm", "angle": "104° - 57°", "weight": "500g"}'::jsonb,
-    ARRAY['Canon EF 17-40mm f/4L Lens', 'EW-83E Petal Parasoley', '77mm Slim UV Filtre', 'Ön ve Arka Kapaklar', 'Dolgulu Kılıf'],
+    ARRAY['Canon EF 17-40mm f/4L Lens', '77mm Slim UV Filtre', 'Ön ve Arka Kapaklar', 'Dolgulu Kılıf'],
     'https://upload.wikimedia.org/wikipedia/commons/6/66/Canon_EF_17-40mm_f4L_USM_front_angled.jpg',
     'available',
     'Tertemiz / Mimari çekimler için hazır'
@@ -384,7 +384,7 @@ VALUES
     'YTU-LENS-24-105L',
     'Kulübün en çok rezerve edilen genel amaçlı "tak-gez" L serisi zoom lensi. Geniş açıdan teleye uzanan odak erimi ve 3-stop IS optik sabitleme desteği.',
     '{"aperture": "f/4 sabit", "mount": "Canon EF L Serisi", "filter_size": "77mm", "stabilization": "3-Stop IS", "weight": "670g"}'::jsonb,
-    ARRAY['Canon EF 24-105mm f/4L IS Lens', 'EW-83H Orijinal Parasoley', '77mm UV Filtre', 'Ön ve Arka Kapaklar'],
+    ARRAY['Canon EF 24-105mm f/4L IS Lens', '77mm UV Filtre', 'Ön ve Arka Kapaklar'],
     'https://upload.wikimedia.org/wikipedia/commons/7/76/Canon_EF_24-105mm_f4L_IS_USM.jpg',
     'available',
     'IS motoru ve diyafram sorunsuz çalışıyor'
@@ -398,7 +398,7 @@ VALUES
     'YTU-LENS-SIGMA-10-20',
     'Crop gövdeler (Canon 1000D vb.) için sabit f/3.5 diyaframlı ultra geniş açı lens. Dar iç mekanlarda ve etkinliklerde geniş kadraj imkanı sunar.',
     '{"aperture": "f/3.5 sabit", "mount": "Canon EF-S Mount", "filter_size": "82mm", "motor": "HSM Sessiz AF", "weight": "520g"}'::jsonb,
-    ARRAY['Sigma 10-20mm f/3.5 Lens', 'Petal Parasoley', 'Ön ve Arka Kapaklar', 'Fermuarlı Taşıma Çantası'],
+    ARRAY['Sigma 10-20mm f/3.5 Lens', 'Ön ve Arka Kapaklar', 'Fermuarlı Taşıma Çantası'],
     'https://upload.wikimedia.org/wikipedia/commons/d/d9/Sigma_10-20mm_F3.5_EX_DC_HSM_01.jpg',
     'available',
     'değerlendirilecek'

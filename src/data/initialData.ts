@@ -11235,7 +11235,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EOS 5D Mark II',
     serial_number: 'YTU-EOS-5D2',
-    description: 'Kulübün efsanevi tam kare (Full Frame) amiral gemisi gövdesi. 21.1 MP çözünürlük, sinematik Canon renkleri ve 1080p Full HD video kabiliyeti ile stüdyo ve dış mekan portrelerinin vazgeçilmezi. ℹ️ Hafıza Kartı: Bu gövde CompactFlash (CF) kart kullanmaktadır; 32GB CF kart ve USB kart okuyucu çanta içerisinde kulüp tarafından teslim edilir (SD kart ile çalışmaz).',
+    description: '21.1 MP Full Frame sensörü ve sinematik renkleriyle stüdyo ve dış mekan portrelerine uygun amiral gemisi gövde.',
     specs: {
       'Sensör': '35.8 x 23.9 mm Full Frame 21.1 MP CMOS',
       'Bayonet': 'Canon EF Mount',
@@ -11264,7 +11264,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EOS 6D',
     serial_number: 'YTU-EOS-6D',
-    description: 'Kompakt ve hafif tam kare gövde. -3 EV düşük ışık odaklama kabiliyeti, dahili Wi-Fi ve GPS özelliğiyle gece çekimleri, kulüp gezileri ve konser fotoğrafları için ideal. ⚠️ ÖNEMLİ SD KART NOTU: Kulüpte SD kart temini bulunmamaktadır. Çekime gelirken kendi SD kartınızı yanınızda getirmeniz gerekmektedir; eğer SD kartınız yoksa rezervasyon notunda mutlaka belirtiniz.',
+    description: 'Yüksek ISO başarımı ve dahili Wi-Fi özellikli, hafif ve kompakt Full Frame gövde.',
     specs: {
       'Sensör': 'Full Frame 20.2 MP CMOS',
       'Bayonet': 'Canon EF Mount',
@@ -11292,7 +11292,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EOS 1000D',
     serial_number: 'YTU-EOS-1000D',
-    description: 'Kulübe yeni katılan üyeler ve temel diyafram-enstantane-ISO eğitim atölyeleri için pratik, hafif ve dayanıklı APS-C DSLR gövde. ⚠️ ÖNEMLİ SD KART NOTU: Kulüpte SD kart temini bulunmamaktadır. Çekime gelirken kendi SD kartınızı yanınızda getirmeniz gerekmektedir; eğer SD kartınız yoksa rezervasyon notunda mutlaka belirtiniz.',
+    description: 'Temel fotoğraf eğitimleri ve pratik sokak çekimleri için hafif ve ergonomik APS-C gövde.',
     specs: {
       'Sensör': 'APS-C 10.1 MP CMOS (1.6x Çarpan)',
       'Bayonet': 'Canon EF ve EF-S Mount Uyumlu',
@@ -11319,7 +11319,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EOS 650 35mm SLR',
     serial_number: 'YTU-EOS-650-ANALOG',
-    description: 'Canon\'un ilk efsanevi elektronik otomatik odaklamalı (AF) 35mm film SLR fotoğraf makinesi (1987 klasiği). Kulübün tüm modern EF lensleriyle tam uyumlu çalışır; analog film çekip karanlık odada tab etmek isteyen üyelerimiz için eşsiz bir gövdedir.',
+    description: 'Tüm modern EF lenslerle tam uyumlu çalışan, otomatik netlemeli klasik 35mm analog film gövdesi.',
     specs: {
       'Film Tipi': 'Standart 35mm Film (135 Negatif / Siyah Beyaz)',
       'Bayonet': 'Canon EF Mount (Elektronik Diyafram & AF)',
@@ -11344,7 +11344,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Nikon',
     model: 'D5000',
     serial_number: 'YTU-NIK-D5000',
-    description: 'Kulübün Nikon sistemini ve ergonomisini tercih eden üyeleri için değişken açılı hareketli LCD ekrana ve HD video kaydına sahip Nikon DX format DSLR gövdesi. ⚠️ ÖNEMLİ SD KART NOTU: Kulüpte SD kart temini bulunmamaktadır. Çekime gelirken kendi SD kartınızı yanınızda getirmeniz gerekmektedir; eğer SD kartınız yoksa rezervasyon notunda mutlaka belirtiniz.',
+    description: 'Döner LCD ekranı ve 12.3 MP çözünürlüğüyle ergonomik Nikon DX format DSLR gövde.',
     specs: {
       'Çözünürlük': '12.3 Megapiksel DX-Format CMOS',
       'Ekran': '2.7" Değişken Açılı (Hareketli / Döner) LCD',
@@ -11377,7 +11377,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EF 50mm f/1.4 USM',
     serial_number: 'YTU-LENS-50MM',
-    description: 'Kulübün en çok talep gören standart prime portre ve sokak lensi. f/1.4 geniş diyaframı sayesinde loş ışıkta harikalar yaratır ve arka planı kremsi şekilde flulaştırır.',
+    description: 'f/1.4 diyaframıyla loş ışıkta yüksek performans ve kremsi arka plan fluluğu sunan standart portre lensi.',
     specs: {
       'Diyafram': 'f/1.4 - f/22 (8 Diyafram Bıçağı)',
       'Bayonet': 'Canon EF Mount (Full Frame & APS-C Uyumlu)',
@@ -11403,7 +11403,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EF 85mm f/1.8 USM',
     serial_number: 'YTU-LENS-85MM',
-    description: 'Jilet keskinliğinde profesyonel portre lensi. Yüz hatlarını bozmayan doğal perspektif açısı, ultra hızlı Ring USM netleme motoru ve muazzam bokeh ayrımı.',
+    description: 'Doğal perspektif açısı ve hızlı USM motoruyla keskin sonuçlar veren profesyonel portre lensi.',
     specs: {
       'Diyafram': 'f/1.8 - f/22',
       'Bayonet': 'Canon EF Mount',
@@ -11430,7 +11430,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EF 100mm f/2.8 Macro USM',
     serial_number: 'YTU-LENS-100-MACRO',
-    description: '1:1 gerçek boyutlu büyütme oranına sahip efsanevi profesyonel makro lensi. Doğa, ürün, böcek, çiçek ve doku detay çekimlerinin yanı sonra 100mm odak uzaklığı ve f/2.8 diyaframıyla mükemmel bir portre lensidir. Dahili odaklama (Internal Focus) sayesinde netleme yaparken lensin boyu uzamaz.',
+    description: '1:1 büyütme oranlı, hem ince detay makro hem de keskin portre çekimlerine uygun f/2.8 lens.',
     specs: {
       'Büyütme Oranı': '1:1 (Gerçek Boyut / Life-Size Macro)',
       'Diyafram': 'f/2.8 - f/32 (8 Diyafram Bıçağı)',
@@ -11458,7 +11458,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EF 70-200mm f/4L USM',
     serial_number: 'YTU-LENS-70-200L',
-    description: 'Efsanevi kırmızı halkalı beyaz L serisi telefoto zoom lens. Konser, sahne, spor, vahşi yaşam ve uzaktaki detay çekimleri için köşeden köşeye üst düzey keskinlik.',
+    description: 'Konser, sahne ve spor çekimleri için köşeden köşeye yüksek keskinlik sunan L serisi telefoto zoom lens.',
     specs: {
       'Diyafram': 'f/4 Sabit Diyafram (Tüm odak aralığında)',
       'Bayonet': 'Canon EF Mount (L Serisi Profesyonel Optik)',
@@ -11484,7 +11484,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EF 17-40mm f/4L USM',
     serial_number: 'YTU-LENS-17-40L',
-    description: 'L serisi profesyonel ultra geniş açı zoom lens. Mimarlık Fakültesi öğrenci projeleri, tarihi Davutpaşa Kışlası iç mekanları ve manzara çekimleri için 1 numaralı tercih.',
+    description: 'Mimari projeler, iç mekan ve manzara çekimleri için L serisi profesyonel ultra geniş açı lens.',
     specs: {
       'Diyafram': 'f/4 Sabit Diyafram',
       'Bayonet': 'Canon EF Mount',
@@ -11511,7 +11511,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EF 24-105mm f/4L IS USM',
     serial_number: 'YTU-LENS-24-105L',
-    description: 'Kulübün en çok rezerve edilen genel amaçlı "tak-gez" L serisi zoom lensi. Geniş açıdan teleye uzanan odak erimi ve 3-stop IS optik görüntü sabitleme desteğiyle her çekime uygundur.',
+    description: 'Optik görüntü sabitleyici (IS) destekli, her türlü genel çekime uygun çok yönlü L serisi standart zoom lens.',
     specs: {
       'Diyafram': 'f/4 Sabit Diyafram',
       'Stabilizasyon': '3-Stop Image Stabilizer (IS Optik Sabitleme)',
@@ -11537,7 +11537,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Sigma',
     model: '10-20mm f/3.5 EX DC HSM (Canon Mount)',
     serial_number: 'YTU-LENS-SIGMA-10-20',
-    description: 'Crop gövdeler (Canon 1000D vb.) için sabit f/3.5 diyaframlı ultra geniş açı lens. Dar iç mekanlarda ve etkinliklerde geniş kadraj imkanı sunar.',
+    description: 'Crop gövdeler için sabit f/3.5 diyaframlı, iç mekan ve etkinlik çekimlerine özel ultra geniş açı lens.',
     specs: {
       'Diyafram': 'f/3.5 Sabit Diyafram',
       'Bayonet': 'Canon EF-S / Crop Sensör Uyumlu',
@@ -11562,7 +11562,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Nikon',
     model: 'AF-S DX NIKKOR 18-55mm f/3.5-5.6G VR',
     serial_number: 'YTU-LENS-NIK-18-55',
-    description: 'Nikon D5000 ve F-Mount DX gövdelerle tam uyumlu standart zoom lensi. 18mm geniş açıdan 55mm portre açısına kadar ideal genel kullanım aralığı ve VR (Vibration Reduction) optik görüntü sabitleme sistemi ile elde titreşimsiz net fotoğraflar sağlar.',
+    description: 'VR titreşim engelleme özellikli, günlük kullanım ve genel çekimler için kompakt standart zoom lens.',
     specs: {
       'Odak Uzaklığı': '18-55 mm (35mm eşdeğeri: 27-82.5 mm)',
       'Diyafram': 'f/3.5 - f/5.6 (7 Bıçaklı Yuvarlak Diyafram)',
@@ -11594,7 +11594,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'Speedlite 580EX II',
     serial_number: 'YTU-FLASH-580EXII',
-    description: 'Canon EOS DSLR gövdelerle tam E-TTL II uyumlu amiral gemisi profesyonel harici tepe flaşı. Yüksek kılavuz numarası (GN 58), hızlı ve sessiz geri dolum, dönebilen reflektör kafası (tavandan/duvardan sektirme), stüdyo ve etkinlik portreleri için vazgeçilmez.',
+    description: 'GN 58 yüksek kılavuz numarası ve dönebilir sektirme başlığıyla profesyonel E-TTL II harici tepe flaşı.',
     specs: {
       'Kılavuz Numarası': 'GN 58 (ISO 100, 105mm)',
       'Uyumluluk': 'Canon E-TTL / E-TTL II Otomatik Pozlama',
@@ -11624,7 +11624,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Fujifilm',
     model: 'Clear Shot M',
     serial_number: 'YTU-ANALOG-CS-01',
-    description: 'Kompakt 35mm film analog fotoğraf makinesi ("Point & Shoot"). Otomatik film sarma, dahili flaş ve sabit odaklı Fujinon lensi ile sokakta analog ruhunu yakalamak isteyen üyelerimiz için.',
+    description: 'Otomatik film sarma ve dahili flaşa sahip, sokak ve seyahat çekimleri için pratik 35mm kompakt analog makine.',
     specs: {
       'Film Tipi': '35mm Standart Negatif / Siyah Beyaz Film (135)',
       'Lens': 'Fujinon Lens',
@@ -11643,7 +11643,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Fujifilm',
     model: 'Clear Shot M',
     serial_number: 'YTU-ANALOG-CS-02',
-    description: 'Kompakt 35mm film analog fotoğraf makinesi. Kulüp gezilerinde ve analog atölyelerinde kullanılmak üzere hazır bekleyen 2 numaralı demirbaş.',
+    description: 'Otomatik film sarma ve dahili flaşa sahip, sokak ve seyahat çekimleri için pratik 35mm kompakt analog makine.',
     specs: {
       'Film Tipi': '35mm Film',
       'Lens': 'Fujinon Lens',
@@ -11662,7 +11662,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Fujifilm',
     model: 'Clear Shot M',
     serial_number: 'YTU-ANALOG-CS-03',
-    description: 'Kompakt 35mm film analog fotoğraf makinesi. Otomatik film sarma mekanizmalı 3 numaralı kulüp makinesi.',
+    description: 'Otomatik film sarma ve dahili flaşa sahip, sokak ve seyahat çekimleri için pratik 35mm kompakt analog makine.',
     specs: {
       'Film Tipi': '35mm Film',
       'Lens': 'Fujinon Lens',
@@ -11681,7 +11681,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Fujifilm',
     model: 'Clear Shot M',
     serial_number: 'YTU-ANALOG-CS-04',
-    description: 'Kompakt 35mm film analog fotoğraf makinesi. 4 numaralı analog kulüp demirbaşı.',
+    description: 'Otomatik film sarma ve dahili flaşa sahip, sokak ve seyahat çekimleri için pratik 35mm kompakt analog makine.',
     specs: {
       'Film Tipi': '35mm Film',
       'Lens': 'Fujinon Lens',
@@ -11700,7 +11700,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Fujifilm',
     model: 'Clear Shot M',
     serial_number: 'YTU-ANALOG-CS-05',
-    description: 'Kompakt 35mm film analog fotoğraf makinesi. 5 numaralı analog kulüp demirbaşı.',
+    description: 'Otomatik film sarma ve dahili flaşa sahip, sokak ve seyahat çekimleri için pratik 35mm kompakt analog makine.',
     specs: {
       'Film Tipi': '35mm Film',
       'Lens': 'Fujinon Lens',
@@ -11723,7 +11723,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Tianya',
     model: '77mm Soft Diffuser',
     serial_number: 'YTU-FLTR-TIANYA-77',
-    description: '77mm filtre çapına sahip lenslerle (Canon EF 24-105mm f/4L ve Canon EF 17-40mm f/4L) tam uyumlu yumuşatıcı (Soft Focus / Mist Diffuser) optik efekt filtresi. Güçlü ışık kaynaklarında ve vurgularda sinematik, masalsı bir ışık halesi (glow/bloom) oluşturarak kontrastı yumuşatır, portre ve sokak çekimlerinde pürüzsüz estetik tonlar sağlar.',
+    description: 'Güçlü ışıklarda sinematik yumuşak hale ve masalsı tonlar oluşturan 77mm optik efekt filtresi.',
     specs: {
       'Filtre Çapı': '77 mm (Canon 24-105mm f/4L & 17-40mm f/4L Uyumlu)',
       'Filtre Tipi': 'Soft Diffuser (Yumuşatıcı / Mist Efekt Filtresi)',

@@ -639,9 +639,11 @@ export const api = {
 
         if (!error && data && data.length > 0) {
           const baseImgMap = new Map(INITIAL_EQUIPMENT.map((e) => [e.id, e.image_url]));
+          const baseDescMap = new Map(INITIAL_EQUIPMENT.map((e) => [e.id, e.description]));
           return (data as Equipment[]).map((e) => ({
             ...e,
-            image_url: baseImgMap.get(e.id) || e.image_url
+            image_url: baseImgMap.get(e.id) || e.image_url,
+            description: baseDescMap.get(e.id) || e.description
           }));
         }
       } catch (err) {

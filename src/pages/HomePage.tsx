@@ -62,16 +62,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.12] font-club">
-                Kadrajınızı Keşfedin, <br />
+                YTÜFOK Ekipman Havuzu <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8193b2] via-[#a9b9d3] to-white">
-                  Ekipmanı Rezerve Edin
+                  & Rezervasyon
                 </span>
               </h1>
 
               <p className="text-[#dce4ef] text-sm sm:text-base max-w-xl leading-relaxed">
-                YTÜFOK üyeleri için modern, şeffaf ve güvenli ekipman takip platformu. 
-                Canon EOS gövdeler, L serisi lensler, 35mm analog makineler ve flaş ekipmanlarına 
-                öğrenci numaranızla anında talep oluşturun.
+                Yıldız Teknik Üniversitesi Fotoğraf Kulübü üyeleri için geliştirilmiş demirbaş ve ekipman talep sistemi. Gövde, lens ve analog ekipmanlar için öğrenci numaranızla kolayca rezervasyon oluşturun.
               </p>
 
               {/* Action Buttons */}
@@ -102,18 +100,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 </button>
               </div>
 
-              {/* Priority & Delivery Highlight Card */}
+              {/* Delivery Highlight Card */}
               <div className="p-4 rounded-2xl bg-[#1c0f18]/90 border border-[#657796]/40 shadow-xl space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#dce4ef] font-club">
                   <span className="w-2 h-2 rounded-full bg-[#657796] animate-pulse"></span>
-                  <span>Önemli Bilgilendirme (Öncelik & Teslimat):</span>
+                  <span>Önemli Bilgilendirme (Teslim & İade Noktası):</span>
                 </div>
-                <p className="text-xs text-[#dce4ef] leading-relaxed">
-                  <strong className="text-white">Aktif Kulüp Üyeleri Önceliklidir:</strong> Rezervasyon onaylarında kulüp atölye, gezi ve etkinliklerine düzenli katılan aktif üyelerimize 1. derece öncelik tanınır.
-                </p>
-                <div className="flex items-center gap-2 pt-1 text-[11px] text-[#a9b9d3] border-t border-[#657796]/20">
-                  <MapPin className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
-                  <span><strong>Tek Teslim & İade Noktası:</strong> Kulüpler Vadisi, Davutpaşa Kampüsü (başka teslim noktası yoktur, iadeler de burayadır).</span>
+                <div className="flex items-center gap-2 text-xs text-[#dce4ef] leading-relaxed">
+                  <MapPin className="w-4 h-4 text-[#8193b2] shrink-0" />
+                  <span><strong className="text-white">Tek Teslim & İade Noktası:</strong> Kulüpler Vadisi, Davutpaşa Kampüsü (başka teslim noktası yoktur, iadeler de burayadır).</span>
                 </div>
               </div>
 
@@ -132,7 +127,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               <div className="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-[#657796]/20 text-xs text-[#a9b9d3]">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
-                  <span className="text-white font-semibold">Aktif Üye Önceliği</span>
+                  <span className="text-white font-semibold">Hızlı Online Talep</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
@@ -193,7 +188,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-[#a9b9d3]">Onay Durumu:</span>
-                    <span className="text-[#8193b2] font-semibold text-right">Aktif Üyeler Öncelikli</span>
+                    <span className="text-[#8193b2] font-semibold text-right">Yönetim Kurulu Onaylı</span>
                   </div>
                 </div>
 
@@ -222,8 +217,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             <div className="text-xs text-[#a9b9d3] mt-1">Profesyonel Gövde & Lens</div>
           </div>
           <div className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 text-center hover:border-[#657796]/50 transition-colors">
-            <div className="text-2xl sm:text-3xl font-bold text-[#8193b2] font-club">1. Öncelik</div>
-            <div className="text-xs text-[#a9b9d3] mt-1">Aktif Kulüp Üyelerinde</div>
+            <div className="text-2xl sm:text-3xl font-bold text-[#8193b2] font-club">Maks. 4 Gün</div>
+            <div className="text-xs text-[#a9b9d3] mt-1">Standart Kullanım Süresi</div>
           </div>
           <div className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 text-center hover:border-[#657796]/50 transition-colors">
             <div className="text-3xl font-bold text-white font-club">24 Saat</div>

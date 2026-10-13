@@ -163,7 +163,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               >
                 {adminProfiles.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.full_name} ({p.short_title} - {p.title}) • No: {p.student_number}
+                    {p.full_name} ({p.short_title} - {p.title})
                   </option>
                 ))}
               </select>
@@ -174,7 +174,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 </div>
                 <div>
                   <div className="text-xs font-bold text-white">{selectedAdmin.full_name}</div>
-                  <div className="text-[11px] text-[#a9b9d3]">{selectedAdmin.title} (No: {selectedAdmin.student_number})</div>
+                  <div className="text-[11px] text-[#a9b9d3]">{selectedAdmin.title}</div>
                 </div>
               </div>
             ) : null}

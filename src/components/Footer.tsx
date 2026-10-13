@@ -29,11 +29,11 @@ export const Footer: React.FC = () => {
                 <span>@ytufokonline</span>
               </a>
               <a
-                href="mailto:iletisim@ytufok.com"
+                href="mailto:ytufokonline@gmail.com"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] hover:text-white transition-colors border border-[#657796]/30"
               >
                 <Mail className="w-3.5 h-3.5 text-[#8193b2]" />
-                <span>iletisim@ytufok.com</span>
+                <span>ytufokonline@gmail.com</span>
               </a>
             </div>
           </div>
@@ -52,14 +52,10 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Temel Kurallar & Öncelik */}
+          {/* Temel Kurallar */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#dce4ef]">Zimmet & Öncelik</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#dce4ef]">Zimmet & Teslimat Kuralları</h4>
             <ul className="space-y-2 text-xs text-[#a9b9d3]">
-              <li className="flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
-                <span className="text-white font-semibold">Aktif kulüp üyeleri 1. derece önceliklidir.</span>
-              </li>
               <li className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
                 <span>Tek Teslimat: Yalnızca Kulüpler Vadisi.</span>

@@ -103,8 +103,8 @@ export const INITIAL_MEMBERS: Member[] = [
     "status": "active",
     "penalty_count": 0,
     "role": "admin",
-    "notes": "Kulüp Başkanı / Ekipman ve Yönetim Sorumlusu",
-    "member_type": "active"
+    "notes": "Kulüp Başkanı / Yönetim Kurulu Üyesi",
+    "member_type": "board"
   },
   {
     "id": "m-by1",
@@ -117,8 +117,8 @@ export const INITIAL_MEMBERS: Member[] = [
     "status": "active",
     "penalty_count": 0,
     "role": "board",
-    "notes": "Başkan Yardımcısı",
-    "member_type": "active"
+    "notes": "Başkan Yardımcısı / Yönetim Kurulu Üyesi",
+    "member_type": "board"
   },
   {
     "id": "m-by2",
@@ -131,8 +131,8 @@ export const INITIAL_MEMBERS: Member[] = [
     "status": "active",
     "penalty_count": 0,
     "role": "board",
-    "notes": "Başkan Yardımcısı",
-    "member_type": "active"
+    "notes": "Başkan Yardımcısı / Yönetim Kurulu Üyesi",
+    "member_type": "board"
   },
   {
     "id": "m-sayman",
@@ -145,8 +145,8 @@ export const INITIAL_MEMBERS: Member[] = [
     "status": "active",
     "penalty_count": 0,
     "role": "board",
-    "notes": "Mali İşler Sorumlusu (Sayman)",
-    "member_type": "active"
+    "notes": "Mali İşler Sorumlusu (Sayman) / Yönetim Kurulu Üyesi",
+    "member_type": "board"
   },
   {
     "id": "m-sekreter",
@@ -159,8 +159,8 @@ export const INITIAL_MEMBERS: Member[] = [
     "status": "active",
     "penalty_count": 0,
     "role": "board",
-    "notes": "Genel Sekreter & Arşiv",
-    "member_type": "active"
+    "notes": "Genel Sekreter / Yönetim Kurulu Üyesi",
+    "member_type": "board"
   },
   {
     "id": "m-yk-sosyal",
@@ -173,8 +173,8 @@ export const INITIAL_MEMBERS: Member[] = [
     "status": "active",
     "penalty_count": 0,
     "role": "board",
-    "notes": "Sosyal Medya Koordinatörü",
-    "member_type": "active"
+    "notes": "Sosyal Medya Koordinatörü / Yönetim Kurulu Üyesi",
+    "member_type": "board"
   },
   {
     "id": "m-yk-gezi",
@@ -187,8 +187,8 @@ export const INITIAL_MEMBERS: Member[] = [
     "status": "active",
     "penalty_count": 0,
     "role": "board",
-    "notes": "Gezi Koordinatörü",
-    "member_type": "active"
+    "notes": "Gezi Koordinatörü / Yönetim Kurulu Üyesi",
+    "member_type": "board"
   },
   {
     "id": "m-yk-sponsorluk",
@@ -201,8 +201,8 @@ export const INITIAL_MEMBERS: Member[] = [
     "status": "active",
     "penalty_count": 0,
     "role": "board",
-    "notes": "Sponsorluk Koordinatörü",
-    "member_type": "active"
+    "notes": "Sponsorluk Koordinatörü / Yönetim Kurulu Üyesi",
+    "member_type": "board"
   },
   {
     "id": "m-isil",
@@ -11741,27 +11741,11 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
   },
   {
     id: 'a-1',
-    title: 'Önemli: Tek Teslim & İade Noktası ve Aktif Üye Önceliği',
-    content: 'Tüm ekipman teslim ve iadeleri YALNIZCA Kulüpler Vadisi, Davutpaşa Kampüsü noktasından yapılmaktadır (başka hiçbir teslim veya iade noktası bulunmamaktadır). Kulüp etkinlik ve atölyelerine düzenli katılan aktif üyelerimizin talepleri onay sürecinde 1. derece önceliklidir. Maksimum rezervasyon süresi 4 gündür.',
+    title: 'Önemli: Tek Teslim & İade Noktası ve Kullanım Kuralları',
+    content: 'Tüm ekipman teslim ve iadeleri YALNIZCA Kulüpler Vadisi, Davutpaşa Kampüsü noktasından yapılmaktadır (başka hiçbir teslim veya iade noktası bulunmamaktadır). Maksimum standart rezervasyon süresi 4 gündür.',
     category: 'Kural & Yönetmelik',
     is_pinned: true,
     created_at: '2026-10-01T09:00:00Z'
-  },
-  {
-    id: 'a-2',
-    title: 'Fujifilm Clear Shot M & Analog Karanlık Oda Atölyesi',
-    content: 'Envanterimizdeki 5 adet Fujifilm Clear Shot M kompakt analog makinemiz ve Canon EOS 650 SLR gövdemiz üyelerimizin kullanımına açıktır. Film sarma ve karanlık odada siyah-beyaz banyo atölyesi bu Perşembe kulüp odamızda gerçekleştirilecektir.',
-    category: 'Analog & Atölye',
-    is_pinned: false,
-    created_at: '2026-10-05T13:30:00Z'
-  },
-  {
-    id: 'a-3',
-    title: 'Canon & Nikon Lensler & Speedlite 580EX II Flaş Eğitimi',
-    content: 'Canon EF ve Nikon DX lensler ile Canon Speedlite 580EX II harici tepe flaşı ile profesyonel portre ışığı eğitimi gerçekleştirilecektir. Tüm aktif üyelerimiz davetlidir.',
-    category: 'Atölye & Eğitim',
-    is_pinned: false,
-    created_at: '2026-10-08T11:00:00Z'
   }
 ];
 

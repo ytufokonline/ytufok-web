@@ -28,7 +28,7 @@ import {
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
 const UNIFIED_NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
-const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v6';
+const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v7';
 
 type CloudCollectionKey =
   | 'admin_profiles'
@@ -361,7 +361,11 @@ function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   const memDelta: MemberDeltas = cols.member_deltas || { overrides: {}, added: [] };
   const baseMembers = INITIAL_MEMBERS.map((m) => {
     const ov = memDelta.overrides?.[m.id];
-    return ov ? { ...m, ...ov } : m;
+    const merged = ov ? { ...m, ...ov } : m;
+    if (merged.role === 'admin' || merged.role === 'board') {
+      return { ...merged, member_type: 'board' as const };
+    }
+    return merged;
   });
   const addedMembers = (Array.isArray(memDelta.added) ? memDelta.added : []).map((m) => {
     const ov = memDelta.overrides?.[m.id];
@@ -425,7 +429,15 @@ function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   }));
 
   // 7. Announcements
-  const rawAnnouncements: Announcement[] = cols.announcements || INITIAL_ANNOUNCEMENTS;
+  const rawAnnouncements: Announcement[] = (cols.announcements || INITIAL_ANNOUNCEMENTS)
+    .filter((a: Announcement) => a.id !== 'a-2' && a.id !== 'a-3')
+    .map((a: Announcement) => {
+      if (a.id === 'a-1') {
+        const updatedA1 = INITIAL_ANNOUNCEMENTS.find((ia) => ia.id === 'a-1');
+        return updatedA1 || a;
+      }
+      return a;
+    });
   const announcements = [...rawAnnouncements].sort((a, b) => {
     if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -736,7 +748,7 @@ export const api = {
 
       const eligibility = checkTripBookingEligibility(trip.start_date, memberTier);
 
-      if (!eligibility.isOpen) {
+      if (memberTier !== 'board' && !eligibility.isOpen) {
         const tierLabel =
           memberTier === 'active' || memberTier === 'honorary_active'
             ? 'Aktif kulüp üyeleri'
@@ -747,7 +759,7 @@ export const api = {
         };
       }
     } else {
-      if (memberTier !== 'active' && memberTier !== 'honorary_active') {
+      if (memberTier !== 'board' && memberTier !== 'active' && memberTier !== 'honorary_active') {
         return {
           success: false,
           message:

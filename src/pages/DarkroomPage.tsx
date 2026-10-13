@@ -923,7 +923,15 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                   <div>
                     <strong className="text-white font-semibold">{verifiedMember.full_name}</strong>
                     <span className="text-[#a9b9d3] block text-[11px]">
-                      {verifiedMember.department} • {verifiedMember.student_number} • <strong className="text-emerald-400">Aktif Üye</strong>
+                      {verifiedMember.role === 'admin' || verifiedMember.role === 'board' || verifiedMember.member_type === 'board' ? (
+                        <>
+                          {verifiedMember.department} • <strong className="text-emerald-400">Yönetim Kurulu Üyesi</strong>
+                        </>
+                      ) : (
+                        <>
+                          {verifiedMember.department} • {verifiedMember.student_number} • <strong className="text-emerald-400">Aktif Üye</strong>
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>

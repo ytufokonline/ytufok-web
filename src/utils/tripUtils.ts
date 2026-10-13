@@ -45,7 +45,7 @@ export function getReservationOpenDate(tripStartDateStr: string, daysBefore: num
  */
 export function resolveMemberTier(member?: Member | null): MemberType {
   if (!member) return 'normal';
-  if (member.role === 'admin' || member.role === 'board') return 'active';
+  if (member.role === 'admin' || member.role === 'board' || member.member_type === 'board') return 'board';
   if (member.member_type === 'honorary_active') return 'honorary_active';
   if (member.member_type === 'honorary') return 'honorary';
   if (member.member_type === 'normal') return 'normal';
@@ -65,6 +65,7 @@ export interface TripBookingEligibility {
 
 /**
  * Evaluates the 5-day / 3-day reservation rule for a given trip start date and member tier:
+ * - board: her zaman açık (kısıtlama yok)
  * - normal & honorary: 3 gün önce (aynı öncelik)
  * - active & honorary_active: 5 gün önce (aynı öncelik)
  */
@@ -73,11 +74,25 @@ export function checkTripBookingEligibility(
   memberType: MemberType = 'active',
   todayStr: string = getLocalDateString()
 ): TripBookingEligibility {
-  const daysBeforeAllowed = memberType === 'active' || memberType === 'honorary_active' ? 5 : 3;
   const daysBeforeTrip = getDaysDifference(tripStartDateStr, todayStr);
+  const hasPassed = daysBeforeTrip < 0;
+
+  if (memberType === 'board') {
+    return {
+      tripStartDate: tripStartDateStr,
+      memberType,
+      daysBeforeAllowed: 365,
+      daysBeforeTrip,
+      openDate: todayStr,
+      isOpen: true,
+      daysUntilOpen: 0,
+      hasPassed
+    };
+  }
+
+  const daysBeforeAllowed = memberType === 'active' || memberType === 'honorary_active' ? 5 : 3;
   const openDate = getReservationOpenDate(tripStartDateStr, daysBeforeAllowed);
   const isOpen = todayStr >= openDate;
-  const hasPassed = daysBeforeTrip < 0;
   const daysUntilOpen = isOpen ? 0 : Math.max(0, daysBeforeTrip - daysBeforeAllowed);
 
   return {

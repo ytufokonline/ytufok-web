@@ -446,16 +446,20 @@ export const AdminDashboard: React.FC = () => {
   const currentlyInUseList = reservations.filter(r => r.status === 'in_use');
   const supabaseConfig = getSupabaseConfigStatus();
 
+  const isBoardMemberObj = (m?: Member | null) =>
+    Boolean(m && (m.role === 'admin' || m.role === 'board' || m.member_type === 'board'));
+
   const filteredMembers = members.filter(m => {
+    const isBoard = isBoardMemberObj(m);
     const matchesStatus = memberStatusFilter === 'all' || m.status === memberStatusFilter;
     const matchesTier = memberTypeFilter === 'all' ||
       (memberTypeFilter === 'normal' ? (m.member_type === 'normal' || m.member_type === 'honorary') :
        memberTypeFilter === 'honorary' ? (m.member_type === 'honorary' || m.member_type === 'honorary_active') :
-       (m.member_type === 'active' || m.member_type === 'honorary_active' || (m.role !== 'member' && m.member_type !== 'normal' && m.member_type !== 'honorary')));
+       (!isBoard && (m.member_type === 'active' || m.member_type === 'honorary_active')));
     const q = memberSearchQuery.toLowerCase().trim();
     const matchesSearch = !q || (
       m.full_name.toLowerCase().includes(q) ||
-      m.student_number.includes(q) ||
+      (!isBoard && m.student_number.includes(q)) ||
       m.department.toLowerCase().includes(q) ||
       (m.notes || '').toLowerCase().includes(q)
     );
@@ -534,7 +538,7 @@ export const AdminDashboard: React.FC = () => {
     ];
     const rows = filteredHistoryReservations.map(r => [
       r.reservation_code,
-      r.student_number,
+      isBoardMemberObj(r.member) ? '-' : r.student_number,
       `"${(r.member?.full_name || '').replace(/"/g, '""')}"`,
       `"${(r.member?.department || '').replace(/"/g, '""')}"`,
       `"${(r.equipment?.name || '').replace(/"/g, '""')}"`,
@@ -615,7 +619,7 @@ export const AdminDashboard: React.FC = () => {
                     Tam Yetkili
                   </span>
                 </div>
-                <span className="text-[10px] text-[#8193b2] block">Öğrenci No: <strong className="font-mono text-[#dce4ef]">{activeAdmin.student_number}</strong></span>
+                <span className="text-[10px] text-[#8193b2] block">YTÜFOK Yönetim Kurulu Üyesi</span>
               </div>
 
               <div className="flex items-center gap-1.5 ml-2">
@@ -853,12 +857,20 @@ export const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="p-3.5">
                         <strong className="text-white block">{r.member?.full_name}</strong>
-                        <span className="text-[#a9b9d3] font-mono text-[11px]">{r.student_number}</span>
-                        {r.member?.member_type && (
-                          <span className="text-[9px] text-[#8193b2] block mt-0.5">
-                            {r.member.member_type === 'active' ? 'Aktif Üye' : r.member.member_type === 'honorary_active' ? 'Fahri Aktif' : r.member.member_type === 'honorary' ? 'Fahri Üye' : 'Normal Üye'}
-                          </span>
+                        {!isBoardMemberObj(r.member) && (
+                          <span className="text-[#a9b9d3] font-mono text-[11px]">{r.student_number}</span>
                         )}
+                        <span className="text-[9px] text-[#8193b2] block mt-0.5">
+                          {isBoardMemberObj(r.member)
+                            ? 'Yönetim Kurulu Üyesi'
+                            : r.member?.member_type === 'active'
+                            ? 'Aktif Üye'
+                            : r.member?.member_type === 'honorary_active'
+                            ? 'Fahri Aktif'
+                            : r.member?.member_type === 'honorary'
+                            ? 'Fahri Üye'
+                            : 'Normal Üye'}
+                        </span>
                       </td>
                       <td className="p-3.5">
                         <strong className="text-white block text-xs">{r.equipment?.name}</strong>
@@ -961,7 +973,9 @@ export const AdminDashboard: React.FC = () => {
                     <span className="text-xs text-[#8193b2] font-mono">{res.equipment?.serial_number}</span>
                   </div>
                   <div className="p-3 rounded-xl bg-[#12080f] border border-[#657796]/20 text-xs space-y-1.5">
-                    <div className="text-white font-bold">{res.member?.full_name} ({res.student_number})</div>
+                    <div className="text-white font-bold">
+                      {res.member?.full_name} {!isBoardMemberObj(res.member) && `(${res.student_number})`}
+                    </div>
                     <div className="text-[#a9b9d3]">Tel: {res.member?.phone}</div>
                     <div className="text-[#dce4ef]">Teslim: <strong className="text-white">{res.pickup_date}</strong> → İade: <strong className="text-white">{res.return_date}</strong></div>
                     {res.approved_by && (
@@ -1145,24 +1159,31 @@ export const AdminDashboard: React.FC = () => {
                 {filteredMembers.map(m => {
                   const mReservations = reservations.filter(r => r.member_id === m.id || r.student_number === m.student_number);
                   const mInUse = mReservations.filter(r => r.status === 'in_use').length;
+                  const isBoard = isBoardMemberObj(m);
 
                   return (
                     <tr key={m.id} className="hover:bg-[#301322]/40 transition-colors">
-                      <td className="p-3.5 font-mono font-bold text-white">{m.student_number}</td>
+                      <td className="p-3.5 font-mono font-bold text-white">
+                        {isBoard ? <span className="text-[#8193b2]">—</span> : m.student_number}
+                      </td>
                       <td className="p-3.5">
                         <div className="flex items-center gap-2">
                           <strong className="text-white font-bold">{m.full_name}</strong>
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-                            m.role === 'admin' ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/40' :
-                            m.role === 'board' ? 'bg-[#657796]/20 text-[#dce4ef]' :
+                            isBoard ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/40' :
                             'text-[#8193b2]'
                           }`}>
-                            {m.role === 'admin' ? 'Yönetici' : m.role === 'board' ? 'YK' : 'Üye'}
+                            {isBoard ? 'Yönetim Kurulu' : 'Üye'}
                           </span>
                         </div>
                       </td>
                       <td className="p-3.5">
-                        {m.member_type === 'honorary_active' ? (
+                        {isBoard ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40 flex items-center gap-1 w-fit">
+                            <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
+                            <span>Yönetim Kurulu Üyesi</span>
+                          </span>
+                        ) : m.member_type === 'honorary_active' ? (
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1 w-fit">
                             <Award className="w-3 h-3 text-purple-400" />
                             <span>★ Fahri Aktif (5 Gün)</span>
@@ -1221,21 +1242,23 @@ export const AdminDashboard: React.FC = () => {
                         )}
                       </td>
                       <td className="p-3.5 text-right space-x-1.5 whitespace-nowrap">
-                        <button
-                          onClick={() => handleToggleMemberType(m)}
-                          className="px-2 py-1 rounded-lg bg-[#12080f] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
-                          title={
-                            m.member_type === 'normal' ? 'Bu üyeyi Aktif Üye yap (5 gün önce rezervasyon & Bireysel Çekim)' :
-                            m.member_type === 'active' ? 'Bu üyeyi Normal Üye yap (3 gün önce rezervasyon)' :
-                            m.member_type === 'honorary' ? 'Bu fahri üyeyi Fahri Aktif yap (5 gün önce & Bireysel Çekim)' :
-                            'Bu fahri üyeyi Normal Öncelikli yap (3 gün önce rezervasyon)'
-                          }
-                        >
-                          {m.member_type === 'normal' ? '★ Aktif Yap' :
-                           m.member_type === 'active' ? 'Normal Yap' :
-                           m.member_type === 'honorary' ? '★ Aktif Yap' :
-                           'Normal Öncelik Yap'}
-                        </button>
+                        {!isBoard && (
+                          <button
+                            onClick={() => handleToggleMemberType(m)}
+                            className="px-2 py-1 rounded-lg bg-[#12080f] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
+                            title={
+                              m.member_type === 'normal' ? 'Bu üyeyi Aktif Üye yap (5 gün önce rezervasyon & Bireysel Çekim)' :
+                              m.member_type === 'active' ? 'Bu üyeyi Normal Üye yap (3 gün önce rezervasyon)' :
+                              m.member_type === 'honorary' ? 'Bu fahri üyeyi Fahri Aktif yap (5 gün önce & Bireysel Çekim)' :
+                              'Bu fahri üyeyi Normal Öncelikli yap (3 gün önce rezervasyon)'
+                            }
+                          >
+                            {m.member_type === 'normal' ? '★ Aktif Yap' :
+                             m.member_type === 'active' ? 'Normal Yap' :
+                             m.member_type === 'honorary' ? '★ Aktif Yap' :
+                             'Normal Öncelik Yap'}
+                          </button>
+                        )}
                         <button
                           onClick={() => setSelectedMemberForHistory(m)}
                           className="px-2 py-1 rounded-lg bg-[#657796]/30 hover:bg-[#657796]/50 text-xs font-semibold text-white transition-colors cursor-pointer inline-flex items-center gap-1"
@@ -1344,7 +1367,7 @@ export const AdminDashboard: React.FC = () => {
                   <option value="all">Tüm Üyeler ({members.length})</option>
                   {members.map(m => (
                     <option key={m.id} value={m.id}>
-                      {m.full_name} ({m.student_number})
+                      {isBoardMemberObj(m) ? `${m.full_name} (Yönetim Kurulu)` : `${m.full_name} (${m.student_number})`}
                     </option>
                   ))}
                 </select>
@@ -1458,7 +1481,7 @@ export const AdminDashboard: React.FC = () => {
                               {res.member?.full_name || res.student_number}
                             </strong>
                             <span className="text-[11px] font-mono text-[#a9b9d3] block">
-                              {res.student_number} • {res.member?.department}
+                              {isBoardMemberObj(res.member) ? res.member?.department : `${res.student_number} • ${res.member?.department}`}
                             </span>
                           </button>
                         </td>
@@ -2904,16 +2927,15 @@ export const AdminDashboard: React.FC = () => {
                         {selectedMemberForHistory.full_name}
                       </h3>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        selectedMemberForHistory.role === 'admin' ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/40' :
-                        selectedMemberForHistory.role === 'board' ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/30' :
-                        'bg-[#301322] text-[#8193b2] border border-[#657796]/20'
+                        isBoardMemberObj(selectedMemberForHistory)
+                          ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/40'
+                          : 'bg-[#301322] text-[#8193b2] border border-[#657796]/20'
                       }`}>
-                        {selectedMemberForHistory.role === 'admin' ? 'Yönetici' :
-                         selectedMemberForHistory.role === 'board' ? 'Yönetim Kurulu' : 'Aktif Üye'}
+                        {isBoardMemberObj(selectedMemberForHistory) ? 'Yönetim Kurulu Üyesi' : 'Kulüp Üyesi'}
                       </span>
                       {selectedMemberForHistory.status === 'active' ? (
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                          Aktif Üye
+                          {isBoardMemberObj(selectedMemberForHistory) ? 'Aktif' : 'Aktif Üye'}
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
@@ -2922,11 +2944,19 @@ export const AdminDashboard: React.FC = () => {
                       )}
                     </div>
                     <div className="text-xs text-[#a9b9d3] flex flex-wrap items-center gap-x-3 gap-y-1">
-                      <span className="font-mono text-white font-bold">{selectedMemberForHistory.student_number}</span>
-                      <span>•</span>
+                      {!isBoardMemberObj(selectedMemberForHistory) && (
+                        <>
+                          <span className="font-mono text-white font-bold">{selectedMemberForHistory.student_number}</span>
+                          <span>•</span>
+                        </>
+                      )}
                       <span>{selectedMemberForHistory.department}</span>
-                      <span>•</span>
-                      <span>{selectedMemberForHistory.email}</span>
+                      {!isBoardMemberObj(selectedMemberForHistory) && (
+                        <>
+                          <span>•</span>
+                          <span>{selectedMemberForHistory.email}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -3112,7 +3142,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
                 <h3 className="text-lg font-bold text-white font-club">Aktif Yönetici Profilini Seçin</h3>
                 <p className="text-xs text-[#a9b9d3] mt-1">
-                  5 yönetim kurulu hesabının tümü tam yetkilidir. Yapacağınız onay, teslim ve iade kabul işlemleri seçtiğiniz yöneticinin adıyla mühürlenecektir.
+                  8 yönetim kurulu hesabının tümü tam yetkilidir. Yapacağınız onay, teslim ve iade kabul işlemleri seçtiğiniz yöneticinin adıyla mühürlenecektir.
                 </p>
               </div>
               <button
@@ -3154,7 +3184,7 @@ export const AdminDashboard: React.FC = () => {
                           {profile.title}
                         </div>
                         <div className="text-[10px] font-mono text-[#8193b2] mt-0.5">
-                          No: {profile.student_number} • <span className="text-emerald-400 font-semibold">Tam Yetki</span>
+                          <span className="text-emerald-400 font-semibold">Tam Yetki</span>
                         </div>
                       </div>
                     </div>

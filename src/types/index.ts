@@ -13,7 +13,7 @@ export type ReservationStatus =
 
 export type MemberStatus = 'active' | 'suspended' | 'passive';
 export type MemberRole = 'member' | 'board' | 'admin';
-export type MemberType = 'active' | 'normal' | 'honorary' | 'honorary_active'; // 'normal' & 'honorary' (Geziden 3 gün önce); 'active' & 'honorary_active' (Geziden 5 gün önce & Bireysel Çekim)
+export type MemberType = 'board' | 'active' | 'normal' | 'honorary' | 'honorary_active';
 
 export interface Member {
   id: string;

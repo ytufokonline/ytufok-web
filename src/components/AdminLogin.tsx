@@ -154,9 +154,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
                       <div className="text-[11px] text-[#a9b9d3] mt-0.5 line-clamp-1">
                         {profile.title}
                       </div>
-                      <div className="text-[10px] font-mono text-[#8193b2] mt-1 truncate">
-                        No: {profile.student_number}
-                      </div>
                     </div>
 
                     <div className="shrink-0 pt-0.5">

@@ -63,7 +63,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
             <button
               onClick={() => onNavigate('reserve')}
-              className="px-6 py-3 rounded-lg bg-white hover:bg-[#dce4ef] text-[#12080f] font-semibold text-sm transition-all duration-150 cursor-pointer shadow-sm active:scale-[0.98]"
+              className="px-6 py-3 rounded-lg bg-white hover:bg-[#dce4ef] text-[#800020] font-semibold text-sm transition-all duration-150 cursor-pointer shadow-sm active:scale-[0.98]"
             >
               Rezervasyon Yap
             </button>

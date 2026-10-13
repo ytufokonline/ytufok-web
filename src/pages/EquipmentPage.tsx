@@ -228,7 +228,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       item.status === 'maintenance'
                         ? 'bg-white/[0.04] text-white/30 cursor-not-allowed'
-                        : 'bg-white text-[#12080f] hover:bg-[#dce4ef] cursor-pointer active:scale-[0.98]'
+                        : 'bg-white text-[#800020] hover:bg-[#dce4ef] cursor-pointer active:scale-[0.98]'
                     }`}
                   >
                     Rezerve Et
@@ -383,7 +383,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                   onNavigate('reserve');
                 }}
                 disabled={selectedItemForModal.status === 'maintenance'}
-                className="px-6 py-2.5 rounded-lg bg-white text-[#12080f] hover:bg-[#dce4ef] text-xs font-semibold cursor-pointer transition-all active:scale-[0.98]"
+                className="px-6 py-2.5 rounded-lg bg-white text-[#800020] hover:bg-[#dce4ef] text-xs font-semibold cursor-pointer transition-all active:scale-[0.98]"
               >
                 Hemen Rezerve Et
               </button>

@@ -20,8 +20,8 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
   const [modalTab, setModalTab] = useState<'details' | 'history'>('details');
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    const fetchData = async (silent = false) => {
+      if (!silent) setLoading(true);
       try {
         const [equipList, resList] = await Promise.all([
           api.getEquipment(),
@@ -32,10 +32,21 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
       } catch (e) {
         console.error('Ekipman yükleme hatası:', e);
       } finally {
-        setLoading(false);
+        if (!silent) setLoading(false);
       }
     };
-    fetchData();
+    fetchData(false);
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        fetchData(true);
+      }
+    }, 10000);
+    const handleFocus = () => fetchData(true);
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const filteredEquipment = equipmentList.filter((item) => {

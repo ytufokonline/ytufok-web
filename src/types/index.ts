@@ -69,6 +69,7 @@ export interface AdminProfile {
   phone: string;
   avatar_color: string;
   pin: string;
+  pin_updated_at?: string;
 }
 
 export interface Trip {

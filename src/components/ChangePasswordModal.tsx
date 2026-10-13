@@ -201,11 +201,6 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               <label className="text-xs font-semibold text-[#dce4ef]">
                 Mevcut Şifre
               </label>
-              {(!selectedAdmin?.pin || selectedAdmin.pin === '1911') && (
-                <span className="text-[10px] text-[#8193b2]">
-                  Başlangıç şifresi: <strong className="text-white font-mono">1911</strong>
-                </span>
-              )}
             </div>
             <div className="relative">
               <input

@@ -101,8 +101,9 @@ export const AdminDashboard: React.FC = () => {
   const [newTripDescription, setNewTripDescription] = useState('');
   const [newTripIsActive, setNewTripIsActive] = useState(true);
 
-  const loadAllData = async () => {
-    setLoading(true);
+  const loadAllData = async (silent?: boolean | React.MouseEvent) => {
+    const isSilent = silent === true;
+    if (!isSilent) setLoading(true);
     try {
       const [resList, equipList, memList, profilesList, currAdmin, koList, slotsList, tripsList] = await Promise.all([
         api.getReservations(),
@@ -125,12 +126,23 @@ export const AdminDashboard: React.FC = () => {
     } catch (e) {
       console.error('Veri yükleme hatası:', e);
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadAllData();
+    loadAllData(false);
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        loadAllData(true);
+      }
+    }, 10000);
+    const handleFocus = () => loadAllData(true);
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   useEffect(() => {
@@ -154,15 +166,18 @@ export const AdminDashboard: React.FC = () => {
       setShowSwitchProfileModal(false);
       return;
     }
-    const validPin = profile.pin || '1911';
-    const enteredPin = window.prompt(`${profile.full_name} (${profile.short_title}) hesabına geçmek için şifrenizi giriniz:${validPin === '1911' ? '\n(Başlangıç Şifresi: 1911)' : ''}`);
+    const enteredPin = window.prompt(`${profile.full_name} (${profile.short_title}) hesabına geçmek için şifrenizi giriniz:`);
     if (enteredPin === null) return;
+    const freshProfiles = await api.getAdminProfiles();
+    setAdminProfiles(freshProfiles);
+    const latestProfile = freshProfiles.find(p => p.id === profile.id) || profile;
+    const validPin = latestProfile.pin || '19111994';
     if (enteredPin.trim() !== validPin) {
       alert('Hatalı şifre! Profil değiştirilemedi.');
       return;
     }
-    setActiveAdmin(profile);
-    await api.setActiveAdmin(profile.id);
+    setActiveAdmin(latestProfile);
+    await api.setActiveAdmin(latestProfile.id);
     setShowSwitchProfileModal(false);
   };
 

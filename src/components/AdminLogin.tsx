@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Lock, Unlock, Eye, EyeOff, CheckCircle2, AlertCircle, Sparkles, UserCheck, KeyRound } from 'lucide-react';
+import { ShieldCheck, Lock, Unlock, Eye, EyeOff, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
 import { AdminProfile } from '../types';
+import { api } from '../lib/api';
 import { ChangePasswordModal } from './ChangePasswordModal';
 
 interface AdminLoginProps {
@@ -34,34 +35,40 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
     setError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProfile) return;
 
     setIsSubmitting(true);
     setError(null);
 
-    // Verify PIN: strictly matches individual profile PIN
-    const validPin = selectedProfile.pin || '1911';
-    if (pin.trim() !== validPin) {
-      setTimeout(() => {
+    try {
+      const freshProfiles = await api.getAdminProfiles();
+      setLocalProfiles(freshProfiles);
+      if (onProfilesUpdate) onProfilesUpdate(freshProfiles);
+
+      const latestProfile = freshProfiles.find(p => p.id === selectedProfile.id) || selectedProfile;
+      const validPin = latestProfile.pin || '19111994';
+
+      if (pin.trim() !== validPin) {
         setError('Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
         setIsSubmitting(false);
-      }, 300);
-      return;
-    }
+        return;
+      }
 
-    setTimeout(() => {
+      setIsSubmitting(false);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      onLogin(latestProfile);
+    } catch {
+      const validPin = selectedProfile.pin || '19111994';
+      if (pin.trim() !== validPin) {
+        setError('Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
+        setIsSubmitting(false);
+        return;
+      }
       setIsSubmitting(false);
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       onLogin(selectedProfile);
-    }, 200);
-  };
-
-  const handleQuickFillPin = () => {
-    if (!selectedProfile?.pin || selectedProfile.pin === '1911') {
-      setPin('1911');
-      setError(null);
     }
   };
 
@@ -210,25 +217,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
                 </div>
               </div>
 
-              {/* Helper Links: Default PIN & Change Password */}
-              <div className="flex items-center justify-between text-xs px-1 text-[#8193b2]">
-                <div className="flex items-center gap-1.5">
-                  {(!selectedProfile?.pin || selectedProfile.pin === '1911') ? (
-                    <>
-                      <span>Başlangıç Şifresi: <strong className="text-white font-mono">1911</strong></span>
-                      <button
-                        type="button"
-                        onClick={handleQuickFillPin}
-                        className="text-[#8193b2] hover:text-white underline font-medium cursor-pointer transition-colors ml-1"
-                      >
-                        Doldur
-                      </button>
-                    </>
-                  ) : (
-                    <span className="text-[#a9b9d3] text-[11px] italic">Kişisel şifre tanımlı</span>
-                  )}
-                </div>
-
+              {/* Helper Link: Change Password */}
+              <div className="flex items-center justify-end text-xs px-1 text-[#8193b2]">
                 <button
                   type="button"
                   onClick={() => setShowChangePasswordModal(true)}

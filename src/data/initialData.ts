@@ -10,7 +10,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '24084005',
     phone: '+90 532 111 22 33',
     avatar_color: 'from-[#4b253b] via-[#301322] to-[#657796]',
-    pin: '1911'
+    pin: '19111994'
   },
   {
     id: 'admin-by1',
@@ -21,7 +21,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '21065054',
     phone: '+90 533 222 33 44',
     avatar_color: 'from-[#657796] via-[#4e3b52] to-[#301322]',
-    pin: '1911'
+    pin: '19111994'
   },
   {
     id: 'admin-by2',
@@ -32,7 +32,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '23084041',
     phone: '+90 535 333 44 55',
     avatar_color: 'from-[#584964] via-[#4b253b] to-[#8193b2]',
-    pin: '1911'
+    pin: '19111994'
   },
   {
     id: 'admin-sayman',
@@ -43,7 +43,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '23084006',
     phone: '+90 536 444 55 66',
     avatar_color: 'from-[#301322] via-[#421d31] to-[#5b657e]',
-    pin: '1911'
+    pin: '19111994'
   },
   {
     id: 'admin-sekreter',
@@ -54,7 +54,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '23084023',
     phone: '+90 538 666 77 88',
     avatar_color: 'from-[#421d31] via-[#584964] to-[#657796]',
-    pin: '1911'
+    pin: '19111994'
   },
   {
     id: 'admin-sosyal-medya',
@@ -65,7 +65,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '24084024',
     phone: '+90 539 777 88 99',
     avatar_color: 'from-[#6e2a4f] via-[#541e3d] to-[#7d8fa9]',
-    pin: '1911'
+    pin: '19111994'
   },
   {
     id: 'admin-gezi',
@@ -76,7 +76,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '24084602',
     phone: '+90 530 888 99 00',
     avatar_color: 'from-[#38263a] via-[#4b253b] to-[#657796]',
-    pin: '1911'
+    pin: '19111994'
   },
   {
     id: 'admin-sponsorluk',
@@ -87,7 +87,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '24084025',
     phone: '+90 531 999 00 11',
     avatar_color: 'from-[#4e3b52] via-[#301322] to-[#8193b2]',
-    pin: '1911'
+    pin: '19111994'
   }
 ];
 

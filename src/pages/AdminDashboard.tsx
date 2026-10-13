@@ -1981,7 +1981,7 @@ export const AdminDashboard: React.FC = () => {
 
                         <td className="p-3.5">
                           <span className="text-[11px] text-[#dce4ef] block">
-                            {res.process_type === 'film_scan' ? '🖥️ Epson V600 Tarayıcı' : res.chemical_source === 'club' ? '🧪 Kulüp Kimyasalları' : '🧴 Kendi Kimyası'}
+                            {res.process_type === 'film_scan' ? '🖥️ Negatif Film Tarayıcı' : res.chemical_source === 'club' ? '🧪 Kulüp Kimyasalları' : '🧴 Kendi Kimyası'}
                           </span>
                           {res.needs_assistance ? (
                             <span className="text-[10px] text-[#dce4ef] font-bold bg-[#301322] px-1.5 py-0.5 rounded border border-[#657796]/30 inline-block mt-1">

@@ -440,7 +440,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           </h1>
 
           <p className="text-sm sm:text-base text-[#dce4ef] leading-relaxed">
-            Kulüpler Vadisi Davutpaşa Kampüsü'ndeki karanlık odamızda siyah-beyaz film banyonuzu yapabilir, Epson V600 ile filmlerinizi tarayabilir veya agrandisör ile kağıda fotoğraf baskısı alabilirsiniz.
+            Kulüpler Vadisi Davutpaşa Kampüsü'ndeki karanlık odamızda siyah-beyaz film banyonuzu yapabilir, negatif tarayıcı ile filmlerinizi tarayabilir veya agrandisör ile kağıda fotoğraf baskısı alabilirsiniz.
           </p>
 
           {/* Highlights */}
@@ -1012,7 +1012,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                 >
                   <div>
                     <strong className="text-xs block text-white font-semibold">Film Tarama</strong>
-                    <span className="text-[11px] text-[#8193b2] block mt-0.5">Epson Perfection V600 negatif tarayıcı</span>
+                    <span className="text-[11px] text-[#8193b2] block mt-0.5">Negatif film tarayıcı</span>
                   </div>
                   {processType === 'film_scan' && <Check className="w-4 h-4 text-cyan-400" />}
                 </button>
@@ -1202,7 +1202,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                 <div className="p-4 rounded-xl bg-[#1c0f18] border border-cyan-500/30 text-xs text-[#dce4ef] space-y-2">
                   <div className="flex items-center gap-2 text-cyan-400 font-bold">
                     <Scan className="w-4 h-4" />
-                    <span>Epson Perfection V600 Film Tarama İstasyonu</span>
+                    <span>Negatif Film Tarama İstasyonu</span>
                   </div>
                   <p className="text-[11px] leading-relaxed text-[#a9b9d3]">
                     Bu seansta kimyasal kullanılmaz. Banyo edilmiş, kuru ve kesilmiş 35mm veya 120 orta format negatif filmlerinizi yüksek optik çözünürlükle bilgisayara aktarabilirsiniz. Yanınızda USB bellek getirmeniz önerilir.
@@ -1595,7 +1595,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           </div>
 
           <div className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1.5">
-            <strong className="text-white text-sm block font-club">Epson V600 Film Tarayıcı</strong>
+            <strong className="text-white text-sm block font-club">Negatif Film Tarayıcı</strong>
             <p className="text-[#a9b9d3]">
               35mm ve 120 orta format negatif tutucular, yüksek optik çözünürlüklü dijital film tarama ve arşivleme istasyonu.
             </p>

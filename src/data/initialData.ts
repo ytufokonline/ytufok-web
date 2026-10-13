@@ -1935,10 +1935,10 @@ export const INITIAL_MEMBERS: Member[] = [
     "department": "Yıldız Teknik Üniversitesi",
     "membership_year": 2025,
     "status": "active",
-    "member_type": "normal",
+    "member_type": "active",
     "penalty_count": 0,
     "role": "member",
-    "notes": "YTÜFOK Kulüp Üyesi (Normal Üye)"
+    "notes": "YTÜFOK Aktif Üyesi (2025-2026 Dönemi)"
   },
   {
     "id": "m-norm-24",
@@ -4847,10 +4847,10 @@ export const INITIAL_MEMBERS: Member[] = [
     "department": "Yıldız Teknik Üniversitesi",
     "membership_year": 2025,
     "status": "active",
-    "member_type": "normal",
+    "member_type": "active",
     "penalty_count": 0,
     "role": "member",
-    "notes": "YTÜFOK Kulüp Üyesi (Normal Üye)"
+    "notes": "YTÜFOK Aktif Üyesi (2025-2026 Dönemi)"
   },
   {
     "id": "m-norm-233",
@@ -9957,10 +9957,10 @@ export const INITIAL_MEMBERS: Member[] = [
     "department": "Yıldız Teknik Üniversitesi",
     "membership_year": 2025,
     "status": "active",
-    "member_type": "normal",
+    "member_type": "active",
     "penalty_count": 0,
     "role": "member",
-    "notes": "YTÜFOK Kulüp Üyesi (Normal Üye)"
+    "notes": "YTÜFOK Aktif Üyesi (2025-2026 Dönemi)"
   },
   {
     "id": "m-norm-598",

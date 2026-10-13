@@ -7,7 +7,7 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <img src="/logo.png" alt="YTÜFOK" className="h-8 w-auto object-contain opacity-90" />
-            <span className="text-sm font-semibold text-white font-club tracking-tight">
+            <span className="text-sm font-semibold text-white font-satoshi tracking-tight">
               YTÜFOK <span className="text-[#8193b2] font-normal">Ekipman Havuzu</span>
             </span>
           </div>

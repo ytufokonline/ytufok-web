@@ -46,8 +46,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, pending
               alt="YTÜFOK" 
               className="h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity"
             />
-            <span className="text-sm font-semibold text-white tracking-tight font-club">
-              YTÜFOK
+            <span className="text-sm font-semibold text-white tracking-tight font-satoshi">
+              Rezervasyon Sitesi
             </span>
           </a>
 

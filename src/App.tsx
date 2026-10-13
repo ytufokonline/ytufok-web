@@ -7,6 +7,8 @@ import { ReservationPage } from './pages/ReservationPage';
 import { DarkroomPage } from './pages/DarkroomPage';
 import { ReservationStatusPage } from './pages/ReservationStatusPage';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { SwitchProfileModal } from './components/SwitchProfileModal';
+import { AdminProfile } from './types';
 import { api } from './lib/api';
 import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
 
@@ -16,10 +18,47 @@ export function App() {
   const [preselectedEquipmentId, setPreselectedEquipmentId] = useState<string | undefined>(initialRoute.equipmentId);
   const [pendingCount, setPendingCount] = useState<number>(0);
 
+  // Global Auth State for Active Admin Profile
+  const [activeAdmin, setActiveAdmin] = useState<AdminProfile | null>(null);
+  const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>([]);
+  const [showSwitchProfileModal, setShowSwitchProfileModal] = useState<boolean>(false);
+
   // Synchronize document title with active tab
   useEffect(() => {
     document.title = TAB_TITLES[activeTab] || 'YTÜFOK | Fotoğraf Kulübü Rezervasyon & Ekipman Sistemi';
   }, [activeTab]);
+
+  // Initial Auth Check & Global Auth State Listener
+  useEffect(() => {
+    let isMounted = true;
+
+    // 1. Initial check
+    api.getActiveAdmin().then((admin) => {
+      if (isMounted) setActiveAdmin(admin);
+    });
+
+    api.getAdminProfiles().then((profiles) => {
+      if (isMounted) setAdminProfiles(profiles);
+    });
+
+    // 2. Real-time auth state subscription
+    const unsubscribe = api.onAuthChange((admin) => {
+      if (isMounted) {
+        setActiveAdmin(admin);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
+
+  // Global Sign Out Handler
+  const handleSignOut = async () => {
+    await api.signOut();
+    setActiveAdmin(null);
+  };
 
   // Navigate helper that pushes/replaces History state and updates tab
   const navigate = useCallback((tab: TabType, options?: { equipmentId?: string; searchCode?: string; replace?: boolean }) => {
@@ -66,7 +105,7 @@ export function App() {
     }
   }, []);
 
-  // Poll pending count for the admin badge (lightweight query without joining 600 members)
+  // Poll pending count for the admin badge
   useEffect(() => {
     const fetchPending = async () => {
       try {
@@ -96,11 +135,14 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#12080f] text-[#f4f5f8] selection:bg-[#657796] selection:text-white font-sans">
-      {/* Main Navigation Bar */}
+      {/* Main Navigation Bar with Active Profile & Sign Out */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={handleNavigate}
         pendingCount={pendingCount}
+        activeAdmin={activeAdmin}
+        onSignOut={handleSignOut}
+        onSwitchProfile={() => setShowSwitchProfileModal(true)}
       />
 
       {/* Main Dynamic View */}
@@ -142,6 +184,18 @@ export function App() {
           <AdminDashboard />
         )}
       </main>
+
+      {/* Profile Switcher Modal Accessible Across All Pages */}
+      <SwitchProfileModal
+        isOpen={showSwitchProfileModal}
+        onClose={() => setShowSwitchProfileModal(false)}
+        adminProfiles={adminProfiles}
+        activeAdmin={activeAdmin}
+        onSuccess={(newProfile) => {
+          setActiveAdmin(newProfile);
+        }}
+        onSignOut={handleSignOut}
+      />
 
       {/* Footer */}
       <Footer />

@@ -19,6 +19,7 @@ import {
 } from '../lib/supabase';
 import { StatusBadge } from '../components/StatusBadge';
 import { AdminLogin } from '../components/AdminLogin';
+import { SwitchProfileModal } from '../components/SwitchProfileModal';
 import { ChangePasswordModal } from '../components/ChangePasswordModal';
 import { checkTripBookingEligibility, formatDateTr, formatDateRangeTr, getReservationOpenDate, getLocalDateString } from '../utils/tripUtils';
 
@@ -34,6 +35,14 @@ export const AdminDashboard: React.FC = () => {
   const [activeAdmin, setActiveAdmin] = useState<AdminProfile | null>(initialSync.activeAdmin);
   const [showSwitchProfileModal, setShowSwitchProfileModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+
+  // Synchronize active admin with global auth state changes
+  useEffect(() => {
+    const unsub = api.onAuthChange((admin) => {
+      setActiveAdmin(admin);
+    });
+    return unsub;
+  }, []);
 
   // Darkroom State (Reservations + Admin-Managed Slots)
   const [darkroomReservations, setDarkroomReservations] = useState<DarkroomReservation[]>(initialSync.darkroomReservations);
@@ -239,29 +248,9 @@ export const AdminDashboard: React.FC = () => {
 
   const handleLogout = async () => {
     if (window.confirm(`${activeAdmin?.full_name || 'Yönetici'} oturumu kapatılsın mı? Giriş ekranına döneceksiniz.`)) {
-      await api.setActiveAdmin(null);
+      await api.signOut();
       setActiveAdmin(null);
     }
-  };
-
-  const handleSelectAdminProfile = async (profile: AdminProfile) => {
-    if (profile.id === activeAdmin?.id) {
-      setShowSwitchProfileModal(false);
-      return;
-    }
-    const enteredPin = window.prompt(`${profile.full_name} (${profile.short_title}) hesabına geçmek için şifrenizi giriniz:`);
-    if (enteredPin === null) return;
-    const freshProfiles = await api.getAdminProfiles();
-    setAdminProfiles(freshProfiles);
-    const latestProfile = freshProfiles.find(p => p.id === profile.id) || profile;
-    const validPin = latestProfile.pin || '19111994';
-    if (enteredPin.trim() !== validPin) {
-      alert('Hatalı şifre! Profil değiştirilemedi.');
-      return;
-    }
-    setActiveAdmin(latestProfile);
-    await api.setActiveAdmin(latestProfile.id);
-    setShowSwitchProfileModal(false);
   };
 
   // Darkroom Actions
@@ -4296,104 +4285,16 @@ export const AdminDashboard: React.FC = () => {
       })()}
 
       {/* Switch Admin Profile Modal */}
-      {showSwitchProfileModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#1c0f18] border border-[#657796]/30 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl space-y-0">
-            {/* Modal Header */}
-            <div className="p-6 border-b border-[#657796]/20 bg-[#12080f]/80 flex items-start justify-between">
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#301322] border border-[#657796]/40 text-[#dce4ef] text-[10px] font-bold uppercase tracking-wider mb-2">
-                  <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
-                  <span>Yönetim Kurulu Hesapları</span>
-                </div>
-                <h3 className="text-lg font-bold text-white font-club">Aktif Yönetici Profilini Seçin</h3>
-                <p className="text-xs text-[#a9b9d3] mt-1">
-                  8 yönetim kurulu hesabının tümü tam yetkilidir. Yapacağınız onay, teslim ve iade kabul işlemleri seçtiğiniz yöneticinin adıyla mühürlenecektir.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowSwitchProfileModal(false)}
-                className="p-1.5 rounded-xl hover:bg-[#301322] text-[#8193b2] hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Profile List */}
-            <div className="p-6 space-y-3 max-h-[60vh] overflow-y-auto">
-              {adminProfiles.map((profile) => {
-                const isCurrent = activeAdmin?.id === profile.id;
-                return (
-                  <button
-                    key={profile.id}
-                    onClick={() => handleSelectAdminProfile(profile)}
-                    className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer group ${
-                      isCurrent
-                        ? 'bg-[#301322] border-[#657796] shadow-xl shadow-[#301322]/80 ring-1 ring-[#657796]/50'
-                        : 'bg-[#12080f] border-[#657796]/20 hover:border-[#657796]/60 hover:bg-[#1a0e17]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${profile.avatar_color} flex items-center justify-center text-white text-sm font-bold font-club shadow-md shrink-0 border border-white/10`}>
-                        {profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                      </div>
-                      <div className="min-w-0">
-                        <strong className="text-white text-sm font-semibold group-hover:text-[#dce4ef] transition-colors block">
-                          {profile.full_name}
-                        </strong>
-                        <div className="text-[11px] text-[#a9b9d3] mt-0.5">
-                          {profile.title}
-                        </div>
-                        <div className="text-[10px] font-mono text-[#8193b2] mt-0.5">
-                          <span className="text-emerald-400 font-semibold">Tam Yetki</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="shrink-0 flex items-center">
-                      {isCurrent ? (
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#657796]/20 border border-[#657796]/40 text-[#dce4ef] text-xs font-bold">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#8193b2]" />
-                          <span>Aktif</span>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-[#8193b2] group-hover:text-white transition-colors font-medium">
-                          Geçiş Yap →
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-[#657796]/20 bg-[#12080f] flex flex-wrap items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[#8193b2]">
-                  Aktif Profil: <strong className="text-white">{activeAdmin?.full_name} ({activeAdmin?.short_title})</strong>
-                </span>
-                <button
-                  onClick={() => {
-                    setShowSwitchProfileModal(false);
-                    setShowChangePasswordModal(true);
-                  }}
-                  className="inline-flex items-center gap-1 text-[11px] text-[#dce4ef] hover:text-white underline font-semibold ml-2 cursor-pointer"
-                >
-                  <KeyRound className="w-3.5 h-3.5 text-[#8193b2]" />
-                  <span>Şifremi Değiştir</span>
-                </button>
-              </div>
-              <button
-                onClick={() => setShowSwitchProfileModal(false)}
-                className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] hover:text-white font-semibold transition-colors cursor-pointer"
-              >
-                Kapat
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SwitchProfileModal
+        isOpen={showSwitchProfileModal}
+        onClose={() => setShowSwitchProfileModal(false)}
+        adminProfiles={adminProfiles}
+        activeAdmin={activeAdmin}
+        onSuccess={(newProfile) => {
+          setActiveAdmin(newProfile);
+        }}
+        onSignOut={handleLogout}
+      />
 
       {/* Add / Edit Trip Modal */}
       {showAddTripModal && (

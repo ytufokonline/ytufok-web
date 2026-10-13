@@ -27,15 +27,20 @@ import {
 } from '../data/initialData';
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
-// Aktif yönetici oturumu (Yalnızca tarayıcı sekmesi bazlı oturum kimliği)
+// Aktif yönetici oturumu
 let activeSessionAdminId: string | null = null;
 try {
-  if (typeof window !== 'undefined' && window.sessionStorage) {
-    activeSessionAdminId = window.sessionStorage.getItem('ytufok_session_admin_id');
+  if (typeof window !== 'undefined') {
+    activeSessionAdminId =
+      window.sessionStorage.getItem('ytufok_session_admin_id') ||
+      window.localStorage.getItem('ytufok_session_admin_id');
   }
 } catch {
   // ignore
 }
+
+type AuthListener = (admin: AdminProfile | null) => void;
+const authListeners = new Set<AuthListener>();
 
 // Üye unvan ve denetim kurulu normalizasyonu
 function normalizeMemberRecord(m: Member): Member {
@@ -108,7 +113,9 @@ const defaultInitialState = {
   activeTrips: INITIAL_TRIPS.filter((t) => t.is_active),
   reservations: INITIAL_RESERVATIONS,
   adminProfiles: INITIAL_ADMIN_PROFILES,
-  activeAdmin: INITIAL_ADMIN_PROFILES[0] || null,
+  activeAdmin: (activeSessionAdminId
+    ? INITIAL_ADMIN_PROFILES.find((p) => p.id === activeSessionAdminId) || null
+    : null) as AdminProfile | null,
   darkroomSlots: DARKROOM_SLOTS,
   darkroomReservations: INITIAL_DARKROOM_RESERVATIONS,
   announcements: INITIAL_ANNOUNCEMENTS,
@@ -118,7 +125,12 @@ const defaultInitialState = {
 export const api = {
   // Anında (0ms) senkron başlangıç verisi (İlk React render için)
   getInitialSyncState() {
-    return defaultInitialState;
+    return {
+      ...defaultInitialState,
+      activeAdmin: (activeSessionAdminId
+        ? INITIAL_ADMIN_PROFILES.find((p) => p.id === activeSessionAdminId) || null
+        : null) as AdminProfile | null
+    };
   },
 
   // ==========================================
@@ -815,20 +827,78 @@ export const api = {
   },
 
   async getActiveAdmin(): Promise<AdminProfile | null> {
+    if (!activeSessionAdminId) return null;
     const profiles = await this.getAdminProfiles();
-    if (!activeSessionAdminId) return profiles[0] || null;
-    return profiles.find((p) => p.id === activeSessionAdminId) || profiles[0] || null;
+    return profiles.find((p) => p.id === activeSessionAdminId) || null;
   },
 
   async setActiveAdmin(adminId: string | null): Promise<void> {
+    if (!adminId) {
+      await this.signOut();
+      return;
+    }
     activeSessionAdminId = adminId;
     try {
-      if (typeof window !== 'undefined' && window.sessionStorage) {
-        if (adminId) window.sessionStorage.setItem('ytufok_session_admin_id', adminId);
-        else window.sessionStorage.removeItem('ytufok_session_admin_id');
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem('ytufok_session_admin_id', adminId);
+        window.localStorage.setItem('ytufok_session_admin_id', adminId);
       }
     } catch {
       // ignore
+    }
+
+    const profiles = await this.getAdminProfiles();
+    const resolved = profiles.find((p) => p.id === adminId) || null;
+    this.notifyAuthChange(resolved);
+  },
+
+  async signOut(): Promise<void> {
+    try {
+      if (isSupabaseConfigured()) {
+        await supabase.auth.signOut();
+      }
+    } catch (err) {
+      console.warn('Supabase auth.signOut error:', err);
+    }
+
+    activeSessionAdminId = null;
+    try {
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem('ytufok_session_admin_id');
+        window.localStorage.removeItem('ytufok_session_admin_id');
+
+        // Clean Supabase Auth storage tokens without deleting Supabase project URL / key credentials
+        const keysToRemove: string[] = [];
+        for (let i = 0; i < window.localStorage.length; i++) {
+          const k = window.localStorage.key(i);
+          if (k && (k.startsWith('sb-') || k.includes('auth-token') || k.includes('supabase.auth.token'))) {
+            keysToRemove.push(k);
+          }
+        }
+        keysToRemove.forEach((k) => window.localStorage.removeItem(k));
+      }
+    } catch (e) {
+      console.warn('LocalStorage cleanup error:', e);
+    }
+
+    this.notifyAuthChange(null);
+  },
+
+  onAuthChange(listener: (admin: AdminProfile | null) => void): () => void {
+    authListeners.add(listener);
+    return () => authListeners.delete(listener);
+  },
+
+  notifyAuthChange(admin: AdminProfile | null): void {
+    authListeners.forEach((listener) => {
+      try {
+        listener(admin);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('ytufok_auth_change', { detail: admin }));
     }
   },
 
@@ -1327,3 +1397,28 @@ export const api = {
     }
   }
 };
+
+// Global Supabase Auth oturum durumunu anlık takip eden mekanizma
+if (typeof window !== 'undefined') {
+  try {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        if (activeSessionAdminId !== null) {
+          await api.signOut();
+        }
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        const userEmail = session.user.email || '';
+        const userPrefix = userEmail.split('@')[0];
+        const profiles = await api.getAdminProfiles();
+        const matched = profiles.find(
+          (p) => p.student_number === userPrefix || p.id === session.user.id
+        );
+        if (matched && matched.id !== activeSessionAdminId) {
+          await api.setActiveAdmin(matched.id);
+        }
+      }
+    });
+  } catch {
+    // Supabase çevrimdışı veya yapılandırılmamışsa yutulur
+  }
+}

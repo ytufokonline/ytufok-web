@@ -11392,7 +11392,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       '58mm UV Koruma Filtresi',
       'Mikrofiber Lens Bezi'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Canon_EF_50mm_f1.4_Front_%26_Rear.jpg',
+    image_url: '/equipment/canon-ef-50mm.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11419,7 +11419,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       '58mm İnce Çerçeve Koruyucu Filtre',
       'Yumuşak Taşıma Kılıfı'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/8/81/Canon_85mm_comparison_%28front%29.jpg',
+    image_url: '/equipment/canon-ef-85mm.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11430,7 +11430,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
     brand: 'Canon',
     model: 'EF 100mm f/2.8 Macro USM',
     serial_number: 'YTU-LENS-100-MACRO',
-    description: '1:1 gerçek boyutlu büyütme oranına sahip efsanevi profesyonel makro lensi. Doğa, ürün, böcek, çiçek ve doku detay çekimlerinin yanı sıra 100mm odak uzaklığı ve f/2.8 diyaframıyla mükemmel bir portre lensidir. Dahili odaklama (Internal Focus) sayesinde netleme yaparken lensin boyu uzamaz.',
+    description: '1:1 gerçek boyutlu büyütme oranına sahip efsanevi profesyonel makro lensi. Doğa, ürün, böcek, çiçek ve doku detay çekimlerinin yanı sonra 100mm odak uzaklığı ve f/2.8 diyaframıyla mükemmel bir portre lensidir. Dahili odaklama (Internal Focus) sayesinde netleme yaparken lensin boyu uzamaz.',
     specs: {
       'Büyütme Oranı': '1:1 (Gerçek Boyut / Life-Size Macro)',
       'Diyafram': 'f/2.8 - f/32 (8 Diyafram Bıçağı)',
@@ -11447,7 +11447,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       '58mm Slim UV Koruma Filtresi',
       'Dolgulu Koruyucu Taşıma Kılıfı'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/c0/Canon_EF_100mm_f2.8_Macro_USM.jpg',
+    image_url: '/equipment/canon-ef-100mm-macro.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11473,7 +11473,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       '67mm UV Koruyucu Filtre',
       'Canon Orijinal Sert Dolgulu Çanta'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Canon_EF_70-200mm_f2.8L_IS_II_USM_with_lens_hood%2C_2013_November.jpg',
+    image_url: '/equipment/canon-ef-70-200mm.webp',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },

@@ -28,7 +28,7 @@ import {
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
 const UNIFIED_NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
-const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v8';
+const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v9';
 
 type CloudCollectionKey =
   | 'admin_profiles'
@@ -638,7 +638,11 @@ export const api = {
           .order('name', { ascending: true });
 
         if (!error && data && data.length > 0) {
-          return data as Equipment[];
+          const baseImgMap = new Map(INITIAL_EQUIPMENT.map((e) => [e.id, e.image_url]));
+          return (data as Equipment[]).map((e) => ({
+            ...e,
+            image_url: baseImgMap.get(e.id) || e.image_url
+          }));
         }
       } catch (err) {
         console.warn('Supabase getEquipment error:', err);

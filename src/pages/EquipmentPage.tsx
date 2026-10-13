@@ -10,9 +10,10 @@ interface EquipmentPageProps {
 }
 
 export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentToReserve, onNavigate }) => {
-  const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
-  const [allReservations, setAllReservations] = useState<Reservation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
+  const [equipmentList, setEquipmentList] = useState<Equipment[]>(initialSync.equipmentList);
+  const [allReservations, setAllReservations] = useState<Reservation[]>(initialSync.reservations);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -20,28 +21,24 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
   const [modalTab, setModalTab] = useState<'details' | 'history'>('details');
 
   useEffect(() => {
-    const fetchData = async (silent = false) => {
-      if (!silent) setLoading(true);
+    const fetchData = async () => {
       try {
-        const [equipList, resList] = await Promise.all([
-          api.getEquipment(),
-          api.getReservations()
-        ]);
-        setEquipmentList(equipList);
-        setAllReservations(resList);
+        const bundle = await api.getDashboardBundle();
+        setEquipmentList(bundle.equipmentList);
+        setAllReservations(bundle.reservations);
       } catch (e) {
         console.error('Ekipman yükleme hatası:', e);
       } finally {
-        if (!silent) setLoading(false);
+        setLoading(false);
       }
     };
-    fetchData(false);
+    fetchData();
     const interval = window.setInterval(() => {
       if (document.visibilityState === 'visible') {
-        fetchData(true);
+        fetchData();
       }
-    }, 10000);
-    const handleFocus = () => fetchData(true);
+    }, 12000);
+    const handleFocus = () => fetchData();
     window.addEventListener('focus', handleFocus);
     return () => {
       window.clearInterval(interval);

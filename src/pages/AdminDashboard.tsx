@@ -17,18 +17,19 @@ import { ChangePasswordModal } from '../components/ChangePasswordModal';
 import { checkTripBookingEligibility, formatDateTr, formatDateRangeTr, getReservationOpenDate, getLocalDateString } from '../utils/tripUtils';
 
 export const AdminDashboard: React.FC = () => {
+  const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
   const [activeTab, setActiveTab] = useState<'reservations' | 'tracking' | 'equipment' | 'members' | 'history' | 'darkroom' | 'supabase' | 'trips'>('reservations');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Board Member Accounts & Active Profile
-  const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>([]);
-  const [activeAdmin, setActiveAdmin] = useState<AdminProfile | null>(null);
+  const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>(initialSync.adminProfiles);
+  const [activeAdmin, setActiveAdmin] = useState<AdminProfile | null>(initialSync.activeAdmin);
   const [showSwitchProfileModal, setShowSwitchProfileModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   // Darkroom State (Reservations + Admin-Managed Slots)
-  const [darkroomReservations, setDarkroomReservations] = useState<DarkroomReservation[]>([]);
-  const [darkroomSlots, setDarkroomSlots] = useState<DarkroomSlot[]>([]);
+  const [darkroomReservations, setDarkroomReservations] = useState<DarkroomReservation[]>(initialSync.darkroomReservations);
+  const [darkroomSlots, setDarkroomSlots] = useState<DarkroomSlot[]>(initialSync.darkroomSlots);
   const [darkroomSubTab, setDarkroomSubTab] = useState<'reservations' | 'slots'>('reservations');
   const [darkroomFilter, setDarkroomFilter] = useState<string>('all');
   const [darkroomSearchQuery, setDarkroomSearchQuery] = useState('');
@@ -43,9 +44,9 @@ export const AdminDashboard: React.FC = () => {
   const [newSlotNotes, setNewSlotNotes] = useState('');
 
   // Data states
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
-  const [members, setMembers] = useState<Member[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>(initialSync.reservations);
+  const [equipmentList, setEquipmentList] = useState<Equipment[]>(initialSync.equipmentList);
+  const [members, setMembers] = useState<Member[]>(initialSync.members);
 
   // Selected Equipment / Member for History Modal
   const [selectedEquipmentForHistory, setSelectedEquipmentForHistory] = useState<Equipment | null>(null);
@@ -89,7 +90,7 @@ export const AdminDashboard: React.FC = () => {
   const [memberTypeFilter, setMemberTypeFilter] = useState<'all' | 'active' | 'normal' | 'honorary'>('all');
 
   // Trips State
-  const [trips, setTrips] = useState<Trip[]>([]);
+  const [trips, setTrips] = useState<Trip[]>(initialSync.trips);
   const [tripSearchQuery, setTripSearchQuery] = useState('');
   const [tripFilter, setTripFilter] = useState<'all' | 'active' | 'passive'>('all');
   const [showAddTripModal, setShowAddTripModal] = useState(false);
@@ -101,42 +102,31 @@ export const AdminDashboard: React.FC = () => {
   const [newTripDescription, setNewTripDescription] = useState('');
   const [newTripIsActive, setNewTripIsActive] = useState(true);
 
-  const loadAllData = async (silent?: boolean | React.MouseEvent) => {
-    const isSilent = silent === true;
-    if (!isSilent) setLoading(true);
+  const loadAllData = async (_silent?: boolean | React.MouseEvent) => {
     try {
-      const [resList, equipList, memList, profilesList, currAdmin, koList, slotsList, tripsList] = await Promise.all([
-        api.getReservations(),
-        api.getEquipment(),
-        api.getMembers(),
-        api.getAdminProfiles(),
-        api.getActiveAdmin(),
-        api.getDarkroomReservations(),
-        api.getDarkroomSlots(),
-        api.getTrips()
-      ]);
-      setReservations(resList);
-      setEquipmentList(equipList);
-      setMembers(memList);
-      setAdminProfiles(profilesList);
-      setActiveAdmin(currAdmin);
-      setDarkroomReservations(koList);
-      setDarkroomSlots(slotsList);
-      setTrips(tripsList);
+      const bundle = await api.getDashboardBundle(true);
+      setReservations(bundle.reservations);
+      setEquipmentList(bundle.equipmentList);
+      setMembers(bundle.members);
+      setAdminProfiles(bundle.adminProfiles);
+      setActiveAdmin(bundle.activeAdmin);
+      setDarkroomReservations(bundle.darkroomReservations);
+      setDarkroomSlots(bundle.darkroomSlots);
+      setTrips(bundle.trips);
     } catch (e) {
       console.error('Veri yükleme hatası:', e);
     } finally {
-      if (!isSilent) setLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadAllData(false);
+    loadAllData(true);
     const interval = window.setInterval(() => {
       if (document.visibilityState === 'visible') {
         loadAllData(true);
       }
-    }, 10000);
+    }, 12000);
     const handleFocus = () => loadAllData(true);
     window.addEventListener('focus', handleFocus);
     return () => {

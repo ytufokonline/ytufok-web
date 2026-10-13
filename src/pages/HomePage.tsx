@@ -11,31 +11,31 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmentToReserve }) => {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [activeTrips, setActiveTrips] = useState<Trip[]>([]);
-  const [gallery, setGallery] = useState<GalleryItem[]>([]);
-  const [featuredEquipment, setFeaturedEquipment] = useState<Equipment[]>([]);
+  const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
+  const [announcements, setAnnouncements] = useState<Announcement[]>(initialSync.announcements);
+  const [activeTrips, setActiveTrips] = useState<Trip[]>(initialSync.activeTrips);
+  const [gallery, setGallery] = useState<GalleryItem[]>(initialSync.gallery);
+  const [featuredEquipment, setFeaturedEquipment] = useState<Equipment[]>(initialSync.equipmentList.slice(0, 3));
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
-      const [annList, galList, equipList, tripsList] = await Promise.all([
-        api.getAnnouncements(),
-        api.getGallery(),
-        api.getEquipment(),
-        api.getActiveTrips()
-      ]);
-      setAnnouncements(annList);
-      setGallery(galList);
-      setFeaturedEquipment(equipList.slice(0, 3));
-      setActiveTrips(tripsList);
+      try {
+        const bundle = await api.getDashboardBundle();
+        setAnnouncements(bundle.announcements);
+        setGallery(bundle.gallery);
+        setFeaturedEquipment(bundle.equipmentList.slice(0, 3));
+        setActiveTrips(bundle.activeTrips);
+      } catch {
+        // ignore
+      }
     };
     loadData();
     const interval = window.setInterval(() => {
       if (document.visibilityState === 'visible') {
         loadData();
       }
-    }, 10000);
+    }, 12000);
     window.addEventListener('focus', loadData);
     return () => {
       window.clearInterval(interval);

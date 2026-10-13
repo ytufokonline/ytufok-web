@@ -27,12 +27,6 @@ import {
 } from '../data/initialData';
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
-// ==========================================
-// TEKİL BİRLEŞİK BULUT VERİTABANI (UNIFIED CLOUD DB) & SUPABASE
-// Tüm koleksiyonlar (geziler, duyurular, şifreler, rezervasyonlar,
-// karanlık oda, ekipman durumları, üye işlemleri) tek bir birleşik
-// bulut isteğiyle (0 rate-limit) ve/veya Supabase üzerinden senkronize edilir.
-// ==========================================
 const UNIFIED_NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
 const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v6';
 
@@ -93,7 +87,7 @@ try {
 let memoryState: UnifiedStateEnvelope | null = null;
 let lastFetchTimestamp = 0;
 let inFlightUnifiedFetch: Promise<UnifiedStateEnvelope> | null = null;
-const UNIFIED_CACHE_TTL_MS = 1500;
+const UNIFIED_CACHE_TTL_MS = 8000;
 
 function loadSnapshot(): UnifiedStateEnvelope {
   if (memoryState) return memoryState;
@@ -111,7 +105,9 @@ function loadSnapshot(): UnifiedStateEnvelope {
   } catch {
     // ignore
   }
-  return { updatedAt: 0, collections: {} };
+  const initial: UnifiedStateEnvelope = { updatedAt: 0, collections: {} };
+  memoryState = initial;
+  return initial;
 }
 
 function saveSnapshot(envelope: UnifiedStateEnvelope): void {
@@ -126,15 +122,28 @@ function saveSnapshot(envelope: UnifiedStateEnvelope): void {
   }
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 1800): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchDirectNtfyUnified(): Promise<UnifiedStateEnvelope | null> {
   try {
-    const res = await fetch(`https://ntfy.sh/${UNIFIED_NTFY_TOPIC}/json?poll=1&since=12h`, {
-      method: 'GET',
-      cache: 'no-store'
-    });
+    const res = await fetchWithTimeout(
+      `https://ntfy.sh/${UNIFIED_NTFY_TOPIC}/json?poll=1&since=12h`,
+      { method: 'GET', cache: 'no-store' },
+      1800
+    );
     if (!res.ok) return null;
     const text = await res.text();
-    if (!text || !text.trim()) return null;
+    if (!text || !text.trim()) {
+      return { updatedAt: Date.now(), collections: {} };
+    }
 
     const lines = text
       .trim()
@@ -155,7 +164,9 @@ async function fetchDirectNtfyUnified(): Promise<UnifiedStateEnvelope | null> {
           (evt.message.startsWith('YTUFOK_STATE:') || evt.message.startsWith('YTUFOK_PTR:'))
       );
 
-    if (lines.length === 0) return null;
+    if (lines.length === 0) {
+      return { updatedAt: Date.now(), collections: {} };
+    }
     const last = lines[lines.length - 1];
 
     if (last.message.startsWith('YTUFOK_PTR:')) {
@@ -179,45 +190,55 @@ async function fetchDirectNtfyUnified(): Promise<UnifiedStateEnvelope | null> {
 
 async function fetchUnifiedState(forceFresh = false): Promise<UnifiedStateEnvelope> {
   const now = Date.now();
-  if (!forceFresh && memoryState && now - lastFetchTimestamp < UNIFIED_CACHE_TTL_MS) {
+  if (!forceFresh && memoryState && lastFetchTimestamp > 0 && now - lastFetchTimestamp < UNIFIED_CACHE_TTL_MS) {
     return memoryState;
   }
 
-  if (!forceFresh && inFlightUnifiedFetch) {
+  if (inFlightUnifiedFetch) {
     return inFlightUnifiedFetch;
   }
 
   const promise = (async (): Promise<UnifiedStateEnvelope> => {
     const fallback = loadSnapshot();
 
-    // 1. Önce aynı domaindeki Vercel Serverless API (/api/db) üzerinden dene (Rate-limit yok, Bytebin + Ntfy destekli)
+    // 1. Önce aynı domaindeki Vercel Serverless API (/api/db) üzerinden dene
     try {
-      const apiRes = await fetch(`/api/db?_t=${Date.now()}`, {
-        method: 'GET',
-        cache: 'no-store',
-        headers: { Accept: 'application/json' }
-      });
+      const apiRes = await fetchWithTimeout(
+        `/api/db?_t=${Date.now()}`,
+        {
+          method: 'GET',
+          cache: 'no-store',
+          headers: { Accept: 'application/json' }
+        },
+        2000
+      );
       const contentType = apiRes.headers.get('content-type') || '';
       if (apiRes.ok && contentType.includes('application/json')) {
         const data = (await apiRes.json()) as UnifiedStateEnvelope;
-        if (data && data.collections && Object.keys(data.collections).length > 0) {
-          if (!fallback.updatedAt || (data.updatedAt || 0) >= fallback.updatedAt) {
+        if (data && data.collections !== undefined) {
+          const remoteHasKeys = Object.keys(data.collections).length > 0;
+          if (remoteHasKeys && (!fallback.updatedAt || (data.updatedAt || 0) >= fallback.updatedAt)) {
             saveSnapshot(data);
             return data;
           }
+          // Sunucu boş döndüyse bile zaman damgasını güncelle, ikinci kez ntfy'a gitme!
+          lastFetchTimestamp = Date.now();
+          return fallback;
         }
       }
     } catch {
-      // /api/db mevcut değilse (örn. vite dev server) doğrudan bulut kanalına geç
+      // /api/db mevcut değilse (örn. vite local dev) doğrudan bulut kanalına geç
     }
 
-    // 2. Doğrudan tekil birleşik bulut kanalından (1 tek istek) oku
+    // 2. Yalnızca /api/db yanıt vermediyse doğrudan bulut kanalından oku
     const direct = await fetchDirectNtfyUnified();
-    if (direct && direct.collections && Object.keys(direct.collections).length > 0) {
-      if (!fallback.updatedAt || (direct.updatedAt || 0) >= fallback.updatedAt) {
+    if (direct && direct.collections !== undefined) {
+      const remoteHasKeys = Object.keys(direct.collections).length > 0;
+      if (remoteHasKeys && (!fallback.updatedAt || (direct.updatedAt || 0) >= fallback.updatedAt)) {
         saveSnapshot(direct);
         return direct;
       }
+      lastFetchTimestamp = Date.now();
     }
 
     return fallback;
@@ -245,7 +266,7 @@ async function readCloudCollection<T>(
 }
 
 async function writeCloudCollection<T>(key: CloudCollectionKey, items: T): Promise<boolean> {
-  const current = await fetchUnifiedState(true);
+  const current = loadSnapshot();
   const nextEnvelope: UnifiedStateEnvelope = {
     updatedAt: Date.now(),
     collections: {
@@ -258,20 +279,23 @@ async function writeCloudCollection<T>(key: CloudCollectionKey, items: T): Promi
 
   let savedOnServer = false;
 
-  // 1. Vercel Serverless API (/api/db) üzerinden kaydet (Bytebin + Ntfy + Sunucu Belleği)
   try {
-    const apiRes = await fetch('/api/db', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
+    const apiRes = await fetchWithTimeout(
+      '/api/db',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          key,
+          value: items,
+          collections: nextEnvelope.collections
+        })
       },
-      body: JSON.stringify({
-        key,
-        value: items,
-        collections: nextEnvelope.collections
-      })
-    });
+      2500
+    );
     const contentType = apiRes.headers.get('content-type') || '';
     if (apiRes.ok && contentType.includes('application/json')) {
       const json = await apiRes.json();
@@ -283,17 +307,20 @@ async function writeCloudCollection<T>(key: CloudCollectionKey, items: T): Promi
     // ignore
   }
 
-  // 2. Eğer /api/db çalışmadıysa (örn. local dev) doğrudan tekil bulut kanalına yaz
   if (!savedOnServer) {
     try {
       const rawState = JSON.stringify(nextEnvelope);
-      const res = await fetch(`https://ntfy.sh/${UNIFIED_NTFY_TOPIC}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=UTF-8'
+      const res = await fetchWithTimeout(
+        `https://ntfy.sh/${UNIFIED_NTFY_TOPIC}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=UTF-8'
+          },
+          body: `YTUFOK_STATE:${rawState}`
         },
-        body: `YTUFOK_STATE:${rawState}`
-      });
+        2500
+      );
       if (res.ok) {
         savedOnServer = true;
       }
@@ -310,7 +337,147 @@ const stripReservationRelations = (r: Reservation): Reservation => {
   return clean;
 };
 
+// Senkron başlangıç verisi üreticisi (Sıfır gecikmeli ilk ekran çizimi için)
+function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
+  const cols = envelope.collections || {};
+
+  // 1. Equipment
+  const eqDelta: EquipmentStateDelta = cols.equipment_state || { overrides: {}, added: [] };
+  const baseEq = INITIAL_EQUIPMENT.map((item) => {
+    const ov = eqDelta.overrides?.[item.id];
+    if (!ov) return item;
+    return {
+      ...item,
+      status: ov.status ?? item.status,
+      current_condition: ov.current_condition ?? item.current_condition
+    };
+  });
+  const equipmentList: Equipment[] = [
+    ...(Array.isArray(eqDelta.added) ? eqDelta.added : []),
+    ...baseEq
+  ];
+
+  // 2. Members
+  const memDelta: MemberDeltas = cols.member_deltas || { overrides: {}, added: [] };
+  const baseMembers = INITIAL_MEMBERS.map((m) => {
+    const ov = memDelta.overrides?.[m.id];
+    return ov ? { ...m, ...ov } : m;
+  });
+  const addedMembers = (Array.isArray(memDelta.added) ? memDelta.added : []).map((m) => {
+    const ov = memDelta.overrides?.[m.id];
+    return ov ? { ...m, ...ov } : m;
+  });
+  const members: Member[] = [...addedMembers, ...baseMembers];
+
+  // Fast O(1) lookup maps
+  const equipById = new Map<string, Equipment>();
+  equipmentList.forEach((e) => equipById.set(e.id, e));
+
+  const memberById = new Map<string, Member>();
+  const memberByNo = new Map<string, Member>();
+  members.forEach((m) => {
+    memberById.set(m.id, m);
+    memberByNo.set(m.student_number, m);
+  });
+
+  // 3. Trips
+  const rawTrips: Trip[] = cols.trips || INITIAL_TRIPS;
+  const trips = [...rawTrips].sort(
+    (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+  );
+  const tripById = new Map<string, Trip>();
+  trips.forEach((t) => tripById.set(t.id, t));
+
+  // 4. Reservations
+  const rawReservations: Reservation[] = cols.reservations || INITIAL_RESERVATIONS;
+  const reservations: Reservation[] = rawReservations.map((r) => ({
+    ...r,
+    equipment: r.equipment || equipById.get(r.equipment_id),
+    member: r.member || memberById.get(r.member_id) || memberByNo.get(r.student_number),
+    trip: r.trip || (r.trip_id ? tripById.get(r.trip_id) || null : null)
+  }));
+
+  // 5. Admin Profiles
+  const pinMap: AdminPinMap | AdminProfile[] = cols.admin_profiles || {};
+  let adminProfiles: AdminProfile[] = INITIAL_ADMIN_PROFILES;
+  if (Array.isArray(pinMap)) {
+    adminProfiles = INITIAL_ADMIN_PROFILES.map((def) => {
+      const found = pinMap.find((cp) => cp.id === def.id);
+      return found ? { ...def, pin: found.pin || def.pin, pin_updated_at: found.pin_updated_at } : def;
+    });
+  } else if (pinMap && typeof pinMap === 'object') {
+    adminProfiles = INITIAL_ADMIN_PROFILES.map((def) => {
+      const rec = (pinMap as AdminPinMap)[def.id];
+      return rec && rec.pin ? { ...def, pin: rec.pin, pin_updated_at: rec.pin_updated_at } : def;
+    });
+  }
+
+  const activeAdmin = activeSessionAdminId
+    ? adminProfiles.find((p) => p.id === activeSessionAdminId) || null
+    : null;
+
+  // 6. Darkroom
+  const darkroomSlots: DarkroomSlot[] = cols.darkroom_slots || DARKROOM_SLOTS;
+  const rawDarkroom: DarkroomReservation[] = cols.darkroom || INITIAL_DARKROOM_RESERVATIONS;
+  const darkroomReservations: DarkroomReservation[] = rawDarkroom.map((r) => ({
+    ...r,
+    member: memberById.get(r.member_id) || memberByNo.get(r.student_number)
+  }));
+
+  // 7. Announcements
+  const rawAnnouncements: Announcement[] = cols.announcements || INITIAL_ANNOUNCEMENTS;
+  const announcements = [...rawAnnouncements].sort((a, b) => {
+    if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
+  return {
+    equipmentList,
+    members,
+    trips,
+    activeTrips: trips.filter((t) => t.is_active),
+    reservations,
+    adminProfiles,
+    activeAdmin,
+    darkroomSlots,
+    darkroomReservations,
+    announcements,
+    gallery: INITIAL_GALLERY
+  };
+}
+
 export const api = {
+  // Anında (0ms) senkron başlangıç verisi (Yükleme ekranı beklemelerini ortadan kaldırır)
+  getInitialSyncState() {
+    return computeSyncStateFromEnvelope(loadSnapshot());
+  },
+
+  // Tek bir toplu ağ isteğiyle tüm yönetici paneli verilerini getirir (Batch Request)
+  async getDashboardBundle(forceFresh = false) {
+    const envelope = await fetchUnifiedState(forceFresh);
+    return computeSyncStateFromEnvelope(envelope);
+  },
+
+  // Yalnızca bekleyen rezervasyon sayısını hızlıca hesaplar (600 üyeyi birleştirmeden)
+  async getPendingCount(): Promise<number> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { count, error } = await supabase
+          .from('reservations')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'pending');
+        if (!error && typeof count === 'number') return count;
+      } catch {
+        // ignore
+      }
+    }
+    const rawReservations = await readCloudCollection<Reservation[]>(
+      'reservations',
+      INITIAL_RESERVATIONS
+    );
+    return rawReservations.filter((r) => r.status === 'pending').length;
+  },
+
   // ==========================================
   // 1. ÖĞRENCİ NUMARASI DOĞRULAMA (WHITELIST)
   // ==========================================
@@ -441,23 +608,8 @@ export const api = {
       }
     }
 
-    const delta = await readCloudCollection<EquipmentStateDelta>('equipment_state', {
-      overrides: {},
-      added: []
-    });
-
-    const baseUpdated = INITIAL_EQUIPMENT.map((item) => {
-      const ov = delta.overrides?.[item.id];
-      if (!ov) return item;
-      return {
-        ...item,
-        status: ov.status ?? item.status,
-        current_condition: ov.current_condition ?? item.current_condition
-      };
-    });
-
-    const addedList = Array.isArray(delta.added) ? delta.added : [];
-    return [...addedList, ...baseUpdated];
+    const bundle = await this.getDashboardBundle();
+    return bundle.equipmentList;
   },
 
   async getEquipmentById(id: string): Promise<Equipment | null> {
@@ -487,11 +639,10 @@ export const api = {
       }
     }
 
-    const delta = await readCloudCollection<EquipmentStateDelta>(
-      'equipment_state',
-      { overrides: {}, added: [] },
-      true
-    );
+    const delta = await readCloudCollection<EquipmentStateDelta>('equipment_state', {
+      overrides: {},
+      added: []
+    });
     const updatedDelta: EquipmentStateDelta = {
       overrides: delta.overrides || {},
       added: [newEquipment, ...(Array.isArray(delta.added) ? delta.added : [])]
@@ -517,11 +668,10 @@ export const api = {
       }
     }
 
-    const delta = await readCloudCollection<EquipmentStateDelta>(
-      'equipment_state',
-      { overrides: {}, added: [] },
-      true
-    );
+    const delta = await readCloudCollection<EquipmentStateDelta>('equipment_state', {
+      overrides: {},
+      added: []
+    });
 
     const overrides = { ...(delta.overrides || {}) };
     const existingOv = overrides[id] || { status };
@@ -651,8 +801,7 @@ export const api = {
 
     const currentReservations = await readCloudCollection<Reservation[]>(
       'reservations',
-      INITIAL_RESERVATIONS,
-      true
+      INITIAL_RESERVATIONS
     );
     const updatedReservations = [
       stripReservationRelations(newReservation),
@@ -683,21 +832,8 @@ export const api = {
       }
     }
 
-    const [reservations, equipmentList, memberList, trips] = await Promise.all([
-      readCloudCollection<Reservation[]>('reservations', INITIAL_RESERVATIONS),
-      this.getEquipment(),
-      this.getMembers(),
-      this.getTrips()
-    ]);
-
-    return reservations.map((r) => ({
-      ...r,
-      equipment: r.equipment || equipmentList.find((e) => e.id === r.equipment_id),
-      member:
-        r.member ||
-        memberList.find((m) => m.id === r.member_id || m.student_number === r.student_number),
-      trip: r.trip || (r.trip_id ? trips.find((t) => t.id === r.trip_id) : null)
-    }));
+    const bundle = await this.getDashboardBundle();
+    return bundle.reservations;
   },
 
   async updateReservationStatus(
@@ -747,8 +883,7 @@ export const api = {
 
     const reservations = await readCloudCollection<Reservation[]>(
       'reservations',
-      INITIAL_RESERVATIONS,
-      true
+      INITIAL_RESERVATIONS
     );
     const target = reservations.find((r) => r.id === id);
     if (!target) return false;
@@ -804,7 +939,7 @@ export const api = {
   // ==========================================
   // YÖNETİM KURULU PROFİLLERİ (ADMIN ACCOUNTS)
   // ==========================================
-  async getAdminProfiles(): Promise<AdminProfile[]> {
+  async getAdminProfiles(forceFresh = false): Promise<AdminProfile[]> {
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase
@@ -822,44 +957,13 @@ export const api = {
       }
     }
 
-    const pinMap = await readCloudCollection<AdminPinMap | AdminProfile[]>(
-      'admin_profiles',
-      {},
-      true
-    );
-
-    if (Array.isArray(pinMap)) {
-      return INITIAL_ADMIN_PROFILES.map((defaultProfile) => {
-        const found = pinMap.find((cp) => cp.id === defaultProfile.id);
-        return found
-          ? {
-              ...defaultProfile,
-              pin: found.pin || defaultProfile.pin,
-              pin_updated_at: found.pin_updated_at
-            }
-          : defaultProfile;
-      });
-    }
-
-    if (pinMap && typeof pinMap === 'object') {
-      return INITIAL_ADMIN_PROFILES.map((defaultProfile) => {
-        const rec = (pinMap as AdminPinMap)[defaultProfile.id];
-        return rec && rec.pin
-          ? {
-              ...defaultProfile,
-              pin: rec.pin,
-              pin_updated_at: rec.pin_updated_at
-            }
-          : defaultProfile;
-      });
-    }
-
-    return INITIAL_ADMIN_PROFILES;
+    const bundle = await this.getDashboardBundle(forceFresh);
+    return bundle.adminProfiles;
   },
 
   async getActiveAdmin(): Promise<AdminProfile | null> {
     if (!activeSessionAdminId) return null;
-    const profiles = await this.getAdminProfiles();
+    const profiles = await this.getAdminProfiles(false);
     return profiles.find((p) => p.id === activeSessionAdminId) || null;
   },
 
@@ -893,7 +997,7 @@ export const api = {
       return { success: false, message: 'Yeni şifre en az 4 karakter olmalıdır.' };
     }
 
-    const profiles = await this.getAdminProfiles();
+    const profiles = await this.getAdminProfiles(true);
     const targetIndex = profiles.findIndex((p) => p.id === adminId);
     if (targetIndex === -1) {
       return { success: false, message: 'Yönetici profili bulunamadı.' };
@@ -961,22 +1065,8 @@ export const api = {
       }
     }
 
-    const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
-      overrides: {},
-      added: []
-    });
-
-    const baseMembers = INITIAL_MEMBERS.map((m) => {
-      const ov = deltas.overrides?.[m.id];
-      return ov ? { ...m, ...ov } : m;
-    });
-
-    const addedMembers = (Array.isArray(deltas.added) ? deltas.added : []).map((m) => {
-      const ov = deltas.overrides?.[m.id];
-      return ov ? { ...m, ...ov } : m;
-    });
-
-    return [...addedMembers, ...baseMembers];
+    const bundle = await this.getDashboardBundle();
+    return bundle.members;
   },
 
   async addMember(member: Omit<Member, 'id'>): Promise<Member> {
@@ -999,11 +1089,10 @@ export const api = {
       }
     }
 
-    const deltas = await readCloudCollection<MemberDeltas>(
-      'member_deltas',
-      { overrides: {}, added: [] },
-      true
-    );
+    const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
+      overrides: {},
+      added: []
+    });
     const updatedDeltas: MemberDeltas = {
       overrides: deltas.overrides || {},
       added: [newMember, ...(Array.isArray(deltas.added) ? deltas.added : [])]
@@ -1036,11 +1125,10 @@ export const api = {
       }
     }
 
-    const deltas = await readCloudCollection<MemberDeltas>(
-      'member_deltas',
-      { overrides: {}, added: [] },
-      true
-    );
+    const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
+      overrides: {},
+      added: []
+    });
     const overrides = { ...(deltas.overrides || {}) };
     overrides[memberId] = {
       ...(overrides[memberId] || {}),
@@ -1073,14 +1161,8 @@ export const api = {
       }
     }
 
-    const list = await readCloudCollection<Announcement[]>(
-      'announcements',
-      INITIAL_ANNOUNCEMENTS
-    );
-    return [...list].sort((a, b) => {
-      if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    });
+    const bundle = await this.getDashboardBundle();
+    return bundle.announcements;
   },
 
   async createAnnouncement(
@@ -1107,8 +1189,7 @@ export const api = {
 
     const current = await readCloudCollection<Announcement[]>(
       'announcements',
-      INITIAL_ANNOUNCEMENTS,
-      true
+      INITIAL_ANNOUNCEMENTS
     );
     await writeCloudCollection('announcements', [newAnn, ...current]);
     return newAnn;
@@ -1132,8 +1213,7 @@ export const api = {
 
     const current = await readCloudCollection<Announcement[]>(
       'announcements',
-      INITIAL_ANNOUNCEMENTS,
-      true
+      INITIAL_ANNOUNCEMENTS
     );
     const updated = current.map((a) => (a.id === id ? { ...a, ...updates } : a));
     return await writeCloudCollection('announcements', updated);
@@ -1154,8 +1234,7 @@ export const api = {
 
     const current = await readCloudCollection<Announcement[]>(
       'announcements',
-      INITIAL_ANNOUNCEMENTS,
-      true
+      INITIAL_ANNOUNCEMENTS
     );
     const updated = current.filter((a) => a.id !== id);
     return await writeCloudCollection('announcements', updated);
@@ -1193,7 +1272,8 @@ export const api = {
         console.warn('Supabase getDarkroomSlots error:', err);
       }
     }
-    return await readCloudCollection<DarkroomSlot[]>('darkroom_slots', DARKROOM_SLOTS);
+    const bundle = await this.getDashboardBundle();
+    return bundle.darkroomSlots;
   },
 
   async getDarkroomSlotsByDate(date: string): Promise<DarkroomSlot[]> {
@@ -1229,8 +1309,7 @@ export const api = {
 
     const current = await readCloudCollection<DarkroomSlot[]>(
       'darkroom_slots',
-      DARKROOM_SLOTS,
-      true
+      DARKROOM_SLOTS
     );
     const updated = [newSlot, ...current];
     await writeCloudCollection('darkroom_slots', updated);
@@ -1262,8 +1341,7 @@ export const api = {
 
     const current = await readCloudCollection<DarkroomSlot[]>(
       'darkroom_slots',
-      DARKROOM_SLOTS,
-      true
+      DARKROOM_SLOTS
     );
     const updated = [...newSlots, ...current];
     await writeCloudCollection('darkroom_slots', updated);
@@ -1282,8 +1360,7 @@ export const api = {
 
     const current = await readCloudCollection<DarkroomSlot[]>(
       'darkroom_slots',
-      DARKROOM_SLOTS,
-      true
+      DARKROOM_SLOTS
     );
     const updated = current.filter((s) => s.id !== id);
     return await writeCloudCollection('darkroom_slots', updated);
@@ -1304,8 +1381,7 @@ export const api = {
 
     const current = await readCloudCollection<DarkroomSlot[]>(
       'darkroom_slots',
-      DARKROOM_SLOTS,
-      true
+      DARKROOM_SLOTS
     );
     const updated = current.map((s) => (s.id === id ? { ...s, is_active } : s));
     return await writeCloudCollection('darkroom_slots', updated);
@@ -1319,9 +1395,15 @@ export const api = {
           this.getMembers()
         ]);
         if (!resData.error && resData.data) {
+          const memberById = new Map<string, Member>();
+          const memberByNo = new Map<string, Member>();
+          members.forEach((m) => {
+            memberById.set(m.id, m);
+            memberByNo.set(m.student_number, m);
+          });
           return (resData.data as DarkroomReservation[]).map((r) => ({
             ...r,
-            member: members.find((m) => m.id === r.member_id || m.student_number === r.student_number)
+            member: memberById.get(r.member_id) || memberByNo.get(r.student_number)
           }));
         }
       } catch (err) {
@@ -1329,14 +1411,8 @@ export const api = {
       }
     }
 
-    const [reservations, members] = await Promise.all([
-      readCloudCollection<DarkroomReservation[]>('darkroom', INITIAL_DARKROOM_RESERVATIONS),
-      this.getMembers()
-    ]);
-    return reservations.map((r) => ({
-      ...r,
-      member: members.find((m) => m.id === r.member_id || m.student_number === r.student_number)
-    }));
+    const bundle = await this.getDashboardBundle();
+    return bundle.darkroomReservations;
   },
 
   async getDarkroomReservationsByDate(date: string): Promise<DarkroomReservation[]> {
@@ -1442,8 +1518,7 @@ export const api = {
 
     const current = await readCloudCollection<DarkroomReservation[]>(
       'darkroom',
-      INITIAL_DARKROOM_RESERVATIONS,
-      true
+      INITIAL_DARKROOM_RESERVATIONS
     );
     const updated = current.map(({ member, ...r }) => {
       if (r.id === id) {
@@ -1475,8 +1550,7 @@ export const api = {
 
     const current = await readCloudCollection<DarkroomReservation[]>(
       'darkroom',
-      INITIAL_DARKROOM_RESERVATIONS,
-      true
+      INITIAL_DARKROOM_RESERVATIONS
     );
     const updated = current
       .filter((r) => r.id !== id)
@@ -1502,10 +1576,8 @@ export const api = {
       }
     }
 
-    const trips = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS);
-    return [...trips].sort(
-      (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
-    );
+    const bundle = await this.getDashboardBundle();
+    return bundle.trips;
   },
 
   async getActiveTrips(): Promise<Trip[]> {
@@ -1538,7 +1610,7 @@ export const api = {
       }
     }
 
-    const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS, true);
+    const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS);
     const updated = [newTrip, ...current];
     await writeCloudCollection('trips', updated);
     return newTrip;
@@ -1554,7 +1626,7 @@ export const api = {
       }
     }
 
-    const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS, true);
+    const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS);
     const updated = current.map((t) => (t.id === id ? { ...t, ...updates } : t));
     return await writeCloudCollection('trips', updated);
   },
@@ -1569,7 +1641,7 @@ export const api = {
       }
     }
 
-    const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS, true);
+    const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS);
     const updated = current.filter((t) => t.id !== id);
     return await writeCloudCollection('trips', updated);
   },
@@ -1602,11 +1674,10 @@ export const api = {
       }
     }
 
-    const deltas = await readCloudCollection<MemberDeltas>(
-      'member_deltas',
-      { overrides: {}, added: [] },
-      true
-    );
+    const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
+      overrides: {},
+      added: []
+    });
     const overrides = { ...(deltas.overrides || {}) };
     overrides[id] = {
       ...(overrides[id] || {}),
@@ -1684,11 +1755,10 @@ export const api = {
       }
     }
 
-    const deltas = await readCloudCollection<MemberDeltas>(
-      'member_deltas',
-      { overrides: {}, added: [] },
-      true
-    );
+    const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
+      overrides: {},
+      added: []
+    });
     await writeCloudCollection('member_deltas', {
       overrides: deltas.overrides || {},
       added: [newMember, ...(Array.isArray(deltas.added) ? deltas.added : [])]

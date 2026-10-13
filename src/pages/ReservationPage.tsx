@@ -10,8 +10,11 @@ interface ReservationPageProps {
 }
 
 export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEquipmentId, onNavigate }) => {
-  const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
-  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string>(preselectedEquipmentId || '');
+  const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
+  const [equipmentList, setEquipmentList] = useState<Equipment[]>(initialSync.equipmentList);
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string>(
+    preselectedEquipmentId || initialSync.equipmentList[0]?.id || ''
+  );
   
   // Whitelist & Member state
   const [studentNumber, setStudentNumber] = useState('');
@@ -26,18 +29,30 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const [regLoading, setRegLoading] = useState(false);
 
   // Trips state
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [loadingTrips, setLoadingTrips] = useState(true);
-  const [usageType, setUsageType] = useState<'trip' | 'custom'>('trip');
-  const [selectedTripId, setSelectedTripId] = useState<string>('');
+  const [trips, setTrips] = useState<Trip[]>(initialSync.activeTrips);
+  const [loadingTrips, setLoadingTrips] = useState(false);
+  const [usageType, setUsageType] = useState<'trip' | 'custom'>(
+    initialSync.activeTrips.length > 0 ? 'trip' : 'custom'
+  );
+  const [selectedTripId, setSelectedTripId] = useState<string>(
+    initialSync.activeTrips[0]?.id || ''
+  );
 
   // Dates & Purpose
   const todayStr = getLocalDateString();
   const defaultReturnDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  const [pickupDate, setPickupDate] = useState(todayStr);
-  const [returnDate, setReturnDate] = useState(defaultReturnDate);
-  const [purpose, setPurpose] = useState('');
+  const [pickupDate, setPickupDate] = useState(
+    initialSync.activeTrips[0]?.start_date || todayStr
+  );
+  const [returnDate, setReturnDate] = useState(
+    initialSync.activeTrips[0]?.end_date || defaultReturnDate
+  );
+  const [purpose, setPurpose] = useState(
+    initialSync.activeTrips[0]
+      ? `YTÜFOK Kulüp Gezisi: ${initialSync.activeTrips[0].title} (${initialSync.activeTrips[0].destination})`
+      : ''
+  );
   const [tripCustomNotes, setTripCustomNotes] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [rulesAccepted, setRulesAccepted] = useState(false);
@@ -47,27 +62,20 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const [submittedReservation, setSubmittedReservation] = useState<Reservation | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
 
-  // Fetch equipment & active trips
+  // Fetch equipment & active trips in a single batched request
   useEffect(() => {
-    const fetchEquipment = async () => {
-      const list = await api.getEquipment();
-      setEquipmentList(list);
-      if (!selectedEquipmentId && list.length > 0) {
-        setSelectedEquipmentId(preselectedEquipmentId || list[0].id);
-      }
-    };
-
-    const fetchTrips = async () => {
+    const syncBundle = async () => {
       try {
-        setLoadingTrips(true);
-        const activeTrips = await api.getActiveTrips();
-        setTrips(activeTrips);
-        if (activeTrips.length > 0) {
-          setSelectedTripId(activeTrips[0].id);
-          applyTripDetails(activeTrips[0]);
+        const bundle = await api.getDashboardBundle();
+        setEquipmentList(bundle.equipmentList);
+        setTrips(bundle.activeTrips);
+        if (!selectedEquipmentId && bundle.equipmentList.length > 0) {
+          setSelectedEquipmentId(preselectedEquipmentId || bundle.equipmentList[0].id);
+        }
+        if (bundle.activeTrips.length > 0 && !selectedTripId) {
+          setSelectedTripId(bundle.activeTrips[0].id);
+          applyTripDetails(bundle.activeTrips[0]);
           setUsageType('trip');
-        } else {
-          setUsageType('custom');
         }
       } catch (err) {
         console.error('Geziler yüklenirken hata:', err);
@@ -76,23 +84,9 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
       }
     };
 
-    const refreshOnFocus = async () => {
-      try {
-        const [list, activeTrips] = await Promise.all([
-          api.getEquipment(),
-          api.getActiveTrips()
-        ]);
-        setEquipmentList(list);
-        setTrips(activeTrips);
-      } catch {
-        // ignore
-      }
-    };
-
-    fetchEquipment();
-    fetchTrips();
-    window.addEventListener('focus', refreshOnFocus);
-    return () => window.removeEventListener('focus', refreshOnFocus);
+    syncBundle();
+    window.addEventListener('focus', syncBundle);
+    return () => window.removeEventListener('focus', syncBundle);
   }, [preselectedEquipmentId]);
 
   // Selected trip helper

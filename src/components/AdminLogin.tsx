@@ -39,18 +39,30 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
     e.preventDefault();
     if (!selectedProfile) return;
 
+    const cleanPin = pin.trim();
+    const localValidPin = selectedProfile.pin || '19111994';
+
+    // 1. Mevcut profil şifresi eşleşiyorsa ağ beklemesi olmadan ANINDA (0ms) giriş yap
+    if (cleanPin === localValidPin) {
+      setError(null);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      onLogin(selectedProfile);
+      return;
+    }
+
+    // 2. Eşleşmediyse başka cihazdan yeni değiştirilmiş olma ihtimaline karşı buluttan kontrol et
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const freshProfiles = await api.getAdminProfiles();
+      const freshProfiles = await api.getAdminProfiles(true);
       setLocalProfiles(freshProfiles);
       if (onProfilesUpdate) onProfilesUpdate(freshProfiles);
 
       const latestProfile = freshProfiles.find(p => p.id === selectedProfile.id) || selectedProfile;
       const validPin = latestProfile.pin || '19111994';
 
-      if (pin.trim() !== validPin) {
+      if (cleanPin !== validPin) {
         setError('Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
         setIsSubmitting(false);
         return;
@@ -60,15 +72,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       onLogin(latestProfile);
     } catch {
-      const validPin = selectedProfile.pin || '19111994';
-      if (pin.trim() !== validPin) {
-        setError('Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
-        setIsSubmitting(false);
-        return;
-      }
+      setError('Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
       setIsSubmitting(false);
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      onLogin(selectedProfile);
     }
   };
 

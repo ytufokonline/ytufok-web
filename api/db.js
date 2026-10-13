@@ -30,15 +30,30 @@ function writeLocalTmp(state) {
   }
 }
 
+async function fetchWithTimeout(url, options = {}, timeoutMs = 1500) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchUpstreamState() {
   try {
-    const res = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=12h`, {
-      method: 'GET',
-      cache: 'no-store'
-    });
+    const res = await fetchWithTimeout(
+      `https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=12h`,
+      { method: 'GET', cache: 'no-store' },
+      1800
+    );
     if (!res.ok) return null;
     const text = await res.text();
-    if (!text || !text.trim()) return null;
+    if (!text || !text.trim()) {
+      const emptyState = { updatedAt: Date.now(), _fetchedAt: Date.now(), collections: {} };
+      writeLocalTmp(emptyState);
+      return emptyState;
+    }
 
     const lines = text
       .trim()
@@ -59,35 +74,43 @@ async function fetchUpstreamState() {
           (e.message.startsWith('YTUFOK_STATE:') || e.message.startsWith('YTUFOK_PTR:'))
       );
 
-    if (lines.length === 0) return null;
+    if (lines.length === 0) {
+      const emptyState = { updatedAt: Date.now(), _fetchedAt: Date.now(), collections: {} };
+      writeLocalTmp(emptyState);
+      return emptyState;
+    }
     const last = lines[lines.length - 1];
 
     if (last.message.startsWith('YTUFOK_PTR:')) {
       const ptr = JSON.parse(last.message.slice(11));
+      if (ptr && ptr.inline) {
+        ptr.inline._fetchedAt = Date.now();
+        writeLocalTmp(ptr.inline);
+        return ptr.inline;
+      }
       if (ptr && ptr.bytebinKey) {
-        const bRes = await fetch(`${BYTEBIN_BASE}/${ptr.bytebinKey}`, {
-          method: 'GET',
-          cache: 'no-store'
-        });
+        const bRes = await fetchWithTimeout(
+          `${BYTEBIN_BASE}/${ptr.bytebinKey}`,
+          { method: 'GET', cache: 'no-store' },
+          1500
+        );
         if (bRes.ok) {
           const fullState = await bRes.json();
+          fullState._fetchedAt = Date.now();
           writeLocalTmp(fullState);
           return fullState;
         }
-      }
-      if (ptr && ptr.inline) {
-        writeLocalTmp(ptr.inline);
-        return ptr.inline;
       }
     }
 
     if (last.message.startsWith('YTUFOK_STATE:')) {
       const state = JSON.parse(last.message.slice(13));
+      state._fetchedAt = Date.now();
       writeLocalTmp(state);
       return state;
     }
-  } catch (err) {
-    console.error('Upstream fetch error:', err);
+  } catch {
+    // ignore timeout or network error
   }
   return null;
 }
@@ -96,34 +119,50 @@ async function pushUpstreamState(state) {
   writeLocalTmp(state);
   const rawJson = JSON.stringify(state);
 
-  let bytebinKey = null;
   try {
-    const bRes = await fetch(`${BYTEBIN_BASE}/post`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: rawJson
-    });
-    if (bRes.ok) {
-      const bData = await bRes.json();
-      bytebinKey = bData?.key || null;
+    if (rawJson.length < 3400) {
+      await fetchWithTimeout(
+        `https://ntfy.sh/${NTFY_TOPIC}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: `YTUFOK_STATE:${rawJson}`
+        },
+        2000
+      );
+      return;
     }
+
+    let bytebinKey = null;
+    try {
+      const bRes = await fetchWithTimeout(
+        `${BYTEBIN_BASE}/post`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: rawJson
+        },
+        2000
+      );
+      if (bRes.ok) {
+        const bData = await bRes.json();
+        bytebinKey = bData?.key || null;
+      }
+    } catch {
+      // ignore
+    }
+
+    await fetchWithTimeout(
+      `https://ntfy.sh/${NTFY_TOPIC}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: `YTUFOK_PTR:${JSON.stringify({ bytebinKey, updatedAt: state.updatedAt })}`
+      },
+      2000
+    );
   } catch {
-    // ignore bytebin error
-  }
-
-  try {
-    const payload =
-      rawJson.length < 3200
-        ? `YTUFOK_PTR:${JSON.stringify({ bytebinKey, updatedAt: state.updatedAt, inline: state })}`
-        : `YTUFOK_PTR:${JSON.stringify({ bytebinKey, updatedAt: state.updatedAt })}`;
-
-    await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-      body: payload
-    });
-  } catch (err) {
-    console.error('Upstream ntfy push error:', err);
+    // ignore
   }
 }
 
@@ -140,22 +179,22 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const now = Date.now();
     const cached = readLocalTmp();
-    // Refresh from upstream if cold start or older than 2 seconds
-    if (!cached || !cached._fetchedAt || now - cached._fetchedAt > 2000) {
-      const upstream = await fetchUpstreamState();
-      if (upstream) {
-        upstream._fetchedAt = now;
-        writeLocalTmp(upstream);
-        return res.status(200).json(upstream);
-      }
+    // Sıcak önbellek varsa anında (<5ms) yanıt döndür, 8 saniyeden eskiyse arka planda güncelle
+    if (cached && cached._fetchedAt && now - cached._fetchedAt < 8000) {
+      return res.status(200).json(cached);
     }
-    return res.status(200).json(cached || { updatedAt: 0, collections: {} });
+
+    const upstream = await fetchUpstreamState();
+    if (upstream) {
+      return res.status(200).json(upstream);
+    }
+    return res.status(200).json(cached || { updatedAt: now, _fetchedAt: now, collections: {} });
   }
 
   if (req.method === 'POST' || req.method === 'PUT') {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const current = (await fetchUpstreamState()) || readLocalTmp() || { updatedAt: 0, collections: {} };
+      const current = readLocalTmp() || { updatedAt: 0, collections: {} };
       const nextCollections = {
         ...(current.collections || {}),
         ...(body?.collections || {})

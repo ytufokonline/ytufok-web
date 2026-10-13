@@ -66,12 +66,11 @@ export function App() {
     }
   }, []);
 
-  // Poll pending count for the admin badge
+  // Poll pending count for the admin badge (lightweight query without joining 600 members)
   useEffect(() => {
     const fetchPending = async () => {
       try {
-        const reservations = await api.getReservations();
-        const pending = reservations.filter(r => r.status === 'pending').length;
+        const pending = await api.getPendingCount();
         setPendingCount(pending);
       } catch (e) {
         console.error(e);

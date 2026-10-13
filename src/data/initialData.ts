@@ -11308,7 +11308,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       '⚠️ SD Kart Dahil Değildir (Üye yanında getirmelidir / not düşülmeli)',
       'Canon Boyun Askısı'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/4/48/Canon_EOS_1000D_01.jpg',
+    image_url: '/equipment/canon-eos-1000d.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },

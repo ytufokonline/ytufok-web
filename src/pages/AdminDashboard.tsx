@@ -156,27 +156,42 @@ export const AdminDashboard: React.FC = () => {
     const cleanContent = newAnnContent.trim();
     if (!cleanContent) return;
 
-    await api.createAnnouncement({
-      title: cleanContent,
-      content: cleanContent,
-      category: newAnnCategory,
-      is_pinned: newAnnIsPinned
-    });
+    try {
+      await api.createAnnouncement({
+        title: cleanContent,
+        content: cleanContent,
+        category: newAnnCategory,
+        is_pinned: newAnnIsPinned
+      });
 
-    setNewAnnContent('');
-    setShowAddAnnouncementModal(false);
-    await loadAllData();
+      setNewAnnContent('');
+      setShowAddAnnouncementModal(false);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Duyuru eklenirken hata:', err);
+      alert(err?.message || 'Duyuru eklenirken bir hata meydana geldi.');
+    }
   };
 
   const handleDeleteAnnouncement = async (id: string) => {
     if (!window.confirm('Bu duyuru/not silinsin mi?')) return;
-    await api.deleteAnnouncement(id);
-    await loadAllData();
+    try {
+      await api.deleteAnnouncement(id);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Duyuru silinirken hata:', err);
+      alert(err?.message || 'Duyuru silinirken bir hata meydana geldi.');
+    }
   };
 
   const handleTogglePinAnnouncement = async (ann: Announcement) => {
-    await api.updateAnnouncement(ann.id, { is_pinned: !ann.is_pinned });
-    await loadAllData();
+    try {
+      await api.updateAnnouncement(ann.id, { is_pinned: !ann.is_pinned });
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Duyuru güncellenirken hata:', err);
+      alert(err?.message || 'Duyuru güncellenirken bir hata meydana geldi.');
+    }
   };
 
   const loadAllData = async (_silent?: boolean | React.MouseEvent) => {
@@ -252,24 +267,39 @@ export const AdminDashboard: React.FC = () => {
   // Darkroom Actions
   const handleApproveDarkroom = async (id: string) => {
     if (!window.confirm('Karanlık oda rezervasyonu onaylansın mı?')) return;
-    await api.updateDarkroomReservationStatus(id, 'approved', { approved_by: getAdminStamp() });
-    await loadAllData();
+    try {
+      await api.updateDarkroomReservationStatus(id, 'approved', { approved_by: getAdminStamp() });
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Karanlık oda onay hatası:', err);
+      alert(err?.message || 'İşlem sırasında bir hata meydana geldi.');
+    }
   };
 
   const handleCompleteDarkroom = async (id: string) => {
     if (!window.confirm('Karanlık oda seansı tamamlandı olarak işaretlensin mi? (Temizlik ve kimyasal kontrolü yapıldı)')) return;
-    await api.updateDarkroomReservationStatus(id, 'completed', { supervisor: getAdminStamp() });
-    await loadAllData();
+    try {
+      await api.updateDarkroomReservationStatus(id, 'completed', { supervisor: getAdminStamp() });
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Karanlık oda tamamlama hatası:', err);
+      alert(err?.message || 'İşlem sırasında bir hata meydana geldi.');
+    }
   };
 
   const handleRejectDarkroom = async (id: string) => {
     const reason = window.prompt('Red gerekçesini giriniz:', 'Kulüp etkinliği nedeniyle seans müsait değildir.');
     if (reason === null) return;
-    await api.updateDarkroomReservationStatus(id, 'rejected', {
-      approved_by: getAdminStamp(),
-      rejection_reason: reason.trim() || 'Kulüp etkinliği nedeniyle seans müsait değildir.'
-    });
-    await loadAllData();
+    try {
+      await api.updateDarkroomReservationStatus(id, 'rejected', {
+        approved_by: getAdminStamp(),
+        rejection_reason: reason.trim() || 'Kulüp etkinliği nedeniyle seans müsait değildir.'
+      });
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Karanlık oda red hatası:', err);
+      alert(err?.message || 'İşlem sırasında bir hata meydana geldi.');
+    }
   };
 
   // Darkroom Slot Management Actions
@@ -282,21 +312,26 @@ export const AdminDashboard: React.FC = () => {
 
     const supervisorName = newSlotSupervisor.trim() || (activeAdmin ? `${activeAdmin.full_name} (${activeAdmin.short_title})` : 'YTÜFOK Yönetim Kurulu');
 
-    await api.createDarkroomSlot({
-      date: newSlotDate,
-      startTime: newSlotStartTime,
-      endTime: newSlotEndTime,
-      durationMinutes: 90,
-      label: `${newSlotStartTime} - ${newSlotEndTime}`,
-      allowed_process: newSlotProcess,
-      supervisor: supervisorName,
-      notes: newSlotNotes.trim() || undefined,
-      is_active: true
-    });
+    try {
+      await api.createDarkroomSlot({
+        date: newSlotDate,
+        startTime: newSlotStartTime,
+        endTime: newSlotEndTime,
+        durationMinutes: 90,
+        label: `${newSlotStartTime} - ${newSlotEndTime}`,
+        allowed_process: newSlotProcess,
+        supervisor: supervisorName,
+        notes: newSlotNotes.trim() || undefined,
+        is_active: true
+      });
 
-    setShowAddSlotModal(false);
-    setNewSlotNotes('');
-    await loadAllData();
+      setShowAddSlotModal(false);
+      setNewSlotNotes('');
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Seans oluşturma hatası:', err);
+      alert(err?.message || 'Seans oluşturulurken bir hata meydana geldi.');
+    }
   };
 
   const handleCreateBulkStandardSlots = async (targetDate: string, proc: DarkroomSlotProcessPermission) => {
@@ -313,9 +348,14 @@ export const AdminDashboard: React.FC = () => {
       is_active: true
     }));
 
-    await api.createBulkDarkroomSlots(slotsToCreate);
-    await loadAllData();
-    alert(`${targetDate} tarihi için 6 adet standart seans başarıyla açıldı.`);
+    try {
+      await api.createBulkDarkroomSlots(slotsToCreate);
+      await loadAllData();
+      alert(`${targetDate} tarihi için 6 adet standart seans başarıyla açıldı.`);
+    } catch (err: any) {
+      console.error('Toplu seans açma hatası:', err);
+      alert(err?.message || 'Toplu seans açılırken bir hata meydana geldi.');
+    }
   };
 
   const handleDeleteSlot = async (slot: DarkroomSlot) => {
@@ -324,41 +364,66 @@ export const AdminDashboard: React.FC = () => {
       ? `DİKKAT: Bu seansta aktif rezervasyon bulunmaktadır (${bookedRes.member?.full_name || bookedRes.student_number} - ${bookedRes.reservation_code}). Yine de seansı kapatıp silmek istiyor musunuz?`
       : `${slot.date} tarihindeki ${slot.startTime} - ${slot.endTime} seansı kapatılsın mı?`;
     if (!window.confirm(confirmMsg)) return;
-    await api.deleteDarkroomSlot(slot.id);
-    await loadAllData();
+    try {
+      await api.deleteDarkroomSlot(slot.id);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Seans silme hatası:', err);
+      alert(err?.message || 'Seans silinirken bir hata meydana geldi.');
+    }
   };
 
   const handleApprove = async (reservationId: string) => {
     if (!window.confirm('Rezervasyon onaylansın mı?')) return;
-    await api.updateReservationStatus(reservationId, 'approved', { approved_by: getAdminStamp() });
-    await loadAllData();
+    try {
+      await api.updateReservationStatus(reservationId, 'approved', { approved_by: getAdminStamp() });
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Rezervasyon onay hatası:', err);
+      alert(err?.message || 'Rezervasyon onaylanırken bir hata meydana geldi.');
+    }
   };
 
   const handleDeliver = async (reservationId: string) => {
     if (!window.confirm('Ekipman teslim edildi mi?')) return;
-    await api.updateReservationStatus(reservationId, 'in_use', { checked_out_by: getAdminStamp() });
-    await loadAllData();
+    try {
+      await api.updateReservationStatus(reservationId, 'in_use', { checked_out_by: getAdminStamp() });
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Ekipman teslim hatası:', err);
+      alert(err?.message || 'Ekipman teslim edilirken bir hata meydana geldi.');
+    }
   };
 
   const handleConfirmReturn = async () => {
     if (!returnModalData) return;
-    await api.updateReservationStatus(returnModalData.id, 'returned', {
-      return_condition_notes: returnConditionNote,
-      returned_to: getAdminStamp()
-    });
-    setReturnModalData(null);
-    await loadAllData();
+    try {
+      await api.updateReservationStatus(returnModalData.id, 'returned', {
+        return_condition_notes: returnConditionNote,
+        returned_to: getAdminStamp()
+      });
+      setReturnModalData(null);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('İade onay hatası:', err);
+      alert(err?.message || 'İade onaylanırken bir hata meydana geldi.');
+    }
   };
 
   const handleConfirmReject = async () => {
     if (!rejectModalData) return;
-    await api.updateReservationStatus(rejectModalData.id, 'rejected', {
-      rejection_reason: rejectionReason.trim() || 'Kulüp etkinliği nedeniyle reddedildi.',
-      approved_by: getAdminStamp()
-    });
-    setRejectModalData(null);
-    setRejectionReason('');
-    await loadAllData();
+    try {
+      await api.updateReservationStatus(rejectModalData.id, 'rejected', {
+        rejection_reason: rejectionReason.trim() || 'Kulüp etkinliği nedeniyle reddedildi.',
+        approved_by: getAdminStamp()
+      });
+      setRejectModalData(null);
+      setRejectionReason('');
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Rezervasyon red hatası:', err);
+      alert(err?.message || 'Rezervasyon reddedilirken bir hata meydana geldi.');
+    }
   };
 
   const handleClearReservationHistory = async () => {
@@ -371,8 +436,13 @@ export const AdminDashboard: React.FC = () => {
     );
     if (!confirmed) return;
 
-    await api.clearReservations();
-    await loadAllData();
+    try {
+      await api.clearReservations();
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Geçmiş temizleme hatası:', err);
+      alert(err?.message || 'Geçmiş temizlenirken bir hata meydana geldi.');
+    }
   };
 
   const handleDeleteReservation = async (res: Reservation) => {
@@ -381,32 +451,42 @@ export const AdminDashboard: React.FC = () => {
     );
     if (!confirmed) return;
 
-    await api.deleteReservation(res.id);
-    await loadAllData();
+    try {
+      await api.deleteReservation(res.id);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Rezervasyon silme hatası:', err);
+      alert(err?.message || 'Rezervasyon silinirken bir hata meydana geldi.');
+    }
   };
 
   const handleAddEquipment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEquipName || !newEquipSerial) return;
 
-    await api.addEquipment({
-      name: newEquipName,
-      brand: newEquipBrand,
-      model: newEquipModel || newEquipName,
-      serial_number: newEquipSerial,
-      category: newEquipCategory,
-      description: 'Kulüp demirbaşı.',
-      specs: { 'Tip': newEquipCategory },
-      package_contents: ['Gövde', '1x Batarya', 'Askı'],
-      image_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80',
-      status: 'available',
-      current_condition: 'değerlendirilecek'
-    });
+    try {
+      await api.addEquipment({
+        name: newEquipName,
+        brand: newEquipBrand,
+        model: newEquipModel || newEquipName,
+        serial_number: newEquipSerial,
+        category: newEquipCategory,
+        description: 'Kulüp demirbaşı.',
+        specs: { 'Tip': newEquipCategory },
+        package_contents: ['Gövde', '1x Batarya', 'Askı'],
+        image_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80',
+        status: 'available',
+        current_condition: 'değerlendirilecek'
+      });
 
-    setShowAddEquipmentModal(false);
-    setNewEquipName('');
-    setNewEquipSerial('');
-    await loadAllData();
+      setShowAddEquipmentModal(false);
+      setNewEquipName('');
+      setNewEquipSerial('');
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Ekipman ekleme hatası:', err);
+      alert(err?.message || 'Ekipman eklenirken bir hata meydana geldi.');
+    }
   };
 
   const handleOpenEditEquipment = (item: Equipment) => {
@@ -524,39 +604,49 @@ export const AdminDashboard: React.FC = () => {
     );
     if (!confirmed) return;
 
-    await api.deleteEquipment(item.id);
-    await loadAllData();
+    try {
+      await api.deleteEquipment(item.id);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Ekipman silme hatası:', err);
+      alert(err?.message || 'Ekipman silinirken bir hata meydana geldi.');
+    }
   };
 
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMemberNo || !newMemberName) return;
 
-    await api.addMember({
-      student_number: newMemberNo.trim(),
-      full_name: newMemberName.trim(),
-      email: `${newMemberNo}@std.yildiz.edu.tr`,
-      phone: '+90 5XX XXX XX XX',
-      department: newMemberDept,
-      status: 'active',
-      member_type: newMemberType,
-      notes: newMemberType === 'honorary_active'
-        ? 'YTÜFOK Fahri Aktif Üyesi (Aktif Öncelik: Gezilerden 5 gün önce & Bireysel Çekim)'
-        : newMemberType === 'honorary'
-        ? 'YTÜFOK Fahri Üyesi (Normal Öncelik: Gezilerden 3 gün önce)'
-        : newMemberType === 'active' 
-        ? 'YTÜFOK Aktif Üyesi (Aktif Öncelik: Gezilerden 5 gün önce)' 
-        : 'Normal Kulüp Üyesi (Normal Öncelik: Gezilerden 3 gün önce)',
-      penalty_count: 0,
-      role: 'member'
-    });
+    try {
+      await api.addMember({
+        student_number: newMemberNo.trim(),
+        full_name: newMemberName.trim(),
+        email: `${newMemberNo}@std.yildiz.edu.tr`,
+        phone: '+90 5XX XXX XX XX',
+        department: newMemberDept,
+        status: 'active',
+        member_type: newMemberType,
+        notes: newMemberType === 'honorary_active'
+          ? 'YTÜFOK Fahri Aktif Üyesi (Aktif Öncelik: Gezilerden 5 gün önce & Bireysel Çekim)'
+          : newMemberType === 'honorary'
+          ? 'YTÜFOK Fahri Üyesi (Normal Öncelik: Gezilerden 3 gün önce)'
+          : newMemberType === 'active' 
+          ? 'YTÜFOK Aktif Üyesi (Aktif Öncelik: Gezilerden 5 gün önce)' 
+          : 'Normal Kulüp Üyesi (Normal Öncelik: Gezilerden 3 gün önce)',
+        penalty_count: 0,
+        role: 'member'
+      });
 
-    setShowAddMemberModal(false);
-    setNewMemberNo('');
-    setNewMemberName('');
-    setNewMemberDept('Yıldız Teknik Üniversitesi');
-    setNewMemberType('active');
-    await loadAllData();
+      setShowAddMemberModal(false);
+      setNewMemberNo('');
+      setNewMemberName('');
+      setNewMemberDept('Yıldız Teknik Üniversitesi');
+      setNewMemberType('active');
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Üye ekleme hatası:', err);
+      alert(err?.message || 'Üye eklenirken bir hata meydana geldi.');
+    }
   };
 
   const handleToggleMemberType = async (member: Member) => {
@@ -566,15 +656,25 @@ export const AdminDashboard: React.FC = () => {
     else if (member.member_type === 'honorary') nextType = 'honorary_active';
     else if (member.member_type === 'honorary_active') nextType = 'honorary';
     else nextType = 'active';
-    await api.updateMemberType(member.id, nextType);
-    await loadAllData();
+    try {
+      await api.updateMemberType(member.id, nextType);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Üye tipi güncelleme hatası:', err);
+      alert(err?.message || 'Üye tipi güncellenirken bir hata meydana geldi.');
+    }
   };
 
   const handleToggleMemberStatus = async (member: Member) => {
     const nextStatus = member.status === 'active' ? 'suspended' : 'active';
     const reason = nextStatus === 'suspended' ? 'Yönetim tarafından askıya alındı.' : '';
-    await api.updateMemberPenalty(member.id, nextStatus === 'suspended' ? 1 : 0, reason);
-    await loadAllData();
+    try {
+      await api.updateMemberPenalty(member.id, nextStatus === 'suspended' ? 1 : 0, reason);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Üye durumu güncelleme hatası:', err);
+      alert(err?.message || 'Üye durumu güncellenirken bir hata meydana geldi.');
+    }
   };
 
   const handleOpenEditMember = (member: Member) => {
@@ -595,21 +695,26 @@ export const AdminDashboard: React.FC = () => {
     e.preventDefault();
     if (!editingMember || !editMemberNo || !editMemberName) return;
 
-    await api.updateMember(editingMember.id, {
-      student_number: editMemberNo.trim(),
-      full_name: editMemberName.trim(),
-      department: editMemberDept.trim(),
-      phone: editMemberPhone.trim(),
-      email: editMemberEmail.trim(),
-      member_type: editMemberType,
-      status: editMemberStatus,
-      penalty_count: Number(editMemberPenalty) || 0,
-      penalty_reason: editMemberPenaltyReason.trim(),
-      notes: editMemberNotes.trim()
-    });
+    try {
+      await api.updateMember(editingMember.id, {
+        student_number: editMemberNo.trim(),
+        full_name: editMemberName.trim(),
+        department: editMemberDept.trim(),
+        phone: editMemberPhone.trim(),
+        email: editMemberEmail.trim(),
+        member_type: editMemberType,
+        status: editMemberStatus,
+        penalty_count: Number(editMemberPenalty) || 0,
+        penalty_reason: editMemberPenaltyReason.trim(),
+        notes: editMemberNotes.trim()
+      });
 
-    setEditingMember(null);
-    await loadAllData();
+      setEditingMember(null);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Üye düzenleme hatası:', err);
+      alert(err?.message || 'Üye düzenlenirken bir hata meydana geldi.');
+    }
   };
 
   const handleDeleteMember = async (member: Member) => {
@@ -624,8 +729,13 @@ export const AdminDashboard: React.FC = () => {
     );
     if (!confirmed) return;
 
-    await api.deleteMember(member.id, member.student_number);
-    await loadAllData();
+    try {
+      await api.deleteMember(member.id, member.student_number);
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Üye silme hatası:', err);
+      alert(err?.message || 'Üye silinirken bir hata meydana geldi.');
+    }
   };
 
   // Trip Management Handlers
@@ -641,42 +751,57 @@ export const AdminDashboard: React.FC = () => {
       return;
     }
 
-    if (editingTrip) {
-      await api.updateTrip(editingTrip.id, {
-        title: newTripTitle.trim(),
-        destination: newTripDestination.trim(),
-        start_date: newTripStartDate,
-        end_date: newTripEndDate,
-        description: newTripDescription.trim(),
-        is_active: newTripIsActive
-      });
-    } else {
-      await api.createTrip({
-        title: newTripTitle.trim(),
-        destination: newTripDestination.trim(),
-        start_date: newTripStartDate,
-        end_date: newTripEndDate,
-        description: newTripDescription.trim(),
-        is_active: newTripIsActive,
-        created_by: activeAdmin?.full_name || 'Yönetim Kurulu'
-      });
-    }
+    try {
+      if (editingTrip) {
+        await api.updateTrip(editingTrip.id, {
+          title: newTripTitle.trim(),
+          destination: newTripDestination.trim(),
+          start_date: newTripStartDate,
+          end_date: newTripEndDate,
+          description: newTripDescription.trim(),
+          is_active: newTripIsActive
+        });
+      } else {
+        await api.createTrip({
+          title: newTripTitle.trim(),
+          destination: newTripDestination.trim(),
+          start_date: newTripStartDate,
+          end_date: newTripEndDate,
+          description: newTripDescription.trim(),
+          is_active: newTripIsActive,
+          created_by: activeAdmin?.full_name || 'Yönetim Kurulu'
+        });
+      }
 
-    setShowAddTripModal(false);
-    setEditingTrip(null);
-    resetTripForm();
-    await loadAllData();
+      setShowAddTripModal(false);
+      setEditingTrip(null);
+      resetTripForm();
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Gezi kaydetme hatası:', err);
+      alert(err?.message || 'Gezi kaydedilirken bir hata meydana geldi.');
+    }
   };
 
   const handleToggleTripActive = async (trip: Trip) => {
-    await api.updateTrip(trip.id, { is_active: !trip.is_active });
-    await loadAllData();
+    try {
+      await api.updateTrip(trip.id, { is_active: !trip.is_active });
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Gezi durumu güncelleme hatası:', err);
+      alert(err?.message || 'Gezi durumu güncellenirken bir hata meydana geldi.');
+    }
   };
 
   const handleDeleteTrip = async (tripId: string, tripTitle: string) => {
     if (window.confirm(`"${tripTitle}" gezisini silmek istediğinize emin misiniz?`)) {
-      await api.deleteTrip(tripId);
-      await loadAllData();
+      try {
+        await api.deleteTrip(tripId);
+        await loadAllData();
+      } catch (err: any) {
+        console.error('Gezi silme hatası:', err);
+        alert(err?.message || 'Gezi silinirken bir hata meydana geldi.');
+      }
     }
   };
 
@@ -1347,8 +1472,13 @@ export const AdminDashboard: React.FC = () => {
                   <button
                     onClick={async () => {
                       const next = item.status === 'maintenance' ? 'available' : 'maintenance';
-                      await api.updateEquipmentStatus(item.id, next);
-                      await loadAllData();
+                      try {
+                        await api.updateEquipmentStatus(item.id, next);
+                        await loadAllData();
+                      } catch (err: any) {
+                        console.error('Ekipman durumu güncelleme hatası:', err);
+                        alert(err?.message || 'Ekipman durumu güncellenirken hata oluştu.');
+                      }
                     }}
                     className="text-[11px] text-[#8193b2] hover:text-white underline cursor-pointer"
                   >

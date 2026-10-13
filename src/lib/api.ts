@@ -91,6 +91,15 @@ const stripReservationRelations = (r: Reservation): Record<string, any> => {
   return clean;
 };
 
+// Supabase bağlantı zorunluluğu kontrolü
+export function ensureSupabaseConfigured(): void {
+  if (!isSupabaseConfigured()) {
+    throw new Error(
+      'Supabase veritabanı bağlantısı henüz yapılandırılmadı! Değişikliklerin kalıcı olması için lütfen Yönetici Paneli > "Supabase Bağlantısı" bölümünden Proje URL ve Anon Key giriniz veya .env dosyasına ekleyiniz.'
+    );
+  }
+}
+
 // Sıfır gecikmeli ilk ekran çizimi için varsayılan başlangıç durumu
 const defaultInitialState = {
   equipmentList: INITIAL_EQUIPMENT.map(sanitizeEquipmentItem),
@@ -471,30 +480,24 @@ export const api = {
       current_condition: equipment.current_condition || 'değerlendirilecek'
     };
 
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase
-        .from('equipment')
-        .insert([insertPayload])
-        .select()
-        .single();
+    ensureSupabaseConfigured();
+    const { data, error } = await supabase
+      .from('equipment')
+      .insert([insertPayload])
+      .select()
+      .single();
 
-      if (error) {
-        throw new Error(`Supabase ekipman ekleme hatası: ${error.message}`);
-      }
-      return sanitizeEquipmentItem(data as Equipment);
+    if (error) {
+      throw new Error(`Supabase ekipman ekleme hatası: ${error.message}`);
     }
-
-    return sanitizeEquipmentItem({ ...insertPayload });
+    return sanitizeEquipmentItem(data as Equipment);
   },
 
   async updateEquipment(
     id: string,
     updates: Partial<Equipment>
   ): Promise<boolean> {
-    if (!isSupabaseConfigured()) {
-      console.warn('Supabase yapılandırılmamış, değişiklikler kalıcı olarak kaydedilemiyor.');
-      return false;
-    }
+    ensureSupabaseConfigured();
 
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     let targetId: string | null = null;
@@ -569,7 +572,7 @@ export const api = {
   },
 
   async deleteEquipment(id: string): Promise<boolean> {
-    if (!isSupabaseConfigured()) return true;
+    ensureSupabaseConfigured();
 
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     if (isUuid) {
@@ -679,26 +682,19 @@ export const api = {
       trip: trip || null
     };
 
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase
-        .from('reservations')
-        .insert([stripReservationRelations(newReservation)])
-        .select()
-        .single();
+    ensureSupabaseConfigured();
+    const { data, error } = await supabase
+      .from('reservations')
+      .insert([stripReservationRelations(newReservation)])
+      .select()
+      .single();
 
-      if (error) {
-        throw new Error(`Supabase rezervasyon oluşturma hatası: ${error.message}`);
-      }
-      return {
-        success: true,
-        reservation: { ...newReservation, ...data },
-        message: `Rezervasyon talebiniz başarıyla oluşturuldu! Takip Kodunuz: ${reservation_code}.`
-      };
+    if (error) {
+      throw new Error(`Supabase rezervasyon oluşturma hatası: ${error.message}`);
     }
-
     return {
       success: true,
-      reservation: newReservation,
+      reservation: { ...newReservation, ...data },
       message: `Rezervasyon talebiniz başarıyla oluşturuldu! Takip Kodunuz: ${reservation_code}.`
     };
   },
@@ -745,6 +741,7 @@ export const api = {
       rejection_reason?: string;
     }
   ): Promise<boolean> {
+    ensureSupabaseConfigured();
     const updates: Record<string, any> = { status };
     const now = new Date().toISOString();
 
@@ -763,42 +760,36 @@ export const api = {
       if (options?.approved_by) updates.approved_by = options.approved_by;
     }
 
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('reservations').update(updates).eq('id', id);
-      if (error) {
-        throw new Error(`Supabase rezervasyon güncelleme hatası: ${error.message}`);
-      }
-
-      // İlgili ekipmanın durumunu güncelle
-      const resList = await this.getReservations();
-      const resItem = resList.find((r) => r.id === id);
-      if (resItem?.equipment_id) {
-        let nextEqStatus: EquipmentStatus = 'available';
-        if (status === 'approved') nextEqStatus = 'reserved';
-        else if (status === 'in_use') nextEqStatus = 'in_use';
-        else if (status === 'returned' || status === 'rejected' || status === 'cancelled') nextEqStatus = 'available';
-
-        await this.updateEquipmentStatus(resItem.equipment_id, nextEqStatus);
-      }
-      return true;
+    const { error } = await supabase.from('reservations').update(updates).eq('id', id);
+    if (error) {
+      throw new Error(`Supabase rezervasyon güncelleme hatası: ${error.message}`);
     }
 
+    // İlgili ekipmanın durumunu güncelle
+    const resList = await this.getReservations();
+    const resItem = resList.find((r) => r.id === id);
+    if (resItem?.equipment_id) {
+      let nextEqStatus: EquipmentStatus = 'available';
+      if (status === 'approved') nextEqStatus = 'reserved';
+      else if (status === 'in_use') nextEqStatus = 'in_use';
+      else if (status === 'returned' || status === 'rejected' || status === 'cancelled') nextEqStatus = 'available';
+
+      await this.updateEquipmentStatus(resItem.equipment_id, nextEqStatus);
+    }
     return true;
   },
 
   async deleteReservation(id: string): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('reservations').delete().eq('id', id);
-      if (error) throw new Error(`Supabase rezervasyon silme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('reservations').delete().eq('id', id);
+    if (error) throw new Error(`Supabase rezervasyon silme hatası: ${error.message}`);
     return true;
   },
 
   async clearReservations(): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('reservations').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-      if (error) throw new Error(`Supabase rezervasyonları temizleme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('reservations').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (error) throw new Error(`Supabase rezervasyonları temizleme hatası: ${error.message}`);
     return true;
   },
 
@@ -858,14 +849,13 @@ export const api = {
       return { success: false, message: 'Yeni PIN en az 4 karakter olmalıdır.' };
     }
 
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase
-        .from('admin_profiles')
-        .upsert({ id: adminId, pin: newPin.trim(), pin_updated_at: new Date().toISOString() });
+    ensureSupabaseConfigured();
+    const { error } = await supabase
+      .from('admin_profiles')
+      .upsert({ id: adminId, pin: newPin.trim(), pin_updated_at: new Date().toISOString() });
 
-      if (error) {
-        throw new Error(`Supabase PIN güncelleme hatası: ${error.message}`);
-      }
+    if (error) {
+      throw new Error(`Supabase PIN güncelleme hatası: ${error.message}`);
     }
 
     const updatedProfile: AdminProfile = {
@@ -904,6 +894,7 @@ export const api = {
   },
 
   async addMember(member: Omit<Member, 'id'>): Promise<Member> {
+    ensureSupabaseConfigured();
     const newId = crypto.randomUUID();
     const payload = {
       ...member,
@@ -912,20 +903,16 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase
-        .from('members')
-        .insert([payload])
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('members')
+      .insert([payload])
+      .select()
+      .single();
 
-      if (error) {
-        throw new Error(`Supabase üye ekleme hatası: ${error.message}`);
-      }
-      return normalizeMemberRecord(data as Member);
+    if (error) {
+      throw new Error(`Supabase üye ekleme hatası: ${error.message}`);
     }
-
-    return normalizeMemberRecord(payload as Member);
+    return normalizeMemberRecord(data as Member);
   },
 
   async updateMemberPenalty(
@@ -934,48 +921,47 @@ export const api = {
     penaltyReason?: string,
     status?: 'active' | 'suspended' | 'passive'
   ): Promise<boolean> {
+    ensureSupabaseConfigured();
     const updates: Record<string, any> = {
       penalty_count: penaltyCount,
       penalty_reason: penaltyReason || null
     };
     if (status) updates.status = status;
 
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('members').update(updates).eq('id', id);
-      if (error) throw new Error(`Supabase ceza güncelleme hatası: ${error.message}`);
-    }
+    const { error } = await supabase.from('members').update(updates).eq('id', id);
+    if (error) throw new Error(`Supabase ceza güncelleme hatası: ${error.message}`);
     return true;
   },
 
   async updateMember(id: string, updates: Partial<Member>): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('members').update(updates).eq('id', id);
-      if (error) throw new Error(`Supabase üye güncelleme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('members').update(updates).eq('id', id);
+    if (error) throw new Error(`Supabase üye güncelleme hatası: ${error.message}`);
     return true;
   },
 
   async deleteMember(id: string, studentNumber?: string): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      let query = supabase.from('members').delete();
-      if (id) query = query.eq('id', id);
-      else if (studentNumber) query = query.eq('student_number', studentNumber);
+    ensureSupabaseConfigured();
+    let query = supabase.from('members').delete();
+    if (id) query = query.eq('id', id);
+    else if (studentNumber) query = query.eq('student_number', studentNumber);
 
-      const { error } = await query;
-      if (error) throw new Error(`Supabase üye silme hatası: ${error.message}`);
-    }
+    const { error } = await query;
+    if (error) throw new Error(`Supabase üye silme hatası: ${error.message}`);
     return true;
   },
 
   async updateMemberType(id: string, memberType: MemberType): Promise<boolean> {
+    ensureSupabaseConfigured();
     let role = 'member';
     if (memberType === 'board') role = 'admin';
     else if (memberType === 'audit') role = 'audit';
 
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('members').update({ role }).eq('id', id);
-      if (error) throw new Error(`Supabase üye rolü güncelleme hatası: ${error.message}`);
-    }
+    const { error } = await supabase
+      .from('members')
+      .update({ role, member_type: memberType })
+      .eq('id', id);
+    if (error) throw new Error(`Supabase üye rolü güncelleme hatası: ${error.message}`);
     return true;
   },
 
@@ -1039,6 +1025,7 @@ export const api = {
   async createAnnouncement(
     announcement: Omit<Announcement, 'id' | 'created_at'>
   ): Promise<Announcement> {
+    ensureSupabaseConfigured();
     const newId = crypto.randomUUID();
     const payload = {
       ...announcement,
@@ -1046,35 +1033,30 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase
-        .from('announcements')
-        .insert([payload])
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('announcements')
+      .insert([payload])
+      .select()
+      .single();
 
-      if (error) throw new Error(`Supabase duyuru ekleme hatası: ${error.message}`);
-      return data as Announcement;
-    }
-    return payload as Announcement;
+    if (error) throw new Error(`Supabase duyuru ekleme hatası: ${error.message}`);
+    return data as Announcement;
   },
 
   async updateAnnouncement(
     id: string,
     updates: Partial<Announcement>
   ): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('announcements').update(updates).eq('id', id);
-      if (error) throw new Error(`Supabase duyuru güncelleme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('announcements').update(updates).eq('id', id);
+    if (error) throw new Error(`Supabase duyuru güncelleme hatası: ${error.message}`);
     return true;
   },
 
   async deleteAnnouncement(id: string): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('announcements').delete().eq('id', id);
-      if (error) throw new Error(`Supabase duyuru silme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('announcements').delete().eq('id', id);
+    if (error) throw new Error(`Supabase duyuru silme hatası: ${error.message}`);
     return true;
   },
 
@@ -1119,46 +1101,40 @@ export const api = {
   },
 
   async createDarkroomSlot(slot: Omit<DarkroomSlot, 'id'>): Promise<DarkroomSlot> {
+    ensureSupabaseConfigured();
     const newId = `slot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const payload = { ...slot, id: newId };
 
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase.from('darkroom_slots').insert([payload]).select().single();
-      if (error) throw new Error(`Supabase seans ekleme hatası: ${error.message}`);
-      return data as DarkroomSlot;
-    }
-    return payload as DarkroomSlot;
+    const { data, error } = await supabase.from('darkroom_slots').insert([payload]).select().single();
+    if (error) throw new Error(`Supabase seans ekleme hatası: ${error.message}`);
+    return data as DarkroomSlot;
   },
 
   async createBulkDarkroomSlots(
     slots: Omit<DarkroomSlot, 'id'>[]
   ): Promise<DarkroomSlot[]> {
+    ensureSupabaseConfigured();
     const payloads = slots.map((s, idx) => ({
       ...s,
       id: `slot-${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 6)}`
     }));
 
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase.from('darkroom_slots').insert(payloads).select();
-      if (error) throw new Error(`Supabase toplu seans açma hatası: ${error.message}`);
-      return data as DarkroomSlot[];
-    }
-    return payloads as DarkroomSlot[];
+    const { data, error } = await supabase.from('darkroom_slots').insert(payloads).select();
+    if (error) throw new Error(`Supabase toplu seans açma hatası: ${error.message}`);
+    return data as DarkroomSlot[];
   },
 
   async deleteDarkroomSlot(id: string): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('darkroom_slots').delete().eq('id', id);
-      if (error) throw new Error(`Supabase seans silme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('darkroom_slots').delete().eq('id', id);
+    if (error) throw new Error(`Supabase seans silme hatası: ${error.message}`);
     return true;
   },
 
   async toggleDarkroomSlot(id: string, is_active: boolean): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('darkroom_slots').update({ is_active }).eq('id', id);
-      if (error) throw new Error(`Supabase seans durumu güncelleme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('darkroom_slots').update({ is_active }).eq('id', id);
+    if (error) throw new Error(`Supabase seans durumu güncelleme hatası: ${error.message}`);
     return true;
   },
 
@@ -1203,14 +1179,11 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured()) {
-      const { member: _m, ...clean } = newReservation;
-      const { data, error } = await supabase.from('darkroom_reservations').insert([clean]).select().single();
-      if (error) throw new Error(`Supabase karanlık oda rezervasyon hatası: ${error.message}`);
-      return { ...newReservation, ...(data || {}) };
-    }
-
-    return newReservation;
+    ensureSupabaseConfigured();
+    const { member: _m, ...clean } = newReservation;
+    const { data, error } = await supabase.from('darkroom_reservations').insert([clean]).select().single();
+    if (error) throw new Error(`Supabase karanlık oda rezervasyon hatası: ${error.message}`);
+    return { ...newReservation, ...(data || {}) };
   },
 
   async updateDarkroomReservationStatus(
@@ -1222,6 +1195,7 @@ export const api = {
       supervisor?: string;
     }
   ): Promise<boolean> {
+    ensureSupabaseConfigured();
     const updates: Record<string, any> = { status };
     const now = new Date().toISOString();
     if (status === 'approved') {
@@ -1233,18 +1207,15 @@ export const api = {
     }
     if (options?.supervisor) updates.supervisor = options.supervisor;
 
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('darkroom_reservations').update(updates).eq('id', id);
-      if (error) throw new Error(`Supabase karanlık oda rezervasyon güncelleme hatası: ${error.message}`);
-    }
+    const { error } = await supabase.from('darkroom_reservations').update(updates).eq('id', id);
+    if (error) throw new Error(`Supabase karanlık oda rezervasyon güncelleme hatası: ${error.message}`);
     return true;
   },
 
   async deleteDarkroomReservation(id: string): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('darkroom_reservations').delete().eq('id', id);
-      if (error) throw new Error(`Supabase karanlık oda rezervasyon silme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('darkroom_reservations').delete().eq('id', id);
+    if (error) throw new Error(`Supabase karanlık oda rezervasyon silme hatası: ${error.message}`);
     return true;
   },
 
@@ -1275,6 +1246,7 @@ export const api = {
   },
 
   async createTrip(tripData: Omit<Trip, 'id' | 'created_at'>): Promise<Trip> {
+    ensureSupabaseConfigured();
     const newId = `trip-${Date.now()}`;
     const payload: Trip = {
       ...tripData,
@@ -1282,27 +1254,22 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase.from('trips').insert([payload]).select().single();
-      if (error) throw new Error(`Supabase gezi ekleme hatası: ${error.message}`);
-      return data as Trip;
-    }
-    return payload;
+    const { data, error } = await supabase.from('trips').insert([payload]).select().single();
+    if (error) throw new Error(`Supabase gezi ekleme hatası: ${error.message}`);
+    return data as Trip;
   },
 
   async updateTrip(id: string, updates: Partial<Trip>): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('trips').update(updates).eq('id', id);
-      if (error) throw new Error(`Supabase gezi güncelleme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('trips').update(updates).eq('id', id);
+    if (error) throw new Error(`Supabase gezi güncelleme hatası: ${error.message}`);
     return true;
   },
 
   async deleteTrip(id: string): Promise<boolean> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.from('trips').delete().eq('id', id);
-      if (error) throw new Error(`Supabase gezi silme hatası: ${error.message}`);
-    }
+    ensureSupabaseConfigured();
+    const { error } = await supabase.from('trips').delete().eq('id', id);
+    if (error) throw new Error(`Supabase gezi silme hatası: ${error.message}`);
     return true;
   },
 

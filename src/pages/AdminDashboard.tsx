@@ -2300,7 +2300,12 @@ export const AdminDashboard: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {filteredTrips.map((trip) => {
-                const tripReservations = reservations.filter(r => r.trip_id === trip.id);
+                const activeTripReservations = reservations.filter(
+                  r => r.trip_id === trip.id && (r.status === 'approved' || r.status === 'in_use')
+                );
+                const pendingTripReservations = reservations.filter(
+                  r => r.trip_id === trip.id && r.status === 'pending'
+                );
                 const activeEligibility = checkTripBookingEligibility(trip.start_date, 'active');
                 const normalEligibility = checkTripBookingEligibility(trip.start_date, 'normal');
 
@@ -2394,10 +2399,21 @@ export const AdminDashboard: React.FC = () => {
 
                     {/* Stats & Actions */}
                     <div className="flex items-center justify-between pt-2 border-t border-[#657796]/15">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 rounded-lg bg-[#301322] text-xs font-semibold text-[#dce4ef] border border-[#657796]/20">
-                          📷 {tripReservations.length} Kamera Rezerve Edildi
-                        </span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {activeTripReservations.length > 0 ? (
+                          <span className="px-2.5 py-1 rounded-lg bg-emerald-950/40 text-xs font-semibold text-emerald-300 border border-emerald-500/30">
+                            📷 {activeTripReservations.length} Kamera Rezerve Edildi
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 rounded-lg bg-[#12080f] text-xs font-semibold text-[#8193b2] border border-[#657796]/20">
+                            📷 0 Kamera Rezerve
+                          </span>
+                        )}
+                        {pendingTripReservations.length > 0 && (
+                          <span className="px-2.5 py-1 rounded-lg bg-amber-950/40 text-xs font-semibold text-amber-300 border border-amber-500/30">
+                            ⏳ {pendingTripReservations.length} Talep Bekliyor
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex items-center gap-1.5">

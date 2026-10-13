@@ -930,7 +930,29 @@ export const api = {
         }
 
         const { error } = await supabase.from('reservations').update(updates).eq('id', id);
-        if (!error) return true;
+        if (!error) {
+          const { data: resRow } = await supabase
+            .from('reservations')
+            .select('equipment_id')
+            .eq('id', id)
+            .single();
+
+          if (resRow?.equipment_id) {
+            let targetEquipStatus: EquipmentStatus = 'available';
+            if (newStatus === 'approved') targetEquipStatus = 'reserved';
+            else if (newStatus === 'in_use' || newStatus === 'overdue') targetEquipStatus = 'in_use';
+            else if (newStatus === 'returned' || newStatus === 'rejected' || newStatus === 'cancelled') {
+              targetEquipStatus = 'available';
+            }
+
+            await this.updateEquipmentStatus(
+              resRow.equipment_id,
+              targetEquipStatus,
+              newStatus === 'returned' ? options?.return_condition_notes : undefined
+            );
+          }
+          return true;
+        }
       } catch (err) {
         console.warn('Supabase updateReservationStatus error:', err);
       }

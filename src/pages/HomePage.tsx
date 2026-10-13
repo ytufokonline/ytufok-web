@@ -100,29 +100,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 </button>
               </div>
 
-              {/* Delivery Highlight Card */}
-              <div className="p-4 rounded-2xl bg-[#1c0f18]/90 border border-[#657796]/40 shadow-xl space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#dce4ef] font-club">
-                  <span className="w-2 h-2 rounded-full bg-[#657796] animate-pulse"></span>
-                  <span>Önemli Bilgilendirme (Teslim & İade Noktası):</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-[#dce4ef] leading-relaxed">
-                  <MapPin className="w-4 h-4 text-[#8193b2] shrink-0" />
-                  <span><strong className="text-white">Tek Teslim & İade Noktası:</strong> Kulüpler Vadisi, Davutpaşa Kampüsü (başka teslim noktası yoktur, iadeler de burayadır).</span>
-                </div>
-              </div>
-
-              {/* SD Kart Bilgilendirme Kartı */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-[#4b253b]/40 via-[#301322] to-[#1c0f18] border border-[#657796]/40 shadow-xl space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#dce4ef] font-club">
-                  <AlertTriangle className="w-4 h-4 text-[#8193b2] shrink-0" />
-                  <span>Kamera Gövdeleri İçin SD Kart Zorunluluğu:</span>
-                </div>
-                <p className="text-xs text-[#dce4ef] leading-relaxed">
-                  Kulübümüz bünyesinde <strong>SD kart temini bulunmamaktadır</strong>. <strong className="text-white">Canon 5D Mark II</strong> (dahili CF kartlı) haricindeki tüm dijital gövdeleri (Canon 6D, 1000D, Nikon D5000 vb.) alacak üyelerimizin çekime gelirken <strong className="text-white">kendi SD kartlarını getirmeleri gerekmektedir</strong>. Kendi SD kartınız yoksa lütfen rezervasyon oluştururken <span className="underline decoration-[#8193b2] font-semibold text-white">not alanında mutlaka belirtiniz</span>.
-                </p>
-              </div>
-
               {/* Badges */}
               <div className="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-[#657796]/20 text-xs text-[#a9b9d3]">
                 <div className="flex items-center gap-2">

@@ -228,7 +228,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       item.status === 'maintenance'
                         ? 'bg-white/[0.04] text-white/30 cursor-not-allowed'
-                        : 'bg-white text-[#1c0e19] hover:bg-[#dce4ef] cursor-pointer active:scale-[0.98]'
+                        : 'bg-white text-[#12080f] hover:bg-[#dce4ef] cursor-pointer active:scale-[0.98]'
                     }`}
                   >
                     Rezerve Et
@@ -244,7 +244,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
       {selectedItemForModal && (
         <div 
           onClick={() => setSelectedItemForModal(null)}
-          className="fixed inset-0 z-50 bg-[#1c0e19]/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 bg-[#12080f]/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
@@ -328,7 +328,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
                 <div>
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8193b2] mb-2">Kutu İçeriği & Aksesuarlar</h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-lg bg-[#1c0e19] border border-white/[0.06] text-xs">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-lg bg-[#12080f] border border-white/[0.06] text-xs">
                     {selectedItemForModal.package_contents.map((pkgItem, index) => (
                       <li key={index} className="flex items-center gap-2 text-[#dce4ef]">
                         <Check className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
@@ -383,7 +383,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                   onNavigate('reserve');
                 }}
                 disabled={selectedItemForModal.status === 'maintenance'}
-                className="px-6 py-2.5 rounded-lg bg-white text-[#1c0e19] hover:bg-[#dce4ef] text-xs font-semibold cursor-pointer transition-all active:scale-[0.98]"
+                className="px-6 py-2.5 rounded-lg bg-white text-[#12080f] hover:bg-[#dce4ef] text-xs font-semibold cursor-pointer transition-all active:scale-[0.98]"
               >
                 Hemen Rezerve Et
               </button>

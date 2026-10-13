@@ -9,9 +9,9 @@ export default {
     extend: {
       colors: {
         ytufok: {
-          bg: '#1c0e19',           // En derin arka plan (hafif açılmış mürdüm gece)
-          card: '#241321',         // Kart ve panel zemini
-          cardHover: '#2c1728',    // Kart hover
+          bg: '#12080f',           // En derin arka plan (koyu mürdüm gece)
+          card: '#1c0f18',         // Kart ve panel zemini
+          cardHover: '#251621',    // Kart hover
           plum: '#301322',         // Kulüp 1. Ana Rengi (Mürdüm / Vişne)
           plumHover: '#421d31',    // Mürdüm açık ton
           wine: '#4b253b',         // Şarap / erik tonu

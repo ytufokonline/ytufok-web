@@ -134,7 +134,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
                   className={`relative p-4 rounded-2xl border text-left cursor-pointer transition-all ${
                     isSelected
                       ? 'bg-[#301322] border-[#657796] shadow-xl shadow-[#301322]/80 ring-2 ring-[#657796]/50'
-                      : 'bg-[#1c0e19]/80 border-[#657796]/20 hover:border-[#657796]/60 hover:bg-[#180d16]'
+                      : 'bg-[#12080f]/80 border-[#657796]/20 hover:border-[#657796]/60 hover:bg-[#180d16]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -201,7 +201,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
                     }}
                     placeholder="••••"
                     autoFocus
-                    className="w-full text-center tracking-[0.5em] text-2xl font-mono py-3.5 px-4 rounded-2xl bg-[#1c0e19] border border-[#657796]/40 text-white placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] focus:ring-2 focus:ring-[#657796]/30 transition-all shadow-inner"
+                    className="w-full text-center tracking-[0.5em] text-2xl font-mono py-3.5 px-4 rounded-2xl bg-[#12080f] border border-[#657796]/40 text-white placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] focus:ring-2 focus:ring-[#657796]/30 transition-all shadow-inner"
                   />
                   <button
                     type="button"

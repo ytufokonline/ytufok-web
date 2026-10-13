@@ -1069,6 +1069,43 @@ export const api = {
     return true;
   },
 
+  async deleteReservation(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('reservations').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Supabase deleteReservation error:', err);
+      }
+    }
+
+    const reservations = await readCloudCollection<Reservation[]>(
+      'reservations',
+      INITIAL_RESERVATIONS
+    );
+    const target = reservations.find((r) => r.id === id);
+    const updated = reservations.filter((r) => r.id !== id);
+    await writeCloudCollection('reservations', updated.map(stripReservationRelations));
+
+    if (target && (target.status === 'approved' || target.status === 'in_use')) {
+      await this.updateEquipmentStatus(target.equipment_id, 'available');
+    }
+
+    return true;
+  },
+
+  async clearReservations(): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('reservations').delete().neq('id', 'placeholder');
+      } catch (err) {
+        console.warn('Supabase clearReservations error:', err);
+      }
+    }
+
+    await writeCloudCollection('reservations', []);
+    return true;
+  },
+
   // ==========================================
   // YÖNETİM KURULU PROFİLLERİ (ADMIN ACCOUNTS)
   // ==========================================

@@ -347,6 +347,30 @@ export const AdminDashboard: React.FC = () => {
     await loadAllData();
   };
 
+  const handleClearReservationHistory = async () => {
+    if (reservations.length === 0) {
+      alert('Temizlenecek herhangi bir zimmet kaydı bulunmuyor.');
+      return;
+    }
+    const confirmed = window.confirm(
+      `Tüm zimmet ve rezervasyon geçmişi (${reservations.length} kayıt) kalıcı olarak silinsin mi? Bu işlem geri alınamaz.`
+    );
+    if (!confirmed) return;
+
+    await api.clearReservations();
+    await loadAllData();
+  };
+
+  const handleDeleteReservation = async (res: Reservation) => {
+    const confirmed = window.confirm(
+      `"${res.reservation_code}" kodlu zimmet kaydını silmek istediğinize emin misiniz?`
+    );
+    if (!confirmed) return;
+
+    await api.deleteReservation(res.id);
+    await loadAllData();
+  };
+
   const handleAddEquipment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEquipName || !newEquipSerial) return;
@@ -1137,8 +1161,17 @@ export const AdminDashboard: React.FC = () => {
                             İade Al
                           </button>
                         )}
-                        {['returned', 'rejected'].includes(r.status) && (
-                          <span className="text-[#a9b9d3] text-[11px]">Kapatıldı</span>
+                        {['returned', 'rejected', 'cancelled'].includes(r.status) && (
+                          <div className="inline-flex items-center gap-2">
+                            <span className="text-[#a9b9d3] text-[11px]">Kapatıldı</span>
+                            <button
+                              onClick={() => handleDeleteReservation(r)}
+                              title="Kaydı Sil"
+                              className="p-1 rounded-lg bg-[#301322] hover:bg-rose-950/70 text-[#8193b2] hover:text-rose-300 border border-[#657796]/30 hover:border-rose-500/30 transition-colors inline-flex items-center cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -1551,13 +1584,25 @@ export const AdminDashboard: React.FC = () => {
                 Kulüp üyelerinin geçmişten bugüne tüm makine, lens ve aksesuar zimmet kayıtları, teslim-iade kronolojisi ve kontrol notları.
               </p>
             </div>
-            <button
-              onClick={handleExportHistoryCSV}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shrink-0 cursor-pointer"
-            >
-              <Download className="w-4 h-4" />
-              <span>CSV Olarak Dışa Aktar</span>
-            </button>
+            <div className="flex items-center gap-2">
+              {reservations.length > 0 && (
+                <button
+                  onClick={handleClearReservationHistory}
+                  className="px-3.5 py-2 rounded-xl bg-[#301322] hover:bg-rose-950/70 border border-rose-500/30 text-rose-300 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shrink-0 cursor-pointer"
+                  title="Tüm zimmet ve rezervasyon kayıtlarını temizle"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Geçmişi Temizle</span>
+                </button>
+              )}
+              <button
+                onClick={handleExportHistoryCSV}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shrink-0 cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>CSV Olarak Dışa Aktar</span>
+              </button>
+            </div>
           </div>
 
           {/* KPI Stats for History */}
@@ -1821,16 +1866,25 @@ export const AdminDashboard: React.FC = () => {
                           )}
                         </td>
                         <td className="p-3.5 text-right whitespace-nowrap">
-                          <button
-                            onClick={() => {
-                              const found = members.find(m => m.id === res.member_id || m.student_number === res.student_number);
-                              if (found) setSelectedMemberForHistory(found);
-                            }}
-                            className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors inline-flex items-center gap-1 cursor-pointer"
-                          >
-                            <User className="w-3 h-3 text-[#8193b2]" />
-                            <span>Üye Geçmişi</span>
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => {
+                                const found = members.find(m => m.id === res.member_id || m.student_number === res.student_number);
+                                if (found) setSelectedMemberForHistory(found);
+                              }}
+                              className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              <User className="w-3 h-3 text-[#8193b2]" />
+                              <span>Üye Geçmişi</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReservation(res)}
+                              title="Kaydı Sil"
+                              className="p-1.5 rounded-xl bg-[#301322] hover:bg-rose-950/70 text-[#8193b2] hover:text-rose-300 border border-[#657796]/30 hover:border-rose-500/30 transition-colors inline-flex items-center cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

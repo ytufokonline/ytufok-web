@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, UserPlus, Info, Sparkles, Lock, Award, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, UserPlus, Info, Sparkles, Lock, ChevronRight } from 'lucide-react';
 import { Equipment, Member, Reservation, Trip } from '../types';
 import { api } from '../lib/api';
 import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference } from '../utils/tripUtils';
@@ -56,7 +56,6 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const [tripCustomNotes, setTripCustomNotes] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [rulesAccepted, setRulesAccepted] = useState(false);
-  const [rulesExpanded, setRulesExpanded] = useState(false);
 
   // Submission State
   const [submitting, setSubmitting] = useState(false);
@@ -234,7 +233,6 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
       if (response.success && response.reservation) {
         setSubmittedReservation(response.reservation);
-        // Refresh equipment bundle in background
         api.getDashboardBundle().then(b => {
           setEquipmentList(b.equipmentList);
         });
@@ -255,118 +253,64 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       
-      {/* Editorial Title */}
-      <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-[#a9b9d3] text-[11px] font-medium uppercase tracking-[0.14em]">
-          <Calendar className="w-3.5 h-3.5 text-[#8193b2]" />
-          <span>Talep Modülü</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-club">
-          Ekipman Rezervasyon Formu
+      {/* Editorial Header */}
+      <div className="border-b border-white/[0.08] pb-6">
+        <h1 className="text-3xl sm:text-4xl font-bold text-white font-club tracking-tight">
+          Ekipman Rezervasyonu
         </h1>
-        <p className="text-[#a9b9d3] text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
-          Demirbaş gövde ve lens talebinizi oluşturmak için lütfen öğrenci numaranızı doğrulayınız.
+        <p className="text-sm text-[#a9b9d3] mt-1">
+          Demirbaş gövde ve lens talebinizi oluşturmak için formu eksiksiz doldurunuz.
         </p>
       </div>
 
-      {/* Sleek Accordion Rules Bar */}
-      <div className="studio-card rounded-2xl overflow-hidden transition-all duration-200">
-        <button
-          type="button"
-          onClick={() => setRulesExpanded(!rulesExpanded)}
-          className="w-full p-4 flex items-center justify-between text-left text-xs text-[#dce4ef] hover:text-white transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <Info className="w-4 h-4 text-[#8193b2] shrink-0" />
-            <span className="font-semibold text-white">Kulüp Rezervasyon ve Teslimat Kuralları</span>
-            <span className="hidden sm:inline-block text-[11px] text-[#8193b2] font-normal">
-              (Tek Nokta: Davutpaşa • Gezi: 5/3 Gün • Bireysel: Maks 2 Gün)
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[#8193b2] text-[11px]">
-            <span>{rulesExpanded ? 'Gizle' : 'Görüntüle'}</span>
-            {rulesExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </div>
-        </button>
-
-        {rulesExpanded && (
-          <div className="p-4 sm:p-5 border-t border-white/[0.06] bg-[#12080f]/50 space-y-3 text-xs text-[#a9b9d3] animate-in fade-in duration-200">
-            <div className="flex items-start gap-2.5">
-              <MapPin className="w-4 h-4 text-[#8193b2] shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-white block font-medium">Tek Teslim ve İade Noktası</strong>
-                <span>Tüm ekipman teslimleri ve iadeleri istisnasız yalnızca Davutpaşa Kampüsü Kulüpler Vadisi'nden yapılır.</span>
-              </div>
-            </div>
-            <div className="flex items-start gap-2.5 pt-2 border-t border-white/[0.04]">
-              <Compass className="w-4 h-4 text-[#8193b2] shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-white block font-medium">Kulüp Gezileri 5/3 Gün Kuralı</strong>
-                <span>Aktif üyeler geziden 5 gün önce, normal üyeler ise 3 gün önce rezervasyon yapabilir.</span>
-              </div>
-            </div>
-            <div className="flex items-start gap-2.5 pt-2 border-t border-white/[0.04]">
-              <Sparkles className="w-4 h-4 text-[#8193b2] shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-white block font-medium">Bireysel Çekim & Maksimum Süre</strong>
-                <span>Bireysel çekim ve ders projeleri yalnızca Aktif Üyelere açıktır (Maksimum standart rezervasyon süresi 2 gündür).</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
       {submittedReservation ? (
-        /* Apple Wallet Ticket Pass Style Confirmation */
-        <div className="studio-card rounded-2xl p-6 sm:p-8 space-y-6 text-center border border-white/[0.12] shadow-2xl">
-          <div className="w-12 h-12 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 flex items-center justify-center mx-auto">
+        /* Airbnb Checkout Confirmation Style */
+        <div className="max-w-xl mx-auto surface-card p-8 space-y-6 text-center border border-white/[0.12]">
+          <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-6 h-6" />
           </div>
 
           <div className="space-y-1">
-            <span className="text-[11px] uppercase font-semibold tracking-wider text-[#8193b2]">
-              Talep Alındı • Onay Bekliyor
+            <span className="text-[11px] uppercase font-semibold text-[#8193b2] tracking-wider">
+              Talep Alındı • Yönetim Onayı Bekliyor
             </span>
             <h2 className="text-2xl font-bold text-white font-club">
-              Rezervasyon Talebiniz Oluşturuldu
+              Rezervasyon Talebiniz İletildi
             </h2>
-            <p className="text-[#a9b9d3] text-xs max-w-sm mx-auto">
-              Talebiniz yönetim kuruluna iletildi. İncelendikten sonra onay durumu güncellenecektir.
+            <p className="text-xs text-[#a9b9d3] max-w-sm mx-auto">
+              Talebiniz yönetim kuruluna ulaştı. İncelendikten sonra onay durumu güncellenecektir.
             </p>
           </div>
 
-          {/* Ticket Body */}
-          <div className="max-w-md mx-auto p-5 rounded-xl bg-[#12080f]/80 border border-white/[0.08] space-y-3">
-            <span className="text-xs text-[#a9b9d3] block">Rezervasyon Takip Kodunuz:</span>
-            <div className="flex items-center justify-center gap-3">
-              <span className="text-2xl sm:text-3xl font-mono font-bold text-white tracking-wider">
+          <div className="p-4 rounded-lg bg-[#140a12] border border-white/[0.08] space-y-2 text-left">
+            <span className="text-[11px] text-[#a9b9d3] block">Takip Kodu:</span>
+            <div className="flex items-center justify-between">
+              <span className="text-2xl font-mono font-bold text-white tracking-wider">
                 {submittedReservation.reservation_code}
               </span>
               <button
                 onClick={() => copyToClipboard(submittedReservation.reservation_code)}
-                className="p-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white transition-colors cursor-pointer border border-white/[0.08]"
-                title="Kodu Kopyala"
+                className="px-3 py-1.5 rounded-md bg-white/[0.08] hover:bg-white/[0.14] text-xs font-medium text-white transition-colors cursor-pointer flex items-center gap-1.5"
               >
-                {copiedCode ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedCode ? 'Kopyalandı' : 'Kopyala'}</span>
               </button>
             </div>
             {submittedReservation.trip && (
-              <div className="pt-2 border-t border-white/[0.06] flex items-center justify-center gap-1.5 text-xs text-[#dce4ef]">
-                <Compass className="w-3.5 h-3.5 text-[#8193b2]" />
-                <span>Gezi: <strong>{submittedReservation.trip.title}</strong></span>
+              <div className="pt-2 border-t border-white/[0.06] text-xs text-[#dce4ef]">
+                Kulüp Gezisi: <strong>{submittedReservation.trip.title}</strong>
               </div>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex items-center justify-center gap-3 pt-2">
             <button
               onClick={() => onNavigate('status', submittedReservation.reservation_code)}
-              className="px-6 py-2.5 rounded-full bg-[#dce4ef] hover:bg-white text-[#12080f] font-semibold text-xs flex items-center gap-2 cursor-pointer transition-all active:scale-[0.98]"
+              className="px-5 py-2.5 rounded-lg bg-white text-[#12080f] font-semibold text-xs hover:bg-[#dce4ef] transition-all cursor-pointer"
             >
-              <FileText className="w-4 h-4" />
-              <span>Durumu Takip Et</span>
+              Durumu Takip Et
             </button>
             <button
               onClick={() => {
@@ -374,602 +318,387 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                 setPurpose('');
                 setTripCustomNotes('');
               }}
-              className="px-6 py-2.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-[#dce4ef] text-xs font-medium border border-white/[0.08] cursor-pointer transition-all"
+              className="px-5 py-2.5 rounded-lg text-white/70 hover:text-white text-xs font-medium transition-colors cursor-pointer"
             >
               Yeni Talep Oluştur
             </button>
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        /* Airbnb 2-Column Checkout Layout */
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
-          {/* STEP 1: KIMLIK & UYE DOGRULAMA */}
-          <div className="studio-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div className="flex items-center gap-3 pb-2 border-b border-white/[0.06]">
-              <span className="w-6 h-6 rounded-full bg-white/[0.1] text-white font-semibold text-xs flex items-center justify-center font-mono">
-                1
-              </span>
-              <div>
-                <h3 className="text-sm font-bold text-white font-club">Öğrenci Numarası Doğrulama</h3>
-                <p className="text-[11px] text-[#a9b9d3]">
+          {/* Left Column: Form Steps */}
+          <div className="lg:col-span-7 space-y-8">
+            
+            {/* 1. Kimlik Doğrulama */}
+            <div className="surface-card p-6 space-y-4">
+              <div className="space-y-1">
+                <span className="text-[11px] font-semibold text-[#8193b2] uppercase tracking-wider block">Adım 1</span>
+                <h3 className="text-base font-semibold text-white font-club">
+                  Öğrenci Numarası Doğrulama
+                </h3>
+                <p className="text-xs text-[#a9b9d3]">
                   Rezervasyon hakkınızı ve gezi önceliğinizi belirlemek için numaranızı sorgulayınız.
                 </p>
               </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-2.5">
-              <input
-                type="text"
-                placeholder="Öğrenci Numaranız (örn: 22052018)..."
-                value={studentNumber}
-                onChange={(e) => {
-                  setStudentNumber(e.target.value);
-                  if (verifiedMember) setVerifiedMember(null);
-                  if (showQuickRegister) setShowQuickRegister(false);
-                }}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white text-xs font-mono focus:outline-none transition-colors"
-              />
-              <button
-                type="button"
-                onClick={handleVerifyStudent}
-                disabled={verifying}
-                className="px-6 py-2.5 rounded-xl bg-white/[0.12] hover:bg-white/[0.2] text-white font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer border border-white/[0.14] transition-all disabled:opacity-50 active:scale-[0.98]"
-              >
-                {verifying ? 'Sorgulanıyor...' : <><UserCheck className="w-4 h-4 text-[#8193b2]" /><span>Doğrula</span></>}
-              </button>
-            </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Öğrenci No (örn: 22052018)..."
+                  value={studentNumber}
+                  onChange={(e) => {
+                    setStudentNumber(e.target.value);
+                    if (verifiedMember) setVerifiedMember(null);
+                    if (showQuickRegister) setShowQuickRegister(false);
+                  }}
+                  className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs font-mono focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleVerifyStudent}
+                  disabled={verifying}
+                  className="px-5 py-2.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-white font-medium text-xs border border-white/[0.1] transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {verifying ? 'Sorgulanıyor...' : 'Doğrula'}
+                </button>
+              </div>
 
-            {/* Verified Member Apple ID Card */}
-            {verifiedMember && (
-              <div className="p-4 rounded-xl bg-[#12080f]/90 border border-white/[0.08] text-xs flex items-start gap-3 animate-in fade-in duration-200">
-                <div className="w-9 h-9 rounded-full bg-white/[0.06] border border-white/[0.1] flex items-center justify-center shrink-0 mt-0.5 text-[#8193b2]">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div className="space-y-1.5 flex-1">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+              {/* Verified Member Badge */}
+              {verifiedMember && (
+                <div className="p-4 rounded-lg bg-[#140a12] border border-white/[0.08] text-xs space-y-2">
+                  <div className="flex items-center justify-between">
                     <strong className="text-white text-sm">
-                      {memberTier === 'board' ? verifiedMember.full_name : `${verifiedMember.full_name} (${verifiedMember.student_number})`}
+                      {verifiedMember.full_name} ({verifiedMember.student_number})
                     </strong>
-                    {memberTier === 'board' ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.1] text-white border border-white/[0.12]">
-                        Yönetim Kurulu Üyesi
-                      </span>
-                    ) : memberTier === 'audit' ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.1] text-white border border-white/[0.12]">
-                        Denetim Kurulu Üyesi
-                      </span>
-                    ) : memberTier === 'honorary_active' ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/15 text-purple-200 border border-purple-500/25">
-                        Fahri Aktif Üye (5 Gün & Bireysel Çekim)
-                      </span>
-                    ) : memberTier === 'honorary' ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/15 text-purple-200 border border-purple-500/25">
-                        Fahri Üye (Geziden 3 Gün Önce)
-                      </span>
-                    ) : memberTier === 'active' ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#4b253b]/60 text-[#dce4ef] border border-[#657796]/40">
-                        ★ Aktif Üye (5 Gün & Bireysel Çekim)
-                      </span>
-                    ) : (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.05] text-[#8193b2] border border-white/[0.08]">
-                        Normal Üye (Geziden 3 Gün Önce)
-                      </span>
-                    )}
+                    <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-white/[0.06] text-white border border-white/[0.08]">
+                      {memberTier === 'board' ? 'Yönetim Kurulu' : memberTier === 'audit' ? 'Denetim Kurulu' : memberTier === 'active' || memberTier === 'honorary_active' ? 'Aktif Üye' : 'Normal Üye'}
+                    </span>
                   </div>
                   <p className="text-[#a9b9d3] text-xs leading-relaxed">
-                    {verifiedMember.department} • {memberTier === 'board'
-                      ? 'Yönetim Kurulu Üyesi kaydınız doğrulandı. Tüm rezervasyon haklarınız sınırsız olarak tanımlanmıştır.'
-                      : memberTier === 'audit'
-                      ? 'Denetim Kurulu Üyesi kaydınız doğrulandı. Ekipman rezervasyon yetkiniz yönetim ile aynıdır.'
-                      : memberTier === 'honorary_active' || memberTier === 'active'
-                      ? 'Aktif üyelik statünüz sayesinde kulüp gezileri için 5 gün önceden erken rezerve hakkınız ve bireysel çekim izniniz aktiftir.'
-                      : 'Normal üyelik statünüz ile kulüp gezilerinden 3 gün önce rezervasyon yapabilirsiniz (Bireysel çekim alanı tüzük gereği aktif üyelere açıktır).'}
+                    {verifiedMember.department} • {hasActivePrivileges ? 'Gezilerden 5 gün önce erken rezervasyon ve bireysel çekim yetkiniz aktiftir.' : 'Kulüp gezilerinden 3 gün önce rezervasyon yapabilirsiniz.'}
                   </p>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Error & Normal Member Quick Registration */}
-            {verificationError && !verifiedMember && (
-              <div className="space-y-3">
-                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs flex items-start gap-3">
-                  <ShieldAlert className="w-4 h-4 text-rose-300 shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <span className="text-[#dce4ef] block font-medium">{verificationError}</span>
-                    <p className="text-[11px] text-[#a9b9d3]">
-                      Öğrenci numaranız listede bulunamadıysa, aşağıdaki formdan <strong>Normal Üye</strong> olarak tek tıkla kaydolup gezilerden 3 gün önce kamera rezerve edebilirsiniz.
-                    </p>
+              {/* Error & Quick Registration */}
+              {verificationError && !verifiedMember && (
+                <div className="space-y-3">
+                  <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-200">
+                    {verificationError}
                   </div>
-                </div>
 
-                {showQuickRegister && (
-                  <div className="p-4 rounded-xl bg-[#12080f]/80 border border-white/[0.08] space-y-3 animate-in fade-in">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-white">
-                      <UserPlus className="w-4 h-4 text-[#8193b2]" />
-                      <span>Normal Üye Hızlı Kayıt Formu</span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] text-[#a9b9d3] mb-1">Ad Soyad *</label>
+                  {showQuickRegister && (
+                    <div className="p-4 rounded-lg bg-[#140a12] border border-white/[0.08] space-y-3">
+                      <strong className="text-xs text-white block">Normal Üye Olarak Kayıt Ol</strong>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <input
                           type="text"
-                          placeholder="Adınız Soyadınız..."
+                          placeholder="Ad Soyad..."
                           value={regFullName}
                           onChange={(e) => setRegFullName(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl bg-[#1a0e17] border border-white/[0.08] text-white text-xs"
+                          className="w-full px-3 py-2 rounded-lg bg-[#1a0e17] border border-white/[0.08] text-white text-xs"
                         />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] text-[#a9b9d3] mb-1">Bölüm / Üniversite</label>
                         <input
                           type="text"
-                          placeholder="Örn: Mimarlık Fakültesi..."
+                          placeholder="Bölüm..."
                           value={regDept}
                           onChange={(e) => setRegDept(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl bg-[#1a0e17] border border-white/[0.08] text-white text-xs"
+                          className="w-full px-3 py-2 rounded-lg bg-[#1a0e17] border border-white/[0.08] text-white text-xs"
                         />
                       </div>
+                      <button
+                        type="button"
+                        onClick={handleQuickRegisterNormal}
+                        disabled={regLoading}
+                        className="px-4 py-2 rounded-lg bg-white text-[#12080f] text-xs font-semibold cursor-pointer"
+                      >
+                        {regLoading ? 'Kaydediliyor...' : 'Kaydol ve Devam Et'}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleQuickRegisterNormal}
-                      disabled={regLoading}
-                      className="px-4 py-2 rounded-full bg-white/[0.1] hover:bg-white/[0.18] text-white text-xs font-semibold cursor-pointer disabled:opacity-50 transition-colors border border-white/[0.1]"
-                    >
-                      {regLoading ? 'Kaydediliyor...' : 'Normal Üye Olarak Kaydol ve Devam Et'}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* STEP 2: EKIPMAN SECIMI */}
-          <div className="studio-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div className="flex items-center gap-3 pb-2 border-b border-white/[0.06]">
-              <span className="w-6 h-6 rounded-full bg-white/[0.1] text-white font-semibold text-xs flex items-center justify-center font-mono">
-                2
-              </span>
-              <div>
-                <h3 className="text-sm font-bold text-white font-club">Ekipman Tercihi</h3>
-                <p className="text-[11px] text-[#a9b9d3]">Rezerve etmek istediğiniz kamera veya lensi seçiniz.</p>
-              </div>
-            </div>
-
-            <select
-              value={selectedEquipmentId}
-              onChange={(e) => setSelectedEquipmentId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white text-xs focus:outline-none cursor-pointer"
-            >
-              {equipmentList.map((item) => (
-                <option key={item.id} value={item.id} disabled={item.status === 'maintenance'}>
-                  {item.name} ({item.brand}) - [{item.serial_number}] - Durum: {item.status === 'available' ? 'Müsait' : item.status === 'reserved' ? 'Rezerve' : item.status === 'in_use' ? 'Kullanımda' : 'Bakımda'}
-                </option>
-              ))}
-            </select>
-
-            {/* Selected Equipment Preview Card */}
-            {selectedEquipment && (
-              <div className="flex items-center gap-3.5 p-3 rounded-xl bg-[#12080f]/60 border border-white/[0.06]">
-                <img 
-                  src={selectedEquipment.image_url} 
-                  alt={selectedEquipment.name} 
-                  className="w-14 h-14 object-cover rounded-lg border border-white/[0.06]"
-                />
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white font-club">{selectedEquipment.name}</span>
-                    <span className="text-[11px] text-[#8193b2] font-mono">{selectedEquipment.serial_number}</span>
-                  </div>
-                  <p className="text-[11px] text-[#a9b9d3] line-clamp-1">{selectedEquipment.description}</p>
-                </div>
-              </div>
-            )}
-
-            {selectedEquipment?.category === 'camera' && (
-              selectedEquipment.id === 'e-5d2' ? (
-                <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs space-y-1">
-                  <div className="flex items-center gap-2 font-semibold text-blue-200">
-                    <Info className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>CompactFlash (CF) Kart Dahildir</span>
-                  </div>
-                  <p className="text-[11px] text-[#dce4ef] leading-relaxed">
-                    Canon EOS 5D Mark II gövdesi için 32GB CF kart ve USB okuyucu, çanta içerisinde kulüp tarafından hazır olarak teslim edilmektedir (SD kart girişi bulunmaz).
-                  </p>
-                </div>
-              ) : (
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs space-y-1">
-                  <div className="flex items-center gap-2 font-semibold text-[#dce4ef]">
-                    <AlertTriangle className="w-4 h-4 text-amber-300/80 shrink-0" />
-                    <span>SD Kart Uyarısı: Bu gövdeye SD kart dahil değildir</span>
-                  </div>
-                  <p className="text-[11px] text-[#a9b9d3] leading-relaxed">
-                    Lütfen çekime gelirken kendi SD kartınızı yanınızda getiriniz. Eğer SD kartınız yoksa aşağıdaki rezervasyon notunda belirtebilirsiniz.
-                  </p>
-                </div>
-              )
-            )}
-          </div>
-
-          {/* STEP 3: KULLANIM ALANI & TARIH ARALIGI */}
-          <div className="studio-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div className="flex items-center gap-3 pb-2 border-b border-white/[0.06]">
-              <span className="w-6 h-6 rounded-full bg-white/[0.1] text-white font-semibold text-xs flex items-center justify-center font-mono">
-                3
-              </span>
-              <div>
-                <h3 className="text-sm font-bold text-white font-club">Kullanım Alanı & Tarihler</h3>
-                <p className="text-[11px] text-[#a9b9d3]">Kulüp gezisi veya bireysel proje için kullanım amacınızı belirleyiniz.</p>
-              </div>
-            </div>
-
-            {/* Apple Segmented Selector: Gezi vs Bireysel */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setUsageType('trip');
-                  if (selectedTrip) applyTripDetails(selectedTrip);
-                }}
-                className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 cursor-pointer ${
-                  usageType === 'trip'
-                    ? 'bg-white/[0.1] border-white/[0.2] shadow-sm'
-                    : 'bg-[#12080f]/60 border-white/[0.06] hover:bg-white/[0.04]'
-                }`}
-              >
-                <div className={`p-2 rounded-lg shrink-0 mt-0.5 ${usageType === 'trip' ? 'bg-white/[0.1] text-white' : 'bg-white/[0.04] text-[#8193b2]'}`}>
-                  <Compass className="w-4 h-4" />
-                </div>
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <strong className={`text-xs font-semibold ${usageType === 'trip' ? 'text-white' : 'text-[#dce4ef]'}`}>
-                      Kulüp Gezisi
-                    </strong>
-                    <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-white/[0.06] text-[#a9b9d3]">
-                      Tüm Üyeler
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#8193b2] leading-relaxed">
-                    Aktif üyeler 5 gün, normal üyeler 3 gün önce rezerve eder.
-                  </p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setUsageType('custom');
-                  setPurpose('');
-                }}
-                className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 cursor-pointer ${
-                  usageType === 'custom'
-                    ? 'bg-white/[0.1] border-white/[0.2] shadow-sm'
-                    : 'bg-[#12080f]/60 border-white/[0.06] hover:bg-white/[0.04]'
-                }`}
-              >
-                <div className={`p-2 rounded-lg shrink-0 mt-0.5 ${usageType === 'custom' ? 'bg-white/[0.1] text-white' : 'bg-white/[0.04] text-[#8193b2]'}`}>
-                  {verifiedMember && !hasActivePrivileges ? (
-                    <Lock className="w-4 h-4 text-rose-300" />
-                  ) : (
-                    <Calendar className="w-4 h-4" />
                   )}
                 </div>
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <strong className={`text-xs font-semibold ${usageType === 'custom' ? 'text-white' : 'text-[#dce4ef]'}`}>
-                      Bireysel Çekim / Ders
-                    </strong>
-                    <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-white/[0.06] text-[#a9b9d3]">
-                      ★ Aktif Üyelere Özel
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#8193b2] leading-relaxed">
-                    Fakülte dersi, portre, serbest proje ve sergi (Maks 2 gün).
-                  </p>
-                </div>
-              </button>
+              )}
             </div>
 
-            {/* IF TRIP USAGE */}
-            {usageType === 'trip' && (
-              <div className="space-y-4 pt-1">
-                <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-semibold text-[#a9b9d3]">
-                    Tanımlı Kulüp Gezileri ({trips.length}):
-                  </label>
-                  <span className="text-[11px] text-[#dce4ef] font-mono">
-                    Bugün: {formatDateTr(todayStr)}
+            {/* 2. Kullanım Amacı & Gezi Seçimi */}
+            <div className="surface-card p-6 space-y-4">
+              <div className="space-y-1">
+                <span className="text-[11px] font-semibold text-[#8193b2] uppercase tracking-wider block">Adım 2</span>
+                <h3 className="text-base font-semibold text-white font-club">
+                  Kullanım Amacı
+                </h3>
+              </div>
+
+              {/* Segmented Selector */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsageType('trip');
+                    if (selectedTrip) applyTripDetails(selectedTrip);
+                  }}
+                  className={`p-4 rounded-lg border text-left transition-all cursor-pointer ${
+                    usageType === 'trip'
+                      ? 'border-white bg-white/[0.08]'
+                      : 'border-white/[0.08] bg-[#140a12] hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <strong className="text-xs text-white block">Kulüp Gezisi</strong>
+                  <span className="text-[11px] text-[#a9b9d3] block mt-0.5">
+                    Aktif üyeler 5 gün, normal üyeler 3 gün önce rezerve eder.
                   </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsageType('custom');
+                    setPurpose('');
+                  }}
+                  className={`p-4 rounded-lg border text-left transition-all cursor-pointer ${
+                    usageType === 'custom'
+                      ? 'border-white bg-white/[0.08]'
+                      : 'border-white/[0.08] bg-[#140a12] hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <strong className="text-xs text-white block">Bireysel Çekim / Ders</strong>
+                  <span className="text-[11px] text-[#a9b9d3] block mt-0.5">
+                    Yalnızca Aktif Üyelere Özel (Maksimum 2 gün).
+                  </span>
+                </button>
+              </div>
+
+              {/* If Trip */}
+              {usageType === 'trip' && (
+                <div className="space-y-3 pt-2">
+                  <label className="block text-xs font-medium text-white">Kulüp Gezisi Seçiniz:</label>
+                  {trips.length === 0 ? (
+                    <div className="p-4 rounded-lg bg-[#140a12] border border-white/[0.08] text-xs text-[#a9b9d3]">
+                      Şu anda tanımlı aktif kulüp gezisi bulunmamaktadır.
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {trips.map((trip) => {
+                        const isSelected = selectedTripId === trip.id;
+                        return (
+                          <div
+                            key={trip.id}
+                            onClick={() => handleTripSelect(trip)}
+                            className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
+                              isSelected
+                                ? 'border-white bg-white/[0.08]'
+                                : 'border-white/[0.08] bg-[#140a12] hover:bg-white/[0.04]'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <strong className="text-xs text-white">{trip.title}</strong>
+                              <span className="text-xs text-[#8193b2]">{formatDateRangeTr(trip.start_date, trip.end_date)}</span>
+                            </div>
+                            <span className="text-[11px] text-[#a9b9d3] block mt-0.5">{trip.destination}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {selectedTrip && tripEligibility && !tripEligibility.isOpen && (
+                    <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+                      Bu gezi için rezervasyon dönemi henüz açılmamıştır. Açılış tarihi: <strong>{formatDateTr(tripEligibility.openDate)}</strong>.
+                    </div>
+                  )}
                 </div>
+              )}
 
-                {loadingTrips ? (
-                  <div className="p-4 text-center text-xs text-[#8193b2]">Geziler yükleniyor...</div>
-                ) : trips.length === 0 ? (
-                  <div className="p-5 rounded-xl bg-[#12080f]/60 border border-white/[0.06] text-center space-y-2">
-                    <Compass className="w-6 h-6 text-[#8193b2] mx-auto opacity-70" />
-                    <p className="text-xs text-[#a9b9d3]">Şu anda sisteme tanımlı aktif bir gezi bulunmamaktadır.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2.5">
-                    {trips.map((trip) => {
-                      const isSelected = selectedTripId === trip.id;
-                      const activeOpenDate = checkTripBookingEligibility(trip.start_date, 'active');
-                      const normalOpenDate = checkTripBookingEligibility(trip.start_date, 'normal');
-
-                      return (
-                        <div
-                          key={trip.id}
-                          onClick={() => handleTripSelect(trip)}
-                          className={`p-4 rounded-xl border transition-all cursor-pointer space-y-2 ${
-                            isSelected
-                              ? 'bg-white/[0.08] border-white/[0.2] shadow-sm'
-                              : 'bg-[#12080f]/60 border-white/[0.06] hover:bg-white/[0.04]'
-                          }`}
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <strong className="text-sm font-bold text-white font-club">{trip.title}</strong>
-                                <span className="text-[10px] text-[#dce4ef] px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.08]">
-                                  {trip.destination}
-                                </span>
-                              </div>
-                              <p className="text-xs text-[#8193b2] mt-0.5">
-                                {formatDateRangeTr(trip.start_date, trip.end_date)}
-                              </p>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
-                              <span className={`px-2 py-0.5 rounded-full font-medium border ${
-                                activeOpenDate.isOpen
-                                  ? 'bg-emerald-500/12 text-emerald-200 border-emerald-500/25'
-                                  : 'bg-white/[0.04] text-[#8193b2] border-white/[0.06]'
-                              }`}>
-                                Aktif (5 Gün): {activeOpenDate.isOpen ? '🟢 Açık' : `⏳ ${formatDateTr(activeOpenDate.openDate)}`}
-                              </span>
-                              <span className={`px-2 py-0.5 rounded-full font-medium border ${
-                                normalOpenDate.isOpen
-                                  ? 'bg-emerald-500/12 text-emerald-200 border-emerald-500/25'
-                                  : 'bg-white/[0.04] text-[#8193b2] border-white/[0.06]'
-                              }`}>
-                                Normal (3 Gün): {normalOpenDate.isOpen ? '🔵 Açık' : `⏳ ${formatDateTr(normalOpenDate.openDate)}`}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Selected Trip Eligibility Verdict */}
-                {selectedTrip && (
-                  <div className="space-y-3 pt-1">
-                    {verifiedMember ? (
-                      tripEligibility?.isOpen ? (
-                        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[#dce4ef] text-xs flex items-start gap-3">
-                          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                          <div className="space-y-1">
-                            <strong className="font-bold text-white text-xs block">
-                              Rezervasyona Açık: {selectedTrip.title}
-                            </strong>
-                            <p className="leading-relaxed text-[#a9b9d3]">
-                              Teslim ({selectedTrip.start_date}) ve iade ({selectedTrip.end_date}) tarihleri gezi takvimine göre ayarlandı.
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[#dce4ef] text-xs flex items-start gap-3">
-                          <Clock className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
-                          <div className="space-y-1">
-                            <strong className="font-bold text-amber-200 text-xs block">
-                              Rezervasyon Dönemi Henüz Açılmadı
-                            </strong>
-                            <p className="leading-relaxed text-[#a9b9d3]">
-                              Bu gezi için açılış tarihi: <strong>{formatDateTr(tripEligibility?.openDate || '')}</strong> ({tripEligibility?.daysUntilOpen} gün sonra açılacak).
-                            </p>
-                          </div>
-                        </div>
-                      )
-                    ) : null}
-
-                    <div>
-                      <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">
-                        Gezi Notu / Açıklama (Opsiyonel):
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Örn: 24-70mm lens ile manzara çekimi yapacağım..."
-                        value={tripCustomNotes}
-                        onChange={(e) => setTripCustomNotes(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white text-xs"
-                      />
+              {/* If Custom */}
+              {usageType === 'custom' && (
+                <div className="space-y-3 pt-2">
+                  {verifiedMember && !hasActivePrivileges ? (
+                    <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-200">
+                      Bireysel çekim ve ders projeleri için ekipman rezervasyonu kulüp yönergesi uyarınca yalnızca <strong>Aktif Üyelere</strong> açıktır. Lütfen Kulüp Gezisi seçeneğini tercih ediniz.
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* IF CUSTOM USAGE */}
-            {usageType === 'custom' && (
-              <div className="space-y-4 pt-1">
-                {!verifiedMember ? (
-                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs space-y-1.5">
-                    <div className="flex items-center gap-2 text-white font-bold font-club">
-                      <Sparkles className="w-4 h-4 text-[#8193b2]" />
-                      <span>Bireysel Rezervasyon Yalnızca Aktif Üyelere Açıktır</span>
-                    </div>
-                    <p className="text-[#a9b9d3] leading-relaxed">
-                      Lütfen yukarıdaki 1. Adım'dan öğrenci numaranızı doğrulayınız. Normal üyeler ekipman rezervasyonunu kulüp gezilerinde yapabilir.
-                    </p>
-                  </div>
-                ) : !hasActivePrivileges ? (
-                  <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs space-y-2">
-                    <strong className="text-rose-200 text-xs block">
-                      Bireysel Ekipman Rezervasyonu Normal Üyelere Kapalıdır
-                    </strong>
-                    <p className="text-[#dce4ef] leading-relaxed text-[11px]">
-                      Sayın {verifiedMember.full_name}, kulüp tüzüğü uyarınca bireysel çekim izni yalnızca Aktif Üyelere açıktır. Kamera rezerve etmek için lütfen <strong>Kulüp Gezisi</strong> seçeneğini tercih ediniz.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUsageType('trip');
-                        if (selectedTrip) applyTripDetails(selectedTrip);
-                      }}
-                      className="px-3.5 py-1.5 rounded-full bg-white/[0.1] text-white text-xs font-semibold"
-                    >
-                      Kulüp Gezisi Rezervasyonuna Geç
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">Teslim Alma:</label>
-                        <input
-                          type="date"
-                          value={pickupDate}
-                          min={todayStr}
-                          onChange={(e) => {
-                            const newPickup = e.target.value;
-                            setPickupDate(newPickup);
-                            const isUnrestricted = memberTier === 'board' || memberTier === 'audit';
-                            if (!isUnrestricted && newPickup) {
-                              const p = parseDate(newPickup);
-                              p.setDate(p.getDate() + 2);
-                              const maxRet = getLocalDateString(p);
-                              if (returnDate > maxRet || returnDate < newPickup) {
-                                setReturnDate(maxRet);
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-white mb-1">Teslim Alma:</label>
+                          <input
+                            type="date"
+                            value={pickupDate}
+                            min={todayStr}
+                            onChange={(e) => {
+                              const newPickup = e.target.value;
+                              setPickupDate(newPickup);
+                              const isUnrestricted = memberTier === 'board' || memberTier === 'audit';
+                              if (!isUnrestricted && newPickup) {
+                                const p = parseDate(newPickup);
+                                p.setDate(p.getDate() + 2);
+                                const maxRet = getLocalDateString(p);
+                                if (returnDate > maxRet || returnDate < newPickup) {
+                                  setReturnDate(maxRet);
+                                }
                               }
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-white mb-1">İade Tarihi (Maks 2 Gün):</label>
+                          <input
+                            type="date"
+                            value={returnDate}
+                            min={pickupDate}
+                            max={
+                              memberTier === 'board' || memberTier === 'audit' || !pickupDate
+                                ? undefined
+                                : (() => {
+                                    const p = parseDate(pickupDate);
+                                    p.setDate(p.getDate() + 2);
+                                    return getLocalDateString(p);
+                                  })()
                             }
-                          }}
-                          className="w-full px-3 py-2 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white text-xs"
-                          required
-                        />
+                            onChange={(e) => setReturnDate(e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs"
+                            required
+                          />
+                        </div>
                       </div>
+
                       <div>
-                        <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">İade Tarihi (Maks 2 Gün):</label>
-                        <input
-                          type="date"
-                          value={returnDate}
-                          min={pickupDate}
-                          max={
-                            memberTier === 'board' || memberTier === 'audit' || !pickupDate
-                              ? undefined
-                              : (() => {
-                                  const p = parseDate(pickupDate);
-                                  p.setDate(p.getDate() + 2);
-                                  return getLocalDateString(p);
-                                })()
-                          }
-                          onChange={(e) => setReturnDate(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white text-xs"
+                        <label className="block text-xs font-medium text-white mb-1">Kullanım Amacı / Proje:</label>
+                        <textarea
+                          rows={2}
+                          placeholder="Örn: Mimarlık Fakültesi Final Proje Çekimi..."
+                          value={purpose}
+                          onChange={(e) => setPurpose(e.target.value)}
+                          className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs"
                           required
                         />
                       </div>
-                    </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
 
-                    <div>
-                      <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">Kullanım Amacı / Proje:</label>
-                      <textarea
-                        rows={2}
-                        placeholder="Örnek: Mimarlık Fakültesi Final Proje Çekimi..."
-                        value={purpose}
-                        onChange={(e) => setPurpose(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white text-xs"
-                        required
-                      />
-                    </div>
-                  </>
-                )}
+            {/* 3. Notlar & Kural Onayı */}
+            <div className="surface-card p-6 space-y-4">
+              <div className="space-y-1">
+                <span className="text-[11px] font-semibold text-[#8193b2] uppercase tracking-wider block">Adım 3</span>
+                <h3 className="text-base font-semibold text-white font-club">
+                  Notlar & Kural Onayı
+                </h3>
               </div>
-            )}
 
-            {/* Ek Notlar & SD Kart Notu */}
-            <div className="space-y-2 pt-3 border-t border-white/[0.06]">
-              <div className="flex items-center justify-between">
-                <label className="block text-[11px] font-semibold text-[#a9b9d3]">
-                  Rezervasyon Notu (Opsiyonel):
+              <div>
+                <label className="block text-xs font-medium text-white mb-1">Özel Not / SD Kart Durumu (Opsiyonel):</label>
+                <textarea
+                  rows={2}
+                  placeholder="Ekipman teslim saati veya SD kart durumunuzu yazabilirsiniz..."
+                  value={additionalNotes}
+                  onChange={(e) => setAdditionalNotes(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs"
+                />
+              </div>
+
+              <div className="pt-2">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={rulesAccepted}
+                    onChange={(e) => setRulesAccepted(e.target.checked)}
+                    className="mt-0.5 rounded bg-[#140a12] border-white/20 text-white"
+                  />
+                  <span className="text-xs text-[#a9b9d3] leading-relaxed">
+                    Ekipmanı <strong>yalnızca Kulüpler Vadisi, Davutpaşa Kampüsü</strong> noktasından öğrenci kimliğimle teslim alacağımı ve eksiksiz olarak <strong>yalnızca bu noktaya</strong> iade edeceğimi kabul ediyorum.
+                  </span>
                 </label>
               </div>
-              <textarea
-                rows={2}
-                placeholder="Ekipman teslimi veya saat tercihinizi buraya yazabilirsiniz..."
-                value={additionalNotes}
-                onChange={(e) => setAdditionalNotes(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white text-xs"
-              />
-              {selectedEquipment?.category === 'camera' && selectedEquipment.id !== 'e-5d2' && (
-                <div className="flex flex-wrap gap-2 pt-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setAdditionalNotes("Kendi SD kartımı getireceğim.")}
-                    className="px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-[#dce4ef] border border-white/[0.08] cursor-pointer"
-                  >
-                    ✓ Kendi SD kartımı getireceğim
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAdditionalNotes("Kendi SD kartım yok, kulüp desteği rica ediyorum.")}
-                    className="px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-[#dce4ef] border border-white/[0.08] cursor-pointer"
-                  >
-                    ⚠️ SD kartım yok, kulüp desteği rica ediyorum
-                  </button>
+            </div>
+
+          </div>
+
+          {/* Right Column: Airbnb Booking Summary Sidebar */}
+          <div className="lg:col-span-5 sticky top-20 space-y-4">
+            <div className="surface-card p-6 space-y-6 border border-white/[0.12]">
+              <h3 className="text-base font-semibold text-white font-club pb-3 border-b border-white/[0.08]">
+                Rezervasyon Özeti
+              </h3>
+
+              {/* Selected Equipment */}
+              <div className="space-y-2">
+                <label className="block text-xs font-medium text-[#8193b2]">Seçili Ekipman:</label>
+                <select
+                  value={selectedEquipmentId}
+                  onChange={(e) => setSelectedEquipmentId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs cursor-pointer focus:outline-none"
+                >
+                  {equipmentList.map((item) => (
+                    <option key={item.id} value={item.id} disabled={item.status === 'maintenance'}>
+                      {item.name} ({item.brand}) - [{item.serial_number}]
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedEquipment && (
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-[#140a12] border border-white/[0.06]">
+                  <img 
+                    src={selectedEquipment.image_url} 
+                    alt={selectedEquipment.name} 
+                    className="w-16 h-12 object-cover rounded border border-white/[0.06]"
+                  />
+                  <div className="text-xs space-y-0.5">
+                    <strong className="text-white block font-club">{selectedEquipment.name}</strong>
+                    <span className="text-[#8193b2] font-mono text-[11px] block">{selectedEquipment.serial_number}</span>
+                  </div>
                 </div>
               )}
-            </div>
 
-            {/* Kural Onay Checkbox */}
-            <div className="pt-2 border-t border-white/[0.06]">
-              <label className="flex items-start gap-2.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={rulesAccepted}
-                  onChange={(e) => setRulesAccepted(e.target.checked)}
-                  className="mt-0.5 rounded bg-[#12080f] border-white/[0.1] text-[#657796]"
-                />
-                <span className="text-[11px] text-[#dce4ef] leading-relaxed">
-                  Ekipmanı <strong>yalnızca Kulüpler Vadisi (Davutpaşa Kampüsü)</strong> noktasından öğrenci kimliğimle teslim alacağımı ve iademi de eksiksiz olarak <strong>yalnızca bu noktaya</strong> yapacağımı kabul ediyorum.
-                </span>
-              </label>
+              {/* Booking Dates Breakdown */}
+              <div className="space-y-2 text-xs border-t border-white/[0.06] pt-4">
+                <div className="flex justify-between text-[#a9b9d3]">
+                  <span>Kullanım Türü:</span>
+                  <strong className="text-white">{usageType === 'trip' ? 'Kulüp Gezisi' : 'Bireysel Çekim'}</strong>
+                </div>
+                <div className="flex justify-between text-[#a9b9d3]">
+                  <span>Teslim Alma:</span>
+                  <strong className="text-white font-mono">{pickupDate}</strong>
+                </div>
+                <div className="flex justify-between text-[#a9b9d3]">
+                  <span>İade Tarihi:</span>
+                  <strong className="text-white font-mono">{returnDate}</strong>
+                </div>
+                <div className="flex justify-between text-[#a9b9d3]">
+                  <span>Teslimat Yeri:</span>
+                  <strong className="text-white">Davutpaşa Kulüpler Vadisi</strong>
+                </div>
+              </div>
+
+              {/* Submit CTA */}
+              <div className="pt-2 border-t border-white/[0.08]">
+                <button
+                  type="submit"
+                  disabled={
+                    submitting ||
+                    !verifiedMember ||
+                    !rulesAccepted ||
+                    (usageType === 'trip' && tripEligibility ? !tripEligibility.isOpen : false) ||
+                    (usageType === 'custom' && !hasActivePrivileges)
+                  }
+                  className="w-full py-3 rounded-lg bg-white hover:bg-[#dce4ef] text-[#12080f] font-semibold text-sm transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm active:scale-[0.98]"
+                >
+                  {submitting ? 'Talebiniz Gönderiliyor...' : 'Rezervasyon Talebini Onayla'}
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Submit Action */}
-          <div className="text-center pt-2">
-            <button
-              type="submit"
-              disabled={
-                submitting ||
-                !verifiedMember ||
-                !rulesAccepted ||
-                (usageType === 'trip' && tripEligibility ? !tripEligibility.isOpen : false) ||
-                (usageType === 'custom' && !hasActivePrivileges)
-              }
-              className={`w-full sm:w-auto px-10 py-3.5 rounded-full font-semibold text-xs tracking-wide transition-all cursor-pointer ${
-                submitting ||
-                !verifiedMember ||
-                !rulesAccepted ||
-                (usageType === 'trip' && tripEligibility ? !tripEligibility.isOpen : false) ||
-                (usageType === 'custom' && !hasActivePrivileges)
-                  ? 'bg-white/[0.05] text-[#a9b9d3]/40 border border-white/[0.06] cursor-not-allowed'
-                  : 'bg-[#dce4ef] hover:bg-white text-[#12080f] shadow-[0_4px_20px_rgba(220,228,239,0.15)] active:scale-[0.98]'
-              }`}
-            >
-              {submitting ? (
-                'Talebiniz Kaydediliyor...'
-              ) : usageType === 'custom' && verifiedMember && !hasActivePrivileges ? (
-                'Bireysel Çekim Yalnızca Aktif Üyelere Açıktır'
-              ) : usageType === 'trip' && tripEligibility && !tripEligibility.isOpen ? (
-                `Rezervasyon Henüz Açılmadı (${formatDateTr(tripEligibility.openDate)})`
-              ) : (
-                'Rezervasyon Talebini Gönder (Onay Bekliyor)'
-              )}
-            </button>
-          </div>
         </form>
       )}
+
     </div>
   );
 };

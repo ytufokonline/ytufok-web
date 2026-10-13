@@ -28,13 +28,13 @@ import {
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
 // ==========================================
-// ORTAK BULUT VERİTABANI (REAL-TIME CLOUD DB)
-// Tüm cihazlar (bilgisayar, telefon, tablet, gizli sekme)
-// verileri doğrudan ortak bulut kanallarından anlık okur ve yazar.
+// TEKİL BİRLEŞİK BULUT VERİTABANI (UNIFIED CLOUD DB) & SUPABASE
+// Tüm koleksiyonlar (geziler, duyurular, şifreler, rezervasyonlar,
+// karanlık oda, ekipman durumları, üye işlemleri) tek bir birleşik
+// bulut isteğiyle (0 rate-limit) ve/veya Supabase üzerinden senkronize edilir.
 // ==========================================
-const CLOUD_SYNC_BASE = 'https://ntfy.sh';
-const TOPIC_PREFIX = 'ytufok_prod_db_v5_948172_';
-const BACKUP_PREFIX = 'ytufok_cloud_snap_v5_';
+const UNIFIED_NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
+const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v6';
 
 type CloudCollectionKey =
   | 'admin_profiles'
@@ -43,6 +43,7 @@ type CloudCollectionKey =
   | 'darkroom'
   | 'darkroom_slots'
   | 'trips'
+  | 'announcements'
   | 'member_deltas';
 
 interface AdminPinRecord {
@@ -62,11 +63,16 @@ interface MemberDeltas {
   added: Member[];
 }
 
-// Eski localStorage anahtarlarını temizle (yalnızca bulut yedeği korunur)
+interface UnifiedStateEnvelope {
+  updatedAt: number;
+  collections: Partial<Record<CloudCollectionKey, any>>;
+}
+
+// Eski localStorage anahtarlarını temizle
 try {
   if (typeof window !== 'undefined' && window.localStorage) {
     Object.keys(window.localStorage).forEach((k) => {
-      if (k.startsWith('ytufok_') && !k.startsWith(BACKUP_PREFIX)) {
+      if (k.startsWith('ytufok_') && k !== SNAPSHOT_KEY) {
         window.localStorage.removeItem(k);
       }
     });
@@ -75,7 +81,6 @@ try {
   // ignore
 }
 
-// Aktif yönetici oturumu yalnızca mevcut sekmede (sessionStorage) tutulur
 let activeSessionAdminId: string | null = null;
 try {
   if (typeof window !== 'undefined' && window.sessionStorage) {
@@ -85,25 +90,86 @@ try {
   // ignore
 }
 
-const inFlightReads: Partial<Record<CloudCollectionKey, Promise<any>>> = {};
-const shortTermCache: Partial<Record<CloudCollectionKey, { timestamp: number; value: any }>> = {};
-const CACHE_TTL_MS = 1000;
+let memoryState: UnifiedStateEnvelope | null = null;
+let lastFetchTimestamp = 0;
+let inFlightUnifiedFetch: Promise<UnifiedStateEnvelope> | null = null;
+const UNIFIED_CACHE_TTL_MS = 1500;
 
-function saveCloudSnapshot<T>(key: CloudCollectionKey, value: T): void {
+function loadSnapshot(): UnifiedStateEnvelope {
+  if (memoryState) return memoryState;
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(BACKUP_PREFIX + key, JSON.stringify(value));
+      const raw = window.localStorage.getItem(SNAPSHOT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as UnifiedStateEnvelope;
+        if (parsed && typeof parsed === 'object' && parsed.collections) {
+          memoryState = parsed;
+          return parsed;
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return { updatedAt: 0, collections: {} };
+}
+
+function saveSnapshot(envelope: UnifiedStateEnvelope): void {
+  memoryState = envelope;
+  lastFetchTimestamp = Date.now();
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(envelope));
     }
   } catch {
     // ignore
   }
 }
 
-function loadCloudSnapshot<T>(key: CloudCollectionKey): T | null {
+async function fetchDirectNtfyUnified(): Promise<UnifiedStateEnvelope | null> {
   try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const raw = window.localStorage.getItem(BACKUP_PREFIX + key);
-      if (raw) return JSON.parse(raw) as T;
+    const res = await fetch(`https://ntfy.sh/${UNIFIED_NTFY_TOPIC}/json?poll=1&since=12h`, {
+      method: 'GET',
+      cache: 'no-store'
+    });
+    if (!res.ok) return null;
+    const text = await res.text();
+    if (!text || !text.trim()) return null;
+
+    const lines = text
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+      .map((line) => {
+        try {
+          return JSON.parse(line);
+        } catch {
+          return null;
+        }
+      })
+      .filter(
+        (evt) =>
+          evt &&
+          evt.event === 'message' &&
+          typeof evt.message === 'string' &&
+          (evt.message.startsWith('YTUFOK_STATE:') || evt.message.startsWith('YTUFOK_PTR:'))
+      );
+
+    if (lines.length === 0) return null;
+    const last = lines[lines.length - 1];
+
+    if (last.message.startsWith('YTUFOK_PTR:')) {
+      const ptr = JSON.parse(last.message.slice(11));
+      if (ptr?.inline && ptr.inline.collections) {
+        return ptr.inline as UnifiedStateEnvelope;
+      }
+    }
+
+    if (last.message.startsWith('YTUFOK_STATE:')) {
+      const parsed = JSON.parse(last.message.slice(13)) as UnifiedStateEnvelope;
+      if (parsed && parsed.collections) {
+        return parsed;
+      }
     }
   } catch {
     // ignore
@@ -111,109 +177,132 @@ function loadCloudSnapshot<T>(key: CloudCollectionKey): T | null {
   return null;
 }
 
+async function fetchUnifiedState(forceFresh = false): Promise<UnifiedStateEnvelope> {
+  const now = Date.now();
+  if (!forceFresh && memoryState && now - lastFetchTimestamp < UNIFIED_CACHE_TTL_MS) {
+    return memoryState;
+  }
+
+  if (!forceFresh && inFlightUnifiedFetch) {
+    return inFlightUnifiedFetch;
+  }
+
+  const promise = (async (): Promise<UnifiedStateEnvelope> => {
+    const fallback = loadSnapshot();
+
+    // 1. Önce aynı domaindeki Vercel Serverless API (/api/db) üzerinden dene (Rate-limit yok, Bytebin + Ntfy destekli)
+    try {
+      const apiRes = await fetch(`/api/db?_t=${Date.now()}`, {
+        method: 'GET',
+        cache: 'no-store',
+        headers: { Accept: 'application/json' }
+      });
+      const contentType = apiRes.headers.get('content-type') || '';
+      if (apiRes.ok && contentType.includes('application/json')) {
+        const data = (await apiRes.json()) as UnifiedStateEnvelope;
+        if (data && data.collections && Object.keys(data.collections).length > 0) {
+          if (!fallback.updatedAt || (data.updatedAt || 0) >= fallback.updatedAt) {
+            saveSnapshot(data);
+            return data;
+          }
+        }
+      }
+    } catch {
+      // /api/db mevcut değilse (örn. vite dev server) doğrudan bulut kanalına geç
+    }
+
+    // 2. Doğrudan tekil birleşik bulut kanalından (1 tek istek) oku
+    const direct = await fetchDirectNtfyUnified();
+    if (direct && direct.collections && Object.keys(direct.collections).length > 0) {
+      if (!fallback.updatedAt || (direct.updatedAt || 0) >= fallback.updatedAt) {
+        saveSnapshot(direct);
+        return direct;
+      }
+    }
+
+    return fallback;
+  })();
+
+  inFlightUnifiedFetch = promise;
+  try {
+    return await promise;
+  } finally {
+    inFlightUnifiedFetch = null;
+  }
+}
+
 async function readCloudCollection<T>(
   key: CloudCollectionKey,
   defaultValue: T,
   forceFresh = false
 ): Promise<T> {
-  const now = Date.now();
-  if (!forceFresh && shortTermCache[key] && now - shortTermCache[key]!.timestamp < CACHE_TTL_MS) {
-    return shortTermCache[key]!.value as T;
+  const envelope = await fetchUnifiedState(forceFresh);
+  const val = envelope.collections?.[key];
+  if (val !== undefined && val !== null) {
+    return val as T;
   }
-
-  if (!forceFresh && inFlightReads[key]) {
-    return inFlightReads[key] as Promise<T>;
-  }
-
-  const topic = `${TOPIC_PREFIX}${key}`;
-  const fetchPromise = (async (): Promise<T> => {
-    try {
-      const res = await fetch(`${CLOUD_SYNC_BASE}/${topic}/json?poll=1&since=12h`, {
-        method: 'GET',
-        cache: 'no-store'
-      });
-
-      if (res.ok) {
-        const text = await res.text();
-        if (text && text.trim().length > 0) {
-          const lines = text
-            .trim()
-            .split('\n')
-            .filter(Boolean)
-            .map((line) => {
-              try {
-                return JSON.parse(line);
-              } catch {
-                return null;
-              }
-            })
-            .filter(
-              (evt) =>
-                evt &&
-                evt.event === 'message' &&
-                typeof evt.message === 'string' &&
-                evt.message.startsWith('YTUFOK:')
-            );
-
-          if (lines.length > 0) {
-            const latestEvt = lines[lines.length - 1];
-            const parsed = JSON.parse(latestEvt.message.slice(7)) as T;
-            shortTermCache[key] = { timestamp: Date.now(), value: parsed };
-            saveCloudSnapshot(key, parsed);
-
-            // Kayıt 2 saatten eskiyse bulut TTL süresini otomatik yenile
-            const nowSec = Math.floor(Date.now() / 1000);
-            if (latestEvt.time && nowSec - latestEvt.time > 7200) {
-              writeCloudCollection(key, parsed).catch(() => {});
-            }
-
-            return parsed;
-          }
-        }
-
-        // Bulut kanalı henüz boşsa ve cihazda daha önce senkronize edilmiş yedek varsa buluta geri yükle
-        const snapshot = loadCloudSnapshot<T>(key);
-        if (snapshot !== null) {
-          shortTermCache[key] = { timestamp: Date.now(), value: snapshot };
-          writeCloudCollection(key, snapshot).catch(() => {});
-          return snapshot;
-        }
-      }
-    } catch (err) {
-      console.error(`Cloud sync read error (${key}):`, err);
-      const snapshot = loadCloudSnapshot<T>(key);
-      if (snapshot !== null) return snapshot;
-    }
-
-    return defaultValue;
-  })();
-
-  inFlightReads[key] = fetchPromise;
-  try {
-    return await fetchPromise;
-  } finally {
-    delete inFlightReads[key];
-  }
+  return defaultValue;
 }
 
 async function writeCloudCollection<T>(key: CloudCollectionKey, items: T): Promise<boolean> {
-  const topic = `${TOPIC_PREFIX}${key}`;
-  shortTermCache[key] = { timestamp: Date.now(), value: items };
-  saveCloudSnapshot(key, items);
+  const current = await fetchUnifiedState(true);
+  const nextEnvelope: UnifiedStateEnvelope = {
+    updatedAt: Date.now(),
+    collections: {
+      ...(current.collections || {}),
+      [key]: items
+    }
+  };
 
+  saveSnapshot(nextEnvelope);
+
+  let savedOnServer = false;
+
+  // 1. Vercel Serverless API (/api/db) üzerinden kaydet (Bytebin + Ntfy + Sunucu Belleği)
   try {
-    const res = await fetch(`${CLOUD_SYNC_BASE}/${topic}`, {
+    const apiRes = await fetch('/api/db', {
       method: 'POST',
       headers: {
-        'Content-Type': 'text/plain;charset=UTF-8'
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
       },
-      body: 'YTUFOK:' + JSON.stringify(items)
+      body: JSON.stringify({
+        key,
+        value: items,
+        collections: nextEnvelope.collections
+      })
     });
-    return res.ok;
-  } catch (err) {
-    console.error(`Cloud sync write error (${key}):`, err);
-    return false;
+    const contentType = apiRes.headers.get('content-type') || '';
+    if (apiRes.ok && contentType.includes('application/json')) {
+      const json = await apiRes.json();
+      if (json?.ok) {
+        savedOnServer = true;
+      }
+    }
+  } catch {
+    // ignore
   }
+
+  // 2. Eğer /api/db çalışmadıysa (örn. local dev) doğrudan tekil bulut kanalına yaz
+  if (!savedOnServer) {
+    try {
+      const rawState = JSON.stringify(nextEnvelope);
+      const res = await fetch(`https://ntfy.sh/${UNIFIED_NTFY_TOPIC}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=UTF-8'
+        },
+        body: `YTUFOK_STATE:${rawState}`
+      });
+      if (res.ok) {
+        savedOnServer = true;
+      }
+    } catch (err) {
+      console.error(`Cloud write error (${key}):`, err);
+    }
+  }
+
+  return savedOnServer;
 }
 
 const stripReservationRelations = (r: Reservation): Reservation => {
@@ -344,7 +433,7 @@ export const api = {
           .select('*')
           .order('name', { ascending: true });
 
-        if (!error && data) {
+        if (!error && data && data.length > 0) {
           return data as Equipment[];
         }
       } catch (err) {
@@ -379,7 +468,7 @@ export const api = {
   async addEquipment(equipment: Omit<Equipment, 'id'>): Promise<Equipment> {
     const newEquipment: Equipment = {
       ...equipment,
-      id: `e-${Date.now()}`
+      id: isSupabaseConfigured() ? crypto.randomUUID() : `e-${Date.now()}`
     };
 
     if (isSupabaseConfigured()) {
@@ -521,7 +610,9 @@ export const api = {
     const reservation_code = `YTU-2026-${codeSuffix}`;
 
     const newReservation: Reservation = {
-      id: `r-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
+      id: isSupabaseConfigured()
+        ? crypto.randomUUID()
+        : `r-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
       reservation_code,
       equipment_id: payload.equipment_id,
       member_id: member.id,
@@ -712,9 +803,25 @@ export const api = {
 
   // ==========================================
   // YÖNETİM KURULU PROFİLLERİ (ADMIN ACCOUNTS)
-  // Doğrudan ortak bulut veritabanından okunur ve yazılır.
   // ==========================================
   async getAdminProfiles(): Promise<AdminProfile[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('admin_profiles')
+          .select('*')
+          .order('id', { ascending: true });
+        if (!error && data && data.length > 0) {
+          return INITIAL_ADMIN_PROFILES.map((def) => {
+            const match = data.find((d: any) => d.id === def.id);
+            return match ? { ...def, pin: match.pin || def.pin, pin_updated_at: match.pin_updated_at } : def;
+          });
+        }
+      } catch (err) {
+        console.warn('Supabase getAdminProfiles error:', err);
+      }
+    }
+
     const pinMap = await readCloudCollection<AdminPinMap | AdminProfile[]>(
       'admin_profiles',
       {},
@@ -808,7 +915,16 @@ export const api = {
 
     profiles[targetIndex] = updatedProfile;
 
-    // Kompakt şifre haritası oluştur (tüm cihazlarda hızlı senkronizasyon için)
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase
+          .from('admin_profiles')
+          .upsert([{ id: adminId, pin: cleanNew, pin_updated_at: nowIso }]);
+      } catch (err) {
+        console.warn('Supabase updateAdminPin error:', err);
+      }
+    }
+
     const pinMap: AdminPinMap = {};
     profiles.forEach((p) => {
       pinMap[p.id] = {
@@ -817,13 +933,7 @@ export const api = {
       };
     });
 
-    const saved = await writeCloudCollection('admin_profiles', pinMap);
-    if (!saved) {
-      return {
-        success: false,
-        message: 'Şifre bulut veritabanına kaydedilirken bağlantı hatası oluştu. Lütfen tekrar deneyin.'
-      };
-    }
+    await writeCloudCollection('admin_profiles', pinMap);
 
     return {
       success: true,
@@ -843,7 +953,7 @@ export const api = {
           .select('*')
           .order('full_name', { ascending: true });
 
-        if (!error && data) {
+        if (!error && data && data.length > 0) {
           return data as Member[];
         }
       } catch (err) {
@@ -872,7 +982,7 @@ export const api = {
   async addMember(member: Omit<Member, 'id'>): Promise<Member> {
     const newMember: Member = {
       ...member,
-      id: `m-${Date.now()}`
+      id: isSupabaseConfigured() ? crypto.randomUUID() : `m-${Date.now()}`
     };
 
     if (isSupabaseConfigured()) {
@@ -957,13 +1067,98 @@ export const api = {
           .order('is_pinned', { ascending: false })
           .order('created_at', { ascending: false });
 
-        if (!error && data) return data as Announcement[];
+        if (!error && data && data.length > 0) return data as Announcement[];
       } catch (err) {
         console.warn('Supabase getAnnouncements error:', err);
       }
     }
 
-    return INITIAL_ANNOUNCEMENTS;
+    const list = await readCloudCollection<Announcement[]>(
+      'announcements',
+      INITIAL_ANNOUNCEMENTS
+    );
+    return [...list].sort((a, b) => {
+      if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+  },
+
+  async createAnnouncement(
+    payload: Omit<Announcement, 'id' | 'created_at'>
+  ): Promise<Announcement> {
+    const newAnn: Announcement = {
+      ...payload,
+      id: isSupabaseConfigured() ? crypto.randomUUID() : `ann-${Date.now()}`,
+      created_at: new Date().toISOString()
+    };
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('announcements')
+          .insert([newAnn])
+          .select()
+          .single();
+        if (!error && data) return data as Announcement;
+      } catch (err) {
+        console.warn('Supabase createAnnouncement error:', err);
+      }
+    }
+
+    const current = await readCloudCollection<Announcement[]>(
+      'announcements',
+      INITIAL_ANNOUNCEMENTS,
+      true
+    );
+    await writeCloudCollection('announcements', [newAnn, ...current]);
+    return newAnn;
+  },
+
+  async updateAnnouncement(
+    id: string,
+    updates: Partial<Announcement>
+  ): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('announcements')
+          .update(updates)
+          .eq('id', id);
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase updateAnnouncement error:', err);
+      }
+    }
+
+    const current = await readCloudCollection<Announcement[]>(
+      'announcements',
+      INITIAL_ANNOUNCEMENTS,
+      true
+    );
+    const updated = current.map((a) => (a.id === id ? { ...a, ...updates } : a));
+    return await writeCloudCollection('announcements', updated);
+  },
+
+  async deleteAnnouncement(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('announcements')
+          .delete()
+          .eq('id', id);
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase deleteAnnouncement error:', err);
+      }
+    }
+
+    const current = await readCloudCollection<Announcement[]>(
+      'announcements',
+      INITIAL_ANNOUNCEMENTS,
+      true
+    );
+    const updated = current.filter((a) => a.id !== id);
+    return await writeCloudCollection('announcements', updated);
   },
 
   async getGallery(): Promise<GalleryItem[]> {
@@ -974,7 +1169,7 @@ export const api = {
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (!error && data) return data as GalleryItem[];
+        if (!error && data && data.length > 0) return data as GalleryItem[];
       } catch (err) {
         console.warn('Supabase getGallery error:', err);
       }
@@ -987,6 +1182,17 @@ export const api = {
   // 6. KARANLIK ODA (DARKROOM) İŞLEMLERİ
   // ==========================================
   async getDarkroomSlots(): Promise<DarkroomSlot[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('darkroom_slots')
+          .select('*')
+          .order('date', { ascending: true });
+        if (!error && data) return data as DarkroomSlot[];
+      } catch (err) {
+        console.warn('Supabase getDarkroomSlots error:', err);
+      }
+    }
     return await readCloudCollection<DarkroomSlot[]>('darkroom_slots', DARKROOM_SLOTS);
   },
 
@@ -1000,11 +1206,6 @@ export const api = {
   },
 
   async createDarkroomSlot(slot: Omit<DarkroomSlot, 'id'>): Promise<DarkroomSlot> {
-    const current = await readCloudCollection<DarkroomSlot[]>(
-      'darkroom_slots',
-      DARKROOM_SLOTS,
-      true
-    );
     const uniqueId = `dslot-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
     const newSlot: DarkroomSlot = {
       ...slot,
@@ -1012,6 +1213,25 @@ export const api = {
       is_active: slot.is_active !== undefined ? slot.is_active : true,
       created_at: new Date().toISOString()
     };
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('darkroom_slots')
+          .insert([newSlot])
+          .select()
+          .single();
+        if (!error && data) return data as DarkroomSlot;
+      } catch (err) {
+        console.warn('Supabase createDarkroomSlot error:', err);
+      }
+    }
+
+    const current = await readCloudCollection<DarkroomSlot[]>(
+      'darkroom_slots',
+      DARKROOM_SLOTS,
+      true
+    );
     const updated = [newSlot, ...current];
     await writeCloudCollection('darkroom_slots', updated);
     return newSlot;
@@ -1020,11 +1240,6 @@ export const api = {
   async createBulkDarkroomSlots(
     slots: Array<Omit<DarkroomSlot, 'id'>>
   ): Promise<DarkroomSlot[]> {
-    const current = await readCloudCollection<DarkroomSlot[]>(
-      'darkroom_slots',
-      DARKROOM_SLOTS,
-      true
-    );
     const createdNow = new Date().toISOString();
     const newSlots: DarkroomSlot[] = slots.map((s, idx) => ({
       ...s,
@@ -1032,12 +1247,39 @@ export const api = {
       is_active: s.is_active !== undefined ? s.is_active : true,
       created_at: createdNow
     }));
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('darkroom_slots')
+          .insert(newSlots)
+          .select();
+        if (!error && data) return data as DarkroomSlot[];
+      } catch (err) {
+        console.warn('Supabase createBulkDarkroomSlots error:', err);
+      }
+    }
+
+    const current = await readCloudCollection<DarkroomSlot[]>(
+      'darkroom_slots',
+      DARKROOM_SLOTS,
+      true
+    );
     const updated = [...newSlots, ...current];
     await writeCloudCollection('darkroom_slots', updated);
     return newSlots;
   },
 
   async deleteDarkroomSlot(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.from('darkroom_slots').delete().eq('id', id);
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase deleteDarkroomSlot error:', err);
+      }
+    }
+
     const current = await readCloudCollection<DarkroomSlot[]>(
       'darkroom_slots',
       DARKROOM_SLOTS,
@@ -1048,6 +1290,18 @@ export const api = {
   },
 
   async toggleDarkroomSlot(id: string, is_active: boolean): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('darkroom_slots')
+          .update({ is_active })
+          .eq('id', id);
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase toggleDarkroomSlot error:', err);
+      }
+    }
+
     const current = await readCloudCollection<DarkroomSlot[]>(
       'darkroom_slots',
       DARKROOM_SLOTS,
@@ -1058,6 +1312,23 @@ export const api = {
   },
 
   async getDarkroomReservations(): Promise<DarkroomReservation[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        const [resData, members] = await Promise.all([
+          supabase.from('darkroom_reservations').select('*').order('created_at', { ascending: false }),
+          this.getMembers()
+        ]);
+        if (!resData.error && resData.data) {
+          return (resData.data as DarkroomReservation[]).map((r) => ({
+            ...r,
+            member: members.find((m) => m.id === r.member_id || m.student_number === r.student_number)
+          }));
+        }
+      } catch (err) {
+        console.warn('Supabase getDarkroomReservations error:', err);
+      }
+    }
+
     const [reservations, members] = await Promise.all([
       readCloudCollection<DarkroomReservation[]>('darkroom', INITIAL_DARKROOM_RESERVATIONS),
       this.getMembers()
@@ -1080,11 +1351,7 @@ export const api = {
       status?: DarkroomStatus;
     }
   ): Promise<DarkroomReservation> {
-    const current = await readCloudCollection<DarkroomReservation[]>(
-      'darkroom',
-      INITIAL_DARKROOM_RESERVATIONS,
-      true
-    );
+    const current = await this.getDarkroomReservations();
 
     const isSlotTaken = current.some(
       (r) =>
@@ -1128,6 +1395,14 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('darkroom_reservations').insert([newReservation]);
+      } catch (err) {
+        console.warn('Supabase createDarkroomReservation error:', err);
+      }
+    }
+
     const updated = [
       newReservation,
       ...current.map(({ member, ...rest }) => rest as DarkroomReservation)
@@ -1152,6 +1427,19 @@ export const api = {
       supervisor?: string;
     }
   ): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const updates: Record<string, unknown> = { status };
+        if (meta?.approved_by !== undefined) updates.approved_by = meta.approved_by;
+        if (status === 'approved') updates.approved_at = new Date().toISOString();
+        if (meta?.rejection_reason !== undefined) updates.rejection_reason = meta.rejection_reason;
+        if (meta?.supervisor !== undefined) updates.supervisor = meta.supervisor;
+        await supabase.from('darkroom_reservations').update(updates).eq('id', id);
+      } catch (err) {
+        console.warn('Supabase updateDarkroomReservationStatus error:', err);
+      }
+    }
+
     const current = await readCloudCollection<DarkroomReservation[]>(
       'darkroom',
       INITIAL_DARKROOM_RESERVATIONS,
@@ -1177,6 +1465,14 @@ export const api = {
   },
 
   async deleteDarkroomReservation(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('darkroom_reservations').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Supabase deleteDarkroomReservation error:', err);
+      }
+    }
+
     const current = await readCloudCollection<DarkroomReservation[]>(
       'darkroom',
       INITIAL_DARKROOM_RESERVATIONS,
@@ -1192,6 +1488,20 @@ export const api = {
   // 7. KULÜP GEZİLERİ (TRIPS) YÖNETİMİ
   // ==========================================
   async getTrips(): Promise<Trip[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('trips')
+          .select('*')
+          .order('start_date', { ascending: true });
+        if (!error && data) {
+          return data as Trip[];
+        }
+      } catch (err) {
+        console.warn('Supabase getTrips error:', err);
+      }
+    }
+
     const trips = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS);
     return [...trips].sort(
       (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
@@ -1215,6 +1525,19 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('trips')
+          .insert([newTrip])
+          .select()
+          .single();
+        if (!error && data) return data as Trip;
+      } catch (err) {
+        console.warn('Supabase createTrip error:', err);
+      }
+    }
+
     const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS, true);
     const updated = [newTrip, ...current];
     await writeCloudCollection('trips', updated);
@@ -1222,12 +1545,30 @@ export const api = {
   },
 
   async updateTrip(id: string, updates: Partial<Trip>): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.from('trips').update(updates).eq('id', id);
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase updateTrip error:', err);
+      }
+    }
+
     const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS, true);
     const updated = current.map((t) => (t.id === id ? { ...t, ...updates } : t));
     return await writeCloudCollection('trips', updated);
   },
 
   async deleteTrip(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.from('trips').delete().eq('id', id);
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase deleteTrip error:', err);
+      }
+    }
+
     const current = await readCloudCollection<Trip[]>('trips', INITIAL_TRIPS, true);
     const updated = current.filter((t) => t.id !== id);
     return await writeCloudCollection('trips', updated);
@@ -1240,6 +1581,27 @@ export const api = {
     id: string,
     memberType: 'active' | 'normal' | 'honorary' | 'honorary_active'
   ): Promise<boolean> {
+    const notesText =
+      memberType === 'honorary_active'
+        ? 'YTÜFOK Fahri Aktif Üyesi (Aktif Öncelik: Gezilerden 5 gün önce & Bireysel Çekim)'
+        : memberType === 'honorary'
+        ? 'YTÜFOK Fahri Üyesi (Normal Öncelik: Gezilerden 3 gün önce)'
+        : memberType === 'active'
+        ? 'YTÜFOK Aktif Üyesi (Aktif Öncelik: Gezilerden 5 gün önce)'
+        : 'Normal Kulüp Üyesi (Normal Öncelik: Gezilerden 3 gün önce)';
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('members')
+          .update({ member_type: memberType, notes: notesText })
+          .eq('id', id);
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase updateMemberType error:', err);
+      }
+    }
+
     const deltas = await readCloudCollection<MemberDeltas>(
       'member_deltas',
       { overrides: {}, added: [] },
@@ -1249,14 +1611,7 @@ export const api = {
     overrides[id] = {
       ...(overrides[id] || {}),
       member_type: memberType,
-      notes:
-        memberType === 'honorary_active'
-          ? 'YTÜFOK Fahri Aktif Üyesi (Aktif Öncelik: Gezilerden 5 gün önce & Bireysel Çekim)'
-          : memberType === 'honorary'
-          ? 'YTÜFOK Fahri Üyesi (Normal Öncelik: Gezilerden 3 gün önce)'
-          : memberType === 'active'
-          ? 'YTÜFOK Aktif Üyesi (Aktif Öncelik: Gezilerden 5 gün önce)'
-          : 'Normal Kulüp Üyesi (Normal Öncelik: Gezilerden 3 gün önce)'
+      notes: notesText
     };
 
     return await writeCloudCollection('member_deltas', {
@@ -1296,7 +1651,7 @@ export const api = {
     }
 
     const newMember: Member = {
-      id: `m-norm-${Date.now()}`,
+      id: isSupabaseConfigured() ? crypto.randomUUID() : `m-norm-${Date.now()}`,
       student_number: cleanNumber,
       full_name: cleanName,
       email: `${cleanNumber}@std.yildiz.edu.tr`,
@@ -1309,6 +1664,25 @@ export const api = {
       notes: 'Normal Kulüp Üyesi (Gezilerden 3 gün önce rezervasyon)',
       created_at: new Date().toISOString()
     };
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('members')
+          .insert([newMember])
+          .select()
+          .single();
+        if (!error && data) {
+          return {
+            success: true,
+            member: data as Member,
+            message: `Normal üye kaydınız başarıyla oluşturuldu: ${cleanName}`
+          };
+        }
+      } catch (err) {
+        console.warn('Supabase quickRegisterNormalMember error:', err);
+      }
+    }
 
     const deltas = await readCloudCollection<MemberDeltas>(
       'member_deltas',

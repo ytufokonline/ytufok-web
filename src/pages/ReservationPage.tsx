@@ -76,8 +76,23 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
       }
     };
 
+    const refreshOnFocus = async () => {
+      try {
+        const [list, activeTrips] = await Promise.all([
+          api.getEquipment(),
+          api.getActiveTrips()
+        ]);
+        setEquipmentList(list);
+        setTrips(activeTrips);
+      } catch {
+        // ignore
+      }
+    };
+
     fetchEquipment();
     fetchTrips();
+    window.addEventListener('focus', refreshOnFocus);
+    return () => window.removeEventListener('focus', refreshOnFocus);
   }, [preselectedEquipmentId]);
 
   // Selected trip helper

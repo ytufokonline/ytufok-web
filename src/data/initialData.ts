@@ -21,7 +21,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     student_number: '21065054',
     phone: '+90 533 222 33 44',
     avatar_color: 'from-[#657796] via-[#4e3b52] to-[#301322]',
-    pin: '19111994'
+    pin: '116324'
   },
   {
     id: 'admin-by2',
@@ -11871,37 +11871,15 @@ export const INITIAL_DARKROOM_RESERVATIONS: DarkroomReservation[] = [];
 // ==========================================
 export const INITIAL_TRIPS: Trip[] = [
   {
-    id: 'trip-kapadokya-2026',
-    title: 'Kapadokya Fotoğraf Gezisi',
-    destination: 'Göreme & Uçhisar, Kapadokya',
-    start_date: '2026-10-16',
-    end_date: '2026-10-19',
-    description: 'Peri bacaları, sıcak hava balonları ile gün doğumu vadi çekimleri ve Kapadokya sokak portreleri.',
-    is_active: true,
-    created_at: '2026-10-01T10:00:00Z',
-    created_by: 'Yavuz Selim Bahadır'
-  },
-  {
     id: 'trip-eskisehir-2026',
-    title: 'Eskişehir Kültür & Mimari Gezisi',
-    destination: 'Odunpazarı, Eskişehir',
-    start_date: '2026-10-23',
-    end_date: '2026-10-25',
-    description: 'Tarihi Odunpazarı ahşap konakları, cam ve lületaşı atölyeleri ile Porsuk Çayı çevresi mimari çekimler.',
+    title: 'Büyükada Gezisi',
+    destination: 'Büyükada, İstanbul',
+    start_date: '2026-10-17',
+    end_date: '2026-10-17',
+    description: 'Gezi kapsamında yeni üyelerimize Büyükada tanıtılacak ve fotoğraf yerleri gösterilecektir.',
     is_active: true,
     created_at: '2026-10-05T12:00:00Z',
     created_by: 'Alara Tezelli'
-  },
-  {
-    id: 'trip-balat-2026',
-    title: 'Balat & Fener Sokak Fotoğrafçılığı Gezisi',
-    destination: 'Fener - Balat, İstanbul',
-    start_date: '2026-10-14',
-    end_date: '2026-10-14',
-    description: 'Renkli cumbalı evler, Merdivenli Yokuş ve tarihi sokak dokusunda günübirlik sokak fotoğrafçılığı.',
-    is_active: true,
-    created_at: '2026-10-08T15:00:00Z',
-    created_by: 'Sıla Dönmez'
   }
 ];
 

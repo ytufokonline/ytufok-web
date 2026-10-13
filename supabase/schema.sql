@@ -98,6 +98,64 @@ CREATE TABLE IF NOT EXISTS public.gallery_items (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 6.1. TABLO: TRIPS (Kulüp Gezileri)
+CREATE TABLE IF NOT EXISTS public.trips (
+    id VARCHAR(100) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    destination VARCHAR(255) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    description TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_by VARCHAR(150),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.2. TABLO: ADMIN_PROFILES (Yönetim Kurulu Şifre ve Profilleri)
+CREATE TABLE IF NOT EXISTS public.admin_profiles (
+    id VARCHAR(50) PRIMARY KEY,
+    pin VARCHAR(50) NOT NULL DEFAULT '19111994',
+    pin_updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.3. TABLO: DARKROOM_SLOTS (Karanlık Oda Seansları)
+CREATE TABLE IF NOT EXISTS public.darkroom_slots (
+    id VARCHAR(100) PRIMARY KEY,
+    date DATE NOT NULL,
+    start_time VARCHAR(10) NOT NULL,
+    end_time VARCHAR(10) NOT NULL,
+    label VARCHAR(100),
+    is_active BOOLEAN DEFAULT true,
+    created_by VARCHAR(150),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.4. TABLO: DARKROOM_RESERVATIONS (Karanlık Oda Rezervasyonları)
+CREATE TABLE IF NOT EXISTS public.darkroom_reservations (
+    id VARCHAR(100) PRIMARY KEY,
+    reservation_code VARCHAR(30) UNIQUE NOT NULL,
+    member_id VARCHAR(100) NOT NULL,
+    student_number VARCHAR(20) NOT NULL,
+    date DATE NOT NULL,
+    slot_id VARCHAR(100) NOT NULL,
+    slot_label VARCHAR(150),
+    process_type VARCHAR(30) NOT NULL,
+    film_type VARCHAR(150),
+    film_roll_count INTEGER DEFAULT 1,
+    paper_count INTEGER,
+    chemicals_needed TEXT[],
+    enlarger_needed BOOLEAN DEFAULT false,
+    experience_level VARCHAR(50),
+    companion_names TEXT,
+    notes TEXT,
+    status VARCHAR(30) DEFAULT 'pending',
+    approved_by VARCHAR(150),
+    approved_at TIMESTAMPTZ,
+    rejection_reason TEXT,
+    supervisor VARCHAR(150),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 7. İŞ MANTIĞI FONKSİYONLARI VE TETİKLEYİCİLER (TRIGGERS)
 
 -- Otomatik Güncelleme Zamanı Tetikleyicisi
@@ -125,19 +183,13 @@ FOR EACH ROW EXECUTE FUNCTION update_timestamp_column();
 CREATE OR REPLACE FUNCTION handle_reservation_equipment_status()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Rezervasyon 'approved' (Onaylandı) olduğunda ekipmanı 'reserved' yap
     IF NEW.status = 'approved' AND (OLD.status IS NULL OR OLD.status != 'approved') THEN
         UPDATE public.equipment SET status = 'reserved' WHERE id = NEW.equipment_id;
-    
-    -- Rezervasyon 'in_use' (Teslim Edildi / Kullanımda) olduğunda ekipmanı 'in_use' yap
     ELSIF NEW.status = 'in_use' AND OLD.status != 'in_use' THEN
         UPDATE public.equipment SET status = 'in_use' WHERE id = NEW.equipment_id;
-    
-    -- Rezervasyon 'returned' veya 'rejected' veya 'cancelled' olduğunda ekipmanı tekrar 'available' (müsait) yap
     ELSIF NEW.status IN ('returned', 'rejected', 'cancelled') AND OLD.status NOT IN ('returned', 'rejected', 'cancelled') THEN
         UPDATE public.equipment SET status = 'available' WHERE id = NEW.equipment_id;
     END IF;
-    
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -146,36 +198,27 @@ CREATE OR REPLACE TRIGGER trg_sync_equipment_status
 AFTER INSERT OR UPDATE OF status ON public.reservations
 FOR EACH ROW EXECUTE FUNCTION handle_reservation_equipment_status();
 
--- 8. ROW LEVEL SECURITY (RLS) POLİTİKALARI
+-- 8. ROW LEVEL SECURITY (RLS) POLİTİKALARI (TAM OKUMA VE YAZMA YETKİLERİ)
 ALTER TABLE public.members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.equipment ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reservations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gallery_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.trips ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.admin_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.darkroom_slots ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.darkroom_reservations ENABLE ROW LEVEL SECURITY;
 
--- Equipment: Herkes görebilir
-CREATE POLICY "Public read equipment" ON public.equipment FOR SELECT USING (true);
-CREATE POLICY "Admin write equipment" ON public.equipment FOR ALL USING (true);
-
--- Gallery & Announcements: Herkes görebilir
-CREATE POLICY "Public read gallery" ON public.gallery_items FOR SELECT USING (true);
-CREATE POLICY "Public read announcements" ON public.announcements FOR SELECT USING (true);
-
--- Members (Whitelist):
--- Öğrenci no sorgulama ve admin yönetimi için okuma/yazma politikaları
-CREATE POLICY "Allow student number verification" ON public.members FOR SELECT USING (true);
-CREATE POLICY "Admin manage members" ON public.members FOR ALL USING (true);
-
--- Reservations:
-CREATE POLICY "Public select reservations" ON public.reservations FOR SELECT USING (true);
-CREATE POLICY "Member insert reservations" ON public.reservations FOR INSERT WITH CHECK (
-    EXISTS (
-        SELECT 1 FROM public.members 
-        WHERE student_number = reservations.student_number 
-        AND status = 'active'
-    )
-);
-CREATE POLICY "Admin update reservations" ON public.reservations FOR UPDATE USING (true);
+-- Tüm tablolarda anon/public okuma ve yazma (INSERT/UPDATE/DELETE) politikaları:
+CREATE POLICY "Full access equipment" ON public.equipment FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Full access gallery" ON public.gallery_items FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Full access announcements" ON public.announcements FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Full access members" ON public.members FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Full access reservations" ON public.reservations FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Full access trips" ON public.trips FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Full access admin_profiles" ON public.admin_profiles FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Full access darkroom_slots" ON public.darkroom_slots FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Full access darkroom_reservations" ON public.darkroom_reservations FOR ALL USING (true) WITH CHECK (true);
 
 -- 9. BAŞLANGIÇ TEST VERİLERİ (SEED DATA)
 

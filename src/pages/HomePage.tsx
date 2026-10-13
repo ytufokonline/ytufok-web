@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Calendar, ArrowRight, CheckCircle, Bell, Image as ImageIcon, MapPin, Eye, Droplets, AlertTriangle } from 'lucide-react';
-import { Announcement, GalleryItem, Equipment } from '../types';
+import { Camera, Calendar, ArrowRight, CheckCircle, Bell, Image as ImageIcon, MapPin, Eye, Droplets, AlertTriangle, Compass } from 'lucide-react';
+import { Announcement, GalleryItem, Equipment, Trip } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
+import { formatDateRangeTr } from '../utils/tripUtils';
 
 interface HomePageProps {
   onNavigate: (tab: 'equipment' | 'reserve' | 'status' | 'admin' | 'darkroom') => void;
@@ -11,22 +12,35 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmentToReserve }) => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [activeTrips, setActiveTrips] = useState<Trip[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [featuredEquipment, setFeaturedEquipment] = useState<Equipment[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
-      const [annList, galList, equipList] = await Promise.all([
+      const [annList, galList, equipList, tripsList] = await Promise.all([
         api.getAnnouncements(),
         api.getGallery(),
-        api.getEquipment()
+        api.getEquipment(),
+        api.getActiveTrips()
       ]);
       setAnnouncements(annList);
       setGallery(galList);
       setFeaturedEquipment(equipList.slice(0, 3));
+      setActiveTrips(tripsList);
     };
     loadData();
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        loadData();
+      }
+    }, 10000);
+    window.addEventListener('focus', loadData);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', loadData);
+    };
   }, []);
 
   return (
@@ -221,6 +235,71 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </div>
         </div>
       </section>
+
+      {/* 2.5. AKTİF KULÜP GEZİLERİ */}
+      {activeTrips.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-8 gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1">
+                <Compass className="w-3.5 h-3.5" />
+                <span>Yaklaşan Kulüp Etkinlikleri</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white font-club">
+                Aktif Kulüp Gezileri
+              </h2>
+            </div>
+            <button
+              onClick={() => onNavigate('reserve')}
+              className="flex items-center gap-1.5 text-xs text-[#8193b2] hover:text-white font-semibold cursor-pointer group"
+            >
+              <span>Gezi İçin Ekipman Rezerve Et</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activeTrips.map((trip) => (
+              <div
+                key={trip.id}
+                className="p-6 rounded-2xl bg-gradient-to-br from-[#1c0f18] via-[#24121f] to-[#12080f] border border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-200 flex flex-col justify-between shadow-xl"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      ● Aktif Gezi
+                    </span>
+                    <span className="text-[11px] text-[#a9b9d3] font-medium">
+                      {formatDateRangeTr(trip.start_date, trip.end_date)}
+                    </span>
+                  </div>
+                  <h3 className="text-base font-bold text-white leading-snug font-club">
+                    {trip.title}
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-xs text-[#8193b2] font-medium">
+                    <MapPin className="w-3.5 h-3.5 shrink-0" />
+                    <span>{trip.destination}</span>
+                  </div>
+                  {trip.description && (
+                    <p className="text-[#dce4ef] text-xs leading-relaxed">
+                      {trip.description}
+                    </p>
+                  )}
+                </div>
+                <div className="pt-4 mt-4 border-t border-[#657796]/20">
+                  <button
+                    onClick={() => onNavigate('reserve')}
+                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:from-[#7589aa] hover:to-[#5e4766] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Gezi İçin Ekipman Seç</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 3. DUYURULAR */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

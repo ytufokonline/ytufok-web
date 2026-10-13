@@ -16,6 +16,8 @@ import { AdminLogin } from '../components/AdminLogin';
 import { ChangePasswordModal } from '../components/ChangePasswordModal';
 import { checkTripBookingEligibility, formatDateTr, formatDateRangeTr, getReservationOpenDate, getLocalDateString } from '../utils/tripUtils';
 
+const cleanAdminName = (name?: string | null) => name ? name.replace(/\s*\([Rr]ed\)/gi, '').trim() : '';
+
 export const AdminDashboard: React.FC = () => {
   const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
   const [activeTab, setActiveTab] = useState<'reservations' | 'tracking' | 'equipment' | 'members' | 'history' | 'darkroom' | 'supabase' | 'trips' | 'announcements'>('reservations');
@@ -237,8 +239,8 @@ export const AdminDashboard: React.FC = () => {
     const reason = window.prompt('Red gerekçesini giriniz:', 'Kulüp etkinliği nedeniyle seans müsait değildir.');
     if (reason === null) return;
     await api.updateDarkroomReservationStatus(id, 'rejected', {
-      approved_by: `${getAdminStamp()} (Red)`,
-      rejection_reason: reason
+      approved_by: getAdminStamp(),
+      rejection_reason: reason.trim() || 'Kulüp etkinliği nedeniyle seans müsait değildir.'
     });
     await loadAllData();
   };
@@ -324,8 +326,8 @@ export const AdminDashboard: React.FC = () => {
   const handleConfirmReject = async () => {
     if (!rejectModalData) return;
     await api.updateReservationStatus(rejectModalData.id, 'rejected', {
-      rejection_reason: rejectionReason || 'Kulüp etkinliği nedeniyle reddedildi.',
-      approved_by: `${getAdminStamp()} (Red)`
+      rejection_reason: rejectionReason.trim() || 'Kulüp etkinliği nedeniyle reddedildi.',
+      approved_by: getAdminStamp()
     });
     setRejectModalData(null);
     setRejectionReason('');
@@ -630,11 +632,11 @@ export const AdminDashboard: React.FC = () => {
       'Alış Tarihi',
       'İade Tarihi',
       'Durum',
-      'Onaylayan Yönetici',
+      'Onay / Ret Yönetici',
       'Teslim Eden Yönetici',
       'İade Alan Yönetici',
       'Amaç',
-      'İade Notu'
+      'İade Notu / Red Gerekçesi'
     ];
     const rows = filteredHistoryReservations.map(r => [
       r.reservation_code,
@@ -646,11 +648,11 @@ export const AdminDashboard: React.FC = () => {
       r.pickup_date,
       r.return_date,
       r.status,
-      `"${(r.approved_by || '').replace(/"/g, '""')}"`,
-      `"${(r.checked_out_by || '').replace(/"/g, '""')}"`,
-      `"${(r.returned_to || '').replace(/"/g, '""')}"`,
+      `"${(r.status === 'rejected' ? `Ret: ${cleanAdminName(r.approved_by) || 'Yönetim Kurulu'}` : cleanAdminName(r.approved_by)).replace(/"/g, '""')}"`,
+      `"${cleanAdminName(r.checked_out_by).replace(/"/g, '""')}"`,
+      `"${cleanAdminName(r.returned_to).replace(/"/g, '""')}"`,
       `"${(r.purpose || '').replace(/"/g, '""')}"`,
-      `"${(r.return_condition_notes || '').replace(/"/g, '""')}"`
+      `"${(r.return_condition_notes || r.rejection_reason || '').replace(/"/g, '""')}"`
     ]);
     const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
@@ -999,19 +1001,30 @@ export const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="p-3.5">
                         <div className="text-xs text-[#dce4ef] font-mono">{r.pickup_date} → {r.return_date}</div>
-                        {r.approved_by && (
-                          <div className="text-[10px] text-[#8193b2] mt-0.5">
-                            Onay: <strong className="text-[#dce4ef]">{r.approved_by}</strong>
+                        {r.status === 'rejected' ? (
+                          <div className="mt-1 space-y-0.5">
+                            <div className="text-[11px] text-rose-400 font-semibold">
+                              Ret: <strong className="text-rose-300 font-semibold">{cleanAdminName(r.approved_by) || 'Yönetim Kurulu'}</strong>
+                            </div>
+                            {r.rejection_reason && (
+                              <div className="text-[10px] text-rose-400/90 italic">
+                                Gerekçe: {r.rejection_reason}
+                              </div>
+                            )}
                           </div>
-                        )}
+                        ) : r.approved_by ? (
+                          <div className="text-[11px] text-emerald-400 font-semibold mt-0.5">
+                            Onay: <strong className="text-emerald-300 font-semibold">{cleanAdminName(r.approved_by)}</strong>
+                          </div>
+                        ) : null}
                         {r.checked_out_by && (
                           <div className="text-[10px] text-[#8193b2]">
-                            Teslim: <strong>{r.checked_out_by}</strong>
+                            Teslim: <strong>{cleanAdminName(r.checked_out_by)}</strong>
                           </div>
                         )}
                         {r.returned_to && (
                           <div className="text-[10px] text-emerald-400">
-                            İade Alan: <strong>{r.returned_to}</strong>
+                            İade Alan: <strong>{cleanAdminName(r.returned_to)}</strong>
                           </div>
                         )}
                       </td>
@@ -1090,13 +1103,14 @@ export const AdminDashboard: React.FC = () => {
                     <div className="text-[#a9b9d3]">Tel: {res.member?.phone}</div>
                     <div className="text-[#dce4ef]">Teslim: <strong className="text-white">{res.pickup_date}</strong> → İade: <strong className="text-white">{res.return_date}</strong></div>
                     {res.approved_by && (
-                      <div className="text-[11px] text-[#8193b2] pt-1 border-t border-[#657796]/15">
-                        Onaylayan: <strong className="text-[#dce4ef]">{res.approved_by}</strong>
+                      <div className="text-[11px] pt-1 border-t border-[#657796]/15">
+                        <span className="text-emerald-400 font-semibold">Onay: </span>
+                        <strong className="text-emerald-300 font-semibold">{cleanAdminName(res.approved_by)}</strong>
                       </div>
                     )}
                     {res.checked_out_by && (
                       <div className="text-[11px] text-[#8193b2]">
-                        Teslim Eden: <strong>{res.checked_out_by}</strong>
+                        Teslim Eden: <strong>{cleanAdminName(res.checked_out_by)}</strong>
                       </div>
                     )}
                   </div>
@@ -1654,22 +1668,27 @@ export const AdminDashboard: React.FC = () => {
                         </td>
                         <td className="p-3.5 min-w-[190px]">
                           <div className="space-y-1 text-[11px]">
-                            {res.approved_by && (
-                              <div className="flex items-center gap-1.5 text-[#dce4ef]">
-                                <span className="text-[#8193b2] font-semibold text-[10px] w-12 shrink-0">Onay:</span>
-                                <span className="text-emerald-400 font-medium truncate">{res.approved_by}</span>
+                            {res.status === 'rejected' ? (
+                              <div className="flex items-center gap-1.5 text-rose-400">
+                                <span className="font-semibold text-[10px] w-12 shrink-0">Ret:</span>
+                                <span className="font-medium text-rose-300 truncate">{cleanAdminName(res.approved_by) || 'Yönetim Kurulu'}</span>
                               </div>
-                            )}
+                            ) : res.approved_by ? (
+                              <div className="flex items-center gap-1.5 text-emerald-400">
+                                <span className="font-semibold text-[10px] w-12 shrink-0">Onay:</span>
+                                <span className="font-medium text-emerald-300 truncate">{cleanAdminName(res.approved_by)}</span>
+                              </div>
+                            ) : null}
                             {res.checked_out_by && (
                               <div className="flex items-center gap-1.5 text-[#dce4ef]">
                                 <span className="text-[#8193b2] font-semibold text-[10px] w-12 shrink-0">Teslim:</span>
-                                <span className="text-cyan-400 font-medium truncate">{res.checked_out_by}</span>
+                                <span className="text-cyan-400 font-medium truncate">{cleanAdminName(res.checked_out_by)}</span>
                               </div>
                             )}
                             {res.returned_to && (
                               <div className="flex items-center gap-1.5 text-[#dce4ef]">
                                 <span className="text-[#8193b2] font-semibold text-[10px] w-12 shrink-0">İade:</span>
-                                <span className="text-purple-400 font-medium truncate">{res.returned_to}</span>
+                                <span className="text-purple-400 font-medium truncate">{cleanAdminName(res.returned_to)}</span>
                               </div>
                             )}
                             {!res.approved_by && !res.checked_out_by && !res.returned_to && (
@@ -1694,8 +1713,11 @@ export const AdminDashboard: React.FC = () => {
                             </div>
                           ) : res.status === 'in_use' ? (
                             <span className="text-[#8193b2] text-[11px]">Şu an zimmette, iade bekleniyor</span>
-                          ) : res.rejection_reason ? (
-                            <span className="text-rose-400 text-[11px]">Red: {res.rejection_reason}</span>
+                          ) : res.status === 'rejected' || res.rejection_reason ? (
+                            <div className="text-rose-400 text-[11px] space-y-0.5">
+                              <span className="font-semibold block">Red Gerekçesi:</span>
+                              <span className="text-rose-300 font-medium">{res.rejection_reason || 'Gerekçe belirtilmedi'}</span>
+                            </div>
                           ) : (
                             <span className="text-[#8193b2] text-[11px]">-</span>
                           )}
@@ -1973,15 +1995,31 @@ export const AdminDashboard: React.FC = () => {
                         </td>
 
                         <td className="p-3.5">
-                          {res.approved_by ? (
-                            <div className="text-xs">
-                              <span className="text-emerald-400 font-medium block">{res.approved_by}</span>
+                          {res.status === 'rejected' ? (
+                            <div className="text-xs space-y-0.5">
+                              <div className="text-rose-400 font-semibold">
+                                Ret: <span className="text-rose-300 font-medium">{cleanAdminName(res.approved_by) || 'Yönetim Kurulu'}</span>
+                              </div>
+                              {res.rejection_reason && (
+                                <span className="text-[11px] text-rose-400/90 italic block">
+                                  Gerekçe: {res.rejection_reason}
+                                </span>
+                              )}
+                            </div>
+                          ) : res.approved_by ? (
+                            <div className="text-xs space-y-0.5">
+                              <div className="text-emerald-400 font-semibold">
+                                Onay: <span className="text-emerald-300 font-medium">{cleanAdminName(res.approved_by)}</span>
+                              </div>
                               {res.supervisor && (
                                 <span className="text-[10px] text-[#8193b2] block">Rehber: {res.supervisor}</span>
                               )}
                             </div>
                           ) : res.rejection_reason ? (
-                            <span className="text-xs text-rose-400 block">{res.rejection_reason}</span>
+                            <div className="text-xs text-rose-400 space-y-0.5">
+                              <span className="font-semibold block">Reddedildi</span>
+                              <span className="text-[11px] text-rose-300 italic block">Gerekçe: {res.rejection_reason}</span>
+                            </div>
                           ) : (
                             <span className="text-[11px] text-[#8193b2] italic block">Onay Bekliyor</span>
                           )}
@@ -3312,11 +3350,15 @@ export const AdminDashboard: React.FC = () => {
                               {res.member?.full_name || res.student_number} ({res.student_number})
                             </strong>
                           </div>
-                          {res.approved_by && (
-                            <span className="text-[11px] text-[#8193b2]">
-                              Onaylayan Yönetici: <strong className="text-[#dce4ef]">{res.approved_by}</strong>
+                          {res.status === 'rejected' ? (
+                            <span className="text-[11px] text-rose-400 font-semibold">
+                              Ret: <strong className="text-rose-300 font-semibold">{cleanAdminName(res.approved_by) || 'Yönetim Kurulu'}</strong>
                             </span>
-                          )}
+                          ) : res.approved_by ? (
+                            <span className="text-[11px] text-emerald-400 font-semibold">
+                              Onay: <strong className="text-emerald-300 font-semibold">{cleanAdminName(res.approved_by)}</strong>
+                            </span>
+                          ) : null}
                         </div>
 
                         <div className="text-xs text-[#dce4ef] bg-[#1c0f18] p-2.5 rounded-xl border border-[#657796]/20">
@@ -3325,6 +3367,13 @@ export const AdminDashboard: React.FC = () => {
                           </span>
                           <span>{res.purpose}</span>
                         </div>
+
+                        {res.rejection_reason && (
+                          <div className="text-[11px] text-rose-300 bg-rose-950/30 p-2 rounded-xl border border-rose-500/20">
+                            <span className="text-[10px] uppercase font-bold text-rose-400 block">Red Gerekçesi:</span>
+                            <span>{res.rejection_reason}</span>
+                          </div>
+                        )}
 
                         {res.return_condition_notes && (
                           <div className="text-[11px] text-[#8193b2] flex items-start gap-1.5 pt-1">
@@ -3498,9 +3547,20 @@ export const AdminDashboard: React.FC = () => {
                               <span className="font-mono font-bold text-white text-xs">{res.reservation_code}</span>
                               <StatusBadge status={res.status} type="reservation" size="sm" />
                             </div>
-                            <span className="text-xs font-mono text-[#8193b2]">
-                              {res.pickup_date} → {res.return_date}
-                            </span>
+                            <div className="text-right">
+                              <span className="text-xs font-mono text-[#8193b2] block">
+                                {res.pickup_date} → {res.return_date}
+                              </span>
+                              {res.status === 'rejected' ? (
+                                <span className="text-[11px] text-rose-400 font-semibold block mt-0.5">
+                                  Ret: <strong className="text-rose-300 font-semibold">{cleanAdminName(res.approved_by) || 'Yönetim Kurulu'}</strong>
+                                </span>
+                              ) : res.approved_by ? (
+                                <span className="text-[11px] text-emerald-400 font-semibold block mt-0.5">
+                                  Onay: <strong className="text-emerald-300 font-semibold">{cleanAdminName(res.approved_by)}</strong>
+                                </span>
+                              ) : null}
+                            </div>
                           </div>
 
                           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#1c0f18] border border-[#657796]/20">

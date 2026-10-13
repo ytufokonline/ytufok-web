@@ -149,9 +149,22 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                           <span className="text-[10px] text-[#8193b2] uppercase font-medium block">Tarih Bilgisi</span>
                           <div className="text-[#dce4ef]">Teslim: <strong className="text-white font-mono">{res.pickup_date}</strong></div>
                           <div className="text-[#dce4ef]">İade: <strong className="text-white font-mono">{res.return_date}</strong></div>
-                          {res.approved_by && (
-                            <div className="text-emerald-400 pt-0.5 text-[11px]">Onay: {res.approved_by}</div>
-                          )}
+                          {res.status === 'rejected' ? (
+                            <div className="pt-1.5 space-y-0.5 border-t border-rose-500/20 mt-1">
+                              <div className="text-rose-400 text-[11px] font-semibold">
+                                Ret: <span className="text-rose-300 font-medium">{res.approved_by?.replace(/\s*\([Rr]ed\)/gi, '') || 'Yönetim Kurulu'}</span>
+                              </div>
+                              {res.rejection_reason && (
+                                <div className="text-rose-300/90 text-[11px] italic">
+                                  Gerekçe: {res.rejection_reason}
+                                </div>
+                              )}
+                            </div>
+                          ) : res.approved_by ? (
+                            <div className="text-emerald-400 pt-0.5 text-[11px] font-semibold">
+                              Onay: <span className="text-emerald-300 font-medium">{res.approved_by.replace(/\s*\([Rr]ed\)/gi, '')}</span>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
 
@@ -216,6 +229,23 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                             {ko.date} • {ko.slot_time}
                           </strong>
                           <span className="text-[#a9b9d3]">Net 1,5 Saat</span>
+                          {ko.status === 'rejected' ? (
+                            <div className="pt-1.5 space-y-0.5 border-t border-rose-500/20 mt-1">
+                              <div className="text-rose-400 text-[11px] font-semibold">
+                                Ret: <span className="text-rose-300 font-medium">{ko.approved_by?.replace(/\s*\([Rr]ed\)/gi, '') || 'Yönetim Kurulu'}</span>
+                              </div>
+                              {ko.rejection_reason && (
+                                <div className="text-rose-300/90 text-[11px] italic">
+                                  Gerekçe: {ko.rejection_reason}
+                                </div>
+                              )}
+                            </div>
+                          ) : ko.approved_by ? (
+                            <div className="text-emerald-400 pt-0.5 text-[11px] font-semibold">
+                              Onay: <span className="text-emerald-300 font-medium">{ko.approved_by.replace(/\s*\([Rr]ed\)/gi, '')}</span>
+                              {ko.supervisor && <span className="text-[#8193b2] font-normal ml-1">({ko.supervisor})</span>}
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                     </div>

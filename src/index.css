@@ -111,11 +111,11 @@
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  /* Headings & Brand elements use Clash Display */
+  /* Headings & Brand elements use Satoshi (Bold) */
   h1, h2, h3, h4, h5, h6,
   .font-club,
   .font-heading {
-    font-family: 'Clash Display', sans-serif !important;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     letter-spacing: -0.02em;
   }
 

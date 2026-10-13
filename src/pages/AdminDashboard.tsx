@@ -10,7 +10,13 @@ import {
 } from 'lucide-react';
 import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement } from '../types';
 import { api } from '../lib/api';
-import { getSupabaseConfigStatus } from '../lib/supabase';
+import { 
+  getSupabaseConfigStatus, 
+  getStoredSupabaseUrl, 
+  getStoredSupabaseAnonKey, 
+  setSupabaseCredentials, 
+  testSupabaseConnection 
+} from '../lib/supabase';
 import { StatusBadge } from '../components/StatusBadge';
 import { AdminLogin } from '../components/AdminLogin';
 import { ChangePasswordModal } from '../components/ChangePasswordModal';
@@ -96,6 +102,14 @@ export const AdminDashboard: React.FC = () => {
   const [editEquipStatus, setEditEquipStatus] = useState<EquipmentStatus>('available');
   const [editEquipImageUrl, setEditEquipImageUrl] = useState('');
   const [editEquipPackageContents, setEditEquipPackageContents] = useState('');
+  const [isSavingEquipment, setIsSavingEquipment] = useState(false);
+
+  // Supabase Configuration & Sync State
+  const [supabaseUrlInput, setSupabaseUrlInput] = useState(() => getStoredSupabaseUrl());
+  const [supabaseKeyInput, setSupabaseKeyInput] = useState(() => getStoredSupabaseAnonKey());
+  const [isTestingSupabase, setIsTestingSupabase] = useState(false);
+  const [isSyncingSupabase, setIsSyncingSupabase] = useState(false);
+  const [supabaseFeedback, setSupabaseFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [newMemberNo, setNewMemberNo] = useState('');
@@ -415,26 +429,85 @@ export const AdminDashboard: React.FC = () => {
     e.preventDefault();
     if (!editingEquipment || !editEquipName.trim() || !editEquipSerial.trim()) return;
 
-    const parsedContents = editEquipPackageContents
-      .split(/[\n,]/)
-      .map(s => s.trim())
-      .filter(Boolean);
+    setIsSavingEquipment(true);
+    try {
+      const parsedContents = editEquipPackageContents
+        .split(/[\n,]/)
+        .map(s => s.trim())
+        .filter(Boolean);
 
-    await api.updateEquipment(editingEquipment.id, {
-      name: editEquipName.trim(),
-      brand: editEquipBrand.trim(),
-      model: editEquipModel.trim() || editEquipName.trim(),
-      serial_number: editEquipSerial.trim(),
-      category: editEquipCategory,
-      description: editEquipDescription.trim(),
-      current_condition: editEquipCondition.trim(),
-      status: editEquipStatus,
-      image_url: editEquipImageUrl.trim(),
-      package_contents: parsedContents.length > 0 ? parsedContents : editingEquipment.package_contents
-    });
+      await api.updateEquipment(editingEquipment.id, {
+        name: editEquipName.trim(),
+        brand: editEquipBrand.trim(),
+        model: editEquipModel.trim() || editEquipName.trim(),
+        serial_number: editEquipSerial.trim(),
+        category: editEquipCategory,
+        description: editEquipDescription.trim(),
+        current_condition: editEquipCondition.trim(),
+        status: editEquipStatus,
+        image_url: editEquipImageUrl.trim(),
+        package_contents: parsedContents.length > 0 ? parsedContents : editingEquipment.package_contents
+      });
 
-    setEditingEquipment(null);
-    await loadAllData();
+      setEditingEquipment(null);
+      await loadAllData();
+    } catch (err) {
+      console.error('Ekipman güncellenirken hata:', err);
+      alert('Ekipman güncellenirken bir hata meydana geldi.');
+    } finally {
+      setIsSavingEquipment(false);
+    }
+  };
+
+  const handleSaveAndTestSupabase = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsTestingSupabase(true);
+    setSupabaseFeedback(null);
+    try {
+      setSupabaseCredentials(supabaseUrlInput.trim(), supabaseKeyInput.trim());
+      const res = await testSupabaseConnection();
+      if (res.ok) {
+        setSupabaseFeedback({ type: 'success', message: res.message });
+        await loadAllData();
+      } else {
+        setSupabaseFeedback({ type: 'error', message: res.message });
+      }
+    } catch (err: any) {
+      setSupabaseFeedback({
+        type: 'error',
+        message: err?.message || 'Supabase bağlantısı sırasında bir hata oluştu.'
+      });
+    } finally {
+      setIsTestingSupabase(false);
+    }
+  };
+
+  const handleSyncEquipmentToSupabase = async () => {
+    if (!window.confirm('Tüm güncel ekipman listesi Supabase veritabanına aktarılsın ve eşitlensin mi?')) return;
+    setIsSyncingSupabase(true);
+    setSupabaseFeedback(null);
+    try {
+      const res = await api.syncAllEquipmentToSupabase();
+      if (res.success) {
+        setSupabaseFeedback({
+          type: 'success',
+          message: `Başarılı! Toplam ${res.count} adet ekipman Supabase veritabanına aktarıldı ve eşitlendi.`
+        });
+        await loadAllData();
+      } else {
+        setSupabaseFeedback({
+          type: 'error',
+          message: `Eşitleme hatası: ${res.error || 'Bilinmeyen hata'}`
+        });
+      }
+    } catch (err: any) {
+      setSupabaseFeedback({
+        type: 'error',
+        message: err?.message || 'Eşitleme işlemi başarısız oldu.'
+      });
+    } finally {
+      setIsSyncingSupabase(false);
+    }
   };
 
   const handleDeleteEquipment = async (item: Equipment) => {
@@ -2730,20 +2803,142 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 5: SUPABASE GUIDE */}
+      {/* TAB 5: SUPABASE GUIDE & SETTINGS */}
       {activeTab === 'supabase' && (
-        <div className="p-6 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-base font-bold text-white font-club">Supabase SQL & Bağlantı Durumu</h3>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#657796] text-white">
-              {supabaseConfig.isConfigured ? 'Bağlantı Başarılı' : 'Yerel / Demo Modu'}
-            </span>
-          </div>
-          <p className="text-xs text-[#a9b9d3]">
-            <code>supabase/schema.sql</code> dosyasındaki SQL komutlarını Supabase panelinde SQL Editor'e yapıştırıp çalıştırarak tabloları oluşturabilirsiniz.
-          </p>
-          <div className="p-3 rounded-xl bg-[#12080f] border border-[#657796]/30 font-mono text-xs text-[#dce4ef]">
-            VITE_SUPABASE_URL={supabaseConfig.url}
+        <div className="space-y-6">
+          <div className="p-6 rounded-2xl bg-[#1c0f18] border border-[#657796]/30 shadow-lg space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#657796]/20">
+              <div>
+                <h3 className="text-base font-bold text-white font-club flex items-center gap-2">
+                  <Package className="w-5 h-5 text-[#8193b2]" />
+                  Ortak Veritabanı & Supabase Bağlantısı
+                </h3>
+                <p className="text-xs text-[#a9b9d3] mt-1">
+                  Ekipman açıklamaları, demirbaş detayları, paket içerikleri ve durumları doğrudan Supabase veritabanına kaydedilir. Sayfa yenilendiğinde veya başka bir cihazdan girildiğinde en güncel veriler kalıcı olarak veritabanından çekilir.
+                </p>
+              </div>
+              <div>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
+                    supabaseConfig.isConfigured
+                      ? 'bg-emerald-950/70 border border-emerald-500/40 text-emerald-300'
+                      : 'bg-amber-950/70 border border-amber-500/40 text-amber-300'
+                  }`}
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      supabaseConfig.isConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+                    }`}
+                  />
+                  {supabaseConfig.isConfigured ? 'Supabase Bağlantısı Aktif' : 'Yerel / Bulut Yedek Modu'}
+                </span>
+              </div>
+            </div>
+
+            {/* Feedback Message Banner */}
+            {supabaseFeedback && (
+              <div
+                className={`p-3.5 rounded-xl border text-xs flex items-center justify-between ${
+                  supabaseFeedback.type === 'success'
+                    ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-200'
+                    : 'bg-rose-950/40 border-rose-500/30 text-rose-200'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {supabaseFeedback.type === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                  )}
+                  <span>{supabaseFeedback.message}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSupabaseFeedback(null)}
+                  className="text-[#8193b2] hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
+            {/* Supabase Credentials Form */}
+            <form onSubmit={handleSaveAndTestSupabase} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">
+                    Supabase Project URL
+                  </label>
+                  <input
+                    type="text"
+                    value={supabaseUrlInput}
+                    onChange={(e) => setSupabaseUrlInput(e.target.value)}
+                    placeholder="https://xyzproject.supabase.co"
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono text-xs focus:outline-none focus:border-[#657796]"
+                  />
+                  <span className="text-[10px] text-[#8193b2] block">
+                    Supabase Panel {'>'} Project Settings {'>'} API bölümünden alınır.
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">
+                    Supabase Anon / Public API Key
+                  </label>
+                  <input
+                    type="password"
+                    value={supabaseKeyInput}
+                    onChange={(e) => setSupabaseKeyInput(e.target.value)}
+                    placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono text-xs focus:outline-none focus:border-[#657796]"
+                  />
+                  <span className="text-[10px] text-[#8193b2] block">
+                    Supabase Panel {'>'} Project Settings {'>'} API {'>'} anon / public anahtarı.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={isTestingSupabase}
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 disabled:opacity-50 text-white font-bold transition-all shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  {isTestingSupabase ? (
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Check className="w-3.5 h-3.5" />
+                  )}
+                  {isTestingSupabase ? 'Bağlantı Test Ediliyor...' : 'Bağlantıyı Kaydet & Test Et'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSyncEquipmentToSupabase}
+                  disabled={isSyncingSupabase || !supabaseConfig.isConfigured}
+                  className="px-4 py-2.5 rounded-xl bg-[#301322] hover:bg-[#421d31] disabled:opacity-50 text-[#dce4ef] hover:text-white font-medium transition-colors border border-[#657796]/30 cursor-pointer flex items-center gap-2"
+                  title="Mevcut envanteri Supabase 'equipment' tablosuna aktarır veya günceller."
+                >
+                  {isSyncingSupabase ? (
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Package className="w-3.5 h-3.5" />
+                  )}
+                  {isSyncingSupabase ? 'Veritabanına Aktarılıyor...' : 'Tüm Ekipmanları Supabase\'e Aktar / Eşitle'}
+                </button>
+              </div>
+            </form>
+
+            {/* SQL Guide Note */}
+            <div className="p-4 rounded-xl bg-[#12080f] border border-[#657796]/20 space-y-2 text-xs">
+              <div className="flex items-center gap-2 text-[#dce4ef] font-semibold">
+                <Info className="w-4 h-4 text-[#8193b2]" />
+                <span>Supabase Tablo Şeması Kurulumu</span>
+              </div>
+              <p className="text-[#a9b9d3]">
+                Supabase projenizde tablolar henüz oluşturulmadıysa, proje kökündeki <code className="text-[#dce4ef] bg-[#1c0f18] px-1.5 py-0.5 rounded">supabase/schema.sql</code> dosyasının içeriğini kopyalayıp Supabase panelinizdeki <strong>SQL Editor</strong> bölümüne yapıştırarak <strong>Run</strong> butonuna tıklayınız. Tablolar otomatik olarak RLS izinleri ve tetikleyicileriyle hazır hale gelecektir.
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -3158,9 +3353,11 @@ export const AdminDashboard: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 text-white font-bold transition-all shadow-md cursor-pointer"
+                  disabled={isSavingEquipment}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 disabled:opacity-50 text-white font-bold transition-all shadow-md cursor-pointer flex items-center gap-2"
                 >
-                  Değişiklikleri Kaydet
+                  {isSavingEquipment && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
+                  {isSavingEquipment ? 'Veritabanına Kaydediliyor...' : 'Değişiklikleri Kaydet'}
                 </button>
               </div>
             </form>

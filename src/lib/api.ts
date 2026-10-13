@@ -503,7 +503,134 @@ export const api = {
   // Tek bir toplu ağ isteğiyle tüm yönetici paneli verilerini getirir (Batch Request)
   async getDashboardBundle(forceFresh = false) {
     const envelope = await fetchUnifiedState(forceFresh);
-    return computeSyncStateFromEnvelope(envelope);
+    const syncState = computeSyncStateFromEnvelope(envelope);
+
+    if (!isSupabaseConfigured()) {
+      return syncState;
+    }
+
+    try {
+      const [eqRes, memRes, resRes, tripRes, annRes] = await Promise.allSettled([
+        supabase.from('equipment').select('*').order('name', { ascending: true }),
+        supabase.from('members').select('*').order('full_name', { ascending: true }),
+        supabase.from('reservations').select('*').order('created_at', { ascending: false }),
+        supabase.from('trips').select('*').order('start_date', { ascending: true }),
+        supabase.from('announcements').select('*').order('created_at', { ascending: false })
+      ]);
+
+      const baseBySerial = new Map<string, Equipment>();
+      const baseById = new Map<string, Equipment>();
+      INITIAL_EQUIPMENT.forEach((e) => {
+        if (e.serial_number) baseBySerial.set(e.serial_number, e);
+        baseById.set(e.id, e);
+      });
+
+      // 1. Equipment from Supabase
+      let equipmentList = syncState.equipmentList;
+      if (eqRes.status === 'fulfilled' && !eqRes.value.error && Array.isArray(eqRes.value.data) && eqRes.value.data.length > 0) {
+        const dbRows = eqRes.value.data;
+        const fetchedList: Equipment[] = dbRows.map((row: any) => {
+          const base = (row.serial_number && baseBySerial.get(row.serial_number)) || baseById.get(row.id);
+          return {
+            id: String(row.id),
+            name: row.name || base?.name || 'Ekipman',
+            category: row.category || base?.category || 'accessory',
+            brand: row.brand || base?.brand || '',
+            model: row.model || base?.model || '',
+            serial_number: row.serial_number || base?.serial_number || '',
+            description: row.description ?? base?.description ?? '',
+            specs: row.specs || base?.specs || {},
+            package_contents: Array.isArray(row.package_contents)
+              ? row.package_contents
+              : (base?.package_contents || []),
+            image_url: row.image_url || base?.image_url || '',
+            status: row.status || base?.status || 'available',
+            current_condition: row.current_condition || base?.current_condition || 'değerlendirilecek'
+          };
+        });
+
+        const dbSerials = new Set(fetchedList.map((e) => e.serial_number).filter(Boolean));
+        const eqDelta = envelope.collections?.equipment_state || { overrides: {}, added: [], deleted: [] };
+        const deletedEqSet = new Set(Array.isArray(eqDelta.deleted) ? eqDelta.deleted : []);
+        const unseeded = INITIAL_EQUIPMENT.filter((e) => !dbSerials.has(e.serial_number) && !deletedEqSet.has(e.id));
+
+        equipmentList = [...fetchedList, ...unseeded];
+      }
+
+      // Fast lookup map for equipment matching (by UUID, custom ID, and serial)
+      const equipById = new Map<string, Equipment>();
+      equipmentList.forEach((e) => {
+        equipById.set(e.id, e);
+        if (e.serial_number) {
+          equipById.set(e.serial_number, e);
+          const initialMatch = INITIAL_EQUIPMENT.find((ie) => ie.serial_number === e.serial_number);
+          if (initialMatch) {
+            equipById.set(initialMatch.id, e);
+          }
+        }
+      });
+
+      // 2. Members from Supabase (if available)
+      let members = syncState.members;
+      if (memRes.status === 'fulfilled' && !memRes.value.error && Array.isArray(memRes.value.data) && memRes.value.data.length > 0) {
+        members = (memRes.value.data as Member[]).map((m) => normalizeMemberRecord(m));
+      }
+
+      const memberById = new Map<string, Member>();
+      const memberByNo = new Map<string, Member>();
+      members.forEach((m) => {
+        memberById.set(m.id, m);
+        memberByNo.set(m.student_number, m);
+      });
+
+      // 3. Trips from Supabase (if available)
+      let trips = syncState.trips;
+      if (tripRes.status === 'fulfilled' && !tripRes.value.error && Array.isArray(tripRes.value.data) && tripRes.value.data.length > 0) {
+        trips = (tripRes.value.data as Trip[]).sort(
+          (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+        );
+      }
+      const tripById = new Map<string, Trip>();
+      trips.forEach((t) => tripById.set(t.id, t));
+
+      // 4. Reservations from Supabase (if available)
+      let reservations = syncState.reservations;
+      if (resRes.status === 'fulfilled' && !resRes.value.error && Array.isArray(resRes.value.data) && resRes.value.data.length > 0) {
+        reservations = (resRes.value.data as Reservation[]).map((r) => ({
+          ...r,
+          equipment: r.equipment || equipById.get(r.equipment_id),
+          member: r.member || memberById.get(r.member_id) || memberByNo.get(r.student_number),
+          trip: r.trip || (r.trip_id ? tripById.get(r.trip_id) || null : null)
+        }));
+      } else {
+        reservations = syncState.reservations.map((r) => ({
+          ...r,
+          equipment: equipById.get(r.equipment_id) || r.equipment
+        }));
+      }
+
+      // 5. Announcements from Supabase (if available)
+      let announcements = syncState.announcements;
+      if (annRes.status === 'fulfilled' && !annRes.value.error && Array.isArray(annRes.value.data) && annRes.value.data.length > 0) {
+        announcements = (annRes.value.data as Announcement[]).sort((a, b) => {
+          if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+      }
+
+      return {
+        ...syncState,
+        equipmentList,
+        members,
+        trips,
+        activeTrips: trips.filter((t) => t.is_active),
+        reservations,
+        announcements
+      };
+    } catch (err) {
+      console.warn('Supabase getDashboardBundle error, fallback to sync state:', err);
+      return syncState;
+    }
   },
 
   // Yalnızca bekleyen rezervasyon sayısını hızlıca hesaplar (600 üyeyi birleştirmeden)
@@ -649,13 +776,36 @@ export const api = {
           .order('name', { ascending: true });
 
         if (!error && data && data.length > 0) {
-          const baseImgMap = new Map(INITIAL_EQUIPMENT.map((e) => [e.id, e.image_url]));
-          const baseDescMap = new Map(INITIAL_EQUIPMENT.map((e) => [e.id, e.description]));
-          return (data as Equipment[]).map((e) => ({
-            ...e,
-            image_url: e.image_url || baseImgMap.get(e.id) || '',
-            description: e.description || baseDescMap.get(e.id) || ''
-          }));
+          const baseBySerial = new Map<string, Equipment>();
+          const baseById = new Map<string, Equipment>();
+          INITIAL_EQUIPMENT.forEach((e) => {
+            if (e.serial_number) baseBySerial.set(e.serial_number, e);
+            baseById.set(e.id, e);
+          });
+
+          const fetchedList: Equipment[] = (data as any[]).map((row) => {
+            const base = (row.serial_number && baseBySerial.get(row.serial_number)) || baseById.get(row.id);
+            return {
+              id: String(row.id),
+              name: row.name || base?.name || 'Ekipman',
+              category: row.category || base?.category || 'accessory',
+              brand: row.brand || base?.brand || '',
+              model: row.model || base?.model || '',
+              serial_number: row.serial_number || base?.serial_number || '',
+              description: row.description ?? base?.description ?? '',
+              specs: row.specs || base?.specs || {},
+              package_contents: Array.isArray(row.package_contents)
+                ? row.package_contents
+                : (base?.package_contents || []),
+              image_url: row.image_url || base?.image_url || '',
+              status: row.status || base?.status || 'available',
+              current_condition: row.current_condition || base?.current_condition || 'değerlendirilecek'
+            };
+          });
+
+          const dbSerials = new Set(fetchedList.map((e) => e.serial_number).filter(Boolean));
+          const unseeded = INITIAL_EQUIPMENT.filter((e) => !dbSerials.has(e.serial_number));
+          return [...fetchedList, ...unseeded];
         }
       } catch (err) {
         console.warn('Supabase getEquipment error:', err);
@@ -668,25 +818,43 @@ export const api = {
 
   async getEquipmentById(id: string): Promise<Equipment | null> {
     const list = await this.getEquipment();
-    return list.find((e) => e.id === id) || null;
+    return list.find((e) => e.id === id || e.serial_number === id) || null;
   },
 
   async addEquipment(equipment: Omit<Equipment, 'id'>): Promise<Equipment> {
+    const newId = crypto.randomUUID();
     const newEquipment: Equipment = {
       ...equipment,
-      id: isSupabaseConfigured() ? crypto.randomUUID() : `e-${Date.now()}`
+      id: newId
     };
 
     if (isSupabaseConfigured()) {
       try {
+        const insertPayload = {
+          id: newId,
+          name: equipment.name,
+          category: equipment.category,
+          brand: equipment.brand,
+          model: equipment.model,
+          serial_number: equipment.serial_number,
+          description: equipment.description || '',
+          specs: equipment.specs || {},
+          package_contents: Array.isArray(equipment.package_contents) ? equipment.package_contents : [],
+          image_url: equipment.image_url || '',
+          status: equipment.status || 'available',
+          current_condition: equipment.current_condition || 'değerlendirilecek'
+        };
+
         const { data, error } = await supabase
           .from('equipment')
-          .insert([newEquipment])
+          .insert([insertPayload])
           .select()
           .single();
 
-        if (!error && data) {
-          return data as Equipment;
+        if (error) {
+          console.error('Supabase addEquipment error:', error);
+        } else if (data) {
+          newEquipment.id = String(data.id);
         }
       } catch (err) {
         console.warn('Supabase addEquipment error:', err);
@@ -709,28 +877,99 @@ export const api = {
     id: string,
     updates: Partial<Equipment>
   ): Promise<boolean> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('equipment').update(updates).eq('id', id);
-        if (!error) {
-          const delta = await readCloudCollection<EquipmentStateDelta>('equipment_state', {
-            overrides: {},
-            added: [],
-            deleted: []
-          });
-          const overrides = { ...(delta.overrides || {}) };
-          overrides[id] = { ...(overrides[id] || {}), ...updates };
-          const added = (Array.isArray(delta.added) ? delta.added : []).map((e) =>
-            e.id === id ? { ...e, ...updates } : e
-          );
-          await writeCloudCollection('equipment_state', { ...delta, overrides, added });
-          return true;
+        let targetId: string | null = null;
+        if (isUuid) {
+          const { data } = await supabase
+            .from('equipment')
+            .select('id, serial_number')
+            .eq('id', id)
+            .maybeSingle();
+          if (data?.id) targetId = data.id;
+        }
+
+        if (!targetId && updates.serial_number) {
+          const { data } = await supabase
+            .from('equipment')
+            .select('id, serial_number')
+            .eq('serial_number', updates.serial_number)
+            .maybeSingle();
+          if (data?.id) targetId = data.id;
+        }
+
+        if (!targetId) {
+          const currentList = await this.getEquipment();
+          const currentItem = currentList.find((e) => e.id === id);
+          if (currentItem?.serial_number) {
+            const { data } = await supabase
+              .from('equipment')
+              .select('id, serial_number')
+              .eq('serial_number', currentItem.serial_number)
+              .maybeSingle();
+            if (data?.id) targetId = data.id;
+          }
+        }
+
+        const payload: Record<string, any> = {};
+        if (updates.name !== undefined) payload.name = updates.name;
+        if (updates.category !== undefined) payload.category = updates.category;
+        if (updates.brand !== undefined) payload.brand = updates.brand;
+        if (updates.model !== undefined) payload.model = updates.model;
+        if (updates.serial_number !== undefined) payload.serial_number = updates.serial_number;
+        if (updates.description !== undefined) payload.description = updates.description;
+        if (updates.specs !== undefined) payload.specs = updates.specs;
+        if (updates.package_contents !== undefined) {
+          payload.package_contents = Array.isArray(updates.package_contents)
+            ? updates.package_contents
+            : [];
+        }
+        if (updates.image_url !== undefined) payload.image_url = updates.image_url;
+        if (updates.status !== undefined) payload.status = updates.status;
+        if (updates.current_condition !== undefined) payload.current_condition = updates.current_condition;
+
+        if (targetId) {
+          const { error } = await supabase.from('equipment').update(payload).eq('id', targetId);
+          if (error) {
+            console.error('Supabase updateEquipment error:', error);
+          }
+        } else {
+          // Record doesn't exist in Supabase yet -> INSERT with updates
+          const currentList = await this.getEquipment();
+          const currentItem =
+            currentList.find((e) => e.id === id) || INITIAL_EQUIPMENT.find((e) => e.id === id);
+          const newId = isUuid ? id : crypto.randomUUID();
+
+          const insertPayload = {
+            id: newId,
+            name: updates.name ?? currentItem?.name ?? 'Ekipman',
+            category: updates.category ?? currentItem?.category ?? 'accessory',
+            brand: updates.brand ?? currentItem?.brand ?? '',
+            model: updates.model ?? currentItem?.model ?? '',
+            serial_number: updates.serial_number ?? currentItem?.serial_number ?? `SN-${Date.now()}`,
+            description: updates.description ?? currentItem?.description ?? '',
+            specs: updates.specs ?? currentItem?.specs ?? {},
+            package_contents: Array.isArray(updates.package_contents ?? currentItem?.package_contents)
+              ? (updates.package_contents ?? currentItem?.package_contents)
+              : [],
+            image_url: updates.image_url ?? currentItem?.image_url ?? '',
+            status: updates.status ?? currentItem?.status ?? 'available',
+            current_condition: updates.current_condition ?? currentItem?.current_condition ?? 'değerlendirilecek'
+          };
+
+          const { error: insErr } = await supabase.from('equipment').insert([insertPayload]);
+          if (insErr) {
+            console.error('Supabase equipment insert error:', insErr);
+          }
         }
       } catch (err) {
-        console.warn('Supabase updateEquipment error:', err);
+        console.warn('Supabase updateEquipment exception:', err);
       }
     }
 
+    // Always update cloud delta & memory snapshot as backup
     const delta = await readCloudCollection<EquipmentStateDelta>('equipment_state', {
       overrides: {},
       added: [],
@@ -748,9 +987,18 @@ export const api = {
   },
 
   async deleteEquipment(id: string): Promise<boolean> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     if (isSupabaseConfigured()) {
       try {
-        await supabase.from('equipment').delete().eq('id', id);
+        if (isUuid) {
+          await supabase.from('equipment').delete().eq('id', id);
+        } else {
+          const currentList = await this.getEquipment();
+          const item = currentList.find((e) => e.id === id);
+          if (item?.serial_number) {
+            await supabase.from('equipment').delete().eq('serial_number', item.serial_number);
+          }
+        }
       } catch (err) {
         console.warn('Supabase deleteEquipment error:', err);
       }
@@ -774,6 +1022,55 @@ export const api = {
       added,
       deleted: Array.from(deleted)
     });
+  },
+
+  async syncAllEquipmentToSupabase(): Promise<{ success: boolean; count: number; error?: string }> {
+    if (!isSupabaseConfigured()) {
+      return { success: false, count: 0, error: 'Supabase bağlantısı henüz yapılandırılmadı.' };
+    }
+    try {
+      const bundle = await this.getDashboardBundle();
+      const itemsToSync = bundle.equipmentList;
+      let syncedCount = 0;
+
+      for (const item of itemsToSync) {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.id);
+        const { data: existing } = await supabase
+          .from('equipment')
+          .select('id')
+          .eq('serial_number', item.serial_number)
+          .maybeSingle();
+
+        const payload = {
+          name: item.name,
+          category: item.category,
+          brand: item.brand,
+          model: item.model,
+          serial_number: item.serial_number,
+          description: item.description,
+          specs: item.specs || {},
+          package_contents: Array.isArray(item.package_contents) ? item.package_contents : [],
+          image_url: item.image_url || '',
+          status: item.status || 'available',
+          current_condition: item.current_condition || 'değerlendirilecek'
+        };
+
+        if (existing?.id) {
+          await supabase.from('equipment').update(payload).eq('id', existing.id);
+        } else {
+          await supabase.from('equipment').insert([
+            {
+              ...payload,
+              id: isUuid ? item.id : crypto.randomUUID()
+            }
+          ]);
+        }
+        syncedCount++;
+      }
+      return { success: true, count: syncedCount };
+    } catch (err: any) {
+      return { success: false, count: 0, error: err?.message || String(err) };
+    }
   },
 
   async updateEquipmentStatus(

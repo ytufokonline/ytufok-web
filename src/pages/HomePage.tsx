@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Calendar, ArrowRight, CheckCircle, Bell, Image as ImageIcon, MapPin, Eye, Droplets, AlertTriangle, Compass } from 'lucide-react';
-import { Announcement, GalleryItem, Equipment, Trip } from '../types';
+import { Camera, Calendar, ArrowRight, CheckCircle, Bell, MapPin, Eye, Droplets, AlertTriangle, Compass } from 'lucide-react';
+import { Announcement, Equipment, Trip } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { formatDateRangeTr } from '../utils/tripUtils';
@@ -14,16 +14,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
   const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
   const [announcements, setAnnouncements] = useState<Announcement[]>(initialSync.announcements);
   const [activeTrips, setActiveTrips] = useState<Trip[]>(initialSync.activeTrips);
-  const [gallery, setGallery] = useState<GalleryItem[]>(initialSync.gallery);
   const [featuredEquipment, setFeaturedEquipment] = useState<Equipment[]>(initialSync.equipmentList.slice(0, 3));
-  const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const bundle = await api.getDashboardBundle();
         setAnnouncements(bundle.announcements);
-        setGallery(bundle.gallery);
         setFeaturedEquipment(bundle.equipmentList.slice(0, 3));
         setActiveTrips(bundle.activeTrips);
       } catch {
@@ -290,17 +287,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {announcements.map((ann) => (
             <div 
               key={ann.id}
-              className={`p-6 rounded-2xl bg-[#1c0f18] border transition-all duration-200 flex flex-col justify-between ${
+              className={`p-5 rounded-2xl bg-[#1c0f18] border transition-all duration-200 flex flex-col justify-between ${
                 ann.is_pinned 
                   ? 'border-[#657796]/60 shadow-xl shadow-[#301322]/40' 
                   : 'border-[#657796]/20 hover:border-[#657796]/40'
               }`}
             >
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <div className="flex items-center justify-between gap-2">
                   <span className={`text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full ${
                     ann.is_pinned 
@@ -313,11 +310,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                     {new Date(ann.created_at).toLocaleDateString('tr-TR')}
                   </span>
                 </div>
-                <h3 className="text-sm font-bold text-white leading-snug font-club">
-                  {ann.title}
-                </h3>
-                <p className="text-[#dce4ef] text-xs leading-relaxed">
-                  {ann.content}
+                <p className="text-white text-xs sm:text-sm font-medium leading-relaxed">
+                  {ann.content || ann.title}
                 </p>
               </div>
             </div>
@@ -411,126 +405,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           ))}
         </div>
       </section>
-
-      {/* 5. VİTRİN GALERİSİ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-8 gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#8193b2] mb-1">
-              <ImageIcon className="w-3.5 h-3.5" />
-              <span>YTÜFOK Vizöründen</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white font-club">
-              Kulüp Fotoğraf Galerisi
-            </h2>
-          </div>
-          <span className="text-xs text-[#a9b9d3]">
-            Kulüp demirbaşı kameralarla üyelerimiz tarafından çekilen fotoğraflar
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {(gallery.length > 0 ? gallery : [
-            { id: 'g-1', title: 'En kısa zamanda yüklenecek', photographer_name: 'YTÜFOK', camera_used: 'Kulüp Demirbaşı', location: 'YTÜ Davutpaşa', image_url: '', created_at: '' },
-            { id: 'g-2', title: 'En kısa zamanda yüklenecek', photographer_name: 'YTÜFOK', camera_used: 'Kulüp Demirbaşı', location: 'YTÜ Davutpaşa', image_url: '', created_at: '' },
-            { id: 'g-3', title: 'En kısa zamanda yüklenecek', photographer_name: 'YTÜFOK', camera_used: 'Kulüp Demirbaşı', location: 'YTÜ Davutpaşa', image_url: '', created_at: '' },
-            { id: 'g-4', title: 'En kısa zamanda yüklenecek', photographer_name: 'YTÜFOK', camera_used: 'Kulüp Demirbaşı', location: 'YTÜ Davutpaşa', image_url: '', created_at: '' },
-          ]).map((photo, idx) => {
-            const hasRealImage = Boolean(photo.image_url && photo.image_url.trim().length > 0);
-
-            if (!hasRealImage) {
-              return (
-                <div
-                  key={photo.id || idx}
-                  className="relative h-64 rounded-2xl overflow-hidden border border-dashed border-[#657796]/35 bg-gradient-to-b from-[#1c0f18] to-[#12080f] p-5 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:border-[#657796]/60 shadow-lg"
-                >
-                  <div className="w-12 h-12 rounded-2xl bg-[#301322] border border-[#657796]/30 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-inner">
-                    <Camera className="w-6 h-6 text-[#8193b2]" />
-                  </div>
-
-                  <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-[#301322] text-[#8193b2] border border-[#657796]/30 mb-2">
-                    YAKINDA
-                  </span>
-
-                  <h4 className="text-xs sm:text-sm font-bold text-white font-club leading-snug">
-                    En kısa zamanda yüklenecek
-                  </h4>
-
-                  <p className="text-[11px] text-[#a9b9d3]/70 mt-1.5 max-w-[200px] leading-relaxed">
-                    Kulüp üyelerimizin vizöründen fotoğraflar yakında burada sergilenecektir.
-                  </p>
-                </div>
-              );
-            }
-
-            return (
-              <div
-                key={photo.id}
-                onClick={() => setSelectedPhoto(photo)}
-                className="relative h-64 rounded-xl overflow-hidden group cursor-pointer border border-[#657796]/20 hover:border-[#657796] transition-all shadow-md bg-black"
-              >
-                <img
-                  src={photo.image_url}
-                  alt={photo.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#12080f] via-[#12080f]/40 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
-                
-                <div className="absolute bottom-0 inset-x-0 p-4 space-y-1 transform group-hover:-translate-y-1 transition-transform">
-                  <span className="text-[10px] text-[#8193b2] font-semibold uppercase tracking-wider block">
-                    {photo.camera_used}
-                  </span>
-                  <h4 className="text-xs font-bold text-white leading-tight font-club">
-                    {photo.title}
-                  </h4>
-                  <div className="flex items-center justify-between text-[11px] text-[#dce4ef] pt-1">
-                    <span>{photo.photographer_name}</span>
-                    <div className="flex items-center gap-1 text-[10px] text-[#a9b9d3]">
-                      <MapPin className="w-3 h-3 text-[#8193b2]" />
-                      <span className="truncate max-w-[80px]">{photo.location}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Lightbox Modal */}
-      {selectedPhoto && Boolean(selectedPhoto.image_url) && (
-        <div 
-          onClick={() => setSelectedPhoto(null)}
-          className="fixed inset-0 z-50 bg-[#12080f]/95 backdrop-blur-md flex items-center justify-center p-4"
-        >
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-w-3xl w-full bg-[#1c0f18] rounded-2xl overflow-hidden border border-[#657796]/40 shadow-2xl"
-          >
-            <div className="relative max-h-[60vh] bg-black">
-              <img
-                src={selectedPhoto.image_url}
-                alt={selectedPhoto.title}
-                className="w-full h-full object-contain mx-auto"
-              />
-            </div>
-            <div className="p-6 space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-white font-club">{selectedPhoto.title}</h3>
-                  <p className="text-xs text-[#8193b2]">Fotoğrafçı: {selectedPhoto.photographer_name}</p>
-                </div>
-                <button
-                  onClick={() => setSelectedPhoto(null)}
-                  className="px-3 py-1.5 rounded-lg bg-[#301322] hover:bg-[#421d31] text-xs text-[#dce4ef] font-semibold"
-                >
-                  Kapat (ESC)
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

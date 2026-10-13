@@ -6,9 +6,9 @@ import {
   User, FileText, CheckCircle2, ChevronRight,
   ArrowRightLeft, LogOut, Award, Sparkles, Droplets,
   Trash2, Calendar, CalendarPlus, Info, Compass, MapPin,
-  KeyRound
+  KeyRound, Bell
 } from 'lucide-react';
-import { Reservation, Equipment, Member, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip } from '../types';
+import { Reservation, Equipment, Member, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement } from '../types';
 import { api } from '../lib/api';
 import { getSupabaseConfigStatus } from '../lib/supabase';
 import { StatusBadge } from '../components/StatusBadge';
@@ -18,7 +18,7 @@ import { checkTripBookingEligibility, formatDateTr, formatDateRangeTr, getReserv
 
 export const AdminDashboard: React.FC = () => {
   const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
-  const [activeTab, setActiveTab] = useState<'reservations' | 'tracking' | 'equipment' | 'members' | 'history' | 'darkroom' | 'supabase' | 'trips'>('reservations');
+  const [activeTab, setActiveTab] = useState<'reservations' | 'tracking' | 'equipment' | 'members' | 'history' | 'darkroom' | 'supabase' | 'trips' | 'announcements'>('reservations');
   const [loading, setLoading] = useState(false);
 
   // Board Member Accounts & Active Profile
@@ -102,6 +102,41 @@ export const AdminDashboard: React.FC = () => {
   const [newTripDescription, setNewTripDescription] = useState('');
   const [newTripIsActive, setNewTripIsActive] = useState(true);
 
+  // Announcements State
+  const [announcements, setAnnouncements] = useState<Announcement[]>(initialSync.announcements);
+  const [showAddAnnouncementModal, setShowAddAnnouncementModal] = useState(false);
+  const [newAnnContent, setNewAnnContent] = useState('');
+  const [newAnnCategory, setNewAnnCategory] = useState('Ekipman & Kural');
+  const [newAnnIsPinned, setNewAnnIsPinned] = useState(true);
+
+  const handleAddAnnouncement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanContent = newAnnContent.trim();
+    if (!cleanContent) return;
+
+    await api.createAnnouncement({
+      title: cleanContent,
+      content: cleanContent,
+      category: newAnnCategory,
+      is_pinned: newAnnIsPinned
+    });
+
+    setNewAnnContent('');
+    setShowAddAnnouncementModal(false);
+    await loadAllData();
+  };
+
+  const handleDeleteAnnouncement = async (id: string) => {
+    if (!window.confirm('Bu duyuru/not silinsin mi?')) return;
+    await api.deleteAnnouncement(id);
+    await loadAllData();
+  };
+
+  const handleTogglePinAnnouncement = async (ann: Announcement) => {
+    await api.updateAnnouncement(ann.id, { is_pinned: !ann.is_pinned });
+    await loadAllData();
+  };
+
   const loadAllData = async (_silent?: boolean | React.MouseEvent) => {
     try {
       const bundle = await api.getDashboardBundle(true);
@@ -113,6 +148,7 @@ export const AdminDashboard: React.FC = () => {
       setDarkroomReservations(bundle.darkroomReservations);
       setDarkroomSlots(bundle.darkroomSlots);
       setTrips(bundle.trips);
+      setAnnouncements(bundle.announcements);
     } catch (e) {
       console.error('Veri yükleme hatası:', e);
     } finally {
@@ -787,6 +823,17 @@ export const AdminDashboard: React.FC = () => {
         >
           <Compass className="w-3.5 h-3.5 text-[#8193b2]" />
           <span>Kulüp Gezileri ({trips.length})</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('announcements')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            activeTab === 'announcements'
+              ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm'
+              : 'text-[#a9b9d3] hover:text-white'
+          }`}
+        >
+          <Bell className="w-3.5 h-3.5 text-[#8193b2]" />
+          <span>Duyurular & Notlar ({announcements.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('supabase')}
@@ -2407,6 +2454,162 @@ export const AdminDashboard: React.FC = () => {
           </p>
           <div className="p-3 rounded-xl bg-[#12080f] border border-[#657796]/30 font-mono text-xs text-[#dce4ef]">
             VITE_SUPABASE_URL={supabaseConfig.url}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: ANNOUNCEMENTS & NOTES */}
+      {activeTab === 'announcements' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/30 shadow-md">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Bell className="w-4 h-4 text-[#8193b2]" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#8193b2]">Kulüp Bildirimleri</span>
+              </div>
+              <h3 className="text-base font-bold text-white font-club">
+                Duyurular, Notlar ve Kural Hatırlatmaları
+              </h3>
+              <p className="text-xs text-[#a9b9d3] mt-0.5">
+                Ana sayfadaki "Duyurular & Hatırlatmalar" bölümünde yayınlanan tek cümlelik bildirimler ve yönetici notları.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddAnnouncementModal(true)}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shrink-0 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Yeni Not / Duyuru Ekle</span>
+            </button>
+          </div>
+
+          {/* Announcements List */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {announcements.map((ann) => (
+              <div
+                key={ann.id}
+                className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 hover:border-[#657796]/40 transition-all flex flex-col justify-between space-y-4"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-[#301322] text-[#dce4ef] border border-[#657796]/30">
+                      {ann.category}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {ann.is_pinned && (
+                        <span className="text-[10px] font-bold text-[#8193b2] bg-[#657796]/20 px-2 py-0.5 rounded-full border border-[#657796]/40">
+                          📌 Sabitlendi
+                        </span>
+                      )}
+                      <span className="text-[11px] text-[#a9b9d3]">
+                        {new Date(ann.created_at).toLocaleDateString('tr-TR')}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-white text-xs sm:text-sm font-medium leading-relaxed">
+                    {ann.content || ann.title}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#657796]/15">
+                  <button
+                    onClick={() => handleTogglePinAnnouncement(ann)}
+                    className="px-2.5 py-1.5 rounded-lg bg-[#12080f] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
+                  >
+                    {ann.is_pinned ? 'Sabitlemeyi Kaldır' : '📌 Öne Çıkar'}
+                  </button>
+                  <button
+                    onClick={() => handleDeleteAnnouncement(ann.id)}
+                    className="px-2.5 py-1.5 rounded-lg bg-[#301322] hover:bg-rose-900/40 text-rose-300 border border-rose-500/30 text-[11px] font-semibold transition-colors cursor-pointer flex items-center gap-1"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Sil</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Add Announcement Modal */}
+      {showAddAnnouncementModal && (
+        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
+              <div className="flex items-center gap-2">
+                <Bell className="w-5 h-5 text-[#8193b2]" />
+                <h3 className="text-base font-bold text-white font-club">Yeni Not / Duyuru Ekle</h3>
+              </div>
+              <button
+                onClick={() => setShowAddAnnouncementModal(false)}
+                className="p-1 rounded-lg text-[#a9b9d3] hover:text-white hover:bg-[#301322] transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddAnnouncement} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-white mb-1.5">
+                  Not / Duyuru Metni (Tek Cümle): *
+                </label>
+                <textarea
+                  rows={3}
+                  value={newAnnContent}
+                  onChange={(e) => setNewAnnContent(e.target.value)}
+                  placeholder="Örn: Hafta sonu gezi hazırlığı sebebiyle perşembe günü ekipman teslim saatleri 17:00'ye kadar uzatılmıştır."
+                  required
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2] focus:outline-none focus:border-[#657796]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-white mb-1.5">
+                  Kategori:
+                </label>
+                <select
+                  value={newAnnCategory}
+                  onChange={(e) => setNewAnnCategory(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs focus:outline-none focus:border-[#657796]"
+                >
+                  <option value="Ekipman & Kural">Ekipman & Kural</option>
+                  <option value="Kural & Yönetmelik">Kural & Yönetmelik</option>
+                  <option value="Genel Duyuru">Genel Duyuru</option>
+                  <option value="Atölye & Gezi">Atölye & Gezi</option>
+                  <option value="Hatırlatma">Hatırlatma</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="ann_is_pinned"
+                  checked={newAnnIsPinned}
+                  onChange={(e) => setNewAnnIsPinned(e.target.checked)}
+                  className="rounded border-[#657796]/40 bg-[#12080f] text-[#657796] focus:ring-0 cursor-pointer"
+                />
+                <label htmlFor="ann_is_pinned" className="text-xs text-[#dce4ef] cursor-pointer">
+                  📌 En başta sabitle (Öne Çıkar)
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#657796]/20">
+                <button
+                  type="button"
+                  onClick={() => setShowAddAnnouncementModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#a9b9d3] hover:text-white bg-[#12080f] border border-[#657796]/20"
+                >
+                  Vazgeç
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 shadow-md cursor-pointer"
+                >
+                  Yayınla
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

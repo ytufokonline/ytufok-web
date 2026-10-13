@@ -11747,16 +11747,16 @@ export const INITIAL_RESERVATIONS: Reservation[] = [];
 export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'a-sd-card',
-    title: 'Önemli: Kamera Gövdelerinde SD Kart Temini & Kart Zorunluluğu',
-    content: 'Kulübümüz envanterinde SD kart temini bulunmamaktadır. Canon 5D Mark II (kendi CF kartı ve okuyucusuyla teslim edilen gövde) HARİÇ tüm dijital kamera gövdelerini (Canon 6D, Canon 1000D, Nikon D5000 vb.) rezerve eden üyelerimizin çekime gelirken yanlarında kendi SD kartlarını getirmeleri gerekmektedir. Kendi SD kartı bulunmayan üyelerimiz rezervasyon formu oluştururken not alanında durumu mutlaka belirtmelidir.',
+    title: 'Canon 5D Mark II (CF kartlı) hariç tüm dijital gövdeler için üyelerimizin çekime gelirken kendi SD kartlarını getirmeleri gerekmektedir.',
+    content: 'Canon 5D Mark II (CF kartlı) hariç tüm dijital gövdeler için üyelerimizin çekime gelirken kendi SD kartlarını getirmeleri gerekmektedir.',
     category: 'Ekipman & Kural',
     is_pinned: true,
     created_at: '2026-10-12T12:00:00Z'
   },
   {
     id: 'a-1',
-    title: 'Önemli: Tek Teslim & İade Noktası ve Kullanım Kuralları',
-    content: 'Tüm ekipman teslim ve iadeleri YALNIZCA Kulüpler Vadisi, Davutpaşa Kampüsü noktasından yapılmaktadır (başka hiçbir teslim veya iade noktası bulunmamaktadır). Maksimum standart rezervasyon süresi 4 gündür.',
+    title: 'Tüm ekipman teslim ve iadeleri yalnızca Kulüpler Vadisi Davutpaşa Kampüsü noktasından yapılmaktadır (maksimum standart rezervasyon süresi 4 gündür).',
+    content: 'Tüm ekipman teslim ve iadeleri yalnızca Kulüpler Vadisi Davutpaşa Kampüsü noktasından yapılmaktadır (maksimum standart rezervasyon süresi 4 gündür).',
     category: 'Kural & Yönetmelik',
     is_pinned: true,
     created_at: '2026-10-01T09:00:00Z'

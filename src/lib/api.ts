@@ -28,7 +28,7 @@ import {
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
 const UNIFIED_NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
-const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v10';
+const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v11';
 
 type CloudCollectionKey =
   | 'admin_profiles'
@@ -457,9 +457,9 @@ function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   const rawAnnouncements: Announcement[] = (cols.announcements || INITIAL_ANNOUNCEMENTS)
     .filter((a: Announcement) => a.id !== 'a-2' && a.id !== 'a-3')
     .map((a: Announcement) => {
-      if (a.id === 'a-1') {
-        const updatedA1 = INITIAL_ANNOUNCEMENTS.find((ia) => ia.id === 'a-1');
-        return updatedA1 || a;
+      if (a.id === 'a-1' || a.id === 'a-sd-card') {
+        const updated = INITIAL_ANNOUNCEMENTS.find((ia) => ia.id === a.id);
+        return updated || a;
       }
       return a;
     });

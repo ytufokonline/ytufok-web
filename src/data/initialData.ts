@@ -10999,6 +10999,34 @@ export const INITIAL_MEMBERS: Member[] = [
     "notes": "YTÜFOK Kulüp Üyesi (Normal Üye)"
   },
   {
+    "id": "m-norm-672",
+    "student_number": "23057009",
+    "full_name": "Betül Gül",
+    "email": "23057009@std.yildiz.edu.tr",
+    "phone": "+90 5XX XXX XX XX",
+    "department": "Yıldız Teknik Üniversitesi",
+    "membership_year": 2023,
+    "status": "active",
+    "member_type": "normal",
+    "penalty_count": 0,
+    "role": "member",
+    "notes": "YTÜFOK Kulüp Üyesi (Normal Üye)"
+  },
+  {
+    "id": "m-norm-673",
+    "student_number": "23037034",
+    "full_name": "Güven Şen",
+    "email": "23037034@std.yildiz.edu.tr",
+    "phone": "+90 5XX XXX XX XX",
+    "department": "Yıldız Teknik Üniversitesi",
+    "membership_year": 2023,
+    "status": "active",
+    "member_type": "normal",
+    "penalty_count": 0,
+    "role": "member",
+    "notes": "YTÜFOK Kulüp Üyesi (Normal Üye)"
+  },
+  {
     "id": "m-fahri-1",
     "student_number": "B2581.060040",
     "full_name": "Mahmut Özer",

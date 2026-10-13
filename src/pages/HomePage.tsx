@@ -77,9 +77,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
 
             <button
               onClick={() => onNavigate('darkroom')}
-              className="px-5 py-3 rounded-lg text-rose-300 hover:text-rose-200 font-medium text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-5 py-3 rounded-lg bg-[#301322]/70 hover:bg-[#301322] text-rose-200 hover:text-white font-medium text-sm border border-rose-500/30 hover:border-rose-500/50 transition-all duration-150 flex items-center gap-2 cursor-pointer active:scale-[0.98]"
             >
-              <Droplets className="w-4 h-4" />
+              <Droplets className="w-4 h-4 text-rose-400" />
               <span>Karanlık Oda (1,5 Saat)</span>
             </button>
           </div>

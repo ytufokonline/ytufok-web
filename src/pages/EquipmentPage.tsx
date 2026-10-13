@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Search, Filter, ArrowRight, Package, Check, AlertCircle, Info, X, MapPin, History, Clock, User, AlertTriangle } from 'lucide-react';
+import { Camera, Search, Filter, ArrowRight, Package, Check, AlertCircle, Info, X, MapPin, History, Clock, User, AlertTriangle, Sparkles } from 'lucide-react';
 import { Equipment, Reservation } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
@@ -37,7 +37,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
       if (document.visibilityState === 'visible') {
         fetchData();
       }
-    }, 12000);
+    }, 15000);
     const handleFocus = () => fetchData();
     window.addEventListener('focus', handleFocus);
     return () => {
@@ -74,7 +74,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
   const getCategoryLabel = (category: string) => {
     switch (category) {
       case 'camera': return 'Gövde (DSLR)';
-      case 'analog': return 'Analog Makine (35mm)';
+      case 'analog': return 'Analog (35mm)';
       case 'lens': return 'Objektif (Lens)';
       case 'lighting': return 'Flaş & Aydınlatma';
       case 'tripod': return 'Tripod & Destek';
@@ -85,65 +85,66 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* Header */}
+      
+      {/* Editorial Header */}
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#301322] border border-[#657796]/40 text-[#dce4ef] text-xs font-semibold uppercase tracking-wider">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-[#a9b9d3] text-[11px] font-medium uppercase tracking-[0.14em]">
           <Camera className="w-3.5 h-3.5 text-[#8193b2]" />
-          <span>Demirbaş Havuzu</span>
+          <span>Demirbaş Kataloğu</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-club">
-          Kamera ve Ekipman Kataloğu
+          Kamera ve Ekipman Havuzu
         </h1>
         <p className="text-[#a9b9d3] text-xs sm:text-sm max-w-2xl leading-relaxed">
-          Kulüp bünyesindeki Canon gövdeler, profesyonel lensler, analog makineler ve aksesuarların 
+          Kulüp bünyesindeki Canon DSLR gövdeler, profesyonel lensler, analog makineler ve aksesuarların 
           anlık durumlarını inceleyebilir ve rezervasyon yapabilirsiniz.
         </p>
       </div>
 
-      {/* Priority & Single Delivery Notice Banner */}
-      <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/40 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-[#301322] border border-[#657796]/30 text-[#8193b2]">
+      {/* Refined Integrated Policy Banner */}
+      <div className="studio-card rounded-2xl p-4 sm:p-5 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
+        <div className="flex items-start gap-3 pt-2 md:pt-0">
+          <div className="p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[#8193b2] shrink-0">
             <MapPin className="w-4 h-4 text-[#8193b2]" />
           </div>
           <div>
-            <span className="font-bold text-white block">Tek Teslim & İade Noktası: Kulüpler Vadisi, Davutpaşa Kampüsü</span>
-            <span className="text-[#a9b9d3] text-[11px]">Başka hiçbir noktada teslimat veya iade yapılmamaktadır. İadeler de burayadır.</span>
+            <strong className="text-white block font-medium">Tek Teslim & İade Noktası</strong>
+            <span className="text-[#a9b9d3] text-[11px] leading-relaxed">Kulüpler Vadisi, Davutpaşa Kampüsü. Başka bir noktada teslimat yapılmaz.</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-[#301322]/80 px-3 py-1.5 rounded-xl border border-[#657796]/30 shrink-0">
-          <span className="w-2 h-2 rounded-full bg-[#657796] animate-pulse"></span>
-          <span className="text-[#dce4ef] font-bold text-[11px]">Aktif Kulüp Üyeleri 1. Derece Önceliklidir</span>
-        </div>
-      </div>
-
-      {/* SD Kart Bilgilendirme Bannerı */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-[#4b253b]/40 via-[#301322] to-[#1c0f18] border border-[#657796]/40 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-[#301322] border border-[#657796]/40 text-[#8193b2]">
-            <AlertTriangle className="w-4 h-4 text-[#8193b2]" />
+        <div className="flex items-start gap-3 pt-3 md:pt-0 md:pl-4">
+          <div className="p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-amber-300/80 shrink-0">
+            <AlertTriangle className="w-4 h-4 text-amber-300/80" />
           </div>
           <div>
-            <span className="font-bold text-white block">Kamera Gövdelerine SD Kart Dahil Değildir</span>
-            <span className="text-[#dce4ef] text-[11px] leading-relaxed">
-              <strong>Canon 5D Mark II</strong> (dahili CF kartlı) haricindeki tüm dijital gövdelerde üyelerimizin <strong>kendi SD kartlarını getirmesi gerekmektedir</strong>. Kartı olmayan üyeler rezervasyon formundaki not alanında mutlaka belirtmelidir.
-            </span>
+            <strong className="text-white block font-medium">SD Kart Durumu</strong>
+            <span className="text-[#a9b9d3] text-[11px] leading-relaxed">5D Mark II (CF kartlı) harici gövdelerde üyeler kendi SD kartını getirmelidir.</span>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 pt-3 md:pt-0 md:pl-4">
+          <div className="p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[#8193b2] shrink-0">
+            <Sparkles className="w-4 h-4 text-[#8193b2]" />
+          </div>
+          <div>
+            <strong className="text-white block font-medium">Rezervasyon Önceliği</strong>
+            <span className="text-[#a9b9d3] text-[11px] leading-relaxed">Aktif kulüp üyeleri 1. derece önceliklidir (5 gün erken rezerve hakkı).</span>
           </div>
         </div>
       </div>
 
-      {/* Search and Filters Bar */}
-      <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-4">
+      {/* Search and Filters Strip */}
+      <div className="studio-card rounded-2xl p-4 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
           <div className="md:col-span-8 relative">
             <Search className="w-4 h-4 text-[#8193b2] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Model, marka veya demirbaş no ara (örn: Sony A7, Fujifilm, 35mm)..."
+              placeholder="Model, marka veya demirbaş no ara (örn: Canon 6D, 50mm, analog)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white placeholder-[#a9b9d3]/60 text-xs focus:outline-none focus:border-[#657796] transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white placeholder-[#a9b9d3]/50 text-xs focus:outline-none transition-colors"
             />
           </div>
 
@@ -152,30 +153,30 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               aria-label="Duruma göre filtrele"
-              className="w-full px-3 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-[#dce4ef] text-xs focus:outline-none focus:border-[#657796] cursor-pointer"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-[#dce4ef] text-xs focus:outline-none cursor-pointer"
             >
-              <option value="all">Tüm Durumlar</option>
+              <option value="all">Tüm Ekipman Durumları</option>
               <option value="available">Sadece Müsait Olanlar</option>
-              <option value="reserved">Rezerve Olanlar</option>
+              <option value="reserved">Rezerve Edilenler</option>
               <option value="in_use">Zimmette Olanlar</option>
               <option value="maintenance">Bakımda Olanlar</option>
             </select>
           </div>
         </div>
 
-        {/* Quick Filter Badges */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#657796]/20 text-xs">
+        {/* Apple Segmented Category Pills */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-white/[0.06] text-xs">
           <span className="text-[#a9b9d3] mr-1 flex items-center gap-1 text-[11px]">
-            <Filter className="w-3 h-3 text-[#8193b2]" /> Kategori:
+            <Filter className="w-3 h-3 text-[#8193b2]" /> Filtre:
           </span>
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1 rounded-lg text-xs transition-all ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
                 selectedCategory === cat.id
-                  ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold shadow-sm'
-                  : 'bg-[#301322] text-[#dce4ef] hover:text-white'
+                  ? 'bg-white/[0.14] text-white border border-white/[0.14] shadow-sm'
+                  : 'bg-white/[0.03] text-[#a9b9d3] hover:text-white hover:bg-white/[0.06] border border-white/[0.05]'
               }`}
             >
               {cat.label}
@@ -186,14 +187,14 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
       {/* Equipment Grid */}
       {loading ? (
-        <div className="py-20 text-center text-[#a9b9d3]">
-          <div className="w-8 h-8 border-2 border-[#657796] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+        <div className="py-24 text-center text-[#a9b9d3]">
+          <div className="w-7 h-7 border-2 border-[#8193b2] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
           Ekipmanlar yükleniyor...
         </div>
       ) : filteredEquipment.length === 0 ? (
-        <div className="py-16 text-center rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-3">
-          <AlertCircle className="w-8 h-8 text-[#8193b2] mx-auto" />
-          <h3 className="text-sm font-bold text-white">Ekipman Bulunamadı</h3>
+        <div className="py-20 text-center rounded-2xl studio-card space-y-3">
+          <AlertCircle className="w-8 h-8 text-[#8193b2] mx-auto opacity-70" />
+          <h3 className="text-sm font-semibold text-white">Ekipman Bulunamadı</h3>
           <p className="text-xs text-[#a9b9d3]">Arama kriterlerine uygun sonuç çıkmadı.</p>
         </div>
       ) : (
@@ -201,19 +202,19 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
           {filteredEquipment.map((item) => (
             <div
               key={item.id}
-              className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden hover:border-[#657796]/60 transition-all flex flex-col group shadow-lg"
+              className="rounded-2xl studio-card-interactive overflow-hidden flex flex-col group"
             >
-              <div className="relative h-56 bg-black overflow-hidden">
+              <div className="relative h-56 bg-black/50 overflow-hidden">
                 <img
                   src={item.image_url}
                   alt={item.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                 />
                 <div className="absolute top-3 right-3">
                   <StatusBadge status={item.status} type="equipment" />
                 </div>
                 <div className="absolute bottom-3 left-3">
-                  <span className="px-2.5 py-1 rounded bg-[#12080f]/90 backdrop-blur-md text-[11px] font-mono font-semibold text-[#dce4ef] border border-[#657796]/30">
+                  <span className="px-2.5 py-1 rounded-md bg-[#12080f]/80 backdrop-blur-md text-[11px] font-mono font-medium text-[#dce4ef] border border-white/[0.08]">
                     {item.serial_number}
                   </span>
                 </div>
@@ -230,13 +231,13 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
                   {item.category === 'camera' && (
                     item.id === 'e-5d2' ? (
-                      <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-950/40 border border-blue-500/30 text-[10px] text-blue-200">
+                      <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] text-blue-200">
                         <Info className="w-3 h-3 text-blue-400 shrink-0" />
                         <span>CF Kart & Okuyucu Çantada Dahil</span>
                       </div>
                     ) : (
-                      <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#301322] border border-[#657796]/40 text-[10px] text-[#dce4ef]">
-                        <AlertTriangle className="w-3 h-3 text-[#8193b2] shrink-0" />
+                      <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[10px] text-[#dce4ef]">
+                        <AlertTriangle className="w-3 h-3 text-amber-300/80 shrink-0" />
                         <span>SD Kart Dahil Değil (Üye Getirmeli)</span>
                       </div>
                     )
@@ -247,23 +248,23 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                   </p>
                 </div>
 
-                <div className="bg-[#12080f] rounded-xl p-3 border border-[#657796]/20 space-y-1 text-xs">
+                <div className="bg-[#12080f]/60 rounded-xl p-3 border border-white/[0.06] space-y-1.5 text-xs">
                   {Object.entries(item.specs).slice(0, 2).map(([key, value]) => (
                     <div key={key} className="flex justify-between text-[#dce4ef]">
                       <span className="text-[#a9b9d3]">{key}:</span>
                       <span className="text-white font-medium truncate max-w-[170px]">{value}</span>
                     </div>
                   ))}
-                  <div className="flex justify-between text-[#dce4ef] pt-1 border-t border-[#657796]/20">
+                  <div className="flex justify-between text-[#dce4ef] pt-1.5 border-t border-white/[0.06]">
                     <span className="text-[#a9b9d3]">Kondisyon:</span>
-                    <span className="text-[#8193b2] font-medium truncate max-w-[170px]">{item.current_condition || 'değerlendirilecek'}</span>
+                    <span className="text-[#8193b2] font-medium truncate max-w-[170px]">{item.current_condition || 'Standart'}</span>
                   </div>
                 </div>
 
                 <div className="pt-2 flex items-center justify-between gap-3">
                   <button
                     onClick={() => setSelectedItemForModal(item)}
-                    className="flex-1 py-2 px-3 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] hover:text-white text-xs font-semibold transition-colors text-center cursor-pointer flex items-center justify-center gap-1.5 border border-[#657796]/20"
+                    className="flex-1 py-2 px-3 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-[#dce4ef] hover:text-white text-xs font-medium transition-colors text-center cursor-pointer flex items-center justify-center gap-1.5 border border-white/[0.08]"
                   >
                     <Info className="w-3.5 h-3.5 text-[#8193b2]" />
                     <span>Detay & Kutu</span>
@@ -275,10 +276,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                       onNavigate('reserve');
                     }}
                     disabled={item.status === 'maintenance'}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`flex-1 py-2 px-3 rounded-full text-xs font-semibold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer ${
                       item.status === 'maintenance'
-                        ? 'bg-[#301322] text-[#a9b9d3] cursor-not-allowed opacity-50'
-                        : 'bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:from-[#7589aa] hover:to-[#5e4766] text-white shadow-md'
+                        ? 'bg-white/[0.04] text-[#a9b9d3]/40 cursor-not-allowed border border-transparent'
+                        : 'bg-white/[0.1] hover:bg-white/[0.18] text-white border border-white/[0.12] active:scale-[0.98]'
                     }`}
                   >
                     <span>Rezerve Et</span>
@@ -291,25 +292,25 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         </div>
       )}
 
-      {/* Ekipman Detay Modalı */}
+      {/* Ekipman Detay Modalı (Apple Sheet Style) */}
       {selectedItemForModal && (
         <div 
           onClick={() => setSelectedItemForModal(null)}
-          className="fixed inset-0 z-50 bg-[#12080f]/92 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-2xl w-full bg-[#1c0f18] border border-[#657796]/40 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+            className="relative max-w-2xl w-full studio-card rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col border border-white/[0.1]"
           >
-            <div className="p-6 border-b border-[#657796]/20 flex items-start justify-between bg-[#12080f]">
+            <div className="p-5 sm:p-6 border-b border-white/[0.06] flex items-start justify-between bg-[#140911]">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs uppercase font-bold text-[#8193b2]">
+                  <span className="text-xs uppercase font-medium text-[#8193b2]">
                     {selectedItemForModal.brand} • {getCategoryLabel(selectedItemForModal.category)}
                   </span>
                   <StatusBadge status={selectedItemForModal.status} type="equipment" size="sm" />
                 </div>
-                <h2 className="text-lg font-bold text-white font-club">
+                <h2 className="text-xl font-bold text-white font-club">
                   {selectedItemForModal.name}
                 </h2>
                 <span className="text-xs font-mono text-[#a9b9d3]">
@@ -318,17 +319,17 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               </div>
               <button
                 onClick={() => setSelectedItemForModal(null)}
-                className="p-2 rounded-xl bg-[#301322] text-[#a9b9d3] hover:text-white"
+                className="p-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-[#a9b9d3] hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Tabs: Özellikler vs Kullanım Geçmişi */}
-            <div className="flex border-b border-[#657796]/20 bg-[#12080f] px-6">
+            {/* Modal Tabs */}
+            <div className="flex border-b border-white/[0.06] bg-[#140911] px-6">
               <button
                 onClick={() => setModalTab('details')}
-                className={`py-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+                className={`py-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
                   modalTab === 'details'
                     ? 'border-[#8193b2] text-white'
                     : 'border-transparent text-[#a9b9d3] hover:text-white'
@@ -339,7 +340,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               </button>
               <button
                 onClick={() => setModalTab('history')}
-                className={`py-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+                className={`py-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
                   modalTab === 'history'
                     ? 'border-[#8193b2] text-white'
                     : 'border-transparent text-[#a9b9d3] hover:text-white'
@@ -347,7 +348,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               >
                 <History className="w-3.5 h-3.5" />
                 <span>Kullanım & Zimmet Geçmişi</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#8193b2] border border-[#657796]/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.06] text-[#8193b2] border border-white/[0.08]">
                   {allReservations.filter(r => r.equipment_id === selectedItemForModal.id).length}
                 </span>
               </button>
@@ -355,7 +356,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
             {modalTab === 'details' ? (
               <div className="p-6 overflow-y-auto space-y-6">
-                <div className="h-56 rounded-2xl overflow-hidden bg-black border border-[#657796]/20">
+                <div className="h-60 rounded-xl overflow-hidden bg-black/40 border border-white/[0.06]">
                   <img
                     src={selectedItemForModal.image_url}
                     alt={selectedItemForModal.name}
@@ -365,8 +366,8 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
                 {selectedItemForModal.category === 'camera' && (
                   selectedItemForModal.id === 'e-5d2' ? (
-                    <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-500/40 space-y-1">
-                      <div className="flex items-center gap-2 text-xs font-bold text-blue-300">
+                    <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-blue-200">
                         <Info className="w-4 h-4 text-blue-400 shrink-0" />
                         <span>Hafıza Kartı: CompactFlash (CF) Kart Dahil</span>
                       </div>
@@ -375,13 +376,13 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                       </p>
                     </div>
                   ) : (
-                    <div className="p-4 rounded-2xl bg-gradient-to-r from-[#4b253b]/40 via-[#301322] to-[#1c0f18] border border-[#657796]/40 space-y-1">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#dce4ef]">
-                        <AlertTriangle className="w-4 h-4 text-[#8193b2] shrink-0" />
-                        <span>⚠️ Önemli Hatırlatma: Bu Gövdeye SD Kart Dahil Değildir!</span>
+                    <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-[#dce4ef]">
+                        <AlertTriangle className="w-4 h-4 text-amber-300/80 shrink-0" />
+                        <span>Önemli Hatırlatma: Bu Gövdeye SD Kart Dahil Değildir!</span>
                       </div>
-                      <p className="text-[11px] text-[#dce4ef] leading-relaxed">
-                        Kulübümüz bünyesinde SD kart temini bulunmamaktadır. Çekime gelirken <strong className="text-white">kendi SD kartınızı yanınızda getirmeniz gerekmektedir</strong>. Eğer SD kartınız yoksa rezervasyon formu doldururken <em className="text-white">not alanında mutlaka belirtiniz</em>.
+                      <p className="text-[11px] text-[#a9b9d3] leading-relaxed">
+                        Kulübümüz bünyesinde SD kart temini bulunmamaktadır. Çekime gelirken kendi SD kartınızı yanınızda getirmeniz gerekmektedir. Eğer SD kartınız yoksa rezervasyon formu doldururken not alanında mutlaka belirtiniz.
                       </p>
                     </div>
                   )
@@ -397,7 +398,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                     <Package className="w-4 h-4 text-white" />
                     <span>Kutu İçeriği & Aksesuarlar</span>
                   </h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-xl bg-[#12080f] border border-[#657796]/20 text-xs">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3.5 rounded-xl bg-[#12080f]/80 border border-white/[0.06] text-xs">
                     {selectedItemForModal.package_contents.map((pkgItem, index) => (
                       <li key={index} className="flex items-center gap-2 text-[#dce4ef]">
                         <Check className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
@@ -409,34 +410,32 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               </div>
             ) : (
               <div className="p-6 overflow-y-auto space-y-5">
-                {/* Usage Stats Summary */}
-                <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/30 text-center text-xs">
+                <div className="grid grid-cols-3 gap-3 p-3.5 rounded-xl bg-[#12080f]/80 border border-white/[0.06] text-center text-xs">
                   <div>
-                    <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Zimmet</span>
+                    <span className="text-[#8193b2] text-[10px] uppercase font-medium block">Toplam Zimmet</span>
                     <strong className="text-white text-base font-club">
                       {allReservations.filter(r => r.equipment_id === selectedItemForModal.id).length} Kez
                     </strong>
                   </div>
                   <div>
-                    <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Tamamlanan İade</span>
+                    <span className="text-[#8193b2] text-[10px] uppercase font-medium block">Tamamlanan İade</span>
                     <strong className="text-[#a9b9d3] text-base font-club">
                       {allReservations.filter(r => r.equipment_id === selectedItemForModal.id && r.status === 'returned').length} Kez
                     </strong>
                   </div>
                   <div>
-                    <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Kondisyon</span>
-                    <strong className="text-white text-xs font-semibold block truncate">
-                      {selectedItemForModal.current_condition || 'değerlendirilecek'}
+                    <span className="text-[#8193b2] text-[10px] uppercase font-medium block">Kondisyon</span>
+                    <strong className="text-white text-xs font-medium block truncate">
+                      {selectedItemForModal.current_condition || 'Standart'}
                     </strong>
                   </div>
                 </div>
 
-                {/* Timeline */}
                 {allReservations.filter(r => r.equipment_id === selectedItemForModal.id).length > 0 ? (
                   <div className="space-y-3">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8193b2] flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />
-                      <span>Zimmet Kronolojisi & Çekim Projeleri</span>
+                      <span>Zimmet Kronolojisi</span>
                     </h4>
 
                     {allReservations
@@ -445,11 +444,11 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                       .map((res) => (
                         <div
                           key={res.id}
-                          className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-2 hover:border-[#657796]/40 transition-colors"
+                          className="p-4 rounded-xl studio-card space-y-2"
                         >
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2">
-                              <span className="font-mono font-bold text-[#dce4ef] text-xs">
+                              <span className="font-mono font-medium text-[#dce4ef] text-xs">
                                 {res.reservation_code}
                               </span>
                               <StatusBadge status={res.status} type="reservation" size="sm" />
@@ -463,40 +462,33 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                             <User className="w-3.5 h-3.5 text-[#8193b2]" />
                             <span className="text-[#a9b9d3]">Kullanan Üye: </span>
                             <strong className="text-white">
-                              {res.member?.full_name || res.student_number} ({res.student_number})
+                              {res.member?.full_name || res.student_number}
                             </strong>
                           </div>
 
-                          <div className="text-xs text-[#dce4ef] bg-[#1c0f18] p-2.5 rounded-xl border border-[#657796]/20 space-y-1">
-                            <span className="text-[10px] text-[#8193b2] block font-bold uppercase tracking-wider">
+                          <div className="text-xs text-[#dce4ef] bg-[#12080f]/80 p-2.5 rounded-lg border border-white/[0.05] space-y-1">
+                            <span className="text-[10px] text-[#8193b2] block font-semibold uppercase tracking-wider">
                               Çekim Projesi / Kullanım Amacı:
                             </span>
                             <span>{res.purpose}</span>
                           </div>
-
-                          {res.return_condition_notes && (
-                            <div className="text-[11px] text-[#8193b2] flex items-start gap-1.5 pt-1">
-                              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                              <span>İade & Teslim Notu: <strong className="text-[#dce4ef]">{res.return_condition_notes}</strong></span>
-                            </div>
-                          )}
                         </div>
                       ))}
                   </div>
                 ) : (
-                  <div className="p-8 text-center rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-2">
-                    <History className="w-8 h-8 text-[#8193b2] mx-auto opacity-60" />
-                    <h4 className="text-xs font-bold text-white">Henüz Kullanım Kaydı Bulunmuyor</h4>
+                  <div className="p-8 text-center rounded-xl bg-[#12080f]/80 border border-white/[0.06] space-y-2">
+                    <History className="w-8 h-8 text-[#8193b2] mx-auto opacity-50" />
+                    <h4 className="text-xs font-semibold text-white">Henüz Kullanım Kaydı Bulunmuyor</h4>
                     <p className="text-[11px] text-[#a9b9d3]">Bu ekipman için tamamlanmış bir zimmet kaydı bulunmuyor. İlk rezervasyon yapan siz olabilirsiniz!</p>
                   </div>
                 )}
               </div>
             )}
 
-            <div className="p-5 border-t border-[#657796]/20 bg-[#12080f] flex items-center justify-between gap-4">
+            <div className="p-4 sm:p-5 border-t border-white/[0.06] bg-[#140911] flex items-center justify-between gap-4">
               <button
                 onClick={() => setSelectedItemForModal(null)}
-                className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] text-xs font-semibold"
+                className="px-4 py-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-[#dce4ef] text-xs font-medium transition-colors"
               >
                 Kapat
               </button>
@@ -507,7 +499,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                   onNavigate('reserve');
                 }}
                 disabled={selectedItemForModal.status === 'maintenance'}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:from-[#7589aa] hover:to-[#5e4766] text-white text-xs font-bold flex items-center gap-2 shadow-md"
+                className="px-5 py-2.5 rounded-full bg-[#dce4ef] hover:bg-white text-[#12080f] text-xs font-semibold flex items-center gap-2 shadow-sm transition-all active:scale-[0.98]"
               >
                 <span>Rezerve Et</span>
                 <ArrowRight className="w-4 h-4" />

@@ -70,57 +70,120 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
   const totalFound = equipmentResults.length + darkroomResults.length;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* Title */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#301322] border border-[#657796]/40 text-[#dce4ef] text-xs font-semibold uppercase tracking-wider">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      
+      {/* Editorial Header */}
+      <div className="text-center space-y-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-[#a9b9d3] text-[11px] font-medium uppercase tracking-[0.14em]">
           <Search className="w-3.5 h-3.5 text-[#8193b2]" />
           <span>Talep Sorgulama</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-club">
           Rezervasyon Durumu Takibi
         </h1>
-        <p className="text-[#a9b9d3] text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
-          Takip kodu (örn: YTU-2026-B101 veya KO-2026-101) ya da öğrenci numaranızla hem ekipman hem karanlık oda onay durumunuzu sorgulayabilirsiniz.
+        <p className="text-[#a9b9d3] text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+          Takip kodunuz (örn: YTU-2026-B101) veya öğrenci numaranızla onay durumunu anlık olarak sorgulayabilirsiniz.
         </p>
       </div>
 
-      <form onSubmit={handleSearch} className="max-w-xl mx-auto">
-        <div className="flex gap-2 p-1.5 rounded-2xl bg-[#1c0f18] border border-[#657796]/30 shadow-xl">
+      {/* Search Input Bar */}
+      <form onSubmit={handleSearch} className="max-w-xl mx-auto space-y-3">
+        <div className="flex gap-2 p-1.5 rounded-2xl studio-card">
           <input
             type="text"
             placeholder="Takip Kodu (YTU-... / KO-...) veya Öğrenci No..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white placeholder-[#a9b9d3]/60 text-xs focus:outline-none focus:border-[#657796] font-mono"
+            className="flex-1 px-4 py-2.5 rounded-xl bg-[#12080f]/80 border border-white/[0.08] text-white placeholder-[#a9b9d3]/50 text-xs font-mono focus:outline-none transition-colors"
           />
           <button
             type="submit"
             disabled={searching}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:from-[#7589aa] hover:to-[#5e4766] text-white font-bold text-xs flex items-center gap-2 cursor-pointer transition-colors shadow-sm"
+            className="px-5 py-2.5 rounded-xl bg-[#dce4ef] hover:bg-white text-[#12080f] font-semibold text-xs flex items-center gap-2 cursor-pointer transition-all shadow-sm active:scale-[0.98] disabled:opacity-50"
           >
-            {searching ? 'Aranıyor...' : <><Search className="w-3.5 h-3.5" /><span>Sorgula</span></>}
+            {searching ? 'Aranıyor...' : <><Search className="w-3.5 h-3.5 text-[#12080f]" /><span>Sorgula</span></>}
           </button>
         </div>
 
-        <div className="flex items-center justify-center gap-2 mt-3 text-[11px] text-[#a9b9d3] flex-wrap">
+        <div className="flex items-center justify-center gap-2 text-[11px] text-[#a9b9d3] flex-wrap">
           <span>Örnek Kodlar:</span>
-          <button type="button" onClick={() => setQuery('YTU-2026-B101')} className="text-[#8193b2] underline font-mono">YTU-2026-B101 (Ekipman)</button>
+          <button type="button" onClick={() => setQuery('YTU-2026-B101')} className="text-[#8193b2] hover:text-white underline font-mono cursor-pointer transition-colors">YTU-2026-B101</button>
           <span>•</span>
-          <button type="button" onClick={() => setQuery('KO-2026-101')} className="text-rose-400 underline font-mono">KO-2026-101 (Karanlık Oda)</button>
+          <button type="button" onClick={() => setQuery('KO-2026-101')} className="text-rose-300 hover:text-rose-200 underline font-mono cursor-pointer transition-colors">KO-2026-101 (Karanlık Oda)</button>
           <span>•</span>
-          <button type="button" onClick={() => setQuery('22052018')} className="text-[#8193b2] underline font-mono">22052018 (Öğrenci No)</button>
+          <button type="button" onClick={() => setQuery('22052018')} className="text-[#8193b2] hover:text-white underline font-mono cursor-pointer transition-colors">22052018 (Öğrenci No)</button>
         </div>
       </form>
 
       {hasSearched && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in duration-200">
           {totalFound > 0 ? (
             <>
+              {/* Equipment Results */}
+              {equipmentResults.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-[#8193b2] uppercase tracking-wider flex items-center gap-2">
+                    <Camera className="w-3.5 h-3.5 text-[#8193b2]" />
+                    <span>Ekipman Rezervasyonları ({equipmentResults.length})</span>
+                  </h3>
+
+                  {equipmentResults.map((res) => (
+                    <div
+                      key={res.id}
+                      className="rounded-2xl studio-card p-5 sm:p-6 space-y-4"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/[0.06] gap-2">
+                        <div className="flex items-center gap-3">
+                          <span className="text-lg font-bold font-mono text-white tracking-wider">
+                            {res.reservation_code}
+                          </span>
+                          <StatusBadge status={res.status} type="reservation" />
+                        </div>
+                        <span className="text-xs text-[#a9b9d3]">
+                          Öğrenci: <strong className="text-white font-mono">{res.student_number}</strong>
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-3.5 rounded-xl bg-[#12080f]/80 border border-white/[0.06] space-y-1">
+                          <span className="text-[10px] text-[#8193b2] uppercase font-medium block">Ekipman</span>
+                          <strong className="text-white block font-club text-sm">{res.equipment?.name}</strong>
+                          <span className="text-[#a9b9d3] font-mono text-[11px] block">Seri: {res.equipment?.serial_number}</span>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl bg-[#12080f]/80 border border-white/[0.06] space-y-1">
+                          <span className="text-[10px] text-[#8193b2] uppercase font-medium block">Tarih Bilgisi</span>
+                          <div className="text-[#dce4ef]">Teslim: <strong className="text-white font-mono">{res.pickup_date}</strong></div>
+                          <div className="text-[#dce4ef]">İade: <strong className="text-white font-mono">{res.return_date}</strong></div>
+                          {res.approved_by && (
+                            <div className="text-emerald-400 pt-0.5 text-[11px]">Onay: {res.approved_by}</div>
+                          )}
+                        </div>
+                      </div>
+
+                      {res.purpose && (
+                        <div className="p-3 rounded-xl bg-[#12080f]/60 border border-white/[0.05] text-xs text-[#dce4ef]">
+                          <span className="text-[10px] text-[#8193b2] uppercase font-medium block mb-0.5">Kullanım Amacı:</span>
+                          <span>{res.purpose}</span>
+                        </div>
+                      )}
+
+                      <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-[#a9b9d3]">
+                        <span className="flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-[#8193b2]" />
+                          <span>Tek Teslim & İade Noktası: Kulüpler Vadisi, Davutpaşa</span>
+                        </span>
+                        <span className="text-[#8193b2]">Öğrenci Kimliği Zorunludur</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {/* Darkroom Results */}
               {darkroomResults.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-rose-300 uppercase tracking-wider flex items-center gap-2">
+                <div className="space-y-3 pt-4">
+                  <h3 className="text-xs font-semibold text-rose-300 uppercase tracking-wider flex items-center gap-2">
                     <Droplets className="w-3.5 h-3.5 text-rose-400" />
                     <span>Karanlık Oda Rezervasyonları ({darkroomResults.length})</span>
                   </h3>
@@ -128,55 +191,38 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                   {darkroomResults.map((ko) => (
                     <div
                       key={ko.id}
-                      className="rounded-3xl bg-[#1c0f18] border border-rose-500/30 p-6 space-y-4 shadow-xl"
+                      className="rounded-2xl studio-card p-5 sm:p-6 space-y-4"
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#657796]/20 gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/[0.06] gap-2">
                         <div className="flex items-center gap-3">
                           <span className="text-lg font-bold font-mono text-white tracking-wider">
                             {ko.reservation_code}
                           </span>
-                          {ko.status === 'pending' && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40">
-                              Yönetim Onayı Bekliyor
-                            </span>
-                          )}
-                          {ko.status === 'approved' && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
-                              Onaylandı (Hazır)
-                            </span>
-                          )}
-                          {ko.status === 'completed' && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-400/20 text-cyan-300 border border-cyan-400/30">
-                              Tamamlandı
-                            </span>
-                          )}
-                          {ko.status === 'rejected' && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-400/20 text-rose-300 border border-rose-400/30">
-                              Reddedildi
-                            </span>
-                          )}
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.06] text-[#dce4ef] border border-white/[0.1]">
+                            {ko.status === 'pending' ? 'Onay Bekliyor' : ko.status === 'approved' ? 'Onaylandı' : ko.status === 'completed' ? 'Tamamlandı' : 'Reddedildi'}
+                          </span>
                         </div>
 
-                        <span className="text-xs font-mono text-[#a9b9d3]">
-                          Öğrenci No: <strong className="text-white">{ko.student_number}</strong>
+                        <span className="text-xs text-[#a9b9d3]">
+                          Öğrenci No: <strong className="text-white font-mono">{ko.student_number}</strong>
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                        <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1">
-                          <span className="text-[10px] text-[#8193b2] uppercase font-bold block">İşlem & Rulo</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-3.5 rounded-xl bg-[#12080f]/80 border border-white/[0.06] space-y-1">
+                          <span className="text-[10px] text-[#8193b2] uppercase font-medium block">İşlem & Rulo</span>
                           <strong className="text-white block">
                             {ko.process_type === 'bw_film' && 'Siyah-Beyaz Film Yıkama'}
                             {ko.process_type === 'photo_print' && 'Kağıda Fotoğraf Baskısı'}
                             {ko.process_type === 'film_scan' && 'Film Tarama'}
                           </strong>
                           <span className="text-[11px] text-[#a9b9d3] block">
-                            {ko.process_type === 'photo_print' ? `${ko.film_count} Baskı Adedi` : `${ko.film_count} Rulo Film`} • {ko.process_type === 'film_scan' ? 'Epson V600 Tarayıcı' : ko.chemical_source === 'club' ? 'Kulüp Kimyasalları' : 'Kendi Kimyası'}
+                            {ko.process_type === 'photo_print' ? `${ko.film_count} Baskı Adedi` : `${ko.film_count} Rulo Film`}
                           </span>
                         </div>
 
-                        <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1">
-                          <span className="text-[10px] text-[#8193b2] uppercase font-bold block">Seans & Zamanlama</span>
+                        <div className="p-3.5 rounded-xl bg-[#12080f]/80 border border-white/[0.06] space-y-1">
+                          <span className="text-[10px] text-[#8193b2] uppercase font-medium block">Seans & Zaman</span>
                           <strong className="text-rose-300 font-mono block">
                             {ko.date} • {ko.slot_time}
                           </strong>
@@ -187,86 +233,11 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                         </div>
                       </div>
 
-                      {ko.approved_by && (
-                        <div className="text-xs p-2.5 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-emerald-300">
-                          <strong>Onaylayan Yönetici:</strong> {ko.approved_by}
-                          {ko.supervisor && <span className="block text-[11px] text-[#8193b2]">Nöbetçi Rehber: {ko.supervisor}</span>}
-                        </div>
-                      )}
-
-                      <div className="pt-2 border-t border-[#657796]/20 flex items-center justify-between text-[11px] text-[#a9b9d3]">
+                      <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-[#a9b9d3]">
                         <span className="flex items-center gap-1.5">
-                          <MapPin className="w-3 h-3 text-rose-400" />
-                          <span>Kulüpler Vadisi, Davutpaşa Kampüsü Karanlık Oda</span>
+                          <MapPin className="w-3.5 h-3.5 text-rose-400" />
+                          <span>Karanlık Oda, Kulüpler Vadisi</span>
                         </span>
-                        <span className="text-[#8193b2] font-semibold">Aktif Üyeler Önceliklidir</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Equipment Results */}
-              {equipmentResults.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-[#8193b2] uppercase tracking-wider flex items-center gap-2">
-                    <Camera className="w-3.5 h-3.5 text-[#8193b2]" />
-                    <span>Ekipman / Kamera Rezervasyonları ({equipmentResults.length})</span>
-                  </h3>
-
-                  {equipmentResults.map((res) => (
-                    <div
-                      key={res.id}
-                      className="rounded-3xl bg-[#1c0f18] border border-[#657796]/20 p-6 space-y-4 shadow-xl"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#657796]/20 gap-2">
-                        <div className="flex items-center gap-3">
-                          <span className="text-lg font-bold font-mono text-[#dce4ef] tracking-wider">
-                            {res.reservation_code}
-                          </span>
-                          <StatusBadge status={res.status} type="reservation" />
-                        </div>
-                        <span className="text-xs text-[#a9b9d3]">
-                          Öğrenci: <strong className="text-white">{res.student_number}</strong>
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                        <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1">
-                          <span className="text-[10px] text-[#8193b2] uppercase font-bold block">Ekipman:</span>
-                          <strong className="text-white block font-club">{res.equipment?.name}</strong>
-                          <span className="text-[#a9b9d3] font-mono text-[11px] block">Seri: {res.equipment?.serial_number}</span>
-                        </div>
-
-                        <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-1">
-                          <span className="text-[10px] text-[#8193b2] uppercase font-bold block">Tarih Bilgisi:</span>
-                          <div className="text-[#dce4ef]">Teslim: <strong className="text-white font-mono">{res.pickup_date}</strong></div>
-                          <div className="text-[#dce4ef]">İade: <strong className="text-white font-mono">{res.return_date}</strong></div>
-                          {res.created_at && (
-                            <div className="text-[#a9b9d3] text-[10px] pt-1 flex items-center gap-1 font-mono border-t border-[#657796]/15 mt-1">
-                              <Clock className="w-3 h-3 text-[#8193b2] shrink-0" />
-                              <span>Talep: {new Date(res.created_at).toLocaleDateString('tr-TR')} {new Date(res.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
-                            </div>
-                          )}
-                          {res.approved_by && (
-                            <div className="text-emerald-400 pt-0.5 text-[11px]">Onay: {res.approved_by}</div>
-                          )}
-                        </div>
-                      </div>
-
-                      {res.additional_notes && (
-                        <div className="p-3 rounded-2xl bg-[#12080f] border border-[#657796]/20 text-xs text-[#dce4ef]">
-                          <strong className="text-[#8193b2] text-[10px] uppercase block mb-0.5">Rezervasyon Notunuz / SD Kart Durumu:</strong>
-                          <span>{res.additional_notes}</span>
-                        </div>
-                      )}
-
-                      <div className="pt-2 border-t border-[#657796]/20 flex items-center justify-between text-[11px] text-[#a9b9d3]">
-                        <span className="flex items-center gap-1.5">
-                          <MapPin className="w-3 h-3 text-[#8193b2]" />
-                          <span>Tek Teslim & İade Noktası: Kulüpler Vadisi, Davutpaşa</span>
-                        </span>
-                        <span className="text-[#8193b2] font-semibold">Aktif Üyeler Önceliklidir</span>
                       </div>
                     </div>
                   ))}
@@ -274,10 +245,10 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
               )}
             </>
           ) : (
-            <div className="py-12 text-center rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-2">
-              <AlertCircle className="w-8 h-8 text-[#8193b2] mx-auto" />
-              <h3 className="text-xs font-bold text-white">Sonuç Bulunamadı</h3>
-              <p className="text-[11px] text-[#a9b9d3]">"{query}" kriterine uygun ekipman veya karanlık oda rezervasyonu bulunamadı.</p>
+            <div className="py-16 text-center rounded-2xl studio-card space-y-2">
+              <AlertCircle className="w-8 h-8 text-[#8193b2] mx-auto opacity-60" />
+              <h3 className="text-sm font-semibold text-white">Kayıt Bulunamadı</h3>
+              <p className="text-xs text-[#a9b9d3]">"{query}" kriterine uygun rezervasyon bulunamadı.</p>
             </div>
           )}
         </div>

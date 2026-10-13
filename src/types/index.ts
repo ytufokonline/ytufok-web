@@ -12,8 +12,8 @@ export type ReservationStatus =
   | 'cancelled';  // İptal Edildi
 
 export type MemberStatus = 'active' | 'suspended' | 'passive';
-export type MemberRole = 'member' | 'board' | 'admin';
-export type MemberType = 'board' | 'active' | 'normal' | 'honorary' | 'honorary_active';
+export type MemberRole = 'member' | 'board' | 'audit' | 'admin';
+export type MemberType = 'board' | 'audit' | 'active' | 'normal' | 'honorary' | 'honorary_active';
 
 export interface Member {
   id: string;

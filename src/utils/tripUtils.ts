@@ -46,6 +46,7 @@ export function getReservationOpenDate(tripStartDateStr: string, daysBefore: num
 export function resolveMemberTier(member?: Member | null): MemberType {
   if (!member) return 'normal';
   if (member.role === 'admin' || member.role === 'board' || member.member_type === 'board') return 'board';
+  if (member.role === 'audit' || member.member_type === 'audit') return 'audit';
   if (member.member_type === 'honorary_active') return 'honorary_active';
   if (member.member_type === 'honorary') return 'honorary';
   if (member.member_type === 'normal') return 'normal';
@@ -65,7 +66,7 @@ export interface TripBookingEligibility {
 
 /**
  * Evaluates the 5-day / 3-day reservation rule for a given trip start date and member tier:
- * - board: her zaman açık (kısıtlama yok)
+ * - board & audit: her zaman açık (kısıtlama yok)
  * - normal & honorary: 3 gün önce (aynı öncelik)
  * - active & honorary_active: 5 gün önce (aynı öncelik)
  */
@@ -77,7 +78,7 @@ export function checkTripBookingEligibility(
   const daysBeforeTrip = getDaysDifference(tripStartDateStr, todayStr);
   const hasPassed = daysBeforeTrip < 0;
 
-  if (memberType === 'board') {
+  if (memberType === 'board' || memberType === 'audit') {
     return {
       tripStartDate: tripStartDateStr,
       memberType,

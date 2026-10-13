@@ -28,7 +28,7 @@ import {
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
 const UNIFIED_NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
-const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v7';
+const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v8';
 
 type CloudCollectionKey =
   | 'admin_profiles'
@@ -337,6 +337,34 @@ const stripReservationRelations = (r: Reservation): Reservation => {
   return clean;
 };
 
+function normalizeMemberRecord(m: Member): Member {
+  if (m.student_number === '23023616' || m.id === 'm-isil') {
+    return {
+      ...m,
+      full_name: 'Işıl Tınmaz',
+      role: 'audit',
+      member_type: 'audit',
+      notes: 'Denetim Kurulu Üyesi'
+    };
+  }
+  if (m.student_number === '23084501' || m.id === 'm-dk-ilyas') {
+    return {
+      ...m,
+      full_name: 'İlyas Güner',
+      role: 'audit',
+      member_type: 'audit',
+      notes: 'Denetim Kurulu Üyesi'
+    };
+  }
+  if (m.role === 'admin' || m.role === 'board') {
+    return { ...m, member_type: 'board' };
+  }
+  if (m.role === 'audit') {
+    return { ...m, member_type: 'audit' };
+  }
+  return m;
+}
+
 // Senkron başlangıç verisi üreticisi (Sıfır gecikmeli ilk ekran çizimi için)
 function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   const cols = envelope.collections || {};
@@ -362,14 +390,11 @@ function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   const baseMembers = INITIAL_MEMBERS.map((m) => {
     const ov = memDelta.overrides?.[m.id];
     const merged = ov ? { ...m, ...ov } : m;
-    if (merged.role === 'admin' || merged.role === 'board') {
-      return { ...merged, member_type: 'board' as const };
-    }
-    return merged;
+    return normalizeMemberRecord(merged);
   });
   const addedMembers = (Array.isArray(memDelta.added) ? memDelta.added : []).map((m) => {
     const ov = memDelta.overrides?.[m.id];
-    return ov ? { ...m, ...ov } : m;
+    return normalizeMemberRecord(ov ? { ...m, ...ov } : m);
   });
   const members: Member[] = [...addedMembers, ...baseMembers];
 
@@ -512,7 +537,7 @@ export const api = {
           .single();
 
         if (!error && data) {
-          const member = data as Member;
+          const member = normalizeMemberRecord(data as Member);
           if (member.status === 'suspended') {
             return {
               success: false,
@@ -748,7 +773,7 @@ export const api = {
 
       const eligibility = checkTripBookingEligibility(trip.start_date, memberTier);
 
-      if (memberTier !== 'board' && !eligibility.isOpen) {
+      if (memberTier !== 'board' && memberTier !== 'audit' && !eligibility.isOpen) {
         const tierLabel =
           memberTier === 'active' || memberTier === 'honorary_active'
             ? 'Aktif kulüp üyeleri'
@@ -759,7 +784,7 @@ export const api = {
         };
       }
     } else {
-      if (memberTier !== 'board' && memberTier !== 'active' && memberTier !== 'honorary_active') {
+      if (memberTier !== 'board' && memberTier !== 'audit' && memberTier !== 'active' && memberTier !== 'honorary_active') {
         return {
           success: false,
           message:
@@ -1070,7 +1095,12 @@ export const api = {
           .order('full_name', { ascending: true });
 
         if (!error && data && data.length > 0) {
-          return data as Member[];
+          const normalized = (data as Member[]).map(normalizeMemberRecord);
+          const existingNos = new Set(normalized.map((m) => m.student_number));
+          const missingBase = INITIAL_MEMBERS.filter((m) => !existingNos.has(m.student_number)).map(
+            normalizeMemberRecord
+          );
+          return [...missingBase, ...normalized];
         }
       } catch (err) {
         console.warn('Supabase getMembers error:', err);

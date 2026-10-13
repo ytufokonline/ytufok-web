@@ -1160,6 +1160,7 @@ export const AdminDashboard: React.FC = () => {
                   const mReservations = reservations.filter(r => r.member_id === m.id || r.student_number === m.student_number);
                   const mInUse = mReservations.filter(r => r.status === 'in_use').length;
                   const isBoard = isBoardMemberObj(m);
+                  const isAudit = Boolean(m.role === 'audit' || m.member_type === 'audit');
 
                   return (
                     <tr key={m.id} className="hover:bg-[#301322]/40 transition-colors">
@@ -1170,10 +1171,10 @@ export const AdminDashboard: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <strong className="text-white font-bold">{m.full_name}</strong>
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-                            isBoard ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/40' :
+                            isBoard || isAudit ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/40' :
                             'text-[#8193b2]'
                           }`}>
-                            {isBoard ? 'Yönetim Kurulu' : 'Üye'}
+                            {isBoard ? 'Yönetim Kurulu' : isAudit ? 'Denetim Kurulu' : 'Üye'}
                           </span>
                         </div>
                       </td>
@@ -1182,6 +1183,11 @@ export const AdminDashboard: React.FC = () => {
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40 flex items-center gap-1 w-fit">
                             <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
                             <span>Yönetim Kurulu Üyesi</span>
+                          </span>
+                        ) : isAudit ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40 flex items-center gap-1 w-fit">
+                            <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
+                            <span>Denetim Kurulu Üyesi</span>
                           </span>
                         ) : m.member_type === 'honorary_active' ? (
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1 w-fit">
@@ -1242,7 +1248,7 @@ export const AdminDashboard: React.FC = () => {
                         )}
                       </td>
                       <td className="p-3.5 text-right space-x-1.5 whitespace-nowrap">
-                        {!isBoard && (
+                        {!isBoard && !isAudit && (
                           <button
                             onClick={() => handleToggleMemberType(m)}
                             className="px-2 py-1 rounded-lg bg-[#12080f] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"

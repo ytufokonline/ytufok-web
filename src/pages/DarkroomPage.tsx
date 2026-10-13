@@ -927,6 +927,10 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         <>
                           {verifiedMember.department} • <strong className="text-emerald-400">Yönetim Kurulu Üyesi</strong>
                         </>
+                      ) : verifiedMember.role === 'audit' || verifiedMember.member_type === 'audit' ? (
+                        <>
+                          {verifiedMember.department} • {verifiedMember.student_number} • <strong className="text-emerald-400">Denetim Kurulu Üyesi</strong>
+                        </>
                       ) : (
                         <>
                           {verifiedMember.department} • {verifiedMember.student_number} • <strong className="text-emerald-400">Aktif Üye</strong>

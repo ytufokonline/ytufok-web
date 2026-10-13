@@ -93,7 +93,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const selectedTrip = trips.find(t => t.id === selectedTripId) || null;
   const selectedEquipment = equipmentList.find(e => e.id === selectedEquipmentId) || null;
   const memberTier = resolveMemberTier(verifiedMember);
-  const hasActivePrivileges = memberTier === 'board' || memberTier === 'active' || memberTier === 'honorary_active';
+  const hasActivePrivileges = memberTier === 'board' || memberTier === 'audit' || memberTier === 'active' || memberTier === 'honorary_active';
   const tripEligibility = selectedTrip ? checkTripBookingEligibility(selectedTrip.start_date, memberTier) : null;
 
   // Apply trip dates & default purpose
@@ -413,7 +413,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
             {/* Verified Member Badge Card */}
             {verifiedMember && (
               <div className="p-4 rounded-xl bg-[#12080f] border border-[#657796]/40 text-xs flex items-start gap-3">
-                <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${memberTier === 'honorary' || memberTier === 'honorary_active' ? 'text-purple-400' : memberTier === 'active' || memberTier === 'board' ? 'text-[#8193b2]' : 'text-[#657796]'}`} />
+                <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${memberTier === 'honorary' || memberTier === 'honorary_active' ? 'text-purple-400' : memberTier === 'active' || memberTier === 'board' || memberTier === 'audit' ? 'text-[#8193b2]' : 'text-[#657796]'}`} />
                 <div className="space-y-1.5 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <strong className="text-white text-sm">
@@ -423,6 +423,11 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40 flex items-center gap-1">
                         <UserCheck className="w-3 h-3 text-[#8193b2]" />
                         <span>Yönetim Kurulu Üyesi</span>
+                      </span>
+                    ) : memberTier === 'audit' ? (
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40 flex items-center gap-1">
+                        <UserCheck className="w-3 h-3 text-[#8193b2]" />
+                        <span>Denetim Kurulu Üyesi</span>
                       </span>
                     ) : memberTier === 'honorary_active' ? (
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center gap-1">
@@ -449,6 +454,8 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                   <p className="text-[#a9b9d3] text-xs leading-relaxed">
                     {verifiedMember.department} • {memberTier === 'board'
                       ? 'Yönetim Kurulu Üyesi kaydınız doğrulandı.'
+                      : memberTier === 'audit'
+                      ? 'Denetim Kurulu Üyesi kaydınız doğrulandı.'
                       : memberTier === 'honorary_active'
                       ? 'Fahri aktif kulüp üyesi statünüz sayesinde geziler için 5 gün önceden erken kamera rezervasyon hakkınız ve bireysel çekim yetkiniz aktiftir.'
                       : memberTier === 'honorary'
@@ -745,7 +752,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                               Rezervasyona Açık! ({selectedTrip.title})
                             </strong>
                             <p className="leading-relaxed">
-                              {memberTier === 'board' ? (
+                              {memberTier === 'board' || memberTier === 'audit' ? (
                                 <>Rezervasyon kaydınız oluşturulmaya hazırdır.</>
                               ) : memberTier === 'active' || memberTier === 'honorary_active' ? (
                                 <>★ <strong>Aktif Kulüp Üyesi</strong> statünüz ile geziden <strong>5 gün önce</strong> erken rezervasyon hakkınız aktiftir.</>
@@ -867,7 +874,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     <div className="p-3 rounded-xl bg-[#301322] border border-[#657796]/40 text-xs flex items-center gap-2 text-[#dce4ef]">
                       <Sparkles className="w-4 h-4 text-[#8193b2] shrink-0" />
                       <span>
-                        ✓ <strong>{memberTier === 'board' ? 'Yönetim Kurulu Üyesi Onaylandı:' : 'Aktif Üye Onaylandı:'}</strong> Bireysel çekim ve dönem projesi için ekipman rezervasyon yetkiniz mevcuttur.
+                        ✓ <strong>{memberTier === 'board' ? 'Yönetim Kurulu Üyesi Onaylandı:' : memberTier === 'audit' ? 'Denetim Kurulu Üyesi Onaylandı:' : 'Aktif Üye Onaylandı:'}</strong> Bireysel çekim ve dönem projesi için ekipman rezervasyon yetkiniz mevcuttur.
                       </span>
                     </div>
 

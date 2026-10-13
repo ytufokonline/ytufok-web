@@ -207,16 +207,30 @@ export const INITIAL_MEMBERS: Member[] = [
   {
     "id": "m-isil",
     "student_number": "23023616",
-    "full_name": "Işıl Gürel",
+    "full_name": "Işıl Tınmaz",
     "email": "23023616@std.yildiz.edu.tr",
     "phone": "+90 535 333 44 55",
     "department": "Yıldız Teknik Üniversitesi",
     "membership_year": 2023,
     "status": "active",
     "penalty_count": 0,
-    "role": "member",
-    "notes": "YTÜFOK Aktif Üyesi",
-    "member_type": "active"
+    "role": "audit",
+    "notes": "Denetim Kurulu Üyesi",
+    "member_type": "audit"
+  },
+  {
+    "id": "m-dk-ilyas",
+    "student_number": "23084501",
+    "full_name": "İlyas Güner",
+    "email": "23084501@std.yildiz.edu.tr",
+    "phone": "+90 5XX XXX XX XX",
+    "department": "Yıldız Teknik Üniversitesi",
+    "membership_year": 2023,
+    "status": "active",
+    "penalty_count": 0,
+    "role": "audit",
+    "notes": "Denetim Kurulu Üyesi",
+    "member_type": "audit"
   },
   {
     "id": "m-10",

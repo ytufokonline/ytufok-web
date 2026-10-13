@@ -308,7 +308,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
               onClick={() => onNavigate('status', submittedReservation.reservation_code)}
-              className="px-5 py-2.5 rounded-lg bg-white text-[#800020] font-semibold text-xs hover:bg-[#dce4ef] transition-all cursor-pointer"
+              className="px-5 py-2.5 rounded-lg bg-white text-[#12080f] font-semibold text-xs hover:bg-[#dce4ef] transition-all cursor-pointer"
             >
               Durumu Takip Et
             </button>
@@ -412,7 +412,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                         type="button"
                         onClick={handleQuickRegisterNormal}
                         disabled={regLoading}
-                        className="px-4 py-2 rounded-lg bg-white text-[#800020] text-xs font-semibold cursor-pointer"
+                        className="px-4 py-2 rounded-lg bg-white text-[#12080f] text-xs font-semibold cursor-pointer"
                       >
                         {regLoading ? 'Kaydediliyor...' : 'Kaydol ve Devam Et'}
                       </button>
@@ -688,7 +688,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     (usageType === 'trip' && tripEligibility ? !tripEligibility.isOpen : false) ||
                     (usageType === 'custom' && !hasActivePrivileges)
                   }
-                  className="w-full py-3 rounded-lg bg-white hover:bg-[#dce4ef] text-[#800020] font-semibold text-sm transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm active:scale-[0.98]"
+                  className="w-full py-3 rounded-lg bg-white hover:bg-[#dce4ef] text-[#12080f] font-semibold text-sm transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm active:scale-[0.98]"
                 >
                   {submitting ? 'Talebiniz Gönderiliyor...' : 'Rezervasyon Talebini Onayla'}
                 </button>

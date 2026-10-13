@@ -11500,7 +11500,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Ön ve Arka Kapaklar',
       'Dolgulu Lens Çantası'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/6/66/Canon_EF_17-40mm_f4L_USM_front_angled.jpg',
+    image_url: '/equipment/canon-ef-17-40mm.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11526,7 +11526,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       '77mm B+W UV Filtre',
       'Ön ve Arka Kapaklar'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/7/76/Canon_EF_24-105mm_f4L_IS_USM.jpg',
+    image_url: '/equipment/canon-ef-24-105mm.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11551,7 +11551,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       'Ön ve Arka Kapaklar',
       'Fermuarlı Dolgulu Sigma Taşıma Çantası'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Sigma_10-20mm_F3.5_EX_DC_HSM_01.jpg',
+    image_url: '/equipment/sigma-10-20mm.jpg',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },
@@ -11579,7 +11579,7 @@ export const INITIAL_EQUIPMENT: Equipment[] = [
       '52mm UV Koruyucu Filtre',
       'Mikrofiber Lens Bezi'
     ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/commons/5/5f/AF-S_DX_Nikkor_18-55mm_f_3.5-5.6G_VR.jpg',
+    image_url: '/equipment/nikon-18-55mm.webp',
     status: 'available',
     current_condition: 'değerlendirilecek'
   },

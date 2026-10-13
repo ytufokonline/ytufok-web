@@ -28,7 +28,7 @@ import {
 import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
 
 const UNIFIED_NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
-const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v9';
+const SNAPSHOT_KEY = 'ytufok_unified_cloud_snap_v10';
 
 type CloudCollectionKey =
   | 'admin_profiles'

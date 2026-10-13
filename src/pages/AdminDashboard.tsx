@@ -6,9 +6,9 @@ import {
   User, FileText, CheckCircle2, ChevronRight,
   ArrowRightLeft, LogOut, Award, Sparkles, Droplets,
   Trash2, Calendar, CalendarPlus, Info, Compass, MapPin,
-  KeyRound, Bell
+  KeyRound, Bell, Pencil
 } from 'lucide-react';
-import { Reservation, Equipment, Member, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement } from '../types';
+import { Reservation, Equipment, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement } from '../types';
 import { api } from '../lib/api';
 import { getSupabaseConfigStatus } from '../lib/supabase';
 import { StatusBadge } from '../components/StatusBadge';
@@ -88,6 +88,19 @@ export const AdminDashboard: React.FC = () => {
   const [newMemberDept, setNewMemberDept] = useState('Yıldız Teknik Üniversitesi');
   const [newMemberType, setNewMemberType] = useState<'active' | 'normal' | 'honorary' | 'honorary_active'>('active');
   const [memberTypeFilter, setMemberTypeFilter] = useState<'all' | 'active' | 'normal' | 'honorary'>('all');
+
+  // Edit Member State
+  const [editingMember, setEditingMember] = useState<Member | null>(null);
+  const [editMemberNo, setEditMemberNo] = useState('');
+  const [editMemberName, setEditMemberName] = useState('');
+  const [editMemberDept, setEditMemberDept] = useState('');
+  const [editMemberPhone, setEditMemberPhone] = useState('');
+  const [editMemberEmail, setEditMemberEmail] = useState('');
+  const [editMemberType, setEditMemberType] = useState<MemberType>('active');
+  const [editMemberStatus, setEditMemberStatus] = useState<'active' | 'suspended' | 'passive'>('active');
+  const [editMemberPenalty, setEditMemberPenalty] = useState(0);
+  const [editMemberPenaltyReason, setEditMemberPenaltyReason] = useState('');
+  const [editMemberNotes, setEditMemberNotes] = useState('');
 
   // Trips State
   const [trips, setTrips] = useState<Trip[]>(initialSync.trips);
@@ -389,6 +402,57 @@ export const AdminDashboard: React.FC = () => {
     const nextStatus = member.status === 'active' ? 'suspended' : 'active';
     const reason = nextStatus === 'suspended' ? 'Yönetim tarafından askıya alındı.' : '';
     await api.updateMemberPenalty(member.id, nextStatus === 'suspended' ? 1 : 0, reason);
+    await loadAllData();
+  };
+
+  const handleOpenEditMember = (member: Member) => {
+    setEditingMember(member);
+    setEditMemberNo(member.student_number || '');
+    setEditMemberName(member.full_name || '');
+    setEditMemberDept(member.department || 'Yıldız Teknik Üniversitesi');
+    setEditMemberPhone(member.phone || '');
+    setEditMemberEmail(member.email || '');
+    setEditMemberType(member.member_type || 'active');
+    setEditMemberStatus(member.status || 'active');
+    setEditMemberPenalty(member.penalty_count || 0);
+    setEditMemberPenaltyReason(member.penalty_reason || '');
+    setEditMemberNotes(member.notes || '');
+  };
+
+  const handleSaveEditMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMember || !editMemberNo || !editMemberName) return;
+
+    await api.updateMember(editingMember.id, {
+      student_number: editMemberNo.trim(),
+      full_name: editMemberName.trim(),
+      department: editMemberDept.trim(),
+      phone: editMemberPhone.trim(),
+      email: editMemberEmail.trim(),
+      member_type: editMemberType,
+      status: editMemberStatus,
+      penalty_count: Number(editMemberPenalty) || 0,
+      penalty_reason: editMemberPenaltyReason.trim(),
+      notes: editMemberNotes.trim()
+    });
+
+    setEditingMember(null);
+    await loadAllData();
+  };
+
+  const handleDeleteMember = async (member: Member) => {
+    const isBoard = isBoardMemberObj(member);
+    if (isBoard) {
+      alert('Yönetim kurulu profilleri bu listeden silinemez. Yönetici Masası sekmesinden yönetilmelidir.');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `"${member.full_name}" (${member.student_number}) isimli üyeyi whitelist ve üye listesinden tamamen silmek istediğinize emin misiniz?`
+    );
+    if (!confirmed) return;
+
+    await api.deleteMember(member.id, member.student_number);
     await loadAllData();
   };
 
@@ -1315,6 +1379,7 @@ export const AdminDashboard: React.FC = () => {
                         <button
                           onClick={() => setSelectedMemberForHistory(m)}
                           className="px-2 py-1 rounded-lg bg-[#657796]/30 hover:bg-[#657796]/50 text-xs font-semibold text-white transition-colors cursor-pointer inline-flex items-center gap-1"
+                          title="Zimmet Geçmişi"
                         >
                           <History className="w-3 h-3 text-[#dce4ef]" />
                           <span>Geçmiş</span>
@@ -1329,6 +1394,24 @@ export const AdminDashboard: React.FC = () => {
                         >
                           {m.status === 'active' ? 'Askıya Al' : 'Aktif Et'}
                         </button>
+                        <button
+                          onClick={() => handleOpenEditMember(m)}
+                          className="px-2 py-1 rounded-lg bg-[#12080f] hover:bg-[#301322] text-xs font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer inline-flex items-center gap-1"
+                          title="Üye Bilgilerini Düzenle"
+                        >
+                          <Pencil className="w-3 h-3 text-[#8193b2]" />
+                          <span>Düzenle</span>
+                        </button>
+                        {!isBoard && (
+                          <button
+                            onClick={() => handleDeleteMember(m)}
+                            className="px-2 py-1 rounded-lg bg-[#301322] hover:bg-rose-900/60 text-xs font-semibold text-rose-300 hover:text-rose-100 border border-rose-500/30 transition-colors cursor-pointer inline-flex items-center gap-1"
+                            title="Üyeyi Whitelist'ten Sil"
+                          >
+                            <Trash2 className="w-3 h-3 text-rose-400" />
+                            <span>Sil</span>
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
@@ -2776,7 +2859,157 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
       )}
-      {/* Add Darkroom Slot Modal */}
+
+      {/* Edit Member Modal */}
+      {editingMember && (
+        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
+              <div className="flex items-center gap-2">
+                <Pencil className="w-4 h-4 text-[#8193b2]" />
+                <h3 className="text-sm font-bold text-white font-club">Üye Bilgilerini Düzenle</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingMember(null)}
+                className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditMember} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Ad Soyad *</label>
+                  <input
+                    type="text"
+                    value={editMemberName}
+                    onChange={e => setEditMemberName(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Öğrenci Numarası *</label>
+                  <input
+                    type="text"
+                    value={editMemberNo}
+                    onChange={e => setEditMemberNo(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono focus:outline-none focus:border-[#657796]"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Üniversite / Bölüm</label>
+                  <input
+                    type="text"
+                    value={editMemberDept}
+                    onChange={e => setEditMemberDept(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Telefon</label>
+                  <input
+                    type="text"
+                    value={editMemberPhone}
+                    onChange={e => setEditMemberPhone(e.target.value)}
+                    placeholder="+90 5XX XXX XX XX"
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Üye Statüsü / Gezi Önceliği</label>
+                  <select
+                    value={editMemberType}
+                    onChange={e => setEditMemberType(e.target.value as any)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  >
+                    <option value="active">★ Aktif Üye (Geziden 5 gün önce & Bireysel Çekim)</option>
+                    <option value="normal">Normal Üye (Geziden 3 gün önce)</option>
+                    <option value="honorary">Fahri Üye (Geziden 3 gün önce)</option>
+                    <option value="honorary_active">★ Fahri Aktif (Geziden 5 gün önce & Bireysel Çekim)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Hesap Durumu</label>
+                  <select
+                    value={editMemberStatus}
+                    onChange={e => setEditMemberStatus(e.target.value as any)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  >
+                    <option value="active">🟢 Aktif (Zimmet Alabilir)</option>
+                    <option value="suspended">🔴 Askıda / Cezalı (Engelli)</option>
+                    <option value="passive">⚪ Pasif</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Ceza Puanı</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={10}
+                    value={editMemberPenalty}
+                    onChange={e => setEditMemberPenalty(parseInt(e.target.value) || 0)}
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[#8193b2] block">Ceza Nedeni</label>
+                  <input
+                    type="text"
+                    value={editMemberPenaltyReason}
+                    onChange={e => setEditMemberPenaltyReason(e.target.value)}
+                    placeholder="Örn: 2 gün gecikmeli iade"
+                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-[#8193b2] block">Yönetici Notu</label>
+                <textarea
+                  rows={2}
+                  value={editMemberNotes}
+                  onChange={e => setEditMemberNotes(e.target.value)}
+                  placeholder="Üye hakkında kulüp notu..."
+                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#657796]/20">
+                <button
+                  type="button"
+                  onClick={() => setEditingMember(null)}
+                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] transition-colors cursor-pointer"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 text-white font-bold transition-all shadow-md cursor-pointer"
+                >
+                  Değişiklikleri Kaydet
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {showAddSlotModal && (
         <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">

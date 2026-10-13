@@ -55,6 +55,7 @@ interface EquipmentStateDelta {
 interface MemberDeltas {
   overrides: Record<string, Partial<Member>>;
   added: Member[];
+  deleted?: string[];
 }
 
 interface UnifiedStateEnvelope {
@@ -386,16 +387,19 @@ function computeSyncStateFromEnvelope(envelope: UnifiedStateEnvelope) {
   ];
 
   // 2. Members
-  const memDelta: MemberDeltas = cols.member_deltas || { overrides: {}, added: [] };
-  const baseMembers = INITIAL_MEMBERS.map((m) => {
+  const memDelta: MemberDeltas = cols.member_deltas || { overrides: {}, added: [], deleted: [] };
+  const deletedSet = new Set(Array.isArray(memDelta.deleted) ? memDelta.deleted : []);
+  const baseMembers = INITIAL_MEMBERS.filter(m => !deletedSet.has(m.id) && !deletedSet.has(m.student_number)).map((m) => {
     const ov = memDelta.overrides?.[m.id];
     const merged = ov ? { ...m, ...ov } : m;
     return normalizeMemberRecord(merged);
   });
-  const addedMembers = (Array.isArray(memDelta.added) ? memDelta.added : []).map((m) => {
-    const ov = memDelta.overrides?.[m.id];
-    return normalizeMemberRecord(ov ? { ...m, ...ov } : m);
-  });
+  const addedMembers = (Array.isArray(memDelta.added) ? memDelta.added : [])
+    .filter(m => !deletedSet.has(m.id) && !deletedSet.has(m.student_number))
+    .map((m) => {
+      const ov = memDelta.overrides?.[m.id];
+      return normalizeMemberRecord(ov ? { ...m, ...ov } : m);
+    });
   const members: Member[] = [...addedMembers, ...baseMembers];
 
   // Fast O(1) lookup maps
@@ -1135,11 +1139,19 @@ export const api = {
           .order('full_name', { ascending: true });
 
         if (!error && data && data.length > 0) {
-          const normalized = (data as Member[]).map(normalizeMemberRecord);
+          const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
+            overrides: {},
+            added: [],
+            deleted: []
+          });
+          const deletedSet = new Set(Array.isArray(deltas.deleted) ? deltas.deleted : []);
+          const normalized = (data as Member[])
+            .filter((m) => !deletedSet.has(m.id) && !deletedSet.has(m.student_number))
+            .map(normalizeMemberRecord);
           const existingNos = new Set(normalized.map((m) => m.student_number));
-          const missingBase = INITIAL_MEMBERS.filter((m) => !existingNos.has(m.student_number)).map(
-            normalizeMemberRecord
-          );
+          const missingBase = INITIAL_MEMBERS.filter(
+            (m) => !existingNos.has(m.student_number) && !deletedSet.has(m.id) && !deletedSet.has(m.student_number)
+          ).map(normalizeMemberRecord);
           return [...missingBase, ...normalized];
         }
       } catch (err) {
@@ -1220,8 +1232,87 @@ export const api = {
     };
 
     return await writeCloudCollection('member_deltas', {
+      ...deltas,
       overrides,
       added: Array.isArray(deltas.added) ? deltas.added : []
+    });
+  },
+
+  async updateMember(id: string, updates: Partial<Member>): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('members')
+          .update(updates)
+          .eq('id', id);
+        if (!error) {
+          const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
+            overrides: {},
+            added: [],
+            deleted: []
+          });
+          const overrides = { ...(deltas.overrides || {}) };
+          overrides[id] = { ...(overrides[id] || {}), ...updates };
+          const added = (Array.isArray(deltas.added) ? deltas.added : []).map((m) =>
+            m.id === id ? { ...m, ...updates } : m
+          );
+          await writeCloudCollection('member_deltas', { ...deltas, overrides, added });
+          return true;
+        }
+      } catch (err) {
+        console.warn('Supabase updateMember error:', err);
+      }
+    }
+
+    const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
+      overrides: {},
+      added: [],
+      deleted: []
+    });
+    const overrides = { ...(deltas.overrides || {}) };
+    overrides[id] = { ...(overrides[id] || {}), ...updates };
+    const added = (Array.isArray(deltas.added) ? deltas.added : []).map((m) =>
+      m.id === id ? { ...m, ...updates } : m
+    );
+
+    return await writeCloudCollection('member_deltas', {
+      ...deltas,
+      overrides,
+      added
+    });
+  },
+
+  async deleteMember(id: string, studentNumber?: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('members').delete().eq('id', id);
+        if (studentNumber) {
+          await supabase.from('members').delete().eq('student_number', studentNumber);
+        }
+      } catch (err) {
+        console.warn('Supabase deleteMember error:', err);
+      }
+    }
+
+    const deltas = await readCloudCollection<MemberDeltas>('member_deltas', {
+      overrides: {},
+      added: [],
+      deleted: []
+    });
+    const deleted = new Set(deltas.deleted || []);
+    deleted.add(id);
+    if (studentNumber) deleted.add(studentNumber);
+
+    const added = (Array.isArray(deltas.added) ? deltas.added : []).filter(
+      (m) => m.id !== id && m.student_number !== studentNumber
+    );
+    const overrides = { ...(deltas.overrides || {}) };
+    delete overrides[id];
+
+    return await writeCloudCollection('member_deltas', {
+      overrides,
+      added,
+      deleted: Array.from(deleted)
     });
   },
 

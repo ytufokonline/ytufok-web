@@ -11896,7 +11896,7 @@ export const INITIAL_TRIPS: Trip[] = [
     start_date: '2026-10-17',
     end_date: '2026-10-17',
     description: 'Gezi kapsamında yeni üyelerimize Büyükada tanıtılacak ve fotoğraf yerleri gösterilecektir.',
-    is_active: true,
+    is_active: false,
     created_at: '2026-10-05T12:00:00Z',
     created_by: 'Alara Tezelli'
   }

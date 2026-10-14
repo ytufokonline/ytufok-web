@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, UserPlus, Info, Sparkles, Lock, ChevronRight } from 'lucide-react';
+import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, AlertCircle, UserPlus, Info, Sparkles, Lock, ChevronRight } from 'lucide-react';
 import { Equipment, Member, Reservation, Trip } from '../types';
 import { api } from '../lib/api';
 import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference } from '../utils/tripUtils';
@@ -72,10 +72,21 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
         if (!selectedEquipmentId && bundle.equipmentList.length > 0) {
           setSelectedEquipmentId(preselectedEquipmentId || bundle.equipmentList[0].id);
         }
-        if (bundle.activeTrips.length > 0 && !selectedTripId) {
-          setSelectedTripId(bundle.activeTrips[0].id);
-          applyTripDetails(bundle.activeTrips[0]);
+        if (bundle.activeTrips.length > 0) {
+          const isCurrentActive = bundle.activeTrips.some(t => t.id === selectedTripId);
+          const tripToSelect = isCurrentActive 
+            ? bundle.activeTrips.find(t => t.id === selectedTripId)! 
+            : bundle.activeTrips[0];
+          setSelectedTripId(tripToSelect.id);
+          applyTripDetails(tripToSelect);
           setUsageType('trip');
+        } else {
+          // Aktif gezi yoksa veya pasife alınmışsa gezi seçimini temizle
+          setSelectedTripId('');
+          setUsageType('custom');
+          setPurpose('');
+          setPickupDate(todayStr);
+          setReturnDate(defaultReturnDate);
         }
       } catch (err) {
         console.error('Geziler yüklenirken hata:', err);
@@ -179,14 +190,9 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
       return;
     }
 
-    if (usageType === 'custom' && !hasActivePrivileges) {
-      alert('Bireysel çekim ve dönem dersi projeleri için ekipman rezervasyonu yalnızca Aktif Kulüp Üyelerine açıktır. Normal üyelerimiz kulüp gezilerinde kamera rezerve edebilir.');
-      return;
-    }
-
     if (usageType === 'trip') {
-      if (!selectedTrip) {
-        alert('Lütfen rezervasyon yapmak istediğiniz kulüp gezisini seçiniz.');
+      if (trips.length === 0 || !selectedTrip || !selectedTrip.is_active) {
+        alert('Şu anda aktif veya rezervasyona açık bir kulüp gezisi bulunmamaktadır.');
         return;
       }
       if (tripEligibility && !tripEligibility.isOpen) {
@@ -195,6 +201,10 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
         return;
       }
     } else {
+      if (!hasActivePrivileges) {
+        alert('Bireysel çekim ve dönem dersi projeleri için ekipman rezervasyonu yalnızca Aktif Kulüp Üyelerine açıktır. Normal üyelerimiz yalnızca aktif kulüp gezilerinde rezervasyon yapabilir.');
+        return;
+      }
       if (!purpose.trim()) {
         alert('Lütfen kullanım amacınızı belirtiniz.');
         return;
@@ -435,19 +445,34 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   type="button"
+                  disabled={trips.length === 0}
                   onClick={() => {
-                    setUsageType('trip');
-                    if (selectedTrip) applyTripDetails(selectedTrip);
+                    if (trips.length > 0) {
+                      setUsageType('trip');
+                      if (selectedTrip) applyTripDetails(selectedTrip);
+                      else if (trips[0]) applyTripDetails(trips[0]);
+                    }
                   }}
-                  className={`p-4 rounded-lg border text-left transition-all cursor-pointer ${
-                    usageType === 'trip'
-                      ? 'border-white bg-white/[0.08]'
-                      : 'border-white/[0.08] bg-[#140a12] hover:bg-white/[0.04]'
+                  className={`p-4 rounded-lg border text-left transition-all ${
+                    trips.length === 0
+                      ? 'border-white/[0.04] bg-white/[0.02] opacity-40 cursor-not-allowed'
+                      : usageType === 'trip'
+                      ? 'border-white bg-white/[0.08] cursor-pointer'
+                      : 'border-white/[0.08] bg-[#140a12] hover:bg-white/[0.04] cursor-pointer'
                   }`}
                 >
-                  <strong className="text-xs text-white block">Kulüp Gezisi</strong>
+                  <div className="flex items-center justify-between">
+                    <strong className="text-xs text-white block">Kulüp Gezisi</strong>
+                    {trips.length === 0 && (
+                      <span className="text-[10px] font-semibold text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                        Aktif Gezi Yok
+                      </span>
+                    )}
+                  </div>
                   <span className="text-[11px] text-[#a9b9d3] block mt-0.5">
-                    Aktif üyeler 5 gün, normal üyeler 3 gün önce rezerve eder.
+                    {trips.length === 0
+                      ? 'Şu anda yayında veya rezervasyona açık bir gezi bulunmuyor.'
+                      : 'Aktif üyeler 5 gün, normal üyeler 3 gün önce rezerve eder.'}
                   </span>
                 </button>
 
@@ -469,6 +494,19 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                   </span>
                 </button>
               </div>
+
+              {/* Normal Member Warning When No Active Trips */}
+              {verifiedMember && !hasActivePrivileges && trips.length === 0 && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-white block font-semibold text-sm">Kulüp Gezisi Rezervasyonları Kapalı</strong>
+                    <p className="mt-1 text-amber-200/80 leading-relaxed text-xs">
+                      Şu anda tanımlı veya yayında aktif bir kulüp gezisi bulunmamaktadır. Kulüp yönergesi gereğince normal üyelerimiz yalnızca resmi kulüp gezileri için rezervasyon yapabilmektedir. Yeni bir gezi açıldığında rezervasyon sistemi otomatik olarak aktifleşecektir.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* If Trip */}
               {usageType === 'trip' && (
@@ -685,12 +723,19 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     submitting ||
                     !verifiedMember ||
                     !rulesAccepted ||
-                    (usageType === 'trip' && tripEligibility ? !tripEligibility.isOpen : false) ||
-                    (usageType === 'custom' && !hasActivePrivileges)
+                    (usageType === 'trip' && (trips.length === 0 || !selectedTrip || !selectedTrip.is_active || (tripEligibility ? !tripEligibility.isOpen : false))) ||
+                    (usageType === 'custom' && !hasActivePrivileges) ||
+                    (!hasActivePrivileges && trips.length === 0)
                   }
                   className="w-full py-3 rounded-lg bg-white hover:bg-[#dce4ef] text-[#12080f] font-semibold text-sm transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm active:scale-[0.98]"
                 >
-                  {submitting ? 'Talebiniz Gönderiliyor...' : 'Rezervasyon Talebini Onayla'}
+                  {submitting
+                    ? 'Talebiniz Gönderiliyor...'
+                    : !hasActivePrivileges && trips.length === 0
+                    ? 'Aktif Gezi Yok (Rezervasyon Kapalı)'
+                    : usageType === 'trip' && trips.length === 0
+                    ? 'Aktif Gezi Bulunmuyor'
+                    : 'Rezervasyon Talebini Onayla'}
                 </button>
               </div>
             </div>

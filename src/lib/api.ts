@@ -730,15 +730,17 @@ export const api = {
     let trip: Trip | null = null;
     const memberTier = resolveMemberTier(member);
 
+    const allTrips = await this.getTrips();
+
     if (payload.trip_id) {
-      trip = await this.getTripById(payload.trip_id);
+      trip = allTrips.find((t) => t.id === payload.trip_id) || null;
       if (!trip) {
         return { success: false, message: 'Seçilen gezi sistemde bulunamadı.' };
       }
       if (!trip.is_active) {
         return {
           success: false,
-          message: 'Bu gezi şu anda aktif değildir veya rezervasyona kapatılmıştır.'
+          message: `"${trip.title}" şu anda pasife alınmıştır / ertelenmiştir. Pasif geziler için ekipman rezervasyonu yapılamaz.`
         };
       }
 
@@ -754,10 +756,25 @@ export const api = {
         };
       }
     } else {
+      // Pasife alınmış gezinin adını yazarak rezervasyon yapma girişimini engelle
+      const lowerPurpose = (payload.purpose || '').toLowerCase();
+      const matchedPassiveTrip = allTrips.find(
+        (t) => !t.is_active && (
+          (t.title && lowerPurpose.includes(t.title.toLowerCase())) ||
+          (t.destination && lowerPurpose.includes(t.destination.toLowerCase()))
+        )
+      );
+      if (matchedPassiveTrip) {
+        return {
+          success: false,
+          message: `"${matchedPassiveTrip.title}" şu anda pasife alınmış / ertelenmiştir. Bu gezi için ekipman rezervasyonu oluşturulamaz.`
+        };
+      }
+
       if (memberTier !== 'board' && memberTier !== 'audit' && memberTier !== 'active' && memberTier !== 'honorary_active') {
         return {
           success: false,
-          message: 'Normal ve fahri üyeler sadece resmi kulüp gezileri için rezervasyon yapabilir. Bireysel çekim rezervasyonları aktif üyelere özeldir.'
+          message: 'Normal üyelerimiz yalnızca aktif ve resmi kulüp gezileri için rezervasyon yapabilir. Şu anda aktif bir gezi bulunmamaktadır.'
         };
       }
     }

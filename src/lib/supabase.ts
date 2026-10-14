@@ -1,12 +1,15 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+const DEFAULT_SUPABASE_URL = 'https://hqmwlrilmtblnsumwcmr.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
+
 // Retrieve stored or environment Supabase URL
 export const getStoredSupabaseUrl = (): string => {
   if (typeof window !== 'undefined' && window.localStorage) {
     const stored = window.localStorage.getItem('ytufok_supabase_url');
     if (stored && stored.trim()) return stored.trim();
   }
-  return import.meta.env.VITE_SUPABASE_URL || '';
+  return import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
 };
 
 // Retrieve stored or environment Supabase Anon Key
@@ -15,7 +18,7 @@ export const getStoredSupabaseAnonKey = (): string => {
     const stored = window.localStorage.getItem('ytufok_supabase_anon_key');
     if (stored && stored.trim()) return stored.trim();
   }
-  return import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+  return import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 };
 
 export const isSupabaseConfigured = (): boolean => {

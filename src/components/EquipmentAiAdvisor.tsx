@@ -157,6 +157,24 @@ export const EquipmentAiAdvisor: React.FC<EquipmentAiAdvisorProps> = ({
   const generateFallbackResponse = (userInput: string): { text: string; equipmentIds: string[]; followUpChips: string[] } => {
     const lower = userInput.toLowerCase().trim();
 
+    // Out-of-scope guardrail
+    if (
+      lower.includes('kek') ||
+      lower.includes('tarif') ||
+      lower.includes('yemek') ||
+      lower.includes('tatlı') ||
+      lower.includes('pasta') ||
+      lower.includes('kod') ||
+      lower.includes('yazılım') ||
+      lower.includes('şef')
+    ) {
+      return {
+        text: `Ben yalnızca **YTÜFOK Fotoğraf Kulübü** ekipman danışmanıyım. 📸 Mutfak tarifleri veya fotoğrafçılık dışı konularda yardımcı olamam.\n\nKulüp fotoğraf makineleri, lensler, flaşlar veya karanlık oda hakkında size nasıl yardımcı olabilirim?`,
+        equipmentIds: [],
+        followUpChips: ['Portre için ne önerirsin?', 'Gece çekimi için hangi gövde uygun?', 'Kulüpte hangi lensler var?']
+      };
+    }
+
     if (lower.includes('nikon') || lower.includes('d5000')) {
       return {
         text: `Kulübümüzün Nikon gövdesi için bayonet uyumluluğu:\n\n` +

@@ -8,6 +8,7 @@ import { DarkroomPage } from './pages/DarkroomPage';
 import { ReservationStatusPage } from './pages/ReservationStatusPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { SwitchProfileModal } from './components/SwitchProfileModal';
+import { EquipmentAiAdvisor } from './components/EquipmentAiAdvisor';
 import { AdminProfile } from './types';
 import { api } from './lib/api';
 import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
@@ -200,6 +201,9 @@ export function App() {
 
       {/* Footer */}
       <Footer />
+
+      {/* AI Equipment Advisor Assistant */}
+      <EquipmentAiAdvisor onSelectEquipmentToReserve={handleSelectEquipmentToReserve} />
     </div>
   );
 }

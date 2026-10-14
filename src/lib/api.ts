@@ -29,6 +29,25 @@ import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUti
 
 // Aktif yönetici oturumu
 let activeSessionAdminId: string | null = null;
+
+export function getActiveSessionAdminId(): string | null {
+  if (activeSessionAdminId) return activeSessionAdminId;
+  try {
+    if (typeof window !== 'undefined') {
+      const stored =
+        window.sessionStorage.getItem('ytufok_session_admin_id') ||
+        window.localStorage.getItem('ytufok_session_admin_id');
+      if (stored) {
+        activeSessionAdminId = stored;
+        return stored;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 try {
   if (typeof window !== 'undefined') {
     activeSessionAdminId =
@@ -113,9 +132,12 @@ const defaultInitialState = {
   activeTrips: INITIAL_TRIPS.filter((t) => t.is_active),
   reservations: INITIAL_RESERVATIONS,
   adminProfiles: INITIAL_ADMIN_PROFILES,
-  activeAdmin: (activeSessionAdminId
-    ? INITIAL_ADMIN_PROFILES.find((p) => p.id === activeSessionAdminId) || null
-    : null) as AdminProfile | null,
+  get activeAdmin() {
+    const adminId = getActiveSessionAdminId();
+    return (adminId
+      ? INITIAL_ADMIN_PROFILES.find((p) => p.id === adminId) || null
+      : null) as AdminProfile | null;
+  },
   darkroomSlots: DARKROOM_SLOTS,
   darkroomReservations: INITIAL_DARKROOM_RESERVATIONS,
   announcements: INITIAL_ANNOUNCEMENTS,
@@ -125,10 +147,11 @@ const defaultInitialState = {
 export const api = {
   // Anında (0ms) senkron başlangıç verisi (İlk React render için)
   getInitialSyncState() {
+    const adminId = getActiveSessionAdminId();
     return {
       ...defaultInitialState,
-      activeAdmin: (activeSessionAdminId
-        ? INITIAL_ADMIN_PROFILES.find((p) => p.id === activeSessionAdminId) || null
+      activeAdmin: (adminId
+        ? INITIAL_ADMIN_PROFILES.find((p) => p.id === adminId) || null
         : null) as AdminProfile | null
     };
   },
@@ -287,8 +310,9 @@ export const api = {
           return match ? { ...def, pin: match.pin || def.pin, pin_updated_at: match.pin_updated_at } : def;
         });
       }
-      const activeAdmin = activeSessionAdminId
-        ? adminProfiles.find((p) => p.id === activeSessionAdminId) || null
+      const currentAdminId = getActiveSessionAdminId();
+      const activeAdmin = currentAdminId
+        ? adminProfiles.find((p) => p.id === currentAdminId) || null
         : null;
 
       // 7. Darkroom Slots
@@ -827,9 +851,10 @@ export const api = {
   },
 
   async getActiveAdmin(): Promise<AdminProfile | null> {
-    if (!activeSessionAdminId) return null;
+    const adminId = getActiveSessionAdminId();
+    if (!adminId) return null;
     const profiles = await this.getAdminProfiles();
-    return profiles.find((p) => p.id === activeSessionAdminId) || null;
+    return profiles.find((p) => p.id === adminId) || null;
   },
 
   async setActiveAdmin(adminId: string | null): Promise<void> {
@@ -1399,21 +1424,20 @@ export const api = {
 };
 
 // Global Supabase Auth oturum durumunu anlık takip eden mekanizma
+// NOT: Yöneticiler Kulüp Yönetim Kurulu PIN şifresiyle oturum açtığı için Gotrue SIGNED_OUT tetiklendiğinde
+// PIN oturumunu kapatmamalıdır. Sadece doğrudan kullanıcı e-posta ile giriş yaptıysa eşleştirme yapılır.
 if (typeof window !== 'undefined') {
   try {
     supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT') {
-        if (activeSessionAdminId !== null) {
-          await api.signOut();
-        }
-      } else if (event === 'SIGNED_IN' && session?.user) {
+      if (event === 'SIGNED_IN' && session?.user) {
         const userEmail = session.user.email || '';
         const userPrefix = userEmail.split('@')[0];
         const profiles = await api.getAdminProfiles();
         const matched = profiles.find(
           (p) => p.student_number === userPrefix || p.id === session.user.id
         );
-        if (matched && matched.id !== activeSessionAdminId) {
+        const currentId = getActiveSessionAdminId();
+        if (matched && matched.id !== currentId) {
           await api.setActiveAdmin(matched.id);
         }
       }

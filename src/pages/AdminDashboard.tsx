@@ -210,7 +210,19 @@ export const AdminDashboard: React.FC = () => {
       setEquipmentList(bundle.equipmentList);
       setMembers(bundle.members);
       setAdminProfiles(bundle.adminProfiles);
-      setActiveAdmin(bundle.activeAdmin);
+      if (bundle.activeAdmin) {
+        setActiveAdmin((prev) => {
+          if (
+            prev?.id === bundle.activeAdmin?.id &&
+            prev?.full_name === bundle.activeAdmin?.full_name &&
+            prev?.title === bundle.activeAdmin?.title &&
+            prev?.pin === bundle.activeAdmin?.pin
+          ) {
+            return prev;
+          }
+          return bundle.activeAdmin;
+        });
+      }
       setDarkroomReservations(bundle.darkroomReservations);
       setDarkroomSlots(bundle.darkroomSlots);
       setTrips(bundle.trips);
@@ -239,7 +251,7 @@ export const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }, [activeAdmin, activeTab]);
+  }, [activeTab]);
 
   const getAdminStamp = () => {
     if (!activeAdmin) return 'YTÜFOK Yönetim Kurulu';

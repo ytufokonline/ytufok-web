@@ -7,10 +7,12 @@ import { StatusBadge } from '../components/StatusBadge';
 interface EquipmentPageProps {
   onSelectEquipmentToReserve: (equipmentId: string) => void;
   onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin') => void;
+  isAdmin?: boolean;
 }
 
-export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentToReserve, onNavigate }) => {
+export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentToReserve, onNavigate, isAdmin }) => {
   const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
+  const [isAdminUser, setIsAdminUser] = useState<boolean>(() => Boolean(isAdmin || initialSync.activeAdmin));
   const [equipmentList, setEquipmentList] = useState<Equipment[]>(initialSync.equipmentList);
   const [allReservations, setAllReservations] = useState<Reservation[]>(initialSync.reservations);
   const [loading, setLoading] = useState(false);
@@ -19,6 +21,23 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedItemForModal, setSelectedItemForModal] = useState<Equipment | null>(null);
   const [modalTab, setModalTab] = useState<'details' | 'history'>('details');
+
+  useEffect(() => {
+    setIsAdminUser(Boolean(isAdmin || initialSync.activeAdmin));
+  }, [isAdmin, initialSync.activeAdmin]);
+
+  useEffect(() => {
+    const unsub = api.onAuthChange((admin) => {
+      setIsAdminUser(Boolean(admin));
+    });
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    if (!isAdminUser && modalTab === 'history') {
+      setModalTab('details');
+    }
+  }, [isAdminUser, modalTab]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -279,27 +298,29 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               <button
                 onClick={() => setModalTab('details')}
                 className={`py-3 font-medium transition-colors relative cursor-pointer ${
-                  modalTab === 'details'
+                  modalTab === 'details' || !isAdminUser
                     ? 'text-white font-semibold after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
                     : 'text-white/60 hover:text-white'
                 }`}
               >
                 Özellikler & Kutu
               </button>
-              <button
-                onClick={() => setModalTab('history')}
-                className={`py-3 font-medium transition-colors relative cursor-pointer ${
-                  modalTab === 'history'
-                    ? 'text-white font-semibold after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                Zimmet Geçmişi ({allReservations.filter(r => r.equipment_id === selectedItemForModal.id && r.status !== 'rejected').length})
-              </button>
+              {isAdminUser && (
+                <button
+                  onClick={() => setModalTab('history')}
+                  className={`py-3 font-medium transition-colors relative cursor-pointer ${
+                    modalTab === 'history'
+                      ? 'text-white font-semibold after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
+                      : 'text-white/60 hover:text-white'
+                  }`}
+                >
+                  Zimmet Geçmişi ({allReservations.filter(r => r.equipment_id === selectedItemForModal.id && r.status !== 'rejected').length})
+                </button>
+              )}
             </div>
 
             {/* Modal Content */}
-            {modalTab === 'details' ? (
+            {modalTab === 'details' || !isAdminUser ? (
               <div className="p-6 overflow-y-auto space-y-6">
                 <div className="aspect-[16/10] rounded-xl overflow-hidden bg-black/40 border border-white/[0.06]">
                   <img

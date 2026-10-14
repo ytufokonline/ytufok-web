@@ -158,6 +158,7 @@ export function App() {
           <EquipmentPage
             onNavigate={handleNavigate}
             onSelectEquipmentToReserve={handleSelectEquipmentToReserve}
+            isAdmin={Boolean(activeAdmin)}
           />
         )}
 

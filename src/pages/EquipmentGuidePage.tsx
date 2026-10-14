@@ -16,6 +16,30 @@ import { Equipment } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { TabType } from '../lib/routes';
+import { INITIAL_EQUIPMENT } from '../data/initialData';
+
+export const EQUIPMENT_SERIAL_MAP: Record<string, string> = {
+  'e-5d2': 'YTU-EOS-5D2',
+  'e-6d': 'YTU-EOS-6D',
+  'e-1000d': 'YTU-EOS-1000D',
+  'e-nikon': 'YTU-NIK-D5000',
+  'e-650': 'YTU-EOS-650-ANALOG',
+  'e-clearshot-1': 'YTU-ANALOG-CS-01',
+  'e-clearshot-2': 'YTU-ANALOG-CS-02',
+  'e-clearshot-3': 'YTU-ANALOG-CS-03',
+  'e-clearshot-4': 'YTU-ANALOG-CS-04',
+  'e-clearshot-5': 'YTU-ANALOG-CS-05',
+  'e-ef-50': 'YTU-LENS-50MM',
+  'e-ef-85': 'YTU-LENS-85MM',
+  'e-ef-100-macro': 'YTU-LENS-100-MACRO',
+  'e-ef-70-200': 'YTU-LENS-70-200L',
+  'e-ef-17-40': 'YTU-LENS-17-40L',
+  'e-ef-24-105': 'YTU-LENS-24-105L',
+  'e-sigma-10-20': 'YTU-LENS-SIGMA-10-20',
+  'e-nikon-18-55-vr': 'YTU-LENS-NIK-18-55',
+  'e-speedlite': 'YTU-FLASH-580EXII',
+  'e-tianya-77': 'YTU-FLTR-TIANYA-77',
+};
 
 export interface EquipmentCombo {
   id: string;
@@ -300,9 +324,20 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
   const safeComboIndex = Math.min(selectedComboIndex, activeScenario.combos.length - 1);
   const activeCombo = activeScenario.combos[safeComboIndex] || activeScenario.combos[0];
 
-  const getEq = (id?: string) => {
-    if (!id) return undefined;
-    return equipmentList.find((e) => e.id === id);
+  const getEq = (key?: string): Equipment | undefined => {
+    if (!key) return undefined;
+    const targetSerial = EQUIPMENT_SERIAL_MAP[key] || key;
+
+    // 1. Try finding in live equipmentList (by id or serial_number)
+    const live = equipmentList.find(
+      (e) => e.id === key || e.serial_number === key || e.serial_number === targetSerial || e.id === targetSerial
+    );
+    if (live) return live;
+
+    // 2. Fallback to INITIAL_EQUIPMENT so it NEVER fails even during loading
+    return INITIAL_EQUIPMENT.find(
+      (e) => e.id === key || e.serial_number === key || e.serial_number === targetSerial || e.id === targetSerial
+    );
   };
 
   const handleScenarioChange = (scenarioId: string) => {
@@ -519,57 +554,57 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
             </div>
 
             {/* Lens Box */}
-            {(() => {
-              const lens = getEq(activeCombo.lensId);
-              if (!lens) {
+            {activeCombo.lensId ? (
+              (() => {
+                const lens = getEq(activeCombo.lensId);
+                if (!lens) return null;
                 return (
-                  <div className="md:col-span-5 p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-center p-6 text-xs text-white/50">
-                    <span>Bu analog makinede lens dahili (Fujinon) olarak gövdededir. Ek lens gerekmez.</span>
+                  <div className="md:col-span-5 p-4 rounded-xl bg-white/[0.04] border border-white/15 flex flex-col justify-between space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-2.5">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#4e3b52] text-white uppercase tracking-wider">
+                          Önerilen Lens
+                        </span>
+                        <StatusBadge status={lens.status} size="sm" />
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="w-14 h-14 rounded-lg bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                          {lens.image_url ? (
+                            <img src={lens.image_url} alt={lens.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Camera className="w-6 h-6 text-white/40" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <strong className="text-xs font-semibold text-white block truncate" title={lens.name}>
+                            {lens.name}
+                          </strong>
+                          <span className="text-[10px] text-purple-300/80 block mt-0.5">
+                            Demirbaş: {lens.serial_number}
+                          </span>
+                          <span className="text-[11px] text-white/60 block mt-0.5 line-clamp-2">
+                            {lens.description}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleReserve(lens.id)}
+                      className="w-full py-2 rounded-lg bg-[#4e3b52] hover:bg-[#634c68] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow"
+                    >
+                      <span>2. Adım: Bu Lensi Rezerve Et</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 );
-              }
-              return (
-                <div className="md:col-span-5 p-4 rounded-xl bg-white/[0.04] border border-white/15 flex flex-col justify-between space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-2.5">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#4e3b52] text-white uppercase tracking-wider">
-                        Önerilen Lens
-                      </span>
-                      <StatusBadge status={lens.status} size="sm" />
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="w-14 h-14 rounded-lg bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
-                        {lens.image_url ? (
-                          <img src={lens.image_url} alt={lens.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Camera className="w-6 h-6 text-white/40" />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <strong className="text-xs font-semibold text-white block truncate" title={lens.name}>
-                          {lens.name}
-                        </strong>
-                        <span className="text-[10px] text-purple-300/80 block mt-0.5">
-                          Demirbaş: {lens.serial_number}
-                        </span>
-                        <span className="text-[11px] text-white/60 block mt-0.5 line-clamp-2">
-                          {lens.description}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => handleReserve(lens.id)}
-                    className="w-full py-2 rounded-lg bg-[#4e3b52] hover:bg-[#634c68] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow"
-                  >
-                    <span>2. Adım: Bu Lensi Rezerve Et</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              );
-            })()}
+              })()
+            ) : (
+              <div className="md:col-span-5 p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-center p-6 text-xs text-white/60">
+                <span>Bu analog makinede lens dahili (Fujinon) olarak gövde üzerindedir. Ek lens gerekmez.</span>
+              </div>
+            )}
 
           </div>
 

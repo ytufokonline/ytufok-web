@@ -10,7 +10,6 @@ interface NavbarProps {
   activeAdmin?: AdminProfile | null;
   onSignOut?: () => void;
   onSwitchProfile?: () => void;
-  onOpenGuide?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -19,8 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   pendingCount = 0,
   activeAdmin = null,
   onSignOut,
-  onSwitchProfile,
-  onOpenGuide
+  onSwitchProfile
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -40,6 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navItems = [
     { id: 'home' as const, label: 'Ana Sayfa', path: TAB_PATHS.home },
     { id: 'equipment' as const, label: 'Ekipmanlar', path: TAB_PATHS.equipment },
+    { id: 'guide' as const, label: 'Çekim Rehberi', path: TAB_PATHS.guide },
     { id: 'reserve' as const, label: 'Rezervasyon', path: TAB_PATHS.reserve },
     { id: 'darkroom' as const, label: 'Karanlık Oda', path: TAB_PATHS.darkroom },
     { id: 'status' as const, label: 'Talep Takibi', path: TAB_PATHS.status },
@@ -101,17 +100,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Desktop Admin / User Profile Area */}
           <div className="hidden md:flex items-center gap-3">
-            {onOpenGuide && (
-              <button
-                type="button"
-                onClick={onOpenGuide}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-purple-300 hover:text-white bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 transition-all cursor-pointer shadow-sm"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-purple-400" />
-                <span>Çekim Rehberi</span>
-              </button>
-            )}
-
             {activeAdmin ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -288,24 +276,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               </a>
             );
           })}
-
-          {/* Mobile Guide Button */}
-          {onOpenGuide && (
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenGuide();
-              }}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-purple-300 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all cursor-pointer mt-1"
-            >
-              <span className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-purple-400" />
-                Çekim & Ekipman Rehberi
-              </span>
-              <span className="text-[10px] bg-purple-500/20 px-1.5 py-0.5 rounded text-purple-200 font-bold">Öğretici</span>
-            </button>
-          )}
 
           {/* Mobile Profile & Admin Block */}
           {activeAdmin ? (

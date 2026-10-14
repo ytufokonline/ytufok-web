@@ -3,15 +3,15 @@ import { Camera, Search, Filter, ArrowRight, Package, Check, AlertCircle, Info, 
 import { Equipment, Reservation } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
+import { TabType } from '../lib/routes';
 
 interface EquipmentPageProps {
   onSelectEquipmentToReserve: (equipmentId: string) => void;
-  onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin') => void;
+  onNavigate: (tab: TabType, extraParam?: string) => void;
   isAdmin?: boolean;
-  onOpenGuide?: () => void;
 }
 
-export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentToReserve, onNavigate, isAdmin, onOpenGuide }) => {
+export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentToReserve, onNavigate, isAdmin }) => {
   const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
   const [isAdminUser, setIsAdminUser] = useState<boolean>(() => Boolean(isAdmin || initialSync.activeAdmin));
   const [equipmentList, setEquipmentList] = useState<Equipment[]>(initialSync.equipmentList);
@@ -117,37 +117,35 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
       </div>
 
       {/* Educational Guide Banner */}
-      {onOpenGuide && (
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-950/40 via-purple-900/20 to-[#180a15] border border-purple-500/30 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl shadow-purple-950/30">
-          <div className="flex items-start sm:items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl shrink-0 shadow-inner">
-              📖
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold tracking-wide uppercase border border-purple-500/30">
-                  Yeni Başlayanlara Özel
-                </span>
-                <span className="text-xs text-white/50">• Fotoğrafçılık & Ekipman Seçim Rehberi</span>
-              </div>
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                Hangi Çekim Türü İçin Hangi Ekipman Alınmalı?
-              </h2>
-              <p className="text-xs text-white/70 max-w-xl leading-relaxed">
-                Portre, sokak, mimarlık, analog veya konser çekimleri için en uygun gövde, lens ve ayarları keşfedin. Hiç bilmeyenler için terim sözlüğü ve tek tıkla rezervasyon!
-              </p>
-            </div>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-950/40 via-purple-900/20 to-[#180a15] border border-purple-500/30 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl shadow-purple-950/30">
+        <div className="flex items-start sm:items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl shrink-0 shadow-inner">
+            📖
           </div>
-          <button
-            onClick={onOpenGuide}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-lg shadow-purple-900/40 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>Rehberi Başlat</span>
-            <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
-          </button>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold tracking-wide uppercase border border-purple-500/30">
+                Kulüp Demirbaşı
+              </span>
+              <span className="text-xs text-white/50">• Fotoğrafçılık & Ekipman Rehberi</span>
+            </div>
+            <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+              Hangi Çekim Türü İçin Hangi Ekipman Alınmalı?
+            </h2>
+            <p className="text-xs text-white/70 max-w-xl leading-relaxed">
+              Sokak, portre, mimarlık veya konser çekimleri için hazır gövde + lens kombolarını rehber sayfamızda inceleyin.
+            </p>
+          </div>
         </div>
-      )}
+        <button
+          onClick={() => onNavigate('guide')}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-lg shadow-purple-900/40 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
+        >
+          <BookOpen className="w-4 h-4" />
+          <span>Rehbere Git</span>
+          <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+        </button>
+      </div>
 
       {/* Clean Airbnb-Style Category Bar & Search */}
       <div className="space-y-6">

@@ -8,8 +8,8 @@ import { DarkroomPage } from './pages/DarkroomPage';
 import { ReservationStatusPage } from './pages/ReservationStatusPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { SwitchProfileModal } from './components/SwitchProfileModal';
-import { EquipmentGuideModal } from './components/EquipmentGuideModal';
-import { AdminProfile, Equipment } from './types';
+import { EquipmentGuidePage } from './pages/EquipmentGuidePage';
+import { AdminProfile } from './types';
 import { api } from './lib/api';
 import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
 import { BookOpen } from 'lucide-react';
@@ -19,8 +19,6 @@ export function App() {
   const [activeTab, setActiveTab] = useState<TabType>(initialRoute.tab);
   const [preselectedEquipmentId, setPreselectedEquipmentId] = useState<string | undefined>(initialRoute.equipmentId);
   const [pendingCount, setPendingCount] = useState<number>(0);
-  const [equipmentList, setEquipmentList] = useState<Equipment[]>(() => api.getInitialSyncState().equipmentList);
-  const [showGuideModal, setShowGuideModal] = useState<boolean>(false);
 
   // Global Auth State for Active Admin Profile
   const [activeAdmin, setActiveAdmin] = useState<AdminProfile | null>(null);
@@ -109,23 +107,17 @@ export function App() {
     }
   }, []);
 
-  // Poll pending count and equipment list for the active tab
+  // Poll pending count for the admin badge
   useEffect(() => {
-    const fetchPendingAndEquipment = async () => {
+    const fetchPending = async () => {
       try {
-        const [pending, list] = await Promise.all([
-          api.getPendingCount(),
-          api.getEquipment()
-        ]);
+        const pending = await api.getPendingCount();
         setPendingCount(pending);
-        if (list && list.length > 0) {
-          setEquipmentList(list);
-        }
       } catch (e) {
         console.error(e);
       }
     };
-    fetchPendingAndEquipment();
+    fetchPending();
   }, [activeTab]);
 
   const handleSelectEquipmentToReserve = (equipmentId: string) => {
@@ -153,7 +145,6 @@ export function App() {
         activeAdmin={activeAdmin}
         onSignOut={handleSignOut}
         onSwitchProfile={() => setShowSwitchProfileModal(true)}
-        onOpenGuide={() => setShowGuideModal(true)}
       />
 
       {/* Main Dynamic View */}
@@ -170,7 +161,13 @@ export function App() {
             onNavigate={handleNavigate}
             onSelectEquipmentToReserve={handleSelectEquipmentToReserve}
             isAdmin={Boolean(activeAdmin)}
-            onOpenGuide={() => setShowGuideModal(true)}
+          />
+        )}
+
+        {activeTab === 'guide' && (
+          <EquipmentGuidePage
+            onNavigate={handleNavigate}
+            onSelectEquipmentToReserve={handleSelectEquipmentToReserve}
           />
         )}
 
@@ -213,26 +210,19 @@ export function App() {
       {/* Footer */}
       <Footer />
 
-      {/* Floating Equipment & Shooting Guide Trigger Button */}
-      <button
-        type="button"
-        onClick={() => setShowGuideModal(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white shadow-xl shadow-purple-900/40 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 group cursor-pointer"
-        aria-label="Çekim & Ekipman Rehberi"
-        title="Hangi çekim için hangi ekipman alınmalı? Öğretici rehberi aç"
-      >
-        <BookOpen className="w-5 h-5 group-hover:rotate-6 transition-transform" />
-        <span className="text-xs font-semibold tracking-wide">Çekim Rehberi</span>
-        <span className="text-[10px] bg-white/25 px-1.5 py-0.5 rounded-full font-bold">Öğretici</span>
-      </button>
-
-      {/* Educational Equipment & Shooting Guide Modal */}
-      <EquipmentGuideModal
-        isOpen={showGuideModal}
-        onClose={() => setShowGuideModal(false)}
-        equipmentList={equipmentList}
-        onSelectEquipmentToReserve={handleSelectEquipmentToReserve}
-      />
+      {/* Floating Link to Guide Page (hidden when already on guide page) */}
+      {activeTab !== 'guide' && (
+        <button
+          type="button"
+          onClick={() => navigate('guide')}
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white shadow-xl shadow-purple-900/40 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 group cursor-pointer"
+          aria-label="Çekim & Ekipman Rehberi"
+          title="Çekim & Ekipman Rehberine Git"
+        >
+          <BookOpen className="w-4 h-4 group-hover:rotate-6 transition-transform" />
+          <span className="text-xs font-semibold tracking-wide">Çekim Rehberi</span>
+        </button>
+      )}
     </div>
   );
 }

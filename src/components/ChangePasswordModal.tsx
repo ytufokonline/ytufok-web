@@ -33,7 +33,12 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
   useEffect(() => {
     if (initialAdminId) {
-      setSelectedAdminId(initialAdminId);
+      const match = adminProfiles.find(p => p.id === initialAdminId || p.student_number === initialAdminId);
+      if (match) {
+        setSelectedAdminId(match.id);
+      } else {
+        setSelectedAdminId(initialAdminId);
+      }
     } else if (adminProfiles.length > 0 && !selectedAdminId) {
       setSelectedAdminId(adminProfiles[0].id);
     }
@@ -52,7 +57,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
   if (!isOpen) return null;
 
-  const selectedAdmin = adminProfiles.find(p => p.id === selectedAdminId) || adminProfiles[0];
+  const selectedAdmin = adminProfiles.find(p => p.id === selectedAdminId || p.student_number === selectedAdminId) || adminProfiles[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -166,7 +166,7 @@ const defaultInitialState = {
   get activeAdmin() {
     const adminId = getActiveSessionAdminId();
     return (adminId
-      ? INITIAL_ADMIN_PROFILES.find((p) => p.id === adminId) || null
+      ? INITIAL_ADMIN_PROFILES.find((p) => p.id === adminId || p.student_number === adminId) || null
       : null) as AdminProfile | null;
   },
   darkroomSlots: DARKROOM_SLOTS,
@@ -182,7 +182,7 @@ export const api = {
     return {
       ...defaultInitialState,
       activeAdmin: (adminId
-        ? INITIAL_ADMIN_PROFILES.find((p) => p.id === adminId) || null
+        ? INITIAL_ADMIN_PROFILES.find((p) => p.id === adminId || p.student_number === adminId) || null
         : null) as AdminProfile | null
     };
   },
@@ -975,7 +975,7 @@ export const api = {
     const adminId = getActiveSessionAdminId();
     if (!adminId) return null;
     const profiles = await this.getAdminProfiles();
-    return profiles.find((p) => p.id === adminId) || null;
+    return profiles.find((p) => p.id === adminId || p.student_number === adminId) || null;
   },
 
   async loginAdmin(
@@ -996,8 +996,8 @@ export const api = {
         cache: 'no-store',
         body: JSON.stringify({ studentNumber: cleanNo, pin: cleanPin })
       });
-      if (res.ok) {
-        const json = await res.json();
+      const json = await res.json().catch(() => null);
+      if (json) {
         return json;
       }
     } catch {
@@ -1024,8 +1024,8 @@ export const api = {
         cache: 'no-store',
         body: JSON.stringify({ adminId, pin: cleanPin })
       });
-      if (res.ok) {
-        const json = await res.json();
+      const json = await res.json().catch(() => null);
+      if (json) {
         return json;
       }
     } catch {
@@ -1054,7 +1054,7 @@ export const api = {
     }
 
     const profiles = await this.getAdminProfiles();
-    const resolved = profiles.find((p) => p.id === adminId) || null;
+    const resolved = profiles.find((p) => p.id === adminId || p.student_number === adminId) || null;
     this.notifyAuthChange(resolved);
   },
 
@@ -1131,14 +1131,14 @@ export const api = {
         cache: 'no-store',
         body: JSON.stringify({ adminId, currentPin: cleanCurrent, newPin: cleanNew })
       });
-      if (res.ok) {
-        const json = await res.json();
+      const json = await res.json().catch(() => null);
+      if (json) {
         if (json.success) {
           const profiles = await this.getAdminProfiles();
-          const updated = profiles.find((p) => p.id === adminId);
+          const updated = profiles.find((p) => p.id === adminId || p.student_number === adminId);
           return { success: true, message: json.message, updatedProfile: updated };
         }
-        return json;
+        return { success: false, message: json.message || 'Şifre güncellenemedi.' };
       }
     } catch {
       // ignore

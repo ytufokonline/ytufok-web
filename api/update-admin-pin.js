@@ -52,6 +52,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, message: 'Yeni şifre en az 4 karakter olmalıdır.' });
     }
 
+    const cleanAdminId = String(adminId).trim();
     const ADMIN_ID_TO_STUDENT = {
       'admin-baskan': '24084005',
       'admin-by1': '21065054',
@@ -62,18 +63,72 @@ export default async function handler(req, res) {
       'admin-gezi': '24084602',
       'admin-sponsorluk': '24084025'
     };
-    const targetStudentNo = ADMIN_ID_TO_STUDENT[adminId] || adminId;
+
+    const FALLBACK_ADMINS = [
+      { id: 'admin-baskan', full_name: 'Sıla Dönmez', student_number: '24084005' },
+      { id: 'admin-by1', full_name: 'Yavuz Selim Bahadır', student_number: '21065054' },
+      { id: 'admin-by2', full_name: 'Alara Tezelli', student_number: '23084041' },
+      { id: 'admin-sayman', full_name: 'Duru Anlar', student_number: '23084006' },
+      { id: 'admin-sekreter', full_name: 'Yağmur Dursun', student_number: '23084023' },
+      { id: 'admin-sosyal-medya', full_name: 'Sümeyra Sever', student_number: '24084024' },
+      { id: 'admin-gezi', full_name: 'İlayda Sudem Güneş', student_number: '24084602' },
+      { id: 'admin-sponsorluk', full_name: 'Öykü Aydın', student_number: '24084025' }
+    ];
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Canlı veritabanından güncel yönetici kaydını çek
-    const { data: member, error: memberError } = await supabase
-      .from('members')
-      .select('id, student_number, full_name, role, member_type, notes')
-      .eq('student_number', targetStudentNo)
-      .maybeSingle();
+    // 1. Canlı veritabanından güncel yönetici kaydını esnek şekilde çek
+    let member = null;
 
-    if (memberError || !member) {
+    // A. Slug haritalamasından öğrenci numarası ile kontrol
+    const mappedStudentNo = ADMIN_ID_TO_STUDENT[cleanAdminId];
+    if (mappedStudentNo) {
+      const { data } = await supabase
+        .from('members')
+        .select('id, student_number, full_name, role, member_type, notes')
+        .eq('student_number', mappedStudentNo)
+        .maybeSingle();
+      if (data) member = data;
+    }
+
+    // B. UUID ise doğrudan ID üzerinden kontrol
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanAdminId);
+    if (!member && isUuid) {
+      const { data } = await supabase
+        .from('members')
+        .select('id, student_number, full_name, role, member_type, notes')
+        .eq('id', cleanAdminId)
+        .maybeSingle();
+      if (data) member = data;
+    }
+
+    // C. Öğrenci numarası olarak kontrol
+    if (!member) {
+      const cleanNo = cleanAdminId.toLowerCase().replace(/\s+/g, '');
+      const { data } = await supabase
+        .from('members')
+        .select('id, student_number, full_name, role, member_type, notes')
+        .eq('student_number', cleanNo)
+        .maybeSingle();
+      if (data) member = data;
+    }
+
+    // D. FALLBACK_ADMINS eşleşmesi üzerinden kontrol
+    if (!member) {
+      const fallback = FALLBACK_ADMINS.find(
+        (a) => a.id === cleanAdminId || a.student_number === cleanAdminId || a.full_name.toLowerCase() === cleanAdminId.toLowerCase()
+      );
+      if (fallback) {
+        const { data } = await supabase
+          .from('members')
+          .select('id, student_number, full_name, role, member_type, notes')
+          .eq('student_number', fallback.student_number)
+          .maybeSingle();
+        if (data) member = data;
+      }
+    }
+
+    if (!member) {
       return res.status(404).json({ success: false, message: 'Yönetici hesabı bulunamadı.' });
     }
 
@@ -130,7 +185,7 @@ export default async function handler(req, res) {
         notes: JSON.stringify(newAuthPayload),
         updated_at: new Date().toISOString()
       })
-      .eq('student_number', targetStudentNo);
+      .eq('id', member.id);
 
     if (updateError) {
       return res.status(500).json({ success: false, message: 'Yeni şifre veritabanına kaydedilirken hata oluştu.' });
@@ -138,10 +193,11 @@ export default async function handler(req, res) {
 
     // admin_profiles tablosu mevcutsa senkron tutmaya çalış
     try {
+      const profileId = mappedStudentNo ? cleanAdminId : (ADMIN_ID_TO_STUDENT[cleanAdminId] ? cleanAdminId : member.id);
       await supabase
         .from('admin_profiles')
         .upsert({
-          id: adminId,
+          id: profileId,
           pin: hash,
           pin_updated_at: new Date().toISOString()
         });

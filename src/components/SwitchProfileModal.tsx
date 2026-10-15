@@ -113,7 +113,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                 key={profile.id}
                 className={`rounded-2xl border transition-all ${
                   isCurrent
-                    ? 'bg-black/35/80 border-white/25'
+                    ? 'bg-black/45 border-white/25'
                     : isSelected
                     ? 'bg-black/35 border-white/30 shadow-lg ring-1 ring-white/20'
                     : 'bg-black/35 border-white/10 hover:border-white/25 hover:bg-black/40'

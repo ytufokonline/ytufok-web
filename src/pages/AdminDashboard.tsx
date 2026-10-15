@@ -976,13 +976,11 @@ export const AdminDashboard: React.FC = () => {
   if (!activeAdmin) {
     return (
       <AdminLogin
-        adminProfiles={adminProfiles}
         onLogin={async (profile) => {
           setActiveAdmin(profile);
           await api.setActiveAdmin(profile.id);
           window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
         }}
-        onProfilesUpdate={(updated) => setAdminProfiles(updated)}
       />
     );
   }

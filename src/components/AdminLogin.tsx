@@ -1,47 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Lock, Unlock, Eye, EyeOff, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
+import { ShieldCheck, Eye, EyeOff, AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { AdminProfile } from '../types';
 import { api } from '../lib/api';
-import { ChangePasswordModal } from './ChangePasswordModal';
 
 interface AdminLoginProps {
-  adminProfiles: AdminProfile[];
+  adminProfiles?: AdminProfile[];
   onLogin: (profile: AdminProfile) => void;
   onProfilesUpdate?: (profiles: AdminProfile[]) => void;
 }
 
-export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, onProfilesUpdate }) => {
-  const [localProfiles, setLocalProfiles] = useState<AdminProfile[]>(adminProfiles);
-  const [selectedProfileId, setSelectedProfileId] = useState<string>(adminProfiles[0]?.id || '');
-  const [pin, setPin] = useState<string>('');
-  const [showPin, setShowPin] = useState<boolean>(false);
+export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
+  const [studentNumber, setStudentNumber] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [showChangePasswordModal, setShowChangePasswordModal] = useState<boolean>(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, []);
 
-  useEffect(() => {
-    setLocalProfiles(adminProfiles);
-  }, [adminProfiles]);
-
-  const selectedProfile = localProfiles.find(p => p.id === selectedProfileId) || localProfiles[0];
-
-  const handleSelectProfile = (id: string) => {
-    setSelectedProfileId(id);
-    setPin('');
-    setError(null);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProfile) return;
 
-    const cleanPin = pin.trim();
-    if (!cleanPin) {
-      setError('Lütfen şifrenizi (PIN) giriniz.');
+    const cleanNo = studentNumber.trim();
+    const cleanPass = password.trim();
+
+    if (!cleanNo) {
+      setError('Lütfen öğrenci numaranızı giriniz.');
+      return;
+    }
+
+    if (!cleanPass) {
+      setError('Lütfen şifrenizi giriniz.');
       return;
     }
 
@@ -49,217 +40,147 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
     setError(null);
 
     try {
-      // Güvenlik: Şifre kontrolü asla tarayıcıda yapılmaz; güvenli sunucu (RPC/API) üzerinden doğrulanır
-      const result = await api.verifyAdminPin(selectedProfile.id, cleanPin);
+      // Güvenlik: Giriş ve şifre kontrolü tamamen sunucu tarafında (RPC / API) yürütülür
+      const result = await api.loginAdmin(cleanNo, cleanPass);
 
-      if (!result.success) {
-        setError(result.message || 'Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
+      if (!result.success || !result.admin) {
+        setError(result.message || 'Öğrenci numarası veya şifre hatalı.');
         setIsSubmitting(false);
         return;
       }
 
-      await api.setActiveAdmin(selectedProfile.id);
+      await api.setActiveAdmin(result.admin.id);
       setIsSubmitting(false);
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      onLogin(selectedProfile);
+      onLogin(result.admin);
     } catch {
-      setError('Giriş yapılırken sunucu bağlantı hatası oluştu. Lütfen tekrar deneyiniz.');
+      setError('Sunucu bağlantısı sağlanamadı. Lütfen daha sonra tekrar deneyiniz.');
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      {/* Brand & Security Header */}
-      <div className="text-center space-y-3 mb-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#301322] border border-[#657796]/40 text-[#dce4ef] text-xs font-semibold shadow-sm">
-          <ShieldCheck className="w-4 h-4 text-[#8193b2]" />
-          <span>Kulüp Yönetim Kurulu • Güvenli Giriş Kapısı</span>
-        </div>
-
-        <div className="flex items-center justify-center gap-3">
-          <img 
-            src="/logo.png" 
-            alt="YTÜFOK Logo" 
-            className="h-12 w-auto object-contain"
-          />
-        </div>
-
-        <h1 className="text-3xl font-extrabold text-white tracking-tight font-club">
-          Yönetici Giriş Portalı
-        </h1>
-        <p className="text-sm text-[#a9b9d3] max-w-xl mx-auto">
-          Davutpaşa Kulüpler Vadisi • Ekipman zimmet, teslimat, iade ve karanlık oda denetim işlemleri için lütfen kendi profilinizle oturum açınız.
-        </p>
-
-        {/* Security Warning Notice */}
-        <div className="max-w-2xl mx-auto mt-4 p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/40 text-left flex items-start gap-3 shadow-md">
-          <AlertCircle className="w-5 h-5 text-[#8193b2] shrink-0 mt-0.5" />
-          <div className="text-xs text-[#dce4ef] leading-relaxed">
-            <strong className="text-white font-semibold block mb-0.5">Denetim İzi & Zimmet Güvenliği:</strong>
-            Yapacağınız tüm rezervasyon onayları, ekipman teslimatları, iade kontrolleri ve karanlık oda onayları 
-            <strong> doğrudan giriş yaptığınız yöneticinin adıyla</strong> mühürlenir. Kimsenin işlemi birbirine karışmaması için 
-            yalnızca kendi hesabınızla giriş yapınız ve masadan ayrılırken <em>Güvenli Çıkış</em> yapınız.
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-[#1c0f18] border border-[#657796]/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-8">
-        {/* Step 1: Profile Selection */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-[#657796]/20 border border-[#657796]/40 text-[#dce4ef] text-xs flex items-center justify-center font-mono">1</span>
-              <span>Yönetim Kurulu Hesabınızı Seçin</span>
-            </h2>
-            <span className="text-xs text-[#8193b2]">8 Yönetim Kurulu Hesabının Tümü Tam Yetkilidir</span>
+    <div className="min-h-[75vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-[420px] space-y-8 animate-in fade-in duration-300">
+        {/* Apple Style Minimalist Header */}
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[#a9b9d3] text-xs font-medium tracking-wide">
+            <ShieldCheck className="w-3.5 h-3.5 text-white/80" />
+            <span>YTÜFOK Yönetim Portalı</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {localProfiles.map((profile) => {
-              const isSelected = selectedProfileId === profile.id;
-              return (
-                <div
-                  key={profile.id}
-                  onClick={() => handleSelectProfile(profile.id)}
-                  className={`relative p-4 rounded-2xl border text-left cursor-pointer transition-all ${
-                    isSelected
-                      ? 'bg-[#301322] border-[#657796] shadow-xl shadow-[#301322]/80 ring-2 ring-[#657796]/50'
-                      : 'bg-[#12080f]/80 border-[#657796]/20 hover:border-[#657796]/60 hover:bg-[#180d16]'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-[#241120] flex items-center justify-center text-white text-sm font-mono font-medium shadow-md shrink-0 border border-white/15">
-                      {profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <span className="text-xs font-bold text-white truncate block">
-                        {profile.full_name}
-                      </span>
-                      <div className="text-[11px] text-[#a9b9d3] mt-0.5 line-clamp-1">
-                        {profile.title}
-                      </div>
-                    </div>
-
-                    <div className="shrink-0 pt-0.5">
-                      {isSelected ? (
-                        <CheckCircle2 className="w-5 h-5 text-[#8193b2]" />
-                      ) : (
-                        <div className="w-4 h-4 rounded-full border border-[#657796]/40" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <h1 className="text-3xl font-semibold tracking-tight text-white font-club">
+            Yönetici Girişi
+          </h1>
+          <p className="text-sm text-[#8193b2] font-normal leading-relaxed">
+            Kulüp yönetim ve zimmet işlemlerine erişmek için kimliğinizi doğrulayın.
+          </p>
         </div>
 
-        {/* Step 2: PIN Verification */}
-        {selectedProfile && (
-          <form onSubmit={handleSubmit} className="border-t border-[#657796]/20 pt-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#657796]/20 border border-[#657796]/40 text-[#dce4ef] text-xs flex items-center justify-center font-mono">2</span>
-                <span>Güvenlik PIN Kodunu Giriniz</span>
-              </h2>
-              <div className="text-xs text-[#a9b9d3] font-medium">
-                Aktif Seçim: <strong className="text-white">{selectedProfile.full_name} ({selectedProfile.short_title})</strong>
-              </div>
-            </div>
-
+        {/* Focused Card Form */}
+        <div className="bg-[#140b12]/90 border border-white/[0.08] rounded-3xl p-7 sm:p-9 shadow-2xl backdrop-blur-2xl">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2 animate-in fade-in duration-200">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{error}</span>
+              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2.5 animate-in fade-in duration-150">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <span className="leading-snug">{error}</span>
               </div>
             )}
 
-            <div className="max-w-md mx-auto space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-[#dce4ef] mb-2 text-center">
-                  Yönetici Şifresi
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPin ? 'text' : 'password'}
-                    maxLength={16}
-                    value={pin}
-                    onChange={(e) => {
-                      setPin(e.target.value);
-                      if (error) setError(null);
-                    }}
-                    placeholder="••••"
-                    autoFocus
-                    className="w-full text-center tracking-[0.5em] text-2xl font-mono py-3.5 px-4 rounded-2xl bg-[#12080f] border border-[#657796]/40 text-white placeholder-[#8193b2]/40 focus:outline-none focus:border-[#657796] focus:ring-2 focus:ring-[#657796]/30 transition-all shadow-inner"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPin(!showPin)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 rounded-xl text-[#8193b2] hover:text-white transition-colors cursor-pointer"
-                    title={showPin ? 'Gizle' : 'Göster'}
-                  >
-                    {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
+            {/* Input 1: Student Number */}
+            <div className="space-y-1.5">
+              <label 
+                htmlFor="studentNumber" 
+                className="block text-xs font-medium text-[#dce4ef] pl-1 tracking-wide"
+              >
+                Öğrenci Numarası
+              </label>
+              <input
+                id="studentNumber"
+                type="text"
+                inputMode="numeric"
+                autoComplete="username"
+                value={studentNumber}
+                onChange={(e) => {
+                  setStudentNumber(e.target.value);
+                  if (error) setError(null);
+                }}
+                placeholder="Örn: 21065054"
+                autoFocus
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 rounded-2xl bg-[#0b0409]/90 border border-white/10 text-white placeholder-white/20 text-sm focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 transition-all font-mono shadow-inner disabled:opacity-50"
+              />
+            </div>
 
-              {/* Helper Link: Change Password */}
-              <div className="flex items-center justify-end text-xs px-1 text-[#8193b2]">
+            {/* Input 2: Password */}
+            <div className="space-y-1.5">
+              <label 
+                htmlFor="adminPassword" 
+                className="block text-xs font-medium text-[#dce4ef] pl-1 tracking-wide"
+              >
+                Şifre
+              </label>
+              <div className="relative">
+                <input
+                  id="adminPassword"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (error) setError(null);
+                  }}
+                  placeholder="••••••••"
+                  disabled={isSubmitting}
+                  className="w-full px-4 py-3 pr-11 rounded-2xl bg-[#0b0409]/90 border border-white/10 text-white placeholder-white/20 text-sm focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 transition-all font-mono shadow-inner disabled:opacity-50"
+                />
                 <button
                   type="button"
-                  onClick={() => setShowChangePasswordModal(true)}
-                  className="inline-flex items-center gap-1 text-[#dce4ef] hover:text-white hover:underline font-semibold cursor-pointer transition-colors"
+                  tabIndex={-1}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-white/40 hover:text-white/90 transition-colors cursor-pointer"
+                  title={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
                 >
-                  <KeyRound className="w-3.5 h-3.5 text-[#8193b2]" />
-                  <span>Şifremi Değiştir</span>
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
+            </div>
 
-              {/* Submit Button */}
+            {/* Submit Button */}
+            <div className="pt-2">
               <button
                 type="submit"
-                disabled={isSubmitting || !pin.trim()}
-                className={`w-full py-3.5 px-6 rounded-xl text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  pin.trim()
-                    ? 'bg-[#1b0d18] hover:bg-[#271223] text-white border border-white/20 hover:border-white/40 shadow-xl shadow-black/60'
-                    : 'bg-white/5 text-white/30 border border-white/10 cursor-not-allowed opacity-60'
+                disabled={isSubmitting || !studentNumber.trim() || !password.trim()}
+                className={`w-full py-3.5 px-6 rounded-2xl text-xs font-semibold tracking-wider uppercase transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
+                  studentNumber.trim() && password.trim() && !isSubmitting
+                    ? 'bg-white text-black hover:bg-neutral-200 shadow-lg shadow-white/10 active:scale-[0.99]'
+                    : 'bg-white/5 text-white/30 border border-white/5 cursor-not-allowed'
                 }`}
               >
                 {isSubmitting ? (
                   <>
-                    <Lock className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin text-black" />
                     <span>Doğrulanıyor...</span>
                   </>
                 ) : (
                   <>
-                    <Unlock className="w-4 h-4" />
-                    <span>{selectedProfile.full_name} Olarak Giriş Yap</span>
+                    <span>Giriş Yap</span>
+                    <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
             </div>
           </form>
-        )}
-      </div>
+        </div>
 
-      {/* Change Password Modal */}
-      <ChangePasswordModal
-        isOpen={showChangePasswordModal}
-        onClose={() => setShowChangePasswordModal(false)}
-        adminProfiles={localProfiles}
-        initialAdminId={selectedProfileId}
-        onSuccess={(updatedProfile) => {
-          const next = localProfiles.map(p => p.id === updatedProfile.id ? updatedProfile : p);
-          setLocalProfiles(next);
-          if (onProfilesUpdate) onProfilesUpdate(next);
-        }}
-      />
-
-      {/* Footer Info */}
-      <div className="text-center mt-6 text-xs text-[#8193b2]">
-        YTÜFOK Zimmet & Yönetim Masası • Yıldız Teknik Üniversitesi Fotoğraf Kulübü
+        {/* Minimal Footer Notice */}
+        <p className="text-center text-[11px] text-[#657796] leading-relaxed max-w-xs mx-auto">
+          Yalnızca yetkili YTÜFOK Yönetim Kurulu erişimine açıktır. Güvenlik amacıyla tüm giriş denemeleri kayıt altındadır.
+        </p>
       </div>
     </div>
   );

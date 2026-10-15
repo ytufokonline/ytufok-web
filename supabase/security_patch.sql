@@ -143,12 +143,57 @@ BEGIN
 END;
 $$;
 
--- 4. RPC FONKSİYONLARINA ÇALIŞTIRMA İZNİ VER
+-- 4. ÖĞRENCİ NUMARASI VE ŞİFRE İLE YÖNETİCİ GİRİŞİ (SERVER-SIDE)
+CREATE OR REPLACE FUNCTION public.verify_admin_login(p_student_number text, p_pin text)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_clean_num text;
+    v_admin record;
+BEGIN
+    v_clean_num := lower(replace(trim(p_student_number), ' ', ''));
+
+    SELECT id, role, title, short_title, full_name, student_number, phone, avatar_color, pin
+    INTO v_admin
+    FROM public.admin_profiles
+    WHERE lower(replace(student_number, ' ', '')) = v_clean_num
+    LIMIT 1;
+
+    IF NOT FOUND THEN
+        RETURN jsonb_build_object('success', false, 'message', 'Girdiğiniz öğrenci numarasına ait yönetici hesabı bulunamadı.');
+    END IF;
+
+    IF v_admin.pin = trim(p_pin) THEN
+        RETURN jsonb_build_object(
+            'success', true,
+            'message', 'Giriş başarılı.',
+            'admin', jsonb_build_object(
+                'id', v_admin.id,
+                'role', v_admin.role,
+                'title', v_admin.title,
+                'short_title', v_admin.short_title,
+                'full_name', v_admin.full_name,
+                'student_number', v_admin.student_number,
+                'phone', v_admin.phone,
+                'avatar_color', v_admin.avatar_color
+            )
+        );
+    ELSE
+        RETURN jsonb_build_object('success', false, 'message', 'Hatalı şifre girdiniz.');
+    END IF;
+END;
+$$;
+
+-- 5. RPC FONKSİYONLARINA ÇALIŞTIRMA İZNİ VER
 GRANT EXECUTE ON FUNCTION public.verify_admin_pin(text, text) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.update_admin_pin(text, text, text) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.verify_student_member(text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.verify_admin_login(text, text) TO anon, authenticated;
 
--- 5. RLS KORUMALARI
+-- 6. RLS KORUMALARI
 -- admin_profiles tablosuna anon doğrudan SELECT atamaz (şifre sızmasını önler)
 DROP POLICY IF EXISTS "Full access admin_profiles" ON public.admin_profiles;
 CREATE POLICY "Deny anon select pin" ON public.admin_profiles

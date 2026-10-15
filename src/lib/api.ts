@@ -978,6 +978,53 @@ export const api = {
     return profiles.find((p) => p.id === adminId) || null;
   },
 
+  async loginAdmin(
+    studentNumber: string,
+    pin: string
+  ): Promise<{ success: boolean; message: string; admin?: AdminProfile }> {
+    const cleanNo = studentNumber.trim().toLowerCase().replace(/\s+/g, '');
+    const cleanPin = pin.trim();
+    if (!cleanNo || !cleanPin) {
+      return { success: false, message: 'Lütfen öğrenci numaranızı ve şifrenizi giriniz.' };
+    }
+
+    // 1. Supabase PostgreSQL RPC (Sunucu Tarafında Doğrulama)
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase.rpc('verify_admin_login', {
+          p_student_number: cleanNo,
+          p_pin: cleanPin
+        });
+
+        if (!error && data && typeof data === 'object') {
+          return data as { success: boolean; message: string; admin?: AdminProfile };
+        }
+      } catch {
+        // RPC henüz veritabanında çalıştırılmadıysa API rotasına devam et
+      }
+    }
+
+    // 2. Vercel Serverless Güvenli API Doğrulaması
+    try {
+      const res = await fetch('/api/verify-admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentNumber: cleanNo, pin: cleanPin })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        return json;
+      }
+    } catch {
+      // ignore
+    }
+
+    return {
+      success: false,
+      message: 'Giriş bilgileri doğrulanamadı. Lütfen bilgilerinizi kontrol ediniz.'
+    };
+  },
+
   async verifyAdminPin(adminId: string, pin: string): Promise<{ success: boolean; message: string }> {
     const cleanPin = pin.trim();
     if (!cleanPin) {

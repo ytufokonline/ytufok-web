@@ -204,28 +204,14 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const loadAllData = async (_silent?: boolean | React.MouseEvent) => {
+    // Güvenlik: Giriş yapılmamışsa (login ekranındayken) ASLA pano verisi veya üye listesi çekme
+    if (!activeAdmin) return;
+
     try {
       const bundle = await api.getDashboardBundle(true);
       setReservations(bundle.reservations);
       setEquipmentList(bundle.equipmentList);
-      let memList = bundle.members;
-      if (!memList || memList.length === 0) {
-        memList = await api.getMembers();
-      }
-      setMembers(memList);
       setAdminProfiles(bundle.adminProfiles);
-      if (bundle.activeAdmin) {
-        setActiveAdmin((prev) => {
-          if (
-            prev?.id === bundle.activeAdmin?.id &&
-            prev?.full_name === bundle.activeAdmin?.full_name &&
-            prev?.title === bundle.activeAdmin?.title
-          ) {
-            return prev;
-          }
-          return bundle.activeAdmin;
-        });
-      }
       setDarkroomReservations(bundle.darkroomReservations);
       setDarkroomSlots(bundle.darkroomSlots);
       setTrips(bundle.trips);
@@ -238,19 +224,33 @@ export const AdminDashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    // Güvenlik: Yalnızca yetkili yönetici oturumu varsa verileri yükle ve periyodik dinle
+    if (!activeAdmin) return;
+
     loadAllData(true);
     const interval = window.setInterval(() => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && activeAdmin) {
         loadAllData(true);
       }
     }, 12000);
-    const handleFocus = () => loadAllData(true);
+    const handleFocus = () => {
+      if (activeAdmin) loadAllData(true);
+    };
     window.addEventListener('focus', handleFocus);
     return () => {
       window.clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [activeAdmin]);
+
+  // Üye listesi yalnızca oturum açmış yönetici "Üyeler" sekmesine girdiğinde yüklenir
+  useEffect(() => {
+    if (activeAdmin && activeTab === 'members' && members.length === 0) {
+      api.getMembers().then((res) => {
+        setMembers(res);
+      });
+    }
+  }, [activeAdmin, activeTab, members.length]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });

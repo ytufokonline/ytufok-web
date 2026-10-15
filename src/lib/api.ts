@@ -222,10 +222,8 @@ export const api = {
     }
 
     try {
-      const isAdmin = Boolean(getActiveSessionAdminId());
       const [
         eqRes,
-        memRes,
         resRes,
         tripRes,
         annRes,
@@ -233,10 +231,6 @@ export const api = {
         darkResRes
       ] = await Promise.allSettled([
         supabase.from('equipment').select('*').order('name', { ascending: true }),
-        // Güvenlik: Üye listesi yalnızca aktif yönetici oturumlarında yüklenir, halka açık isteklerde asla çekilmez
-        isAdmin 
-          ? supabase.from('members').select('*').order('full_name', { ascending: true }) 
-          : Promise.resolve({ data: [] as any[], error: null }),
         supabase.from('reservations').select('*').order('created_at', { ascending: false }),
         supabase.from('trips').select('*').order('start_date', { ascending: true }),
         supabase.from('announcements').select('*').order('created_at', { ascending: false }),
@@ -293,21 +287,25 @@ export const api = {
         }
       });
 
-      // 2. Members
-      let members: Member[] = defaultInitialState.members;
-      if (
-        memRes.status === 'fulfilled' &&
-        !memRes.value.error &&
-        Array.isArray(memRes.value.data) &&
-        memRes.value.data.length > 0
-      ) {
-        members = memRes.value.data.map((m: any) => normalizeMemberRecord(m));
+      // 2. Members (Güvenlik: Halka açık pano isteklerinde veya giriş yapılmamışken üye listesi asla çekilmez)
+      const currentAdminId = getActiveSessionAdminId();
+      let members: Member[] = [];
+      if (currentAdminId) {
+        try {
+          const memRes = await supabase.from('members').select('*');
+          if (memRes.data && Array.isArray(memRes.data)) {
+            members = memRes.data as Member[];
+          }
+        } catch (e) {
+          console.warn('Üye listesi çekilemedi:', e);
+        }
       }
+
       const memberById = new Map<string, Member>();
       const memberByNo = new Map<string, Member>();
       members.forEach((m) => {
-        memberById.set(m.id, m);
-        memberByNo.set(m.student_number, m);
+        if (m.id) memberById.set(m.id, m);
+        if (m.student_number) memberByNo.set(m.student_number, m);
       });
 
       // 3. Trips
@@ -357,7 +355,6 @@ export const api = {
 
       // 6. Admin Profiles (Güvenlik: Şifreler client tarafına asla çekilmez)
       const adminProfiles: AdminProfile[] = INITIAL_ADMIN_PROFILES;
-      const currentAdminId = getActiveSessionAdminId();
       const activeAdmin = currentAdminId
         ? adminProfiles.find((p) => p.id === currentAdminId) || null
         : null;
@@ -1162,6 +1159,10 @@ export const api = {
   // 6. ÜYELER (SUPABASE MEMBERS)
   // ==========================================
   async getMembers(): Promise<Member[]> {
+    // Güvenlik: Aktif yönetici oturumu yoksa (giriş yapılmadıysa) members tablosuna asla sorgu atma
+    if (!getActiveSessionAdminId()) {
+      return [];
+    }
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase
@@ -1518,12 +1519,7 @@ export const api = {
           .order('created_at', { ascending: false });
 
         if (!error && data) {
-          const members = await this.getMembers();
-          const memMap = new Map(members.map((m) => [m.id, m]));
-          return (data as any[]).map((r) => ({
-            ...r,
-            member: memMap.get(r.member_id) || members.find((m) => m.student_number === r.student_number)
-          }));
+          return data as DarkroomReservation[];
         }
       } catch (err) {
         console.warn('Supabase getDarkroomReservations error:', err);

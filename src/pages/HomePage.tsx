@@ -44,8 +44,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
     <div className="text-[#f4f5f8] selection:bg-white/20 selection:text-white space-y-24 sm:space-y-36 pb-32">
       
       {/* 1. HERO ALANI VE MANİFESTO (Apple Editorial Minimalist) */}
-      <section className="pt-20 sm:pt-32 lg:pt-40 pb-16 sm:pb-24 border-b border-white/[0.08]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
+      <section className="pt-6 sm:pt-8 lg:pt-10 pb-16 sm:pb-20 border-b border-white/[0.08]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8">
           
           {/* YTÜFOK Official Logo */}
           <div className="flex justify-center">

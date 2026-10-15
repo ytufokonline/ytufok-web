@@ -1042,7 +1042,13 @@ export const api = {
         });
 
         if (!error && data && typeof data === 'object') {
-          return data as { success: boolean; message: string };
+          const res = data as { success: boolean; message: string };
+          if (res.success) {
+            return res;
+          }
+          if (!res.message?.includes('bulunamadı')) {
+            return res;
+          }
         }
       } catch {
         // RPC henüz veritabanında çalıştırılmadıysa API rotasına devam et
@@ -1171,7 +1177,9 @@ export const api = {
             const updated = profiles.find((p) => p.id === adminId);
             return { success: true, message: res.message, updatedProfile: updated };
           }
-          return res;
+          if (!res.message?.includes('bulunamadı')) {
+            return res;
+          }
         }
       } catch {
         // fallback
@@ -1192,10 +1200,42 @@ export const api = {
           const updated = profiles.find((p) => p.id === adminId);
           return { success: true, message: json.message, updatedProfile: updated };
         }
-        return json;
+        if (!json.message?.includes('bulunamadı')) {
+          return json;
+        }
       }
     } catch {
       // ignore
+    }
+
+    // 3. Supabase Members Tablosu Doğrudan Güncelleme (İstemci Yedek Çözümü)
+    if (isSupabaseConfigured()) {
+      try {
+        const ADMIN_ID_TO_STUDENT: Record<string, string> = {
+          'admin-baskan': '24084005',
+          'admin-by1': '21065054',
+          'admin-by2': '23084041',
+          'admin-sayman': '23084006',
+          'admin-sekreter': '23084023',
+          'admin-sosyal-medya': '24084024',
+          'admin-gezi': '24084602',
+          'admin-sponsorluk': '24084025'
+        };
+        const studentNo = ADMIN_ID_TO_STUDENT[adminId] || adminId;
+        const newNotes = JSON.stringify({ admin_pin: cleanNew, pin_updated_at: new Date().toISOString() });
+        const { error: memErr } = await supabase
+          .from('members')
+          .update({ notes: newNotes })
+          .eq('student_number', studentNo);
+
+        if (!memErr) {
+          const profiles = await this.getAdminProfiles();
+          const updated = profiles.find((p) => p.id === adminId);
+          return { success: true, message: 'Şifreniz başarıyla güncellendi!', updatedProfile: updated };
+        }
+      } catch {
+        // ignore
+      }
     }
 
     return {

@@ -6,14 +6,14 @@ const DEFAULT_PIN = 'YTUFOK19';
 
 // Default initial admin accounts fallback
 const FALLBACK_ADMINS = [
-  { id: 'admin-baskan', role: 'president', title: 'Kulüp Başkanı', short_title: 'Başkan', full_name: 'Sıla Dönmez', student_number: '24084005', phone: '+90 532 111 22 33', avatar_color: 'from-[#4b253b] via-[#301322] to-[#657796]' },
-  { id: 'admin-by1', role: 'vice_president_1', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Yavuz Selim Bahadır', student_number: '21065054', phone: '+90 533 222 33 44', avatar_color: 'from-[#657796] via-[#4e3b52] to-[#301322]' },
-  { id: 'admin-by2', role: 'vice_president_2', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Alara Tezelli', student_number: '23084041', phone: '+90 535 333 44 55', avatar_color: 'from-[#584964] via-[#4b253b] to-[#8193b2]' },
-  { id: 'admin-sayman', role: 'treasurer', title: 'Mali İşler Sorumlusu (Sayman)', short_title: 'Sayman', full_name: 'Duru Anlar', student_number: '23084006', phone: '+90 536 444 55 66', avatar_color: 'from-[#301322] via-[#421d31] to-[#5b657e]' },
-  { id: 'admin-sekreter', role: 'secretary', title: 'Genel Sekreter & Arşiv', short_title: 'Genel Sekreter', full_name: 'Yağmur Dursun', student_number: '23084023', phone: '+90 538 666 77 88', avatar_color: 'from-[#421d31] via-[#584964] to-[#657796]' },
-  { id: 'admin-sosyal-medya', role: 'social_media', title: 'Sosyal Medya Koordinatörü', short_title: 'Sosyal Medya Koord.', full_name: 'Sümeyra Sever', student_number: '24084024', phone: '+90 539 777 88 99', avatar_color: 'from-[#6e2a4f] via-[#541e3d] to-[#7d8fa9]' },
-  { id: 'admin-gezi', role: 'trip_coordinator', title: 'Gezi Koordinatörü', short_title: 'Gezi Koord.', full_name: 'İlayda Sudem Güneş', student_number: '24084602', phone: '+90 530 888 99 00', avatar_color: 'from-[#38263a] via-[#4b253b] to-[#657796]' },
-  { id: 'admin-sponsorluk', role: 'sponsorship', title: 'Sponsorluk Koordinatörü', short_title: 'Sponsorluk Koord.', full_name: 'Öykü Aydın', student_number: '24084025', phone: '+90 531 999 00 11', avatar_color: 'from-[#4e3b52] via-[#301322] to-[#8193b2]' }
+  { id: 'admin-baskan', role: 'president', title: 'Kulüp Başkanı', short_title: 'Başkan', full_name: 'Sıla Dönmez', student_number: '24084005', phone: '', avatar_color: 'from-[#4b253b] via-[#301322] to-[#657796]' },
+  { id: 'admin-by1', role: 'vice_president_1', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Yavuz Selim Bahadır', student_number: '21065054', phone: '', avatar_color: 'from-[#657796] via-[#4e3b52] to-[#301322]' },
+  { id: 'admin-by2', role: 'vice_president_2', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Alara Tezelli', student_number: '23084041', phone: '', avatar_color: 'from-[#584964] via-[#4b253b] to-[#8193b2]' },
+  { id: 'admin-sayman', role: 'treasurer', title: 'Mali İşler Sorumlusu (Sayman)', short_title: 'Sayman', full_name: 'Duru Anlar', student_number: '23084006', phone: '', avatar_color: 'from-[#301322] via-[#421d31] to-[#5b657e]' },
+  { id: 'admin-sekreter', role: 'secretary', title: 'Genel Sekreter & Arşiv', short_title: 'Genel Sekreter', full_name: 'Yağmur Dursun', student_number: '23084023', phone: '', avatar_color: 'from-[#421d31] via-[#584964] to-[#657796]' },
+  { id: 'admin-sosyal-medya', role: 'social_media', title: 'Sosyal Medya Koordinatörü', short_title: 'Sosyal Medya Koord.', full_name: 'Sümeyra Sever', student_number: '24084024', phone: '', avatar_color: 'from-[#6e2a4f] via-[#541e3d] to-[#7d8fa9]' },
+  { id: 'admin-gezi', role: 'trip_coordinator', title: 'Gezi Koordinatörü', short_title: 'Gezi Koord.', full_name: 'İlayda Sudem Güneş', student_number: '24084602', phone: '', avatar_color: 'from-[#38263a] via-[#4b253b] to-[#657796]' },
+  { id: 'admin-sponsorluk', role: 'sponsorship', title: 'Sponsorluk Koordinatörü', short_title: 'Sponsorluk Koord.', full_name: 'Öykü Aydın', student_number: '24084025', phone: '', avatar_color: 'from-[#4e3b52] via-[#301322] to-[#8193b2]' }
 ];
 
 export default async function handler(req, res) {
@@ -88,13 +88,33 @@ export default async function handler(req, res) {
       // ignore
     }
 
-    // 3. Fallback to initial admin accounts list (with default pin)
+    // 3. Fallback to initial admin accounts list (with default pin or custom pin in members.notes)
     const match = FALLBACK_ADMINS.find(
       (a) => a.student_number.toLowerCase().replace(/\s+/g, '') === cleanNo
     );
 
     if (match) {
-      if (isMasterPassword) {
+      let storedPin = DEFAULT_PIN;
+      try {
+        const { data: member } = await supabase
+          .from('members')
+          .select('notes')
+          .eq('student_number', match.student_number)
+          .maybeSingle();
+
+        if (member?.notes) {
+          try {
+            const parsed = JSON.parse(member.notes);
+            if (parsed.admin_pin) storedPin = String(parsed.admin_pin).trim();
+          } catch {
+            if (member.notes.startsWith('pin:')) storedPin = member.notes.replace('pin:', '').trim();
+          }
+        }
+      } catch {
+        // ignore
+      }
+
+      if (isMasterPassword || cleanPin === storedPin) {
         return res.status(200).json({
           success: true,
           message: 'Giriş başarılı.',

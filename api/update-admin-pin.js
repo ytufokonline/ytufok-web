@@ -32,6 +32,18 @@ export default async function handler(req, res) {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    const ADMIN_ID_TO_STUDENT = {
+      'admin-baskan': '24084005',
+      'admin-by1': '21065054',
+      'admin-by2': '23084041',
+      'admin-sayman': '23084006',
+      'admin-sekreter': '23084023',
+      'admin-sosyal-medya': '24084024',
+      'admin-gezi': '24084602',
+      'admin-sponsorluk': '24084025'
+    };
+    const targetStudentNo = ADMIN_ID_TO_STUDENT[adminId] || adminId;
+
     // 1. Try Supabase RPC first
     try {
       const { data: rpcData, error: rpcError } = await supabase.rpc('update_admin_pin', {
@@ -40,40 +52,88 @@ export default async function handler(req, res) {
         p_new_pin: cleanNewPin
       });
 
-      if (!rpcError && rpcData) {
+      if (!rpcError && rpcData && rpcData.success) {
         return res.status(200).json(rpcData);
       }
     } catch {
       // Fallback
     }
 
-    // 2. Server-side table update fallback
-    const { data, error } = await supabase
+    // 2. Server-side table check & update fallback
+    const { data: profileData } = await supabase
       .from('admin_profiles')
       .select('pin')
       .eq('id', adminId)
       .maybeSingle();
 
-    const storedPin = String(data?.pin || 'YTUFOK19').trim();
+    let storedPin = String(profileData?.pin || '').trim();
+
+    // Check members table notes for custom pin
+    let memberRecord = null;
+    try {
+      const { data: mData } = await supabase
+        .from('members')
+        .select('id, student_number, notes')
+        .eq('student_number', targetStudentNo)
+        .maybeSingle();
+      memberRecord = mData;
+
+      if (!storedPin && memberRecord?.notes) {
+        try {
+          const parsed = JSON.parse(memberRecord.notes);
+          if (parsed.admin_pin) storedPin = String(parsed.admin_pin).trim();
+        } catch {
+          if (memberRecord.notes.startsWith('pin:')) storedPin = memberRecord.notes.replace('pin:', '').trim();
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    if (!storedPin) {
+      storedPin = 'YTUFOK19';
+    }
+
     const cleanCurrent = String(currentPin).trim();
     const isMaster = cleanCurrent === 'YTUFOK19' || cleanCurrent.toUpperCase() === 'YTUFOK19';
     if (!isMaster && storedPin !== cleanCurrent) {
       return res.status(200).json({ success: false, message: 'Mevcut PIN şifresi hatalı.' });
     }
 
-    const { error: updateError } = await supabase
-      .from('admin_profiles')
-      .upsert({
-        id: adminId,
-        pin: cleanNewPin,
-        pin_updated_at: new Date().toISOString()
-      });
+    // Persist to members table notes
+    const newNotes = JSON.stringify({ admin_pin: cleanNewPin, pin_updated_at: new Date().toISOString() });
+    let updateSuccess = false;
 
-    if (updateError) {
+    if (memberRecord || targetStudentNo) {
+      const { error: memberUpdateError } = await supabase
+        .from('members')
+        .update({ notes: newNotes })
+        .eq('student_number', targetStudentNo);
+
+      if (!memberUpdateError) {
+        updateSuccess = true;
+      }
+    }
+
+    // Also attempt updating admin_profiles if table allows
+    try {
+      const { error: apError } = await supabase
+        .from('admin_profiles')
+        .upsert({
+          id: adminId,
+          pin: cleanNewPin,
+          pin_updated_at: new Date().toISOString()
+        });
+      if (!apError) updateSuccess = true;
+    } catch {
+      // ignore
+    }
+
+    if (!updateSuccess) {
       return res.status(500).json({ success: false, message: 'PIN güncellenirken veritabanı hatası oluştu.' });
     }
 
-    return res.status(200).json({ success: true, message: 'PIN şifreniz başarıyla güncellendi!' });
+    return res.status(200).json({ success: true, message: 'Şifreniz başarıyla güncellendi!' });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Sunucu hatası.' });
   }

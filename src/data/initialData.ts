@@ -8,7 +8,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     short_title: 'Başkan',
     full_name: 'Sıla Dönmez',
     student_number: '24084005',
-    phone: '+90 532 111 22 33',
+    phone: '',
     avatar_color: 'from-[#4b253b] via-[#301322] to-[#657796]'
   },
   {
@@ -18,7 +18,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     short_title: 'Başkan Yrd.',
     full_name: 'Yavuz Selim Bahadır',
     student_number: '21065054',
-    phone: '+90 533 222 33 44',
+    phone: '',
     avatar_color: 'from-[#657796] via-[#4e3b52] to-[#301322]'
   },
   {
@@ -28,7 +28,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     short_title: 'Başkan Yrd.',
     full_name: 'Alara Tezelli',
     student_number: '23084041',
-    phone: '+90 535 333 44 55',
+    phone: '',
     avatar_color: 'from-[#584964] via-[#4b253b] to-[#8193b2]'
   },
   {
@@ -38,7 +38,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     short_title: 'Sayman',
     full_name: 'Duru Anlar',
     student_number: '23084006',
-    phone: '+90 536 444 55 66',
+    phone: '',
     avatar_color: 'from-[#301322] via-[#421d31] to-[#5b657e]'
   },
   {
@@ -48,7 +48,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     short_title: 'Genel Sekreter',
     full_name: 'Yağmur Dursun',
     student_number: '23084023',
-    phone: '+90 538 666 77 88',
+    phone: '',
     avatar_color: 'from-[#421d31] via-[#584964] to-[#657796]'
   },
   {
@@ -58,7 +58,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     short_title: 'Sosyal Medya Koord.',
     full_name: 'Sümeyra Sever',
     student_number: '24084024',
-    phone: '+90 539 777 88 99',
+    phone: '',
     avatar_color: 'from-[#6e2a4f] via-[#541e3d] to-[#7d8fa9]'
   },
   {
@@ -68,7 +68,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     short_title: 'Gezi Koord.',
     full_name: 'İlayda Sudem Güneş',
     student_number: '24084602',
-    phone: '+90 530 888 99 00',
+    phone: '',
     avatar_color: 'from-[#38263a] via-[#4b253b] to-[#657796]'
   },
   {
@@ -78,7 +78,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     short_title: 'Sponsorluk Koord.',
     full_name: 'Öykü Aydın',
     student_number: '24084025',
-    phone: '+90 531 999 00 11',
+    phone: '',
     avatar_color: 'from-[#4e3b52] via-[#301322] to-[#8193b2]'
   }
 ];

@@ -50,17 +50,44 @@ export default async function handler(req, res) {
       .maybeSingle();
 
     const isMasterPassword = cleanPin === 'YTUFOK19' || cleanPin.toUpperCase() === 'YTUFOK19';
-
-    if (error || !data) {
-      // Default fallback PIN for initial accounts if row doesn't exist
-      if (isMasterPassword) {
-        return res.status(200).json({ success: true, message: 'Giriş başarılı.' });
-      }
-      return res.status(200).json({ success: false, message: 'Hatalı PIN kodu.' });
+    if (isMasterPassword) {
+      return res.status(200).json({ success: true, message: 'Giriş başarılı.' });
     }
 
-    const storedPin = String(data.pin || 'YTUFOK19').trim();
-    if (storedPin === cleanPin || isMasterPassword) {
+    let storedPin = String(data?.pin || '').trim();
+    if (!storedPin) {
+      const ADMIN_ID_TO_STUDENT = {
+        'admin-baskan': '24084005',
+        'admin-by1': '21065054',
+        'admin-by2': '23084041',
+        'admin-sayman': '23084006',
+        'admin-sekreter': '23084023',
+        'admin-sosyal-medya': '24084024',
+        'admin-gezi': '24084602',
+        'admin-sponsorluk': '24084025'
+      };
+      const targetStudentNo = ADMIN_ID_TO_STUDENT[adminId] || adminId;
+      try {
+        const { data: member } = await supabase
+          .from('members')
+          .select('notes')
+          .eq('student_number', targetStudentNo)
+          .maybeSingle();
+
+        if (member?.notes) {
+          try {
+            const parsed = JSON.parse(member.notes);
+            if (parsed.admin_pin) storedPin = String(parsed.admin_pin).trim();
+          } catch {
+            if (member.notes.startsWith('pin:')) storedPin = member.notes.replace('pin:', '').trim();
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (storedPin && storedPin === cleanPin) {
       return res.status(200).json({ success: true, message: 'Giriş başarılı.' });
     }
 

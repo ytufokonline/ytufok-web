@@ -23,7 +23,11 @@ BEGIN
     WHERE id = p_admin_id;
 
     IF NOT FOUND THEN
-        RETURN jsonb_build_object('success', false, 'message', 'Yönetici hesabı bulunamadı.');
+        IF trim(p_pin) = 'YTUFOK19' OR upper(trim(p_pin)) = 'YTUFOK19' THEN
+            RETURN jsonb_build_object('success', true, 'message', 'Giriş başarılı.');
+        ELSE
+            RETURN jsonb_build_object('success', false, 'message', 'Hatalı PIN kodu.');
+        END IF;
     END IF;
 
     IF v_stored_pin = trim(p_pin) OR trim(p_pin) = 'YTUFOK19' OR upper(trim(p_pin)) = 'YTUFOK19' THEN
@@ -43,20 +47,30 @@ SET search_path = public
 AS $$
 DECLARE
     v_stored_pin text;
+    v_is_master boolean;
 BEGIN
     IF length(trim(p_new_pin)) < 4 THEN
         RETURN jsonb_build_object('success', false, 'message', 'Yeni PIN en az 4 karakter olmalıdır.');
     END IF;
+
+    v_is_master := (trim(p_current_pin) = 'YTUFOK19' OR upper(trim(p_current_pin)) = 'YTUFOK19');
 
     SELECT pin INTO v_stored_pin
     FROM public.admin_profiles
     WHERE id = p_admin_id;
 
     IF NOT FOUND THEN
-        RETURN jsonb_build_object('success', false, 'message', 'Yönetici hesabı bulunamadı.');
+        IF v_is_master THEN
+            INSERT INTO public.admin_profiles (id, pin, pin_updated_at)
+            VALUES (p_admin_id, trim(p_new_pin), NOW())
+            ON CONFLICT (id) DO UPDATE SET pin = trim(p_new_pin), pin_updated_at = NOW();
+            RETURN jsonb_build_object('success', true, 'message', 'PIN başarıyla güncellendi.');
+        ELSE
+            RETURN jsonb_build_object('success', false, 'message', 'Mevcut PIN hatalı veya hesap bulunamadı.');
+        END IF;
     END IF;
 
-    IF v_stored_pin != trim(p_current_pin) THEN
+    IF v_stored_pin != trim(p_current_pin) AND NOT v_is_master THEN
         RETURN jsonb_build_object('success', false, 'message', 'Mevcut PIN hatalı.');
     END IF;
 
@@ -190,9 +204,18 @@ BEGIN
 END;
 $$;
 
--- 5. TÜM YÖNETİCİ ŞİFRELERİNİ YTUFOK19 OLARAK GÜNCELLE
-UPDATE public.admin_profiles
-SET pin = 'YTUFOK19';
+-- 5. TÜM YÖNETİCİ PROFİLLERİNİ VE ŞİFRELERİNİ EŞLE (BAŞLANGIÇ: YTUFOK19)
+INSERT INTO public.admin_profiles (id, pin)
+VALUES 
+    ('admin-baskan', 'YTUFOK19'),
+    ('admin-by1', 'YTUFOK19'),
+    ('admin-by2', 'YTUFOK19'),
+    ('admin-sayman', 'YTUFOK19'),
+    ('admin-sekreter', 'YTUFOK19'),
+    ('admin-sosyal-medya', 'YTUFOK19'),
+    ('admin-gezi', 'YTUFOK19'),
+    ('admin-sponsorluk', 'YTUFOK19')
+ON CONFLICT (id) DO UPDATE SET pin = EXCLUDED.pin;
 
 -- 6. RPC FONKSİYONLARINA ÇALIŞTIRMA İZNİ VER
 GRANT EXECUTE ON FUNCTION public.verify_admin_pin(text, text) TO anon, authenticated;

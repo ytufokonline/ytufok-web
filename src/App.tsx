@@ -222,12 +222,12 @@ export function App() {
         <button
           type="button"
           onClick={() => navigate('guide')}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white shadow-xl shadow-purple-900/40 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 group cursor-pointer"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white text-black shadow-2xl shadow-black/70 hover:bg-white/90 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/40 group cursor-pointer"
           aria-label="Çekim & Ekipman Rehberi"
           title="Çekim & Ekipman Rehberine Git"
         >
-          <BookOpen className="w-4 h-4 group-hover:rotate-6 transition-transform" />
-          <span className="text-xs font-semibold tracking-wide">Çekim Rehberi</span>
+          <BookOpen className="w-4 h-4 text-black group-hover:rotate-6 transition-transform" />
+          <span className="text-xs font-semibold tracking-wide font-satoshi">Çekim Rehberi</span>
         </button>
       )}
     </div>

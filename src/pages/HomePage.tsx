@@ -48,9 +48,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
           
           {/* YTÜFOK Official Logo (Left-Aligned, Crisp Scale) */}
-          <div className="w-48 sm:w-64 md:w-72">
+          <div className="w-56 sm:w-72 md:w-80 lg:w-96">
             <img
-              src="/ytufok-hero-logo.png"
+              src="/ytufok-hero-logo.png?v=2"
               alt="YTÜFOK - Yıldız Teknik Üniversitesi Fotoğraf Kulübü"
               className="w-full h-auto object-contain mix-blend-screen select-none"
             />

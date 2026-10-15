@@ -41,7 +41,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
   }, []);
 
   return (
-    <div className="text-[#f4f5f8] selection:bg-white/20 selection:text-white pb-28">
+    <div className="text-[#eed1d1] selection:bg-white/20 selection:text-white pb-28">
       
       {/* 1. HERO ALANI (Apple Left-Aligned Editorial) */}
       <section className="pt-8 sm:pt-14 lg:pt-16 border-b border-white/[0.08] pb-12 sm:pb-16">

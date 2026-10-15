@@ -1218,7 +1218,7 @@ export const AdminDashboard: React.FC = () => {
               placeholder="Kod, öğrenci veya ekipman ara..."
               value={searchReservationQuery}
               onChange={(e) => setSearchReservationQuery(e.target.value)}
-              className="w-full sm:w-72 px-3 py-1.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+              className="w-full sm:w-72 px-3 py-1.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
             />
             <div className="flex flex-wrap gap-1 text-xs">
               {['all', 'pending', 'approved', 'in_use', 'returned', 'rejected'].map(f => (
@@ -1238,7 +1238,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-[#dce4ef]">
-                <thead className="bg-[#12080f] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+                <thead className="bg-[#500b27] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                   <tr>
                     <th className="p-3.5">Kod & Talep Zamanı</th>
                     <th className="p-3.5">Öğrenci</th>
@@ -1403,7 +1403,7 @@ export const AdminDashboard: React.FC = () => {
                     <h4 className="font-bold text-white text-sm font-club">{res.equipment?.name}</h4>
                     <span className="text-xs text-[#8193b2] font-mono">{res.equipment?.serial_number}</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#12080f] border border-[#657796]/20 text-xs space-y-1.5">
+                  <div className="p-3 rounded-xl bg-[#500b27] border border-[#657796]/20 text-xs space-y-1.5">
                     <div className="text-white font-bold">
                       {res.member?.full_name} {!isBoardMemberObj(res.member) && `(${res.student_number})`}
                     </div>
@@ -1491,7 +1491,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <button
                     onClick={() => handleOpenEditEquipment(item)}
-                    className="py-1.5 rounded-xl bg-[#12080f] hover:bg-[#301322] text-[11px] text-[#dce4ef] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="py-1.5 rounded-xl bg-[#500b27] hover:bg-[#301322] text-[11px] text-[#dce4ef] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Pencil className="w-3 h-3 text-[#8193b2]" />
                     <span>Düzenle</span>
@@ -1499,7 +1499,7 @@ export const AdminDashboard: React.FC = () => {
 
                   <button
                     onClick={() => handleDeleteEquipment(item)}
-                    className="py-1.5 rounded-xl bg-[#12080f] hover:bg-rose-950/60 text-[11px] text-[#8193b2] hover:text-rose-300 font-medium border border-[#657796]/30 hover:border-rose-500/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="py-1.5 rounded-xl bg-[#500b27] hover:bg-rose-950/60 text-[11px] text-[#8193b2] hover:text-rose-300 font-medium border border-[#657796]/30 hover:border-rose-500/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                     <span>Sil</span>
@@ -1545,7 +1545,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="İsim, öğrenci no veya üniversite ara..."
                 value={memberSearchQuery}
                 onChange={(e) => setMemberSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#12080f] border border-white/10 text-white text-xs placeholder-white/30"
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#500b27] border border-white/10 text-white text-xs placeholder-white/30"
               />
             </div>
             <div className="flex flex-wrap items-center gap-1.5 text-xs w-full sm:w-auto justify-end">
@@ -1555,7 +1555,7 @@ export const AdminDashboard: React.FC = () => {
                 className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberStatusFilter === 'all' && memberTypeFilter === 'all'
                     ? 'bg-white text-black font-semibold shadow-sm'
-                    : 'bg-[#12080f] text-white/60 hover:text-white border border-white/10'
+                    : 'bg-[#500b27] text-white/60 hover:text-white border border-white/10'
                 }`}
               >
                 Tümü ({members.length})
@@ -1565,7 +1565,7 @@ export const AdminDashboard: React.FC = () => {
                 className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberTypeFilter === 'active'
                     ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/30'
-                    : 'bg-[#12080f] text-emerald-400/70 hover:text-emerald-300 border border-emerald-500/20'
+                    : 'bg-[#500b27] text-emerald-400/70 hover:text-emerald-300 border border-emerald-500/20'
                 }`}
               >
                 ★ Aktif Üyeler (5 Gün)
@@ -1575,7 +1575,7 @@ export const AdminDashboard: React.FC = () => {
                 className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberTypeFilter === 'normal'
                     ? 'bg-blue-950/80 text-blue-300 border border-blue-500/30'
-                    : 'bg-[#12080f] text-blue-400/70 hover:text-blue-300 border border-blue-500/20'
+                    : 'bg-[#500b27] text-blue-400/70 hover:text-blue-300 border border-blue-500/20'
                 }`}
               >
                 Normal Üyeler (3 Gün)
@@ -1585,7 +1585,7 @@ export const AdminDashboard: React.FC = () => {
                 className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberTypeFilter === 'honorary'
                     ? 'bg-white/20 text-white border border-white/30'
-                    : 'bg-[#12080f] text-white/60 hover:text-white border border-white/10'
+                    : 'bg-[#500b27] text-white/60 hover:text-white border border-white/10'
                 }`}
               >
                 ★ Fahri Üyeler
@@ -1595,7 +1595,7 @@ export const AdminDashboard: React.FC = () => {
                 className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberStatusFilter === 'suspended'
                     ? 'bg-rose-950/80 text-rose-300 border border-rose-500/30'
-                    : 'bg-[#12080f] text-rose-400/70 hover:text-rose-300 border border-rose-500/20'
+                    : 'bg-[#500b27] text-rose-400/70 hover:text-rose-300 border border-rose-500/20'
                 }`}
               >
                 Askıda / Cezalı
@@ -1605,7 +1605,7 @@ export const AdminDashboard: React.FC = () => {
 
           <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
             <table className="w-full text-left text-xs text-[#dce4ef]">
-              <thead className="bg-[#12080f] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+              <thead className="bg-[#500b27] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                 <tr>
                   <th className="p-3.5">Öğrenci No</th>
                   <th className="p-3.5">İsim & Yetki</th>
@@ -1713,7 +1713,7 @@ export const AdminDashboard: React.FC = () => {
                         {!isBoard && !isAudit && (
                           <button
                             onClick={() => handleToggleMemberType(m)}
-                            className="px-2 py-1 rounded-lg bg-[#12080f] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-[#500b27] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
                             title={
                               m.member_type === 'normal' ? 'Bu üyeyi Aktif Üye yap (5 gün önce rezervasyon & Bireysel Çekim)' :
                               m.member_type === 'active' ? 'Bu üyeyi Normal Üye yap (3 gün önce rezervasyon)' :
@@ -1747,7 +1747,7 @@ export const AdminDashboard: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleOpenEditMember(m)}
-                          className="px-2 py-1 rounded-lg bg-[#12080f] hover:bg-[#301322] text-xs font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer inline-flex items-center gap-1"
+                          className="px-2 py-1 rounded-lg bg-[#500b27] hover:bg-[#301322] text-xs font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer inline-flex items-center gap-1"
                           title="Üye Bilgilerini Düzenle"
                         >
                           <Pencil className="w-3 h-3 text-[#8193b2]" />
@@ -1852,7 +1852,7 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="Üye, öğrenci no, ekipman, amaç..."
                   value={historySearchQuery}
                   onChange={(e) => setHistorySearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
                 />
               </div>
 
@@ -1861,7 +1861,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={historyMemberFilter}
                   onChange={(e) => setHistoryMemberFilter(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                 >
                   <option value="all">Tüm Üyeler ({members.length})</option>
                   {members.map(m => (
@@ -1877,7 +1877,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={historyEquipmentFilter}
                   onChange={(e) => setHistoryEquipmentFilter(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                 >
                   <option value="all">Tüm Ekipmanlar ({equipmentList.length})</option>
                   {equipmentList.map(e => (
@@ -1893,7 +1893,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={historyStatusFilter}
                   onChange={(e) => setHistoryStatusFilter(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                 >
                   <option value="all">Tüm Durumlar</option>
                   <option value="returned">İade Alındı (Tamamlandı)</option>
@@ -1909,7 +1909,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={historyAdminFilter}
                   onChange={(e) => setHistoryAdminFilter(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                 >
                   <option value="all">Tüm Yöneticiler ({adminProfiles.length})</option>
                   {adminProfiles.map(p => (
@@ -1947,7 +1947,7 @@ export const AdminDashboard: React.FC = () => {
             {filteredHistoryReservations.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-[#dce4ef]">
-                  <thead className="bg-[#12080f] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+                  <thead className="bg-[#500b27] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                     <tr>
                       <th className="p-3.5">Takip Kodu & Statü</th>
                       <th className="p-3.5">Üye Bilgisi</th>
@@ -2218,14 +2218,14 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Öğrenci no, üye adı, kod veya not ara..."
                 value={darkroomSearchQuery}
                 onChange={(e) => setDarkroomSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
               />
             </div>
 
             <select
               value={darkroomFilter}
               onChange={(e) => setDarkroomFilter(e.target.value)}
-              className="p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs w-full sm:w-56"
+              className="p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs w-full sm:w-56"
             >
               <option value="all">Tüm Durumlar ({darkroomReservations.length})</option>
               <option value="pending">Onay Bekleyenler</option>
@@ -2240,7 +2240,7 @@ export const AdminDashboard: React.FC = () => {
             {filteredDarkroomReservations.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-[#dce4ef]">
-                  <thead className="bg-[#12080f] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+                  <thead className="bg-[#500b27] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                     <tr>
                       <th className="p-3.5">Takip Kodu & Statü</th>
                       <th className="p-3.5">Tarih & Seans Saati</th>
@@ -2321,7 +2321,7 @@ export const AdminDashboard: React.FC = () => {
                             {res.process_type === 'photo_print' ? `${res.film_count} Baskı Adedi` : `${res.film_count} Rulo Film`}
                           </span>
                           {res.film_brands_and_asa && (
-                            <div className="text-[10px] text-[#dce4ef] font-mono mt-0.5 bg-[#12080f] p-1 rounded border border-[#657796]/20">
+                            <div className="text-[10px] text-[#dce4ef] font-mono mt-0.5 bg-[#500b27] p-1 rounded border border-[#657796]/20">
                               Filmler: {res.film_brands_and_asa}
                             </div>
                           )}
@@ -2541,7 +2541,7 @@ export const AdminDashboard: React.FC = () => {
 
               {/* Açık Seanslar Listesi / Tablosu */}
               <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
-                <div className="p-4 border-b border-[#657796]/20 bg-[#12080f] flex items-center justify-between">
+                <div className="p-4 border-b border-[#657796]/20 bg-[#500b27] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-rose-400" />
                     <h4 className="text-xs font-bold text-white uppercase tracking-wider">
@@ -2556,7 +2556,7 @@ export const AdminDashboard: React.FC = () => {
                 {darkroomSlots.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs text-[#dce4ef]">
-                      <thead className="bg-[#12080f]/70 text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+                      <thead className="bg-[#500b27]/70 text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                         <tr>
                           <th className="p-3.5">Tarih</th>
                           <th className="p-3.5">Seans Saati</th>
@@ -2714,7 +2714,7 @@ export const AdminDashboard: React.FC = () => {
               <span>Gezilerde Kamera Rezervasyon Kuralları (Otomatik Sistem Doğrulaması)</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-[#12080f]/80 border border-emerald-500/30 space-y-1">
+              <div className="p-3.5 rounded-xl bg-[#500b27]/80 border border-emerald-500/30 space-y-1">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold">
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                   <span>1. Öncelikli Aktif Üyeler:</span>
@@ -2724,7 +2724,7 @@ export const AdminDashboard: React.FC = () => {
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#12080f]/80 border border-blue-500/30 space-y-1">
+              <div className="p-3.5 rounded-xl bg-[#500b27]/80 border border-blue-500/30 space-y-1">
                 <div className="flex items-center gap-2 text-blue-400 font-bold">
                   <span className="w-2 h-2 rounded-full bg-blue-400"></span>
                   <span>Normal Kulüp Üyeleri:</span>
@@ -2745,7 +2745,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Gezi adı, konum veya rota ara..."
                 value={tripSearchQuery}
                 onChange={(e) => setTripSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#12080f] border border-white/10 text-white text-xs placeholder-white/30"
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#500b27] border border-white/10 text-white text-xs placeholder-white/30"
               />
             </div>
 
@@ -2758,7 +2758,7 @@ export const AdminDashboard: React.FC = () => {
                   className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                     tripFilter === filter
                       ? 'bg-white text-black font-semibold shadow-sm'
-                      : 'bg-[#12080f] text-white/60 hover:text-white border border-white/10'
+                      : 'bg-[#500b27] text-white/60 hover:text-white border border-white/10'
                   }`}
                 >
                   {filter === 'all' ? `Tümü (${trips.length})` : filter === 'active' ? 'Aktif Geziler' : 'Pasif / Taslak'}
@@ -2833,7 +2833,7 @@ export const AdminDashboard: React.FC = () => {
                     )}
 
                     {/* Reservation Timeline Details */}
-                    <div className="p-3.5 rounded-xl bg-[#12080f] border border-[#657796]/20 space-y-2 text-xs">
+                    <div className="p-3.5 rounded-xl bg-[#500b27] border border-[#657796]/20 space-y-2 text-xs">
                       <div className="text-[11px] font-bold text-[#8193b2] uppercase tracking-wider flex items-center justify-between">
                         <span>Rezervasyon Açılış Takvimi:</span>
                         <span className="text-[#dce4ef] font-mono">Bugün: {formatDateTr(getLocalDateString())}</span>
@@ -2884,7 +2884,7 @@ export const AdminDashboard: React.FC = () => {
                             📷 {activeTripReservations.length} Kamera Rezerve Edildi
                           </span>
                         ) : (
-                          <span className="px-2.5 py-1 rounded-lg bg-[#12080f] text-xs font-semibold text-[#8193b2] border border-[#657796]/20">
+                          <span className="px-2.5 py-1 rounded-lg bg-[#500b27] text-xs font-semibold text-[#8193b2] border border-[#657796]/20">
                             📷 0 Kamera Rezerve
                           </span>
                         )}
@@ -2901,7 +2901,7 @@ export const AdminDashboard: React.FC = () => {
                           onClick={() => handleToggleTripActive(trip)}
                           className={`p-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer border ${
                             trip.is_active
-                              ? 'bg-[#12080f] hover:bg-[#301322] text-[#8193b2] hover:text-white border-[#657796]/30'
+                              ? 'bg-[#500b27] hover:bg-[#301322] text-[#8193b2] hover:text-white border-[#657796]/30'
                               : 'bg-emerald-950/50 hover:bg-emerald-900 text-emerald-300 border-emerald-500/40'
                           }`}
                           title={trip.is_active ? 'Geziyi pasife al (üyelerin seçimine kapat)' : 'Geziyi yayına al'}
@@ -3006,7 +3006,7 @@ export const AdminDashboard: React.FC = () => {
                     value={supabaseUrlInput}
                     onChange={(e) => setSupabaseUrlInput(e.target.value)}
                     placeholder="https://xyzproject.supabase.co"
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono text-xs focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white font-mono text-xs focus:outline-none focus:border-[#657796]"
                   />
                   <span className="text-[10px] text-[#8193b2] block">
                     Supabase Panel {'>'} Project Settings {'>'} API bölümünden alınır.
@@ -3022,7 +3022,7 @@ export const AdminDashboard: React.FC = () => {
                     value={supabaseKeyInput}
                     onChange={(e) => setSupabaseKeyInput(e.target.value)}
                     placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono text-xs focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white font-mono text-xs focus:outline-none focus:border-[#657796]"
                   />
                   <span className="text-[10px] text-[#8193b2] block">
                     Supabase Panel {'>'} Project Settings {'>'} API {'>'} anon / public anahtarı.
@@ -3062,7 +3062,7 @@ export const AdminDashboard: React.FC = () => {
             </form>
 
             {/* SQL Guide Note */}
-            <div className="p-4 rounded-xl bg-[#12080f] border border-[#657796]/20 space-y-2 text-xs">
+            <div className="p-4 rounded-xl bg-[#500b27] border border-[#657796]/20 space-y-2 text-xs">
               <div className="flex items-center gap-2 text-[#dce4ef] font-semibold">
                 <Info className="w-4 h-4 text-[#8193b2]" />
                 <span>Supabase Tablo Şeması Kurulumu</span>
@@ -3131,7 +3131,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#657796]/15">
                   <button
                     onClick={() => handleTogglePinAnnouncement(ann)}
-                    className="px-2.5 py-1.5 rounded-lg bg-[#12080f] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg bg-[#500b27] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
                   >
                     {ann.is_pinned ? 'Sabitlemeyi Kaldır' : '📌 Öne Çıkar'}
                   </button>
@@ -3151,7 +3151,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Add Announcement Modal */}
       {showAddAnnouncementModal && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
               <div className="flex items-center gap-2">
@@ -3177,7 +3177,7 @@ export const AdminDashboard: React.FC = () => {
                   onChange={(e) => setNewAnnContent(e.target.value)}
                   placeholder="Örn: Hafta sonu gezi hazırlığı sebebiyle perşembe günü ekipman teslim saatleri 17:00'ye kadar uzatılmıştır."
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2] focus:outline-none focus:border-[#657796]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2] focus:outline-none focus:border-[#657796]"
                 />
               </div>
 
@@ -3188,7 +3188,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={newAnnCategory}
                   onChange={(e) => setNewAnnCategory(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs focus:outline-none focus:border-[#657796]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs focus:outline-none focus:border-[#657796]"
                 >
                   <option value="Ekipman & Kural">Ekipman & Kural</option>
                   <option value="Kural & Yönetmelik">Kural & Yönetmelik</option>
@@ -3204,7 +3204,7 @@ export const AdminDashboard: React.FC = () => {
                   id="ann_is_pinned"
                   checked={newAnnIsPinned}
                   onChange={(e) => setNewAnnIsPinned(e.target.checked)}
-                  className="rounded border-[#657796]/40 bg-[#12080f] text-[#657796] focus:ring-0 cursor-pointer"
+                  className="rounded border-[#657796]/40 bg-[#500b27] text-[#657796] focus:ring-0 cursor-pointer"
                 />
                 <label htmlFor="ann_is_pinned" className="text-xs text-[#dce4ef] cursor-pointer">
                   📌 En başta sabitle (Öne Çıkar)
@@ -3215,7 +3215,7 @@ export const AdminDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddAnnouncementModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#a9b9d3] hover:text-white bg-[#12080f] border border-[#657796]/20"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#a9b9d3] hover:text-white bg-[#500b27] border border-[#657796]/20"
                 >
                   Vazgeç
                 </button>
@@ -3233,7 +3233,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Return Modal */}
       {returnModalData && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-4">
             <h3 className="text-sm font-bold text-white font-club">İade Kontrolü ve Onay</h3>
             <p className="text-xs text-[#dce4ef]">{returnModalData.equipmentName} iade alındı. Hasar/eksik parça kontrol notu:</p>
@@ -3241,7 +3241,7 @@ export const AdminDashboard: React.FC = () => {
               type="text"
               value={returnConditionNote}
               onChange={(e) => setReturnConditionNote(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-[#12080f] border border-white/10 text-xs text-white"
+              className="w-full p-2.5 rounded-xl bg-[#500b27] border border-white/10 text-xs text-white"
             />
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => setReturnModalData(null)} className="px-4 py-2 rounded-xl bg-[#1c0d18] text-xs text-white/70 hover:text-white cursor-pointer">Vazgeç</button>
@@ -3253,7 +3253,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Reject Modal */}
       {rejectModalData && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-md w-full p-6 space-y-4">
             <h3 className="text-sm font-bold text-white font-club">Talebi Reddet ({rejectModalData.code})</h3>
             <textarea
@@ -3261,7 +3261,7 @@ export const AdminDashboard: React.FC = () => {
               placeholder="Red gerekçesi..."
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-xs text-white"
+              className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-xs text-white"
             />
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => setRejectModalData(null)} className="px-4 py-2 rounded-xl bg-[#301322] text-xs text-[#dce4ef]">İptal</button>
@@ -3273,7 +3273,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Add Equipment Modal */}
       {showAddEquipmentModal && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-md w-full p-6 space-y-3">
             <h3 className="text-sm font-bold text-white font-club">Yeni Ekipman Ekle</h3>
             <form onSubmit={handleAddEquipment} className="space-y-3 text-xs">
@@ -3282,14 +3282,14 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Ekipman Adı (örn: Canon EOS 5D Mark II)"
                 value={newEquipName}
                 onChange={e => setNewEquipName(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white"
+                className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white"
                 required
               />
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={newEquipBrand}
                   onChange={e => setNewEquipBrand(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white"
+                  className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white"
                 >
                   <option value="Canon">Canon</option>
                   <option value="Fujifilm">Fujifilm</option>
@@ -3300,7 +3300,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={newEquipCategory}
                   onChange={e => setNewEquipCategory(e.target.value as any)}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white"
+                  className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white"
                 >
                   <option value="camera">Dijital Gövde</option>
                   <option value="analog">Analog Makine</option>
@@ -3315,7 +3315,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Seri / Demirbaş No (örn: YTU-EOS-5D2)"
                 value={newEquipSerial}
                 onChange={e => setNewEquipSerial(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white"
+                className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white"
                 required
               />
               <div className="flex justify-end gap-2 pt-2">
@@ -3329,7 +3329,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Edit Equipment Modal */}
       {editingEquipment && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
               <div className="flex items-center gap-2">
@@ -3353,7 +3353,7 @@ export const AdminDashboard: React.FC = () => {
                     type="text"
                     value={editEquipName}
                     onChange={e => setEditEquipName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                     required
                   />
                 </div>
@@ -3364,7 +3364,7 @@ export const AdminDashboard: React.FC = () => {
                     type="text"
                     value={editEquipSerial}
                     onChange={e => setEditEquipSerial(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white font-mono focus:outline-none focus:border-[#657796]"
                     required
                   />
                 </div>
@@ -3376,7 +3376,7 @@ export const AdminDashboard: React.FC = () => {
                   <select
                     value={editEquipCategory}
                     onChange={e => setEditEquipCategory(e.target.value as EquipmentCategory)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   >
                     <option value="camera">Dijital Gövde</option>
                     <option value="analog">Analog Makine</option>
@@ -3393,7 +3393,7 @@ export const AdminDashboard: React.FC = () => {
                     type="text"
                     value={editEquipBrand}
                     onChange={e => setEditEquipBrand(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   />
                 </div>
 
@@ -3403,7 +3403,7 @@ export const AdminDashboard: React.FC = () => {
                     type="text"
                     value={editEquipModel}
                     onChange={e => setEditEquipModel(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   />
                 </div>
               </div>
@@ -3414,7 +3414,7 @@ export const AdminDashboard: React.FC = () => {
                   <select
                     value={editEquipStatus}
                     onChange={e => setEditEquipStatus(e.target.value as EquipmentStatus)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   >
                     <option value="available">🟢 Müsait (Rezerve Edilebilir)</option>
                     <option value="in_use">🔵 Kullanımda / Zimmette</option>
@@ -3430,7 +3430,7 @@ export const AdminDashboard: React.FC = () => {
                     value={editEquipCondition}
                     onChange={e => setEditEquipCondition(e.target.value)}
                     placeholder="Örn: Kusursuz, vizörde hafif toz"
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   />
                 </div>
               </div>
@@ -3443,7 +3443,7 @@ export const AdminDashboard: React.FC = () => {
                     value={editEquipImageUrl}
                     onChange={e => setEditEquipImageUrl(e.target.value)}
                     placeholder="/equipment/canon-eos-1000d.jpg veya https://..."
-                    className="flex-1 p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono text-[11px] focus:outline-none focus:border-[#657796]"
+                    className="flex-1 p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white font-mono text-[11px] focus:outline-none focus:border-[#657796]"
                   />
                   {editEquipImageUrl && (
                     <div className="w-10 h-10 rounded-lg overflow-hidden bg-black shrink-0 border border-[#657796]/30">
@@ -3460,7 +3460,7 @@ export const AdminDashboard: React.FC = () => {
                   value={editEquipDescription}
                   onChange={e => setEditEquipDescription(e.target.value)}
                   placeholder="Ekipman tanıtımı ve kullanım bilgisi..."
-                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                  className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
                 />
               </div>
 
@@ -3471,7 +3471,7 @@ export const AdminDashboard: React.FC = () => {
                   value={editEquipPackageContents}
                   onChange={e => setEditEquipPackageContents(e.target.value)}
                   placeholder="Gövde, 1x LP-E5 Batarya, Şarj Aleti, Askı..."
-                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                  className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
                 />
               </div>
 
@@ -3499,7 +3499,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Add Member Modal */}
       {showAddMemberModal && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-3">
             <h3 className="text-sm font-bold text-white font-club">Whitelist'e Üye Ekle</h3>
             <form onSubmit={handleAddMember} className="space-y-3 text-xs">
@@ -3508,7 +3508,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Öğrenci Numarası (örn: 23015099)"
                 value={newMemberNo}
                 onChange={e => setNewMemberNo(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#12080f] border border-white/10 text-white font-mono"
+                className="w-full p-2 rounded-xl bg-[#500b27] border border-white/10 text-white font-mono"
                 required
               />
               <input
@@ -3516,7 +3516,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Ad Soyad"
                 value={newMemberName}
                 onChange={e => setNewMemberName(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#12080f] border border-white/10 text-white"
+                className="w-full p-2 rounded-xl bg-[#500b27] border border-white/10 text-white"
                 required
               />
               <input
@@ -3524,14 +3524,14 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Üniversite (varsayılan: Yıldız Teknik Üniversitesi)"
                 value={newMemberDept}
                 onChange={e => setNewMemberDept(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#12080f] border border-white/10 text-white"
+                className="w-full p-2 rounded-xl bg-[#500b27] border border-white/10 text-white"
               />
               <div className="space-y-1">
                 <label className="text-[11px] text-white/50 block">Üye Statüsü / Gezi Önceliği:</label>
                 <select
                   value={newMemberType}
                   onChange={e => setNewMemberType(e.target.value as 'active' | 'normal' | 'honorary' | 'honorary_active')}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-white/10 text-white"
+                  className="w-full p-2 rounded-xl bg-[#500b27] border border-white/10 text-white"
                 >
                   <option value="active">★ Aktif Üye (Geziden 5 gün önce & Bireysel Çekim)</option>
                   <option value="normal">Normal Üye (Geziden 3 gün önce rezervasyon hakkı)</option>
@@ -3550,7 +3550,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Edit Member Modal */}
       {editingMember && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
               <div className="flex items-center gap-2">
@@ -3574,7 +3574,7 @@ export const AdminDashboard: React.FC = () => {
                     type="text"
                     value={editMemberName}
                     onChange={e => setEditMemberName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                     required
                   />
                 </div>
@@ -3585,7 +3585,7 @@ export const AdminDashboard: React.FC = () => {
                     type="text"
                     value={editMemberNo}
                     onChange={e => setEditMemberNo(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white font-mono focus:outline-none focus:border-[#657796]"
                     required
                   />
                 </div>
@@ -3598,7 +3598,7 @@ export const AdminDashboard: React.FC = () => {
                     type="text"
                     value={editMemberDept}
                     onChange={e => setEditMemberDept(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   />
                 </div>
 
@@ -3609,7 +3609,7 @@ export const AdminDashboard: React.FC = () => {
                     value={editMemberPhone}
                     onChange={e => setEditMemberPhone(e.target.value)}
                     placeholder="+90 5XX XXX XX XX"
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   />
                 </div>
               </div>
@@ -3620,7 +3620,7 @@ export const AdminDashboard: React.FC = () => {
                   <select
                     value={editMemberType}
                     onChange={e => setEditMemberType(e.target.value as any)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   >
                     <option value="active">★ Aktif Üye (Geziden 5 gün önce & Bireysel Çekim)</option>
                     <option value="normal">Normal Üye (Geziden 3 gün önce)</option>
@@ -3634,7 +3634,7 @@ export const AdminDashboard: React.FC = () => {
                   <select
                     value={editMemberStatus}
                     onChange={e => setEditMemberStatus(e.target.value as any)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   >
                     <option value="active">🟢 Aktif (Zimmet Alabilir)</option>
                     <option value="suspended">🔴 Askıda / Cezalı (Engelli)</option>
@@ -3652,7 +3652,7 @@ export const AdminDashboard: React.FC = () => {
                     max={10}
                     value={editMemberPenalty}
                     onChange={e => setEditMemberPenalty(parseInt(e.target.value) || 0)}
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   />
                 </div>
 
@@ -3663,7 +3663,7 @@ export const AdminDashboard: React.FC = () => {
                     value={editMemberPenaltyReason}
                     onChange={e => setEditMemberPenaltyReason(e.target.value)}
                     placeholder="Örn: 2 gün gecikmeli iade"
-                    className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
                   />
                 </div>
               </div>
@@ -3675,7 +3675,7 @@ export const AdminDashboard: React.FC = () => {
                   value={editMemberNotes}
                   onChange={e => setEditMemberNotes(e.target.value)}
                   placeholder="Üye hakkında kulüp notu..."
-                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                  className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
                 />
               </div>
 
@@ -3699,7 +3699,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
       {showAddSlotModal && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-white/10 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
@@ -3730,7 +3730,7 @@ export const AdminDashboard: React.FC = () => {
                   type="date"
                   value={newSlotDate}
                   onChange={e => setNewSlotDate(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-white/10 text-white font-mono"
+                  className="w-full p-2.5 rounded-xl bg-[#500b27] border border-white/10 text-white font-mono"
                   required
                 />
               </div>
@@ -3747,7 +3747,7 @@ export const AdminDashboard: React.FC = () => {
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       newSlotProcess === 'all'
                         ? 'bg-white text-black font-semibold shadow-sm'
-                        : 'bg-[#12080f] border-white/10 text-white/60 hover:text-white'
+                        : 'bg-[#500b27] border-white/10 text-white/60 hover:text-white'
                     }`}
                   >
                     <span className="text-[11px] block font-semibold">Her İkisi</span>
@@ -3760,7 +3760,7 @@ export const AdminDashboard: React.FC = () => {
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       newSlotProcess === 'film_wash'
                         ? 'bg-rose-950/80 border-rose-500 text-white font-bold ring-2 ring-rose-500/30'
-                        : 'bg-[#12080f] border-[#657796]/20 text-[#8193b2] hover:text-white'
+                        : 'bg-[#500b27] border-[#657796]/20 text-[#8193b2] hover:text-white'
                     }`}
                   >
                     <span className="text-[11px] block font-semibold">Film Yıkama</span>
@@ -3773,7 +3773,7 @@ export const AdminDashboard: React.FC = () => {
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       newSlotProcess === 'photo_print'
                         ? 'bg-[#301322] border-rose-400 text-white font-bold ring-2 ring-rose-400/30'
-                        : 'bg-[#12080f] border-[#657796]/20 text-[#8193b2] hover:text-white'
+                        : 'bg-[#500b27] border-[#657796]/20 text-[#8193b2] hover:text-white'
                     }`}
                   >
                     <span className="text-[11px] block font-semibold">Kağıda Baskı</span>
@@ -3808,7 +3808,7 @@ export const AdminDashboard: React.FC = () => {
                         className={`p-2 rounded-xl text-[11px] font-mono border transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-rose-500/20 border-rose-500 text-rose-300 font-bold'
-                            : 'bg-[#12080f] border-[#657796]/20 text-[#dce4ef] hover:border-[#657796]/50'
+                            : 'bg-[#500b27] border-[#657796]/20 text-[#dce4ef] hover:border-[#657796]/50'
                         }`}
                       >
                         {item.no}. Seans: {item.start}-{item.end}
@@ -3826,7 +3826,7 @@ export const AdminDashboard: React.FC = () => {
                     type="time"
                     value={newSlotStartTime}
                     onChange={e => setNewSlotStartTime(e.target.value)}
-                    className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono"
+                    className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white font-mono"
                     required
                   />
                 </div>
@@ -3836,7 +3836,7 @@ export const AdminDashboard: React.FC = () => {
                     type="time"
                     value={newSlotEndTime}
                     onChange={e => setNewSlotEndTime(e.target.value)}
-                    className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono"
+                    className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white font-mono"
                     required
                   />
                 </div>
@@ -3850,7 +3850,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={newSlotSupervisor || (activeAdmin ? `${activeAdmin.full_name} (${activeAdmin.short_title})` : '')}
                   onChange={e => setNewSlotSupervisor(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white"
+                  className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white"
                 >
                   {adminProfiles.map(p => (
                     <option key={p.id} value={`${p.full_name} (${p.short_title})`}>
@@ -3871,7 +3871,7 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="Örn: B&W kimyaları taze hazırlandı, agrandisör 50mm lens takılı"
                   value={newSlotNotes}
                   onChange={e => setNewSlotNotes(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white placeholder-[#8193b2]"
+                  className="w-full p-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white placeholder-[#8193b2]"
                 />
               </div>
 
@@ -3914,13 +3914,13 @@ export const AdminDashboard: React.FC = () => {
       {selectedEquipmentForHistory && (
         <div 
           onClick={() => setSelectedEquipmentForHistory(null)}
-          className="fixed inset-0 z-50 bg-[#12080f]/92 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-[#500b27]/92 backdrop-blur-sm flex items-center justify-center p-4"
         >
           <div 
             onClick={e => e.stopPropagation()}
             className="relative max-w-2xl w-full bg-[#1c0f18] border border-[#657796]/40 rounded-3xl overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
           >
-            <div className="p-6 border-b border-[#657796]/20 flex items-start justify-between bg-[#12080f]">
+            <div className="p-6 border-b border-[#657796]/20 flex items-start justify-between bg-[#500b27]">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs uppercase font-bold text-[#8193b2]">
@@ -3945,7 +3945,7 @@ export const AdminDashboard: React.FC = () => {
 
             <div className="p-6 overflow-y-auto space-y-4">
               {/* Stats Bar */}
-              <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/30 text-center text-xs">
+              <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-[#500b27] border border-[#657796]/30 text-center text-xs">
                 <div>
                   <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Zimmet</span>
                   <strong className="text-white text-base font-club">
@@ -3979,7 +3979,7 @@ export const AdminDashboard: React.FC = () => {
                     .map(res => (
                       <div
                         key={res.id}
-                        className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-2 hover:border-[#657796]/40 transition-colors"
+                        className="p-4 rounded-2xl bg-[#500b27] border border-[#657796]/20 space-y-2 hover:border-[#657796]/40 transition-colors"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
@@ -4035,7 +4035,7 @@ export const AdminDashboard: React.FC = () => {
                     ))}
                 </div>
               ) : (
-                <div className="p-8 text-center rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-2">
+                <div className="p-8 text-center rounded-2xl bg-[#500b27] border border-[#657796]/20 space-y-2">
                   <History className="w-8 h-8 text-[#8193b2] mx-auto opacity-60" />
                   <h4 className="text-xs font-bold text-white">Geçmiş Kullanım Kaydı Bulunmuyor</h4>
                   <p className="text-[11px] text-[#a9b9d3]">Bu ekipman henüz bir üyeye zimmetlenmemiştir.</p>
@@ -4043,7 +4043,7 @@ export const AdminDashboard: React.FC = () => {
               )}
             </div>
 
-            <div className="p-4 border-t border-[#657796]/20 bg-[#12080f] flex justify-end">
+            <div className="p-4 border-t border-[#657796]/20 bg-[#500b27] flex justify-end">
               <button
                 onClick={() => setSelectedEquipmentForHistory(null)}
                 className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] text-xs font-semibold cursor-pointer"
@@ -4066,14 +4066,14 @@ export const AdminDashboard: React.FC = () => {
         return (
           <div 
             onClick={() => setSelectedMemberForHistory(null)}
-            className="fixed inset-0 z-50 bg-[#12080f]/92 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-[#500b27]/92 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <div 
               onClick={e => e.stopPropagation()}
               className="relative max-w-3xl w-full bg-[#1c0f18] border border-[#657796]/40 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
             >
               {/* Modal Header */}
-              <div className="p-6 border-b border-[#657796]/20 bg-[#12080f] flex items-start justify-between gap-4">
+              <div className="p-6 border-b border-[#657796]/20 bg-[#500b27] flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-[#140911] flex items-center justify-center text-white/90 font-medium text-lg border border-white/15 shadow-inner shrink-0">
                     {selectedMemberForHistory.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -4145,7 +4145,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Member Notes if any */}
                 {selectedMemberForHistory.notes && (
-                  <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20 text-xs text-[#dce4ef] flex items-center justify-between">
+                  <div className="p-3.5 rounded-2xl bg-[#500b27] border border-[#657796]/20 text-xs text-[#dce4ef] flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-bold text-[#8193b2] uppercase tracking-wider block">Yönetim Notu</span>
                       <span>{selectedMemberForHistory.notes}</span>
@@ -4158,19 +4158,19 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Stats Summary */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                  <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20">
+                  <div className="p-3.5 rounded-2xl bg-[#500b27] border border-[#657796]/20">
                     <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Talep</span>
                     <strong className="text-white text-xl font-club">{memberResList.length} Kez</strong>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20">
+                  <div className="p-3.5 rounded-2xl bg-[#500b27] border border-[#657796]/20">
                     <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Tamamlanan İade</span>
                     <strong className="text-emerald-400 text-xl font-club">{completedReturns} Kez</strong>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20">
+                  <div className="p-3.5 rounded-2xl bg-[#500b27] border border-[#657796]/20">
                     <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Şu An Zimmette</span>
                     <strong className="text-white text-xl font-club">{currentInUse} Ekipman</strong>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/20">
+                  <div className="p-3.5 rounded-2xl bg-[#500b27] border border-[#657796]/20">
                     <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Ceza Puanı</span>
                     <strong className={`text-xl font-club ${selectedMemberForHistory.penalty_count > 0 ? 'text-rose-400' : 'text-[#a9b9d3]'}`}>
                       {selectedMemberForHistory.penalty_count}
@@ -4190,7 +4190,7 @@ export const AdminDashboard: React.FC = () => {
                       {memberResList.map(res => (
                         <div
                           key={res.id}
-                          className="p-4 rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-3 hover:border-[#657796]/40 transition-colors"
+                          className="p-4 rounded-2xl bg-[#500b27] border border-[#657796]/20 space-y-3 hover:border-[#657796]/40 transition-colors"
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <div className="flex items-center gap-2">
@@ -4260,7 +4260,7 @@ export const AdminDashboard: React.FC = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-8 text-center rounded-2xl bg-[#12080f] border border-[#657796]/20 space-y-2">
+                    <div className="p-8 text-center rounded-2xl bg-[#500b27] border border-[#657796]/20 space-y-2">
                       <History className="w-8 h-8 text-[#8193b2] mx-auto opacity-60" />
                       <h4 className="text-xs font-bold text-white">Zimmet Kaydı Bulunmuyor</h4>
                       <p className="text-[11px] text-[#a9b9d3]">Bu üye henüz kulüpten ekipman teslim almamıştır.</p>
@@ -4270,7 +4270,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-4 border-t border-[#657796]/20 bg-[#12080f] flex items-center justify-between gap-3">
+              <div className="p-4 border-t border-[#657796]/20 bg-[#500b27] flex items-center justify-between gap-3">
                 <button
                   onClick={async () => {
                     await handleToggleMemberStatus(selectedMemberForHistory);
@@ -4311,7 +4311,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Add / Edit Trip Modal */}
       {showAddTripModal && (
-        <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in">
             <div className="flex items-center justify-between border-b border-[#657796]/20 pb-3">
               <div className="flex items-center gap-2">
@@ -4347,7 +4347,7 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="Örn: Kapadokya Sonbahar Fotoğraf Gezisi"
                   value={newTripTitle}
                   onChange={(e) => setNewTripTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                   required
                 />
               </div>
@@ -4359,7 +4359,7 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="Örn: Göreme & Uçhisar, Nevşehir"
                   value={newTripDestination}
                   onChange={(e) => setNewTripDestination(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                   required
                 />
               </div>
@@ -4371,7 +4371,7 @@ export const AdminDashboard: React.FC = () => {
                     type="date"
                     value={newTripStartDate}
                     onChange={(e) => setNewTripStartDate(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                     required
                   />
                 </div>
@@ -4382,7 +4382,7 @@ export const AdminDashboard: React.FC = () => {
                     min={newTripStartDate}
                     value={newTripEndDate}
                     onChange={(e) => setNewTripEndDate(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                     required
                   />
                 </div>
@@ -4390,7 +4390,7 @@ export const AdminDashboard: React.FC = () => {
 
               {/* Dynamic Live Calculator Box inside modal */}
               {newTripStartDate && (
-                <div className="p-3.5 rounded-xl bg-[#12080f] border border-[#657796]/40 space-y-2 text-xs">
+                <div className="p-3.5 rounded-xl bg-[#500b27] border border-[#657796]/40 space-y-2 text-xs">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#dce4ef] block">
                     ⚡ Otomatik Rezervasyon Açılış Önizlemesi:
                   </span>
@@ -4418,7 +4418,7 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="Gezi rotası, çekim konsepti ve katılımcılara yönelik notlar..."
                   value={newTripDescription}
                   onChange={(e) => setNewTripDescription(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[#500b27] border border-[#657796]/30 text-white text-xs"
                 />
               </div>
 
@@ -4428,7 +4428,7 @@ export const AdminDashboard: React.FC = () => {
                   id="tripIsActive"
                   checked={newTripIsActive}
                   onChange={(e) => setNewTripIsActive(e.target.checked)}
-                  className="rounded bg-[#12080f] border-[#657796]/30 text-[#657796]"
+                  className="rounded bg-[#500b27] border-[#657796]/30 text-[#657796]"
                 />
                 <label htmlFor="tripIsActive" className="text-xs text-[#dce4ef] cursor-pointer">
                   Gezi hemen yayına alınsın ve rezervasyon formunda görünsün

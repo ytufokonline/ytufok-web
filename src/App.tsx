@@ -137,7 +137,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#12080f] text-[#f4f5f8] selection:bg-[#657796] selection:text-white font-sans">
+    <div className="min-h-screen flex flex-col bg-[#500b27] text-[#eed1d1] selection:bg-[#657796] selection:text-white font-sans">
       {/* Main Navigation Bar with Active Profile & Sign Out */}
       <Navbar
         activeTab={activeTab}

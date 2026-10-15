@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Calendar, ArrowRight, MapPin, Droplets, Compass, History, Sparkles, Award, Layers, BookOpen, Clock, ShieldCheck } from 'lucide-react';
+import { Camera, Calendar, ArrowRight, MapPin, Droplets, Compass, History, Sparkles, BookOpen } from 'lucide-react';
 import { Announcement, Equipment, Trip } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
@@ -41,150 +41,133 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
   }, []);
 
   return (
-    <div className="text-[#f4f5f8] selection:bg-white/20 selection:text-white space-y-24 sm:space-y-36 pb-32">
+    <div className="text-[#f4f5f8] selection:bg-white/20 selection:text-white space-y-32 sm:space-y-48 pb-36">
       
-      {/* 1. HERO ALANI VE MANİFESTO (Apple Editorial Minimalist) */}
-      <section className="pt-6 sm:pt-8 lg:pt-10 pb-16 sm:pb-20 border-b border-white/[0.08]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8">
+      {/* 1. HERO ALANI (Apple Left-Aligned Editorial) */}
+      <section className="pt-8 sm:pt-14 lg:pt-20 border-b border-white/[0.08] pb-20 sm:pb-28">
+        <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
           
-          {/* YTÜFOK Official Logo */}
-          <div className="flex justify-center">
+          {/* YTÜFOK Official Logo (Left-Aligned, Crisp Scale) */}
+          <div className="w-48 sm:w-64 md:w-72">
             <img
               src="/ytufok-hero-logo.png"
               alt="YTÜFOK - Yıldız Teknik Üniversitesi Fotoğraf Kulübü"
-              className="w-56 sm:w-72 md:w-80 lg:w-[22rem] h-auto object-contain mix-blend-screen select-none drop-shadow-2xl"
+              className="w-full h-auto object-contain mix-blend-screen select-none"
             />
           </div>
 
-          {/* Hero Headline (Natural, Confident Student-Driven) */}
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-white font-club leading-[1.2] max-w-3xl mx-auto">
-            1994'ten beri kampüsün en aktif topluluğu.
-          </h1>
+          {/* Hero Headline (Apple Monumental Typography) */}
+          <div className="space-y-4 max-w-4xl">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-white font-club leading-[1.05]">
+              1994'ten beri kampüsün en aktif topluluğu.
+            </h1>
+            <p className="text-lg sm:text-2xl text-white/50 font-light max-w-2xl leading-relaxed pt-2">
+              Yıldız Teknik Üniversitesi Fotoğraf Kulübü. Analogdan dijitale üretmeye, 
+              hafta sonu gezilerine, karanlık oda nöbetlerine ve fotoğrafı paylaşmaya devam ediyoruz.
+            </p>
+          </div>
 
-          {/* Genuine Student-Crafted Intro Paragraph */}
-          <p className="text-base sm:text-lg lg:text-xl text-white/70 font-light max-w-2xl mx-auto leading-relaxed">
-            Yıldız Teknik Üniversitesi Fotoğraf Kulübü olarak analogdan dijitale üretmeye, 
-            hafta sonu gezilerine, karanlık oda banyolarına ve fotoğrafı paylaşmaya devam ediyoruz.
-          </p>
-
-          {/* Kritik Yönlendirme (Apple HIG Asil & Dikkat Çekmeyen Butonlar) */}
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+          {/* Apple-Style Action Bar (Clean White Pill + Text Link) */}
+          <div className="flex flex-wrap items-center gap-6 pt-2">
             <button
               onClick={() => onNavigate('equipment')}
-              className="px-6 sm:px-8 py-3.5 rounded-full bg-white text-black hover:bg-white/90 text-xs font-mono uppercase tracking-wider font-semibold shadow-2xl transition-all duration-200 cursor-pointer flex items-center gap-2 group active:scale-[0.98]"
+              className="px-7 py-3 rounded-full bg-white text-black hover:bg-white/90 text-xs font-mono uppercase tracking-wider font-semibold shadow-xl transition-all duration-150 cursor-pointer active:scale-95"
             >
-              <span>Ekipman Havuzunu İncele ve Rezervasyon Yap</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              Ekipman Havuzunu İncele
+            </button>
+
+            <button
+              onClick={() => onNavigate('reserve')}
+              className="text-white/80 hover:text-white text-xs font-mono uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors cursor-pointer group py-2"
+            >
+              <span>Rezervasyon Yap</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </button>
 
             <button
               onClick={() => onNavigate('darkroom')}
-              className="px-5 sm:px-6 py-3.5 rounded-full border border-white/15 hover:border-white/35 bg-[#140911] hover:bg-[#1f0e1a] text-white/90 hover:text-white text-xs font-mono uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer active:scale-[0.98]"
+              className="text-white/50 hover:text-white text-xs font-mono uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors cursor-pointer group py-2"
             >
-              <Droplets className="w-3.5 h-3.5 text-white/60" />
+              <Droplets className="w-3.5 h-3.5 text-white/50 group-hover:text-white transition-colors" />
               <span>Karanlık Oda Randevusu</span>
-            </button>
-
-            <button
-              onClick={() => onNavigate('guide')}
-              className="px-4 py-3.5 rounded-full text-white/60 hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Çekim Rehberi</span>
             </button>
           </div>
 
-          {/* Key Facts Strip (Apple Minimalist Metrics) */}
-          <div className="pt-16 sm:pt-20 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 max-w-4xl mx-auto text-left border-t border-white/[0.08]">
+          {/* Apple Minimalist Metrics Strip (Left Aligned, Clean Hairline) */}
+          <div className="pt-16 sm:pt-20 grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 border-t border-white/[0.08]">
             <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase text-white/40 tracking-wider block">Kuruluş</span>
-              <strong className="text-2xl sm:text-3xl text-white font-club font-bold block">1994</strong>
-              <span className="text-xs text-white/50 font-light block leading-snug">30 yılı aşan kesintisiz kulüp hafızası</span>
+              <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">1994</span>
+              <span className="text-xs text-white/40 font-light block leading-snug">Kuruluş Yılı</span>
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase text-white/40 tracking-wider block">Türkiye'de Bir İlk</span>
-              <strong className="text-2xl sm:text-3xl text-white font-club font-bold block">1. Kulüp</strong>
-              <span className="text-xs text-white/50 font-light block leading-snug">Üniversiteler arası ilk fotoğraf kulübü</span>
+              <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">İlk</span>
+              <span className="text-xs text-white/40 font-light block leading-snug">Üniversiteler Arası İlk Kulüp</span>
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase text-white/40 tracking-wider block">YTÜ Tarihi</span>
-              <strong className="text-2xl sm:text-3xl text-white font-club font-bold block">2. En Köklü</strong>
-              <span className="text-xs text-white/50 font-light block leading-snug">Üniversitenin en köklü 2. topluluğu</span>
+              <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">2.</span>
+              <span className="text-xs text-white/40 font-light block leading-snug">YTÜ'nün En Köklü Kulübü</span>
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase text-white/40 tracking-wider block">Festival Öncülüğü</span>
-              <strong className="text-2xl sm:text-3xl text-white font-club font-bold block">İlk Festival</strong>
-              <span className="text-xs text-white/50 font-light block leading-snug">Türkiye'deki ilk fotoğraf festivali</span>
+              <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">30+</span>
+              <span className="text-xs text-white/40 font-light block leading-snug">Yıllık Kesintisiz Üretim</span>
             </div>
           </div>
 
         </div>
       </section>
 
-      {/* 2. KÖKLER, MİRAS VE İLKLER (Tarihçe & Öncülük) */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      {/* 2. KÖKLER VE MİRAS (Fluid Editorial Text, No Template Boxes) */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-16">
         
         {/* Section Header */}
-        <div className="space-y-3">
+        <div className="space-y-4 max-w-3xl">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
             01 / Kökler ve Öncülük
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-white font-club tracking-tight leading-[1.1]">
-            Türkiye üniversite fotoğrafçılığının<br />
-            başladığı yer.
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold text-white font-club tracking-tight leading-[1.08]">
+            Türkiye üniversite fotoğrafçılığının ilk kıvılcımı.
           </h2>
-          <p className="text-base sm:text-lg text-white/60 font-light max-w-2xl leading-relaxed pt-1">
-            YTÜFOK, 1994 yılından bu yana yalnızca Yıldız Teknik Üniversitesi'nin değil, 
-            ülkemizin gençlik ve görsel sanat ortamının şekillenmesinde öncü rol üstlenmiştir.
+          <p className="text-base sm:text-xl text-white/50 font-light leading-relaxed pt-1">
+            YTÜFOK, 1994'te Yıldız Teknik Üniversitesi'nde kurulduğu günden bu yana yalnızca kampüsün değil, 
+            ülkenin gençlik fotoğraf ortamının kurucu hafızası oldu.
           </p>
         </div>
 
-        {/* Narrative Split */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 pt-4 border-t border-white/[0.08]">
+        {/* Narrative Flow (Two Columns, Pure Typographic Contrast) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-20 pt-8 border-t border-white/[0.08]">
           
-          {/* Sol Kolon: 1994 & Üniversite Kulüplerinin İlki */}
-          <div className="space-y-4">
-            <div className="text-xs font-mono uppercase tracking-widest text-white/40 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-              <span>1994'ten Beri • Köklü Miras</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-semibold text-white font-club tracking-tight">
+          <div className="space-y-3">
+            <span className="text-xs font-mono uppercase tracking-wider text-white/40 block">
+              1994'ten Beri
+            </span>
+            <h3 className="text-xl sm:text-2xl font-medium text-white font-club tracking-tight">
               YTÜ'nün 2. En Köklü Kulübü,<br />
               Türkiye'nin İlk Fotoğraf Kulübü
             </h3>
-            <p className="text-sm sm:text-base text-white/60 font-light leading-relaxed">
-              1994 yılında Yıldız Teknik Üniversitesi çatısı altında kurulan YTÜFOK, 
-              Türkiye'deki tüm üniversiteler arasında kurulan <strong className="text-white font-medium">ilk fotoğraf kulübü</strong> olma unvanını taşır. 
-              Aynı zamanda YTÜ bünyesindeki <strong className="text-white font-medium">en köklü ikinci öğrenci kulübüdür</strong>.
+            <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed pt-1">
+              1994 yılında YTÜ çatısı altında kurulan kulübümüz, Türkiye'deki tüm üniversiteler arasında kurulan ilk fotoğraf kulübü olma unvanını taşır. Aynı zamanda Yıldız Teknik Üniversitesi'nin en köklü ikinci topluluğudur.
             </p>
-            <p className="text-sm sm:text-base text-white/60 font-light leading-relaxed">
-              Kuruluşundan itibaren fotoğrafı yalnızca teknik bir görüntüleme aracı değil; 
-              düşünsel bir tavır, sosyolojik bir tanıklık ve kolektif bir üretim alanı olarak konumlandırdı.
+            <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
+              Fotoğrafı yalnızca teknik bir donanım meselesi olarak değil; düşünsel bir üretim, sosyolojik bir tanıklık ve kolektif bir dayanışma alanı olarak yaşatıyoruz.
             </p>
           </div>
 
-          {/* Sağ Kolon: Türkiye'de İlk Fotoğraf Festivali */}
-          <div className="space-y-4">
-            <div className="text-xs font-mono uppercase tracking-widest text-white/40 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-              <span>Vizyon • Öncü Girişim</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-semibold text-white font-club tracking-tight">
+          <div className="space-y-3">
+            <span className="text-xs font-mono uppercase tracking-wider text-white/40 block">
+              Festival Öncülüğü
+            </span>
+            <h3 className="text-xl sm:text-2xl font-medium text-white font-club tracking-tight">
               Türkiye'deki İlk Üniversite<br />
               Fotoğraf Festivalinin Mimarı
             </h3>
-            <p className="text-sm sm:text-base text-white/60 font-light leading-relaxed">
-              YTÜFOK, üniversite sınırlarını aşan vizyonuyla Türkiye'de üniversiteler düzeyinde 
-              gerçekleştirilen <strong className="text-white font-medium">ilk fotoğraf festivaline</strong> imza atmıştır. 
-              Ülkenin usta fotoğrafçılarını, akademisyenlerini ve genç yeteneklerini aynı masada buluşturan bu girişim, 
-              üniversite gençliğinin görsel kültüründeki kilometre taşlarından biridir.
+            <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed pt-1">
+              YTÜFOK, üniversite sınırlarını aşan vizyonuyla Türkiye'de üniversiteler düzeyinde düzenlenen ilk fotoğraf festivalini hayata geçirdi. 
             </p>
-            <p className="text-sm sm:text-base text-white/60 font-light leading-relaxed">
-              Bu öncü gelenek; paneller, sergiler ve atölyelerle otuz yıl boyunca kuşaktan kuşağa aktarılarak 
-              günümüzün yaşayan atölye kültürünü doğurdu.
+            <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
+              Ülkenin usta fotoğrafçılarını, akademisyenlerini ve genç yeteneklerini aynı atölyelerde buluşturan bu festival, üniversite fotoğrafçılığında kalıcı bir ekol yarattı.
             </p>
           </div>
 
@@ -192,103 +175,80 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
 
       </section>
 
-      {/* 3. YAŞAYAN KAMPÜS VE AKTİF KÜLTÜR */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      {/* 3. YAŞAYAN KAMPÜS (Apple Feature-List Editorial Rows, No Box Cards) */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-16">
         
         {/* Section Header */}
-        <div className="space-y-3">
+        <div className="space-y-4 max-w-3xl">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
-            02 / Yaşayan Kampüs
+            02 / Yaşayan Kültür
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-white font-club tracking-tight leading-[1.1]">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold text-white font-club tracking-tight leading-[1.08]">
             Sadece bir ekipman havuzu değil.<br />
-            Kampüsün en aktif yaşam alanı.
+            Kampüsün en aktif topluluğu.
           </h2>
-          <p className="text-base sm:text-lg text-white/60 font-light max-w-2xl leading-relaxed pt-1">
-            YTÜFOK; her hafta sonu düzenlenen keşif gezileri, analog karanlık oda nöbetleri ve 
-            otuz yılı aşkın mezun-öğrenci bağıyla kampüsün yaşayan hafızasıdır.
-          </p>
         </div>
 
-        {/* 4 Core Pillars (Clean Editorial Grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-white/[0.08]">
+        {/* Apple Editorial Feature Rows (Divided by Hairlines, Pure Typography) */}
+        <div className="border-t border-white/[0.08] divide-y divide-white/[0.08]">
           
-          {/* Pillar 1: Hafta Sonu Gezileri & En Aktif Kulüp */}
-          <div className="p-8 rounded-3xl bg-[#140911] border border-white/10 space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80">
-                <Compass className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-semibold text-white font-club tracking-tight">
-                Her Hafta Sonu Düzenlenen Geziler
-              </h3>
-              <p className="text-sm text-white/60 font-light leading-relaxed">
-                Kampüsün <strong className="text-white font-medium">en aktif kulüplerinden biri</strong> olarak, 
-                her hafta sonu İstanbul'un tarihi sokaklarından Anadolu'nun saklı coğrafyalarına uzanan tematik geziler düzenliyoruz. 
-                Öğrencilerimiz teoriyi doğrudan sahada pratiğe dönüştürüyor; birlikte görüyor, birlikte üretiyor.
-              </p>
+          {/* Row 1: Geziler */}
+          <div className="py-10 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+            <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
+              01 / Her Hafta Sonu Sahada
             </div>
-            <div className="pt-4 border-t border-white/[0.06] text-xs font-mono text-white/40">
-              Sokak, Belgesel & Doğa Çekimleri
+            <div className="md:col-span-8 space-y-2">
+              <h3 className="text-xl sm:text-2xl font-medium text-white font-club tracking-tight">
+                İstanbul'un sokaklarından Anadolu'nun saklı rotalarına.
+              </h3>
+              <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
+                Kampüsün en aktif topluluklarından biri olarak, her hafta sonu tematik çekim gezileri düzenliyoruz. Teoriyi doğrudan vizör başında pratiğe döküyor; birlikte geziyor, birlikte üretiyoruz.
+              </p>
             </div>
           </div>
 
-          {/* Pillar 2: Analog & Karanlık Oda Geleneği */}
-          <div className="p-8 rounded-3xl bg-[#140911] border border-white/10 space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80">
-                <Droplets className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-semibold text-white font-club tracking-tight">
-                Analog Kültür & Karanlık Oda
-              </h3>
-              <p className="text-sm text-white/60 font-light leading-relaxed">
-                Davutpaşa Kulüpler Vadisi'ndeki karanlık odamızda 35mm ve orta format filmlerimizi kendimiz yıkıyor, 
-                agrandisör başında analog kart baskılarımızı alıyoruz. Hem analog disiplini koruyor hem de yeni başlayanlara karanlık oda eğitimi veriyoruz.
-              </p>
+          {/* Row 2: Analog & Karanlık Oda */}
+          <div className="py-10 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+            <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
+              02 / Karanlık Oda Geleneği
             </div>
-            <div className="pt-4 border-t border-white/[0.06] text-xs font-mono text-white/40">
-              1,5 Saatlik Nöbetçi Seansları • Banyo & Baskı
+            <div className="md:col-span-8 space-y-2">
+              <h3 className="text-xl sm:text-2xl font-medium text-white font-club tracking-tight">
+                Kırmızı ışık altında filmini kendin yıka, kartına kendin bas.
+              </h3>
+              <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
+                Davutpaşa Kulüpler Vadisi'ndeki karanlık odamızda 35mm ve orta format filmlerimizi kendimiz yıkıyor, agrandisör başında siyah-beyaz kart baskılarımızı alıyoruz. Yeni başlayan herkese analog eğitimi veriyoruz.
+              </p>
             </div>
           </div>
 
-          {/* Pillar 3: Demokratik Ekipman Havuzu */}
-          <div className="p-8 rounded-3xl bg-[#140911] border border-white/10 space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80">
-                <Camera className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-semibold text-white font-club tracking-tight">
-                Demokratik Ekipman Havuzu
-              </h3>
-              <p className="text-sm text-white/60 font-light leading-relaxed">
-                Pahalı ekipmanlar hiçbir öğrencinin hikayesini anlatmasına engel olmasın diye kurulmuş bir dayanışma modeli. 
-                Gövde, prime lensler ve analog makineler; kulüp üyelerine karşılıklı güven ve koruma sözleşmesiyle 
-                ücretsiz olarak zimmetlenir.
-              </p>
+          {/* Row 3: Dayanışma & Ekipman */}
+          <div className="py-10 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+            <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
+              03 / Ortak Ekipman Havuzu
             </div>
-            <div className="pt-4 border-t border-white/[0.06] text-xs font-mono text-white/40">
-              Maksimum 2 Gün Standart Kullanım • Davutpaşa Teslimat
+            <div className="md:col-span-8 space-y-2">
+              <h3 className="text-xl sm:text-2xl font-medium text-white font-club tracking-tight">
+                Pahalı donanımlar üretmene engel olmasın.
+              </h3>
+              <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
+                Kulüp demirbaşındaki gövde, prime lens ve aksesuarları tüm üyelerimize karşılıklı güven ilkesiyle ücretsiz zimmetliyoruz. Öğrenci numaranla başvur, çekimini yap, teslim et.
+              </p>
             </div>
           </div>
 
-          {/* Pillar 4: Kuşaklar Arası Bağ & Köklü Aidiyet */}
-          <div className="p-8 rounded-3xl bg-[#140911] border border-white/10 space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80">
-                <History className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-semibold text-white font-club tracking-tight">
-                Kuşaklar Arası Köklü Aidiyet
-              </h3>
-              <p className="text-sm text-white/60 font-light leading-relaxed">
-                1994'ten bu yana yolu kulübümüzden geçmiş yüzlerce mezunumuz, bugün sanat dünyasında, 
-                medyada ve akademide öncüdür. Kulüp odasında demlenen çaylar, aktarılan ustalıklar ve 
-                nesilleri bir araya getiren yıllık buluşmalarla daimi bir aileyiz.
-              </p>
+          {/* Row 4: Kuşaklar Arası Bağ */}
+          <div className="py-10 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+            <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
+              04 / Otuz Yıllık Aile
             </div>
-            <div className="pt-4 border-t border-white/[0.06] text-xs font-mono text-white/40">
-              30+ Yıllık Mezun-Öğrenci Dayanışması
+            <div className="md:col-span-8 space-y-2">
+              <h3 className="text-xl sm:text-2xl font-medium text-white font-club tracking-tight">
+                Kuşaktan kuşağa aktarılan bir kulüp kültürü.
+              </h3>
+              <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
+                1994'ten bu yana kulübümüzden geçen yüzlerce mezunumuz bugün görsel sanatların, medyanın ve akademinin öncüleridir. Mezunlarımız ve öğrencilerimiz her dönem aynı masada buluşur.
+              </p>
             </div>
           </div>
 
@@ -297,159 +257,140 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
       </section>
 
       {/* 4. EKİPMAN HAVUZUNA GEÇİŞ (Apple Product Showcase) */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-12">
         
-        {/* Banner Card */}
-        <div className="p-8 sm:p-12 rounded-3xl bg-[#140911] border border-white/15 space-y-8 relative overflow-hidden">
-          
-          <div className="max-w-2xl space-y-4">
-            <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
-              03 / Demirbaş Envanteri
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white font-club tracking-tight">
-              Üretmek için ihtiyacın olan her şey hazır.
-            </h2>
-            <p className="text-sm sm:text-base text-white/60 font-light leading-relaxed">
-              DSLR ve aynasız gövdeler, prime ve zoom objektifler, analog makineler ve karanlık oda seansları. 
-              Öğrenci numaranızla anında rezervasyon talebi oluşturun, Davutpaşa Kulüpler Vadisi'nden teslim alın.
-            </p>
-          </div>
+        {/* Editorial Section Header */}
+        <div className="space-y-4 max-w-3xl">
+          <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
+            03 / Demirbaş Envanteri
+          </span>
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold text-white font-club tracking-tight leading-[1.08]">
+            Üretmek için ihtiyacın olan her şey hazır.
+          </h2>
+          <p className="text-base sm:text-xl text-white/50 font-light leading-relaxed">
+            DSLR ve aynasız gövdeler, prime ve zoom objektifler, analog makineler ve karanlık oda seansları. Öğrenci numaranla doğrudan rezerve et, Davutpaşa Kulüpler Vadisi'nden teslim al.
+          </p>
 
-          {/* Action Trigger Buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-6 pt-2">
             <button
               onClick={() => onNavigate('equipment')}
-              className="px-6 py-3 rounded-full bg-white text-black hover:bg-white/90 text-xs font-mono uppercase tracking-wider font-semibold shadow-lg transition-all duration-150 cursor-pointer flex items-center gap-2 group active:scale-[0.98]"
+              className="px-6 py-2.5 rounded-full bg-white text-black hover:bg-white/90 text-xs font-mono uppercase tracking-wider font-semibold transition-all duration-150 cursor-pointer active:scale-95 shadow-lg"
             >
-              <span>Tüm Ekipmanları Keşfet</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              Tüm Ekipmanları Keşfet
             </button>
-
             <button
               onClick={() => onNavigate('reserve')}
-              className="px-6 py-3 rounded-full border border-white/15 hover:border-white/35 bg-[#180a14] hover:bg-[#200e1c] text-white/90 hover:text-white text-xs font-mono uppercase tracking-wider transition-all duration-150 cursor-pointer active:scale-[0.98]"
+              className="text-white/80 hover:text-white text-xs font-mono uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors cursor-pointer group"
             >
-              Doğrudan Rezervasyon Yap
+              <span>Doğrudan Rezervasyon Yap</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </button>
+          </div>
+        </div>
 
+        {/* Minimalist Equipment Preview Row (No Thick Boxes) */}
+        <div className="pt-8 border-t border-white/[0.08] space-y-6">
+          <div className="flex items-center justify-between text-xs font-mono text-white/40">
+            <span className="uppercase tracking-wider">Öne Çıkan Demirbaşlar</span>
             <button
-              onClick={() => onNavigate('darkroom')}
-              className="px-5 py-3 rounded-full border border-white/15 hover:border-white/35 bg-[#180a14] hover:bg-[#200e1c] text-white/90 hover:text-white text-xs font-mono uppercase tracking-wider transition-all duration-150 flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+              onClick={() => onNavigate('equipment')}
+              className="text-white/60 hover:text-white transition-colors cursor-pointer flex items-center gap-1"
             >
-              <Droplets className="w-3.5 h-3.5 text-white/60" />
-              <span>Karanlık Oda</span>
+              <span>Tümünü Gör ({initialSync.equipmentList.length})</span>
+              <ArrowRight className="w-3 h-3" />
             </button>
           </div>
 
-          {/* Featured 3 Equipment Preview Row */}
-          <div className="pt-8 border-t border-white/[0.08] space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-white/40 uppercase tracking-wider">Öne Çıkan Demirbaşlar</span>
-              <button
-                onClick={() => onNavigate('equipment')}
-                className="text-white/60 hover:text-white transition-colors cursor-pointer flex items-center gap-1"
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+            {featuredEquipment.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => {
+                  onSelectEquipmentToReserve(item.id);
+                  onNavigate('reserve');
+                }}
+                className="group cursor-pointer space-y-3"
               >
-                <span>Tümünü Gör ({initialSync.equipmentList.length})</span>
-                <ArrowRight className="w-3 h-3" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {featuredEquipment.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => {
-                    onSelectEquipmentToReserve(item.id);
-                    onNavigate('reserve');
-                  }}
-                  className="p-4 rounded-2xl bg-[#12080f] border border-white/10 hover:border-white/25 transition-all cursor-pointer group space-y-3"
-                >
-                  <div className="aspect-[4/3] rounded-xl overflow-hidden bg-black/60 relative">
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-2 right-2">
-                      <StatusBadge status={item.status} type="equipment" size="sm" />
-                    </div>
+                <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-white/[0.02] border border-white/10 group-hover:border-white/30 transition-all relative">
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 right-3">
+                    <StatusBadge status={item.status} type="equipment" size="sm" />
                   </div>
-                  <div>
-                    <span className="text-[10px] font-mono uppercase text-white/40 block">
-                      {item.brand} • {item.serial_number}
-                    </span>
-                    <h4 className="text-xs font-semibold text-white font-club truncate mt-0.5">
-                      {item.name}
-                    </h4>
-                  </div>
-                  <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono">
-                    <span className="text-white/40">{item.current_condition || 'Standart'}</span>
-                    <span className="text-white/80 group-hover:text-white flex items-center gap-1">
-                      <span>Rezerve</span>
-                      <ArrowRight className="w-3 h-3" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono uppercase text-white/40 block">
+                    {item.brand} • {item.serial_number}
+                  </span>
+                  <h4 className="text-sm font-medium text-white group-hover:text-white transition-colors">
+                    {item.name}
+                  </h4>
+                  <div className="flex items-center justify-between text-xs font-mono pt-1 text-white/40">
+                    <span>{item.current_condition || 'Standart'}</span>
+                    <span className="text-white/70 group-hover:text-white flex items-center gap-1 transition-colors">
+                      <span>Rezerve Et</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-
         </div>
 
       </section>
 
       {/* 5. AKTİF KULÜP GEZİLERİ (Varsa) */}
       {activeTrips.length > 0 && (
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex items-end justify-between border-b border-white/[0.08] pb-4">
-            <div>
-              <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">Etkinlikler</span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight mt-1">
-                Aktif Kulüp Gezileri
-              </h2>
-            </div>
+        <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-8">
+          <div className="border-b border-white/[0.08] pb-4">
+            <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">Etkinlikler</span>
+            <h2 className="text-2xl sm:text-3xl font-semibold text-white font-club tracking-tight mt-1">
+              Aktif Kulüp Gezileri
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {activeTrips.map((trip) => (
               <div
                 key={trip.id}
-                className="rounded-2xl border border-white/10 bg-[#140911] p-6 flex flex-col justify-between space-y-4"
+                className="border-b border-white/10 pb-6 space-y-3"
               >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-full border border-emerald-400/30 text-emerald-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                      Aktif Gezi
-                    </span>
-                    <span className="text-xs font-mono text-white/50">
-                      {formatDateRangeTr(trip.start_date, trip.end_date)}
-                    </span>
-                  </div>
-
-                  <h3 className="text-base font-semibold text-white font-club tracking-tight">
-                    {trip.title}
-                  </h3>
-
-                  <div className="flex items-center gap-1.5 text-xs text-white/50 font-mono">
-                    <MapPin className="w-3.5 h-3.5 shrink-0" />
-                    <span>{trip.destination}</span>
-                  </div>
-
-                  {trip.description && (
-                    <p className="text-xs text-white/60 font-light leading-relaxed pt-1">
-                      {trip.description}
-                    </p>
-                  )}
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-emerald-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    Aktif Gezi
+                  </span>
+                  <span className="text-xs font-mono text-white/40">
+                    {formatDateRangeTr(trip.start_date, trip.end_date)}
+                  </span>
                 </div>
 
-                <div className="pt-4 border-t border-white/[0.06]">
+                <h3 className="text-base font-medium text-white tracking-tight">
+                  {trip.title}
+                </h3>
+
+                <div className="flex items-center gap-1.5 text-xs text-white/40 font-mono">
+                  <MapPin className="w-3.5 h-3.5 shrink-0" />
+                  <span>{trip.destination}</span>
+                </div>
+
+                {trip.description && (
+                  <p className="text-xs text-white/50 font-light leading-relaxed">
+                    {trip.description}
+                  </p>
+                )}
+
+                <div className="pt-2">
                   <button
                     onClick={() => onNavigate('reserve')}
-                    className="w-full py-2.5 rounded-xl border border-white/10 hover:border-white/30 text-white text-xs font-mono transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="text-xs font-mono text-white/70 hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <Calendar className="w-3.5 h-3.5 text-white/50" />
-                    <span>Gezi İçin Ekipman Rezerve Et</span>
+                    <span>Gezi İçin Ekipman Rezerve Et ›</span>
                   </button>
                 </div>
               </div>
@@ -460,29 +401,25 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
 
       {/* 6. DUYURULAR VE NOTLAR (Varsa) */}
       {announcements.length > 0 && (
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-6">
           <div className="border-b border-white/[0.08] pb-4">
             <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">Haberler</span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight mt-1">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-white font-club tracking-tight mt-1">
               Kulüp Bildirimleri
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {announcements.map((ann) => (
               <div 
                 key={ann.id}
-                className="rounded-2xl border border-white/10 bg-[#140911] p-5 flex flex-col justify-between space-y-3"
+                className="border-b border-white/10 pb-5 space-y-2"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-white/10 text-white/60">
-                    {ann.category}
-                  </span>
-                  <span className="text-xs font-mono text-white/40">
-                    {new Date(ann.created_at).toLocaleDateString('tr-TR')}
-                  </span>
+                <div className="flex items-center justify-between text-xs font-mono text-white/40">
+                  <span className="uppercase">{ann.category}</span>
+                  <span>{new Date(ann.created_at).toLocaleDateString('tr-TR')}</span>
                 </div>
-                <p className="text-sm text-white/90 font-light leading-relaxed">
+                <p className="text-sm text-white/80 font-light leading-relaxed">
                   {ann.content || ann.title}
                 </p>
               </div>

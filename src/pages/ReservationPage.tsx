@@ -454,7 +454,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
             </div>
 
             {/* 2. Kullanım Amacı & Gezi Seçimi */}
-            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 space-y-5">
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 space-y-5 overflow-hidden">
               <div className="space-y-1">
                 <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 block">2. Adım</span>
                 <h3 className="text-xl font-bold text-white font-club tracking-tight">
@@ -579,8 +579,8 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     </div>
                   ) : (
                     <>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full min-w-0">
+                        <div className="w-full min-w-0">
                           <label className="block text-xs font-mono uppercase tracking-wider text-white/70 mb-1">Teslim Alma:</label>
                           <input
                             type="date"
@@ -599,11 +599,11 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                                 }
                               }
                             }}
-                            className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs font-mono"
+                            className="block w-full max-w-full min-w-0 box-border px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-sm sm:text-xs font-mono focus:border-white/30 transition-all"
                             required
                           />
                         </div>
-                        <div>
+                        <div className="w-full min-w-0">
                           <label className="block text-xs font-mono uppercase tracking-wider text-white/70 mb-1">İade Tarihi (Maks 2 Gün):</label>
                           <input
                             type="date"
@@ -619,7 +619,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                                   })()
                             }
                             onChange={(e) => setReturnDate(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs font-mono"
+                            className="block w-full max-w-full min-w-0 box-border px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-sm sm:text-xs font-mono focus:border-white/30 transition-all"
                             required
                           />
                         </div>

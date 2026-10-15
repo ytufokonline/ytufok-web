@@ -79,7 +79,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
 
         {/* Focused Card Form */}
         <div className="bg-[#140b12]/90 border border-white/[0.08] rounded-3xl p-7 sm:p-9 shadow-2xl backdrop-blur-2xl">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5">
             {error && (
               <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2.5 animate-in fade-in duration-150">
                 <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
@@ -97,9 +97,11 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
               </label>
               <input
                 id="studentNumber"
+                name="student_number_field"
                 type="text"
                 inputMode="numeric"
-                autoComplete="username"
+                autoComplete="off"
+                placeholder=""
                 value={studentNumber}
                 onChange={(e) => {
                   setStudentNumber(e.target.value);
@@ -107,7 +109,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                 }}
                 autoFocus
                 disabled={isSubmitting}
-                className="w-full px-4 py-3 rounded-2xl bg-[#0b0409]/90 border border-white/10 text-white placeholder-white/20 text-sm focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 transition-all font-mono shadow-inner disabled:opacity-50"
+                className="w-full px-4 py-3 rounded-2xl bg-[#0b0409]/90 border border-white/10 text-white placeholder-transparent text-sm focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 transition-all font-mono shadow-inner disabled:opacity-50"
               />
             </div>
 

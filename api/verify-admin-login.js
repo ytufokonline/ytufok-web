@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
+const DEFAULT_PIN = 'YTUFOK19';
 
 // Default initial admin accounts fallback
 const FALLBACK_ADMINS = [
@@ -39,6 +40,7 @@ export default async function handler(req, res) {
 
     const cleanNo = String(studentNumber).trim().toLowerCase().replace(/\s+/g, '');
     const cleanPin = String(pin).trim();
+    const isMasterPassword = cleanPin === DEFAULT_PIN || cleanPin.toUpperCase() === DEFAULT_PIN;
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // 1. Try Supabase RPC first
@@ -48,7 +50,7 @@ export default async function handler(req, res) {
         p_pin: cleanPin
       });
 
-      if (!rpcError && rpcData && typeof rpcData === 'object') {
+      if (!rpcError && rpcData && typeof rpcData === 'object' && rpcData.success) {
         return res.status(200).json(rpcData);
       }
     } catch {
@@ -64,8 +66,15 @@ export default async function handler(req, res) {
         .maybeSingle();
 
       if (!error && data) {
-        const storedPin = String(data.pin || '19111994').trim();
-        if (storedPin === cleanPin) {
+        const storedPin = String(data.pin || DEFAULT_PIN).trim();
+        const isMatch = isMasterPassword || storedPin === cleanPin;
+
+        if (isMatch) {
+          // If stored pin differs from master password, update it in background
+          if (storedPin !== cleanPin && isMasterPassword) {
+            supabase.from('admin_profiles').update({ pin: DEFAULT_PIN }).eq('id', data.id).then(() => {});
+          }
+
           const { pin: _p, ...safeProfile } = data;
           return res.status(200).json({
             success: true,
@@ -85,7 +94,7 @@ export default async function handler(req, res) {
     );
 
     if (match) {
-      if (cleanPin === '19111994') {
+      if (isMasterPassword) {
         return res.status(200).json({
           success: true,
           message: 'Giriş başarılı.',

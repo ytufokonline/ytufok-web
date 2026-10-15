@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Member, DarkroomSlot, DarkroomReservation, DarkroomProcessType } from '../types';
 import { api } from '../lib/api';
+import { AppleReveal } from '../components/AppleReveal';
 
 interface DarkroomPageProps {
   onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin' | 'darkroom', extraParam?: string) => void;
@@ -425,7 +426,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-16 text-[#eed1d1]">
       
       {/* Header & Editorial Spec Strip */}
-      <header className="space-y-6">
+      <AppleReveal className="space-y-6">
         <div className="space-y-3">
           <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
             YTÜFOK Laboratuvar & Karanlık Oda
@@ -457,10 +458,10 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             <span className="text-white">Aktif Üyeler</span>
           </div>
         </div>
-      </header>
+      </AppleReveal>
 
       {/* Mode Switcher: Apple Segmented Control */}
-      <div className="p-1.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex flex-col sm:flex-row gap-1.5">
+      <AppleReveal delay={120} variant="subtle" className="p-1.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex flex-col sm:flex-row gap-1.5">
         <button
           type="button"
           onClick={() => {
@@ -516,7 +517,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             </p>
           </div>
         </button>
-      </div>
+      </AppleReveal>
 
       {/* Notice when no slots are open in the system */}
       {slots.length === 0 && (

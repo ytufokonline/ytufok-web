@@ -4,6 +4,7 @@ import { Equipment, Reservation } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { TabType } from '../lib/routes';
+import { AppleReveal } from '../components/AppleReveal';
 
 interface EquipmentPageProps {
   onSelectEquipmentToReserve: (equipmentId: string) => void;
@@ -107,7 +108,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-14 text-[#eed1d1]">
       
       {/* Header */}
-      <header className="space-y-3">
+      <AppleReveal className="space-y-3">
         <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
           Envanter & Ekipman
         </div>
@@ -117,10 +118,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-2xl">
           Kulüp bünyesindeki Full Frame ve Crop DSLR gövdeler, profesyonel L serisi objektifler, analog makineler ve çekim aksesuarları.
         </p>
-      </header>
+      </AppleReveal>
 
       {/* Educational Guide Highlight (Apple Editorial Highlight) */}
-      <div className="rounded-2xl border border-white/10 bg-black/25 p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-sm">
+      <AppleReveal delay={120} variant="subtle" className="rounded-2xl border border-white/10 bg-black/25 p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-sm">
         <div className="space-y-2 max-w-2xl">
           <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40">
             Fotoğrafçılık & Ekipman Rehberi
@@ -140,7 +141,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
           <span>Rehberi Aç</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
-      </div>
+      </AppleReveal>
 
       {/* Category Bar & Search */}
       <div className="space-y-6">
@@ -222,9 +223,11 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEquipment.map((item) => (
-            <div
+          {filteredEquipment.map((item, idx) => (
+            <AppleReveal
               key={item.id}
+              delay={(idx % 6) * 60}
+              variant="scale"
               className="rounded-2xl border border-white/10 hover:border-white/25 bg-black/25 hover:bg-black/35 transition-all overflow-hidden flex flex-col group cursor-pointer shadow-sm"
               onClick={() => setSelectedItemForModal(item)}
             >
@@ -281,7 +284,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                   </button>
                 </div>
               </div>
-            </div>
+            </AppleReveal>
           ))}
         </div>
       )}

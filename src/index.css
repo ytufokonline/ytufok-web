@@ -151,3 +151,80 @@ input[type="date"]::-webkit-date-and-time-value {
   min-height: 1.2em;
 }
 
+/* ==============================================================================
+   APPLE SIGNATURE SCROLL-DRIVEN REVEAL ANIMATIONS (BUTTERY SMOOTH & ZERO JANK)
+   ============================================================================== */
+
+.apple-reveal {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.95s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.apple-reveal.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+/* Subtle reveal (16px rise) - Ideal for tags, eyebrow labels, small badges */
+.apple-reveal-subtle {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.apple-reveal-subtle.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+/* Scale & Drift reveal - Ideal for imagery, hero logo, showcases */
+.apple-reveal-scale {
+  opacity: 0;
+  transform: translate3d(0, 36px, 0) scale(0.96);
+  transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.apple-reveal-scale.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  will-change: auto;
+}
+
+/* Cascading Delay Helpers */
+.apple-delay-100 { transition-delay: 100ms !important; }
+.apple-delay-150 { transition-delay: 150ms !important; }
+.apple-delay-200 { transition-delay: 200ms !important; }
+.apple-delay-250 { transition-delay: 250ms !important; }
+.apple-delay-300 { transition-delay: 300ms !important; }
+.apple-delay-350 { transition-delay: 350ms !important; }
+.apple-delay-400 { transition-delay: 400ms !important; }
+.apple-delay-500 { transition-delay: 500ms !important; }
+.apple-delay-600 { transition-delay: 600ms !important; }
+.apple-delay-700 { transition-delay: 700ms !important; }
+
+/* Accessibility fallback */
+@media (prefers-reduced-motion: reduce) {
+  .apple-reveal,
+  .apple-reveal-subtle,
+  .apple-reveal-scale {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+

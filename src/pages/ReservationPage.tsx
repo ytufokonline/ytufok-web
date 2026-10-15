@@ -3,6 +3,7 @@ import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, 
 import { Equipment, Member, Reservation, Trip } from '../types';
 import { api } from '../lib/api';
 import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference } from '../utils/tripUtils';
+import { AppleReveal } from '../components/AppleReveal';
 
 interface ReservationPageProps {
   preselectedEquipmentId?: string;
@@ -224,7 +225,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-14 text-[#eed1d1]">
       
       {/* Editorial Header */}
-      <header className="space-y-4">
+      <AppleReveal className="space-y-4">
         <div className="space-y-3">
           <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
             YTÜFOK Rezervasyon Sistemi
@@ -252,7 +253,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
             <span className="text-white">Gezi Tarihine Özel</span>
           </div>
         </div>
-      </header>
+      </AppleReveal>
 
       {submittedReservation ? (
         /* Success Screen */

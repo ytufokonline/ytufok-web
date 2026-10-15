@@ -3,6 +3,7 @@ import { Search, AlertCircle, Droplets, Camera, Clock, MapPin } from 'lucide-rea
 import { Reservation, DarkroomReservation } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
+import { AppleReveal } from '../components/AppleReveal';
 
 interface ReservationStatusPageProps {
   onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'darkroom' | 'status' | 'admin') => void;
@@ -73,56 +74,60 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-14 text-[#eed1d1]">
       
       {/* Header */}
-      <header className="space-y-3">
-        <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
-          Sorgulama & Takip
-        </div>
-        <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white font-club">
-          Rezervasyon Takibi
-        </h1>
-        <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-2xl">
-          Rezervasyon kodunuz (örn: YTU-2026-B101) veya öğrenci numaranız ile anlık onay durumunuzu sorgulayabilirsiniz.
-        </p>
-      </header>
+      <AppleReveal delay={0}>
+        <header className="space-y-3">
+          <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
+            Sorgulama & Takip
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white font-club">
+            Rezervasyon Takibi
+          </h1>
+          <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-2xl">
+            Rezervasyon kodunuz (örn: YTU-2026-B101) veya öğrenci numaranız ile anlık onay durumunuzu sorgulayabilirsiniz.
+          </p>
+        </header>
+      </AppleReveal>
 
       {/* Search Input Bar */}
-      <form onSubmit={handleSearch} className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            type="text"
-            placeholder="Takip Kodu (YTU-... / KO-...) veya Öğrenci Numarası..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 px-4 py-3.5 rounded-xl bg-black/35 border border-white/10 text-white placeholder:text-white/35 text-xs font-mono focus:border-white/40 transition-all"
-          />
-          <button
-            type="submit"
-            disabled={searching}
-            className="px-8 py-3.5 rounded-xl bg-white text-black hover:bg-white/90 font-semibold text-xs font-mono uppercase tracking-wider cursor-pointer transition-all disabled:opacity-40 shadow-sm"
-          >
-            {searching ? 'Sorgulanıyor...' : 'Sorgula'}
-          </button>
-        </div>
+      <AppleReveal delay={120}>
+        <form onSubmit={handleSearch} className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="text"
+              placeholder="Takip Kodu (YTU-... / KO-...) veya Öğrenci Numarası..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex-1 px-4 py-3.5 rounded-xl bg-black/35 border border-white/10 text-white placeholder:text-white/35 text-xs font-mono focus:border-white/40 transition-all"
+            />
+            <button
+              type="submit"
+              disabled={searching}
+              className="px-8 py-3.5 rounded-xl bg-white text-black hover:bg-white/90 font-semibold text-xs font-mono uppercase tracking-wider cursor-pointer transition-all disabled:opacity-40 shadow-sm"
+            >
+              {searching ? 'Sorgulanıyor...' : 'Sorgula'}
+            </button>
+          </div>
 
-        <div className="flex items-center gap-2 text-xs font-mono text-white/40 flex-wrap">
-          <span>Örnek Kodlar:</span>
-          <button 
-            type="button" 
-            onClick={() => setQuery('YTU-2026-B101')} 
-            className="px-2 py-0.5 rounded border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-colors cursor-pointer"
-          >
-            YTU-2026-B101
-          </button>
-          <span>•</span>
-          <button 
-            type="button" 
-            onClick={() => setQuery('KO-2026-101')} 
-            className="px-2 py-0.5 rounded border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-colors cursor-pointer"
-          >
-            KO-2026-101 (Karanlık Oda)
-          </button>
-        </div>
-      </form>
+          <div className="flex items-center gap-2 text-xs font-mono text-white/40 flex-wrap">
+            <span>Örnek Kodlar:</span>
+            <button 
+              type="button" 
+              onClick={() => setQuery('YTU-2026-B101')} 
+              className="px-2 py-0.5 rounded border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-colors cursor-pointer"
+            >
+              YTU-2026-B101
+            </button>
+            <span>•</span>
+            <button 
+              type="button" 
+              onClick={() => setQuery('KO-2026-101')} 
+              className="px-2 py-0.5 rounded border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-colors cursor-pointer"
+            >
+              KO-2026-101 (Karanlık Oda)
+            </button>
+          </div>
+        </form>
+      </AppleReveal>
 
       {/* Search Results */}
       {hasSearched && (

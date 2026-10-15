@@ -17,6 +17,7 @@ import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { TabType } from '../lib/routes';
 import { INITIAL_EQUIPMENT } from '../data/initialData';
+import { AppleReveal } from '../components/AppleReveal';
 
 export const EQUIPMENT_SERIAL_MAP: Record<string, string> = {
   'e-5d2': 'YTU-EOS-5D2',
@@ -353,49 +354,51 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-14 text-[#eed1d1]">
       
       {/* Page Header */}
-      <header className="space-y-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="space-y-3">
-            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
-              YTÜFOK Eğitim & Rehber
+      <AppleReveal delay={0}>
+        <header className="space-y-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-3">
+              <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
+                YTÜFOK Eğitim & Rehber
+              </div>
+              <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white font-club">
+                Çekim & Ekipman Rehberi
+              </h1>
+              <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-2xl">
+                Hangi çekim türü için hangi gövde ve lensi almalısınız? Kulübümüzün demirbaş envanterine göre optimize edilmiş hazır kombolar.
+              </p>
             </div>
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white font-club">
-              Çekim & Ekipman Rehberi
-            </h1>
-            <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-2xl">
-              Hangi çekim türü için hangi gövde ve lensi almalısınız? Kulübümüzün demirbaş envanterine göre optimize edilmiş hazır kombolar.
-            </p>
+
+            <button
+              onClick={() => setShowDictionary(!showDictionary)}
+              className={`self-start md:self-auto px-4 py-2.5 rounded-xl text-xs font-mono border flex items-center gap-2 transition-all cursor-pointer ${
+                showDictionary 
+                  ? 'bg-white text-black border-white shadow-md font-medium' 
+                  : 'border-white/10 text-white/70 hover:text-white hover:border-white/30 bg-white/[0.02]'
+              }`}
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span>{showDictionary ? 'Terimleri Kapat' : 'Temel Terimler (f / mm)'}</span>
+            </button>
           </div>
 
-          <button
-            onClick={() => setShowDictionary(!showDictionary)}
-            className={`self-start md:self-auto px-4 py-2.5 rounded-xl text-xs font-mono border flex items-center gap-2 transition-all cursor-pointer ${
-              showDictionary 
-                ? 'bg-white text-black border-white shadow-md font-medium' 
-                : 'border-white/10 text-white/70 hover:text-white hover:border-white/30 bg-white/[0.02]'
-            }`}
-          >
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>{showDictionary ? 'Terimleri Kapat' : 'Temel Terimler (f / mm)'}</span>
-          </button>
-        </div>
-
-        {/* Hairline Spec Strip */}
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 pt-6 border-t border-white/[0.08] text-xs font-mono text-white/50">
-          <div>
-            <span className="text-white/30 uppercase mr-2 tracking-wider">Senaryo Sayısı:</span>
-            <span className="text-white font-semibold">{GUIDE_SCENARIOS.length} Çekim Türü</span>
+          {/* Hairline Spec Strip */}
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-3 pt-6 border-t border-white/[0.08] text-xs font-mono text-white/50">
+            <div>
+              <span className="text-white/30 uppercase mr-2 tracking-wider">Senaryo Sayısı:</span>
+              <span className="text-white font-semibold">{GUIDE_SCENARIOS.length} Çekim Türü</span>
+            </div>
+            <div>
+              <span className="text-white/30 uppercase mr-2 tracking-wider">Demirbaş:</span>
+              <span className="text-white">Tam Uyumlu Gövde & Lensler</span>
+            </div>
+            <div>
+              <span className="text-white/30 uppercase mr-2 tracking-wider">Öneri:</span>
+              <span className="text-white">1 Gövde + 1 Lens Rezerve Edin</span>
+            </div>
           </div>
-          <div>
-            <span className="text-white/30 uppercase mr-2 tracking-wider">Demirbaş:</span>
-            <span className="text-white">Tam Uyumlu Gövde & Lensler</span>
-          </div>
-          <div>
-            <span className="text-white/30 uppercase mr-2 tracking-wider">Öneri:</span>
-            <span className="text-white">1 Gövde + 1 Lens Rezerve Edin</span>
-          </div>
-        </div>
-      </header>
+        </header>
+      </AppleReveal>
 
       {/* Quick Photography Terms (Collapsible) */}
       {showDictionary && (
@@ -428,27 +431,30 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
       )}
 
       {/* Scenario Horizontal Tabs Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-white/[0.08]">
-        {GUIDE_SCENARIOS.map((sc) => {
-          const isActive = sc.id === activeScenario.id;
-          return (
-            <button
-              key={sc.id}
-              onClick={() => handleScenarioChange(sc.id)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-mono whitespace-nowrap transition-all border flex items-center gap-2 cursor-pointer ${
-                isActive
-                  ? 'bg-white text-black border-white shadow-md font-semibold'
-                  : 'border-white/10 text-white/60 hover:text-white hover:border-white/25 bg-black/30'
-              }`}
-            >
-              <span>{sc.title}</span>
-            </button>
-          );
-        })}
-      </div>
+      <AppleReveal delay={120}>
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-white/[0.08]">
+          {GUIDE_SCENARIOS.map((sc) => {
+            const isActive = sc.id === activeScenario.id;
+            return (
+              <button
+                key={sc.id}
+                onClick={() => handleScenarioChange(sc.id)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-mono whitespace-nowrap transition-all border flex items-center gap-2 cursor-pointer ${
+                  isActive
+                    ? 'bg-white text-black border-white shadow-md font-semibold'
+                    : 'border-white/10 text-white/60 hover:text-white hover:border-white/25 bg-black/30'
+                }`}
+              >
+                <span>{sc.title}</span>
+              </button>
+            );
+          })}
+        </div>
+      </AppleReveal>
 
       {/* Scenario Content Container */}
-      <div className="space-y-6">
+      <AppleReveal delay={180}>
+        <div className="space-y-6">
         
         {/* Scenario Header Info */}
         <div className="p-6 rounded-2xl border border-white/10 bg-black/25 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
@@ -677,9 +683,9 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
             </div>
           </div>
 
+          </div>
         </div>
-
-      </div>
+      </AppleReveal>
 
     </div>
   );

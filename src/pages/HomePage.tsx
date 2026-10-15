@@ -4,6 +4,7 @@ import { Announcement, Equipment, Trip } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { formatDateRangeTr } from '../utils/tripUtils';
+import { AppleReveal } from '../components/AppleReveal';
 
 interface HomePageProps {
   onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin' | 'darkroom' | 'guide' | 'tips') => void;
@@ -44,20 +45,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
     <div className="text-[#eed1d1] selection:bg-white/20 selection:text-white pb-28">
       
       {/* 1. HERO ALANI (Apple Left-Aligned Editorial) */}
-      <section className="pt-8 sm:pt-14 lg:pt-16 border-b border-white/[0.08] pb-12 sm:pb-16">
+      <section className="pt-8 sm:pt-14 lg:pt-16 border-b border-white/[0.08] pb-12 sm:pb-16 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
           
-          {/* YTÜFOK Official Logo (Left-Aligned, Crisp Scale) */}
-          <div className="w-56 sm:w-72 md:w-80 lg:w-96">
+          {/* YTÜFOK Official Logo (Left-Aligned, Crisp Scale with Apple reveal) */}
+          <AppleReveal delay={0} variant="scale" className="w-56 sm:w-72 md:w-80 lg:w-96">
             <img
               src="/ytufok-hero-logo.png?v=2"
               alt="YTÜFOK - Yıldız Teknik Üniversitesi Fotoğraf Kulübü"
               className="w-full h-auto object-contain mix-blend-screen select-none"
             />
-          </div>
+          </AppleReveal>
 
           {/* Hero Headline (Apple Monumental Typography) */}
-          <div className="space-y-4 max-w-4xl">
+          <AppleReveal delay={120} className="space-y-4 max-w-4xl">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-white font-club leading-[1.05]">
               1994'ten beri kampüsün en aktif topluluğu.
             </h1>
@@ -65,10 +66,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               Yıldız Teknik Üniversitesi Fotoğraf Kulübü. Analogdan dijitale üretmeye, 
               hafta sonu gezilerine, karanlık oda nöbetlerine ve fotoğrafı paylaşmaya devam ediyoruz.
             </p>
-          </div>
+          </AppleReveal>
 
           {/* Apple-Style Action Bar (Clean White Pill + Text Link) */}
-          <div className="flex flex-wrap items-center gap-6 pt-2">
+          <AppleReveal delay={240} variant="subtle" className="flex flex-wrap items-center gap-6 pt-2">
             <button
               onClick={() => onNavigate('equipment')}
               className="px-7 py-3 rounded-full bg-white text-black hover:bg-white/90 text-xs font-mono uppercase tracking-wider font-semibold shadow-xl transition-all duration-150 cursor-pointer active:scale-95"
@@ -91,29 +92,29 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               <Droplets className="w-3.5 h-3.5 text-white/50 group-hover:text-white transition-colors" />
               <span>Karanlık Oda Randevusu</span>
             </button>
-          </div>
+          </AppleReveal>
 
           {/* Apple Minimalist Metrics Strip (Left Aligned, Clean Hairline) */}
           <div className="pt-10 sm:pt-14 grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 border-t border-white/[0.08]">
-            <div className="space-y-1">
+            <AppleReveal delay={360} className="space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">1994</span>
               <span className="text-xs text-white/40 font-light block leading-snug">Kuruluş Yılı</span>
-            </div>
+            </AppleReveal>
 
-            <div className="space-y-1">
+            <AppleReveal delay={460} className="space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">Öncü</span>
               <span className="text-xs text-white/40 font-light block leading-snug">Üniversiteler Arası İlk Kulüp</span>
-            </div>
+            </AppleReveal>
 
-            <div className="space-y-1">
+            <AppleReveal delay={560} className="space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">2.</span>
               <span className="text-xs text-white/40 font-light block leading-snug">YTÜ'nün En Köklü Kulübü</span>
-            </div>
+            </AppleReveal>
 
-            <div className="space-y-1">
+            <AppleReveal delay={660} className="space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">30+</span>
               <span className="text-xs text-white/40 font-light block leading-snug">Yıllık Kesintisiz Üretim</span>
-            </div>
+            </AppleReveal>
           </div>
 
         </div>
@@ -124,7 +125,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
         
         {/* Section Header */}
-        <div className="space-y-4 max-w-3xl">
+        <AppleReveal className="space-y-4 max-w-3xl">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
             01 / Kökler ve Öncülük
           </span>
@@ -135,12 +136,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             YTÜFOK, 1994'te Yıldız Teknik Üniversitesi'nde kurulduğu günden bu yana yalnızca kampüsün değil, 
             ülkenin gençlik fotoğraf ortamının kurucu hafızası oldu.
           </p>
-        </div>
+        </AppleReveal>
 
         {/* Narrative Flow (Two Columns, Pure Typographic Contrast) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16 pt-8 border-t border-white/[0.08]">
           
-          <div className="space-y-3">
+          <AppleReveal delay={120} className="space-y-3">
             <span className="text-xs font-mono uppercase tracking-wider text-white/40 block">
               1994'ten Beri
             </span>
@@ -154,9 +155,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
               Fotoğrafı yalnızca teknik bir donanım meselesi olarak değil; düşünsel bir üretim, sosyolojik bir tanıklık ve kolektif bir dayanışma alanı olarak yaşatıyoruz.
             </p>
-          </div>
+          </AppleReveal>
 
-          <div className="space-y-3">
+          <AppleReveal delay={240} className="space-y-3">
             <span className="text-xs font-mono uppercase tracking-wider text-white/40 block">
               Festival Öncülüğü
             </span>
@@ -170,7 +171,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
               Ülkenin usta fotoğrafçılarını, akademisyenlerini ve genç yeteneklerini aynı atölyelerde buluşturan bu festival, üniversite fotoğrafçılığında kalıcı bir ekol yarattı.
             </p>
-          </div>
+          </AppleReveal>
 
         </div>
         </div>
@@ -182,7 +183,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
         
         {/* Section Header */}
-        <div className="space-y-4 max-w-3xl">
+        <AppleReveal className="space-y-4 max-w-3xl">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
             02 / Yaşayan Kültür
           </span>
@@ -190,13 +191,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             Sadece bir ekipman havuzu değil.<br />
             Kampüsün en aktif topluluğu.
           </h2>
-        </div>
+        </AppleReveal>
 
         {/* Apple Editorial Feature Rows (Divided by Hairlines, Pure Typography) */}
         <div className="border-t border-white/[0.08] divide-y divide-white/[0.08]">
           
           {/* Row 1: Geziler */}
-          <div className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+          <AppleReveal delay={60} className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
             <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
               01 / Her Hafta Sonu Sahada
             </div>
@@ -208,10 +209,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 Kampüsün en aktif topluluklarından biri olarak, her hafta sonu tematik çekim gezileri düzenliyoruz. Teoriyi doğrudan vizör başında pratiğe döküyor; birlikte geziyor, birlikte üretiyoruz.
               </p>
             </div>
-          </div>
+          </AppleReveal>
 
           {/* Row 2: Analog & Karanlık Oda */}
-          <div className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+          <AppleReveal delay={60} className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
             <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
               02 / Karanlık Oda Geleneği
             </div>
@@ -223,10 +224,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 Davutpaşa Kulüpler Vadisi'ndeki karanlık odamızda 35mm filmlerimizi kendimiz yıkıyor, agrandisör başında siyah-beyaz kart baskılarımızı alıyoruz. Yeni başlayan herkese analog eğitimi veriyoruz.
               </p>
             </div>
-          </div>
+          </AppleReveal>
 
           {/* Row 3: Dayanışma & Ekipman */}
-          <div className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+          <AppleReveal delay={60} className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
             <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
               03 / Ortak Ekipman Havuzu
             </div>
@@ -238,10 +239,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 Kulüp demirbaşındaki gövde, prime lens ve aksesuarları tüm üyelerimize karşılıklı güven ilkesiyle ücretsiz zimmetliyoruz. Öğrenci numaranla başvur, çekimini yap, teslim et.
               </p>
             </div>
-          </div>
+          </AppleReveal>
 
           {/* Row 4: Kuşaklar Arası Bağ */}
-          <div className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+          <AppleReveal delay={60} className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
             <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
               04 / Otuz Yıllık Aile
             </div>
@@ -253,7 +254,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 1994'ten bu yana kulübümüzden geçen yüzlerce mezunumuz bugün görsel sanatların, medyanın ve akademinin öncüleridir. Mezunlarımız ve öğrencilerimiz her dönem aynı masada buluşur.
               </p>
             </div>
-          </div>
+          </AppleReveal>
 
         </div>
         </div>
@@ -265,7 +266,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
         
         {/* Editorial Section Header */}
-        <div className="space-y-4 max-w-3xl">
+        <AppleReveal className="space-y-4 max-w-3xl">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
             03 / Demirbaş Envanteri
           </span>
@@ -291,11 +292,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
-        </div>
+        </AppleReveal>
 
         {/* Minimalist Equipment Preview Row (No Thick Boxes) */}
         <div className="pt-8 border-t border-white/[0.08] space-y-6">
-          <div className="flex items-center justify-between text-xs font-mono text-white/40">
+          <AppleReveal variant="subtle" className="flex items-center justify-between text-xs font-mono text-white/40">
             <span className="uppercase tracking-wider">Öne Çıkan Demirbaşlar</span>
             <button
               onClick={() => onNavigate('equipment')}
@@ -304,12 +305,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               <span>Tümünü Gör ({initialSync.equipmentList.length})</span>
               <ArrowRight className="w-3 h-3" />
             </button>
-          </div>
+          </AppleReveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-            {featuredEquipment.map((item) => (
-              <div
+            {featuredEquipment.map((item, idx) => (
+              <AppleReveal
                 key={item.id}
+                delay={idx * 120}
+                variant="scale"
                 onClick={() => {
                   onSelectEquipmentToReserve(item.id);
                   onNavigate('reserve');
@@ -341,7 +344,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                     </span>
                   </div>
                 </div>
-              </div>
+              </AppleReveal>
             ))}
           </div>
         </div>
@@ -353,17 +356,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
       {activeTrips.length > 0 && (
         <section className="border-b border-white/[0.08] py-14 sm:py-18">
           <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-8">
-          <div className="border-b border-white/[0.08] pb-4">
+          <AppleReveal className="border-b border-white/[0.08] pb-4">
             <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">Etkinlikler</span>
             <h2 className="text-2xl sm:text-3xl font-semibold text-white font-club tracking-tight mt-1">
               Aktif Kulüp Gezileri
             </h2>
-          </div>
+          </AppleReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeTrips.map((trip) => (
-              <div
+            {activeTrips.map((trip, idx) => (
+              <AppleReveal
                 key={trip.id}
+                delay={idx * 100}
                 className="border-b border-white/10 pb-6 space-y-3"
               >
                 <div className="flex items-center justify-between">
@@ -400,7 +404,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                     <span>Gezi İçin Ekipman Rezerve Et ›</span>
                   </button>
                 </div>
-              </div>
+              </AppleReveal>
             ))}
           </div>
           </div>
@@ -411,17 +415,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
       {announcements.length > 0 && (
         <section className="py-14 sm:py-18">
           <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-6">
-          <div className="border-b border-white/[0.08] pb-4">
+          <AppleReveal className="border-b border-white/[0.08] pb-4">
             <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">Haberler</span>
             <h2 className="text-2xl sm:text-3xl font-semibold text-white font-club tracking-tight mt-1">
               Kulüp Bildirimleri
             </h2>
-          </div>
+          </AppleReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {announcements.map((ann) => (
-              <div 
+            {announcements.map((ann, idx) => (
+              <AppleReveal
                 key={ann.id}
+                delay={idx * 80}
                 className="border-b border-white/10 pb-5 space-y-2"
               >
                 <div className="flex items-center justify-between text-xs font-mono text-white/40">
@@ -431,7 +436,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 <p className="text-sm text-white/80 font-light leading-relaxed">
                   {ann.content || ann.title}
                 </p>
-              </div>
+              </AppleReveal>
             ))}
           </div>
           </div>

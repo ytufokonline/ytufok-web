@@ -53,10 +53,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             <span>YTÜFOK • 1994'ten Bugüne</span>
           </div>
 
+          {/* YTÜFOK Official Logo */}
+          <div className="flex justify-center pt-2">
+            <img
+              src="/ytufok-hero-logo.png"
+              alt="YTÜFOK - Yıldız Teknik Üniversitesi Fotoğraf Kulübü"
+              className="w-48 sm:w-64 md:w-72 lg:w-80 h-auto object-contain mix-blend-screen select-none drop-shadow-2xl"
+            />
+          </div>
+
           {/* Hero Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white font-club leading-[1.06] max-w-4xl mx-auto">
-            Geçmişin izinde,<br />
-            geleceğe ilerliyoruz.
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-club leading-[1.1] max-w-4xl mx-auto">
+            32 yıllık köklü miras, sizlerle ilerliyor.
           </h1>
 
           {/* Manifesto Paragraph */}

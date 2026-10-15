@@ -22,12 +22,6 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const [verifiedMember, setVerifiedMember] = useState<Member | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 
-  // Quick register for normal members
-  const [showQuickRegister, setShowQuickRegister] = useState(false);
-  const [regFullName, setRegFullName] = useState('');
-  const [regDept, setRegDept] = useState('Yıldız Teknik Üniversitesi');
-  const [regLoading, setRegLoading] = useState(false);
-
   // Trips state
   const [trips, setTrips] = useState<Trip[]>(initialSync.activeTrips);
   const [loadingTrips, setLoadingTrips] = useState(false);
@@ -128,7 +122,6 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
     setVerifying(true);
     setVerificationError(null);
-    setShowQuickRegister(false);
 
     try {
       const result = await api.verifyStudentNumber(studentNumber);
@@ -137,48 +130,13 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
         setVerificationError(null);
       } else {
         setVerifiedMember(null);
-        setVerificationError(result.message);
-        if (!result.member) {
-          setShowQuickRegister(true);
-        }
+        setVerificationError(result.message || 'Girdiğiniz öğrenci numarası kulüp üye listesinde bulunamadı.');
       }
     } catch {
       setVerificationError('Öğrenci numarası sorgulanırken hata oluştu.');
       setVerifiedMember(null);
     } finally {
       setVerifying(false);
-    }
-  };
-
-  const handleQuickRegisterNormal = async () => {
-    if (!studentNumber.trim()) {
-      alert('Lütfen öğrenci numaranızı giriniz.');
-      return;
-    }
-    if (!regFullName.trim()) {
-      alert('Lütfen ad ve soyadınızı giriniz.');
-      return;
-    }
-
-    setRegLoading(true);
-    try {
-      const result = await api.quickRegisterNormalMember(
-        studentNumber.trim(),
-        regFullName.trim(),
-        regDept.trim() || 'Yıldız Teknik Üniversitesi'
-      );
-
-      if (result.success && result.member) {
-        setVerifiedMember(result.member);
-        setVerificationError(null);
-        setShowQuickRegister(false);
-      } else {
-        alert(result.message || 'Kayıt yapılırken bir hata oluştu.');
-      }
-    } catch (e) {
-      alert('Kayıt oluşturulurken bağlantı hatası oluştu.');
-    } finally {
-      setRegLoading(false);
     }
   };
 
@@ -382,7 +340,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                   onChange={(e) => {
                     setStudentNumber(e.target.value);
                     if (verifiedMember) setVerifiedMember(null);
-                    if (showQuickRegister) setShowQuickRegister(false);
+                    if (verificationError) setVerificationError(null);
                   }}
                   className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs font-mono placeholder:text-white/25 focus:border-white/40 transition-all"
                 />
@@ -413,42 +371,10 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                 </div>
               )}
 
-              {/* Error & Quick Registration */}
+              {/* Error Notification */}
               {verificationError && !verifiedMember && (
-                <div className="space-y-3">
-                  <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/[0.06] text-xs text-rose-300">
-                    {verificationError}
-                  </div>
-
-                  {showQuickRegister && (
-                    <div className="p-5 rounded-2xl border border-white/[0.08] bg-white/[0.01] space-y-3">
-                      <strong className="text-xs font-mono uppercase text-white/70 block">Normal Üye Olarak Kayıt Ol</strong>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input
-                          type="text"
-                          placeholder="Ad Soyad..."
-                          value={regFullName}
-                          onChange={(e) => setRegFullName(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Bölüm..."
-                          value={regDept}
-                          onChange={(e) => setRegDept(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleQuickRegisterNormal}
-                        disabled={regLoading}
-                        className="px-5 py-2.5 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-mono font-semibold cursor-pointer"
-                      >
-                        {regLoading ? 'Kaydediliyor...' : 'Kaydol ve Devam Et'}
-                      </button>
-                    </div>
-                  )}
+                <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/[0.06] text-xs text-rose-300">
+                  {verificationError}
                 </div>
               )}
             </div>

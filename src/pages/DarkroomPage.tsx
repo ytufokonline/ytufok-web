@@ -1159,7 +1159,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     <span>Negatif Film Tarama İstasyonu</span>
                   </div>
                   <p className="text-[11px] leading-relaxed text-white/50 font-light">
-                    Bu seansta kimyasal banyo kullanılmaz. Banyo edilmiş, kuru ve kesilmiş 35mm veya 120 orta format negatif filmlerinizi yüksek optik çözünürlükle dijital ortama aktarabilirsiniz. Yanınızda USB bellek getirmeniz önerilir.
+                    Bu seansta kimyasal banyo kullanılmaz. Banyo edilmiş, kuru ve kesilmiş 35mm negatif filmlerinizi yüksek optik çözünürlükle dijital ortama aktarabilirsiniz. Yanınızda USB bellek getirmeniz önerilir.
                   </p>
                 </div>
               )}
@@ -1548,21 +1548,21 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] space-y-2">
             <strong className="text-white text-sm block font-medium tracking-tight">Film Yıkama Tankları</strong>
             <p className="text-white/50 font-light leading-relaxed">
-              3 adet çiftli ve tekli spiral film tankı; 35mm ve 120 orta format ayarlanabilir spiraller ile tam donanımlı banyo istasyonu.
+              3 adet çiftli ve tekli spiral film tankı; 35mm spiraller ile tam donanımlı banyo istasyonu.
             </p>
           </div>
 
           <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] space-y-2">
             <strong className="text-white text-sm block font-medium tracking-tight">S/B Agrandisör</strong>
             <p className="text-white/50 font-light leading-relaxed">
-              35mm ve 6x6 orta format kondansatörlü agrandisör, 50mm ve 75mm lensler ile ayarlanabilir kadraj marjörü.
+              35mm kondansatörlü agrandisör, 50mm lens ve ayarlanabilir kadraj marjörü.
             </p>
           </div>
 
           <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] space-y-2">
             <strong className="text-white text-sm block font-medium tracking-tight">Negatif Film Tarayıcı</strong>
             <p className="text-white/50 font-light leading-relaxed">
-              35mm ve 120 orta format negatif tutucular; yüksek optik çözünürlüklü dijital film tarama ve arşiv istasyonu.
+              35mm negatif tutucular; yüksek optik çözünürlüklü dijital film tarama ve arşiv istasyonu.
             </p>
           </div>
         </div>

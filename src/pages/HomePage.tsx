@@ -217,7 +217,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 Kırmızı ışık altında filmini kendin yıka, kartına kendin bas.
               </h3>
               <p className="text-sm sm:text-base text-white/50 font-light leading-relaxed">
-                Davutpaşa Kulüpler Vadisi'ndeki karanlık odamızda 35mm ve orta format filmlerimizi kendimiz yıkıyor, agrandisör başında siyah-beyaz kart baskılarımızı alıyoruz. Yeni başlayan herkese analog eğitimi veriyoruz.
+                Davutpaşa Kulüpler Vadisi'ndeki karanlık odamızda 35mm filmlerimizi kendimiz yıkıyor, agrandisör başında siyah-beyaz kart baskılarımızı alıyoruz. Yeni başlayan herkese analog eğitimi veriyoruz.
               </p>
             </div>
           </div>

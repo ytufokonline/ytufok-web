@@ -9,7 +9,7 @@ export default {
     extend: {
       colors: {
         ytufok: {
-          bg: '#1c0d17',           // En derin arka plan (koyu mürdüm gece)
+          bg: '#12080f',           // En derin arka plan (koyu mürdüm gece)
           card: '#1c0f18',         // Kart ve panel zemini
           cardHover: '#251621',    // Kart hover
           plum: '#301322',         // Kulüp 1. Ana Rengi (Mürdüm / Vişne)

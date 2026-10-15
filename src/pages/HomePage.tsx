@@ -41,10 +41,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
   }, []);
 
   return (
-    <div className="text-[#f4f5f8] selection:bg-white/20 selection:text-white space-y-32 sm:space-y-48 pb-36">
+    <div className="text-[#f4f5f8] selection:bg-white/20 selection:text-white pb-28">
       
       {/* 1. HERO ALANI (Apple Left-Aligned Editorial) */}
-      <section className="pt-8 sm:pt-14 lg:pt-20 border-b border-white/[0.08] pb-20 sm:pb-28">
+      <section className="pt-8 sm:pt-14 lg:pt-16 border-b border-white/[0.08] pb-12 sm:pb-16">
         <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
           
           {/* YTÜFOK Official Logo (Left-Aligned, Crisp Scale) */}
@@ -94,7 +94,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </div>
 
           {/* Apple Minimalist Metrics Strip (Left Aligned, Clean Hairline) */}
-          <div className="pt-16 sm:pt-20 grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 border-t border-white/[0.08]">
+          <div className="pt-10 sm:pt-14 grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 border-t border-white/[0.08]">
             <div className="space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">1994</span>
               <span className="text-xs text-white/40 font-light block leading-snug">Kuruluş Yılı</span>
@@ -120,14 +120,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
       </section>
 
       {/* 2. KÖKLER VE MİRAS (Fluid Editorial Text, No Template Boxes) */}
-      <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-16">
+      <section className="border-b border-white/[0.08] py-14 sm:py-20">
+        <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
         
         {/* Section Header */}
         <div className="space-y-4 max-w-3xl">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
             01 / Kökler ve Öncülük
           </span>
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold text-white font-club tracking-tight leading-[1.08]">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white font-club tracking-tight leading-[1.1]">
             Türkiye üniversite fotoğrafçılığının ilk kıvılcımı.
           </h2>
           <p className="text-base sm:text-xl text-white/50 font-light leading-relaxed pt-1">
@@ -137,7 +138,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         </div>
 
         {/* Narrative Flow (Two Columns, Pure Typographic Contrast) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-20 pt-8 border-t border-white/[0.08]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16 pt-8 border-t border-white/[0.08]">
           
           <div className="space-y-3">
             <span className="text-xs font-mono uppercase tracking-wider text-white/40 block">
@@ -172,18 +173,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </div>
 
         </div>
+        </div>
 
       </section>
 
       {/* 3. YAŞAYAN KAMPÜS (Apple Feature-List Editorial Rows, No Box Cards) */}
-      <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-16">
+      <section className="border-b border-white/[0.08] py-14 sm:py-20">
+        <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
         
         {/* Section Header */}
         <div className="space-y-4 max-w-3xl">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">
             02 / Yaşayan Kültür
           </span>
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold text-white font-club tracking-tight leading-[1.08]">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white font-club tracking-tight leading-[1.1]">
             Sadece bir ekipman havuzu değil.<br />
             Kampüsün en aktif topluluğu.
           </h2>
@@ -193,7 +196,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         <div className="border-t border-white/[0.08] divide-y divide-white/[0.08]">
           
           {/* Row 1: Geziler */}
-          <div className="py-10 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+          <div className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
             <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
               01 / Her Hafta Sonu Sahada
             </div>
@@ -208,7 +211,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </div>
 
           {/* Row 2: Analog & Karanlık Oda */}
-          <div className="py-10 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+          <div className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
             <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
               02 / Karanlık Oda Geleneği
             </div>
@@ -223,7 +226,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </div>
 
           {/* Row 3: Dayanışma & Ekipman */}
-          <div className="py-10 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+          <div className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
             <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
               03 / Ortak Ekipman Havuzu
             </div>
@@ -238,7 +241,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </div>
 
           {/* Row 4: Kuşaklar Arası Bağ */}
-          <div className="py-10 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
+          <div className="py-8 sm:py-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
             <div className="md:col-span-4 text-xs font-mono text-white/40 uppercase tracking-wider">
               04 / Otuz Yıllık Aile
             </div>
@@ -253,11 +256,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </div>
 
         </div>
+        </div>
 
       </section>
 
       {/* 4. EKİPMAN HAVUZUNA GEÇİŞ (Apple Product Showcase) */}
-      <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-12">
+      <section className="border-b border-white/[0.08] py-14 sm:py-20">
+        <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
         
         {/* Editorial Section Header */}
         <div className="space-y-4 max-w-3xl">
@@ -340,12 +345,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             ))}
           </div>
         </div>
+        </div>
 
       </section>
 
       {/* 5. AKTİF KULÜP GEZİLERİ (Varsa) */}
       {activeTrips.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-8">
+        <section className="border-b border-white/[0.08] py-14 sm:py-18">
+          <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-8">
           <div className="border-b border-white/[0.08] pb-4">
             <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">Etkinlikler</span>
             <h2 className="text-2xl sm:text-3xl font-semibold text-white font-club tracking-tight mt-1">
@@ -396,12 +403,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               </div>
             ))}
           </div>
+          </div>
         </section>
       )}
 
       {/* 6. DUYURULAR VE NOTLAR (Varsa) */}
       {announcements.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-6">
+        <section className="py-14 sm:py-18">
+          <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-6">
           <div className="border-b border-white/[0.08] pb-4">
             <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/40 block">Haberler</span>
             <h2 className="text-2xl sm:text-3xl font-semibold text-white font-club tracking-tight mt-1">
@@ -424,6 +433,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 </p>
               </div>
             ))}
+          </div>
           </div>
         </section>
       )}

@@ -129,10 +129,24 @@ function getLocalData<T>(key: string, fallback: T): T {
 
 function setLocalData<T>(key: string, data: T): void {
   if (typeof window === 'undefined') return;
+  // Security: Never save members or admin credentials into localStorage
+  if (key.includes('members') || key.includes('admin_profiles')) return;
   try {
     window.localStorage.setItem(key, JSON.stringify(data));
   } catch (e) {
     console.warn('localStorage error:', e);
+  }
+}
+
+// Güvenlik: Eski sürümlerden kalma hassas verileri tarayıcı hafızasından (localStorage) derhal temizle
+if (typeof window !== 'undefined') {
+  try {
+    window.localStorage.removeItem('ytufok_local_members');
+    window.localStorage.removeItem('ytufok_local_admin_profiles');
+    window.sessionStorage.removeItem('ytufok_local_members');
+    window.sessionStorage.removeItem('ytufok_local_admin_profiles');
+  } catch {
+    // ignore
   }
 }
 
@@ -144,7 +158,7 @@ export function ensureSupabaseConfigured(): boolean {
 // Sıfır gecikmeli ilk ekran çizimi için varsayılan başlangıç durumu
 const defaultInitialState = {
   equipmentList: INITIAL_EQUIPMENT.map(sanitizeEquipmentItem),
-  members: INITIAL_MEMBERS.map(normalizeMemberRecord),
+  members: [] as Member[], // Güvenlik: Üye listesi başlangıç durumunda boş tutulur
   trips: INITIAL_TRIPS,
   activeTrips: INITIAL_TRIPS.filter((t) => t.is_active),
   reservations: INITIAL_RESERVATIONS,
@@ -208,6 +222,7 @@ export const api = {
     }
 
     try {
+      const isAdmin = Boolean(getActiveSessionAdminId());
       const [
         eqRes,
         memRes,
@@ -215,17 +230,18 @@ export const api = {
         tripRes,
         annRes,
         darkSlotRes,
-        darkResRes,
-        adminRes
+        darkResRes
       ] = await Promise.allSettled([
         supabase.from('equipment').select('*').order('name', { ascending: true }),
-        supabase.from('members').select('*').order('full_name', { ascending: true }),
+        // Güvenlik: Üye listesi yalnızca aktif yönetici oturumlarında yüklenir, halka açık isteklerde asla çekilmez
+        isAdmin 
+          ? supabase.from('members').select('*').order('full_name', { ascending: true }) 
+          : Promise.resolve({ data: [] as any[], error: null }),
         supabase.from('reservations').select('*').order('created_at', { ascending: false }),
         supabase.from('trips').select('*').order('start_date', { ascending: true }),
         supabase.from('announcements').select('*').order('created_at', { ascending: false }),
         supabase.from('darkroom_slots').select('*').order('date', { ascending: true }),
-        supabase.from('darkroom_reservations').select('*').order('created_at', { ascending: false }),
-        supabase.from('admin_profiles').select('*')
+        supabase.from('darkroom_reservations').select('*').order('created_at', { ascending: false })
       ]);
 
       const baseBySerial = new Map<string, Equipment>();
@@ -339,20 +355,8 @@ export const api = {
         });
       }
 
-      // 6. Admin Profiles & PINs
-      let adminProfiles: AdminProfile[] = INITIAL_ADMIN_PROFILES;
-      if (
-        adminRes.status === 'fulfilled' &&
-        !adminRes.value.error &&
-        Array.isArray(adminRes.value.data) &&
-        adminRes.value.data.length > 0
-      ) {
-        const pinMap = new Map(adminRes.value.data.map((r: any) => [r.id, r]));
-        adminProfiles = INITIAL_ADMIN_PROFILES.map((def) => {
-          const match = pinMap.get(def.id);
-          return match ? { ...def, pin: match.pin || def.pin, pin_updated_at: match.pin_updated_at } : def;
-        });
-      }
+      // 6. Admin Profiles (Güvenlik: Şifreler client tarafına asla çekilmez)
+      const adminProfiles: AdminProfile[] = INITIAL_ADMIN_PROFILES;
       const currentAdminId = getActiveSessionAdminId();
       const activeAdmin = currentAdminId
         ? adminProfiles.find((p) => p.id === currentAdminId) || null
@@ -431,11 +435,42 @@ export const api = {
       return { success: false, message: 'Lütfen öğrenci numaranızı giriniz.' };
     }
 
+    // 1. Supabase Güvenli RPC Fonksiyonunu Dene (Server-side)
+    if (isSupabaseConfigured()) {
+      try {
+        const { data: rpcData, error: rpcError } = await supabase.rpc('verify_student_member', {
+          p_student_number: cleanNumber
+        });
+
+        if (!rpcError && rpcData && typeof rpcData === 'object') {
+          return rpcData as { success: boolean; member?: Member; message: string };
+        }
+      } catch (err) {
+        // RPC henüz çalıştırılmadıysa fallback akışına devam et
+      }
+    }
+
+    // 2. Serverless API Endpoint'ini Dene
+    try {
+      const res = await fetch('/api/verify-member', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentNumber: cleanNumber })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        return json;
+      }
+    } catch {
+      // ignore
+    }
+
+    // 3. Güvenli Tekil Satır Sorgusu (Yalnızca aranan tek öğrenciyi çeker, tüm tabloyu asla istemciye indirmez)
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase
           .from('members')
-          .select('*')
+          .select('id, student_number, full_name, department, status, role, penalty_count, penalty_reason')
           .eq('student_number', cleanNumber)
           .maybeSingle();
 
@@ -466,24 +501,9 @@ export const api = {
       }
     }
 
-    const members = await this.getMembers();
-    const normalizedInput = cleanNumber.toLowerCase().replace(/[\s\.\-_]/g, '');
-    const foundMember = members.find((m) => {
-      const normalizedTarget = m.student_number.toLowerCase().replace(/[\s\.\-_]/g, '');
-      return normalizedTarget === normalizedInput;
-    });
-
-    if (!foundMember) {
-      return {
-        success: false,
-        message: 'Bu öğrenci numarası aktif kulüp üyesi whitelist listesinde bulunamadı.'
-      };
-    }
-
     return {
-      success: true,
-      member: foundMember,
-      message: `Hoş geldiniz, ${foundMember.full_name} (${foundMember.department}). Üyeliğiniz aktif.`
+      success: false,
+      message: 'Girdiğiniz öğrenci numarası kulüp üye listesinde bulunamadı.'
     };
   },
 
@@ -950,20 +970,7 @@ export const api = {
   // 5. YÖNETİCİ PROFİLLERİ & PIN ŞİFRELERİ
   // ==========================================
   async getAdminProfiles(_forceFresh = false): Promise<AdminProfile[]> {
-    if (isSupabaseConfigured()) {
-      try {
-        const { data, error } = await supabase.from('admin_profiles').select('*');
-        if (!error && data && data.length > 0) {
-          const pinMap = new Map(data.map((r: any) => [r.id, r]));
-          return INITIAL_ADMIN_PROFILES.map((def) => {
-            const match = pinMap.get(def.id);
-            return match ? { ...def, pin: match.pin || def.pin, pin_updated_at: match.pin_updated_at } : def;
-          });
-        }
-      } catch (err) {
-        console.warn('Supabase getAdminProfiles error:', err);
-      }
-    }
+    // Güvenlik: PIN şifresi asla istemciye getirilmez, sadece genel profil bilgileri döndürülür
     return INITIAL_ADMIN_PROFILES;
   },
 
@@ -972,6 +979,49 @@ export const api = {
     if (!adminId) return null;
     const profiles = await this.getAdminProfiles();
     return profiles.find((p) => p.id === adminId) || null;
+  },
+
+  async verifyAdminPin(adminId: string, pin: string): Promise<{ success: boolean; message: string }> {
+    const cleanPin = pin.trim();
+    if (!cleanPin) {
+      return { success: false, message: 'Lütfen PIN şifrenizi giriniz.' };
+    }
+
+    // 1. Supabase PostgreSQL RPC (Sunucu Tarafında Doğrulama)
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase.rpc('verify_admin_pin', {
+          p_admin_id: adminId,
+          p_pin: cleanPin
+        });
+
+        if (!error && data && typeof data === 'object') {
+          return data as { success: boolean; message: string };
+        }
+      } catch {
+        // RPC henüz veritabanında çalıştırılmadıysa API rotasına devam et
+      }
+    }
+
+    // 2. Vercel Serverless Güvenli API Doğrulaması
+    try {
+      const res = await fetch('/api/verify-admin-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminId, pin: cleanPin })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        return json;
+      }
+    } catch {
+      // ignore
+    }
+
+    return {
+      success: false,
+      message: 'Hatalı PIN kodu veya sunucuya ulaşılamadı.'
+    };
   },
 
   async setActiveAdmin(adminId: string | null): Promise<void> {
@@ -1049,49 +1099,62 @@ export const api = {
     currentPin: string,
     newPin: string
   ): Promise<{ success: boolean; message: string; updatedProfile?: AdminProfile }> {
-    const profiles = await this.getAdminProfiles(true);
-    const target = profiles.find((p) => p.id === adminId);
-    if (!target) return { success: false, message: 'Yönetici hesabı bulunamadı.' };
+    const cleanCurrent = currentPin.trim();
+    const cleanNew = newPin.trim();
 
-    if (target.pin !== currentPin.trim()) {
-      return { success: false, message: 'Mevcut PIN şifresi hatalı.' };
+    if (!cleanCurrent || !cleanNew) {
+      return { success: false, message: 'Lütfen tüm alanları doldurunuz.' };
     }
-
-    if (!newPin || newPin.trim().length < 4) {
+    if (cleanNew.length < 4) {
       return { success: false, message: 'Yeni PIN en az 4 karakter olmalıdır.' };
     }
 
-    const updatedProfile: AdminProfile = {
-      ...target,
-      pin: newPin.trim(),
-      pin_updated_at: new Date().toISOString()
-    };
+    // 1. Supabase PostgreSQL RPC (Sunucu Tarafında Güncelleme)
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase.rpc('update_admin_pin', {
+          p_admin_id: adminId,
+          p_current_pin: cleanCurrent,
+          p_new_pin: cleanNew
+        });
 
-    if (!isSupabaseConfigured()) {
-      const list = getLocalData<AdminProfile[]>('ytufok_local_admin_profiles', defaultInitialState.adminProfiles);
-      const idx = list.findIndex(p => p.id === adminId);
-      if (idx !== -1) list[idx] = updatedProfile;
-      else list.push(updatedProfile);
-      setLocalData('ytufok_local_admin_profiles', list);
-      return {
-        success: true,
-        message: 'PIN şifreniz başarıyla güncellendi!',
-        updatedProfile
-      };
+        if (!error && data && typeof data === 'object') {
+          const res = data as { success: boolean; message: string };
+          if (res.success) {
+            const profiles = await this.getAdminProfiles();
+            const updated = profiles.find((p) => p.id === adminId);
+            return { success: true, message: res.message, updatedProfile: updated };
+          }
+          return res;
+        }
+      } catch {
+        // fallback
+      }
     }
 
-    const { error } = await supabase
-      .from('admin_profiles')
-      .upsert({ id: adminId, pin: newPin.trim(), pin_updated_at: new Date().toISOString() });
-
-    if (error) {
-      throw new Error(`Supabase PIN güncelleme hatası: ${error.message}`);
+    // 2. Serverless API Doğrulaması ve Güncelleme
+    try {
+      const res = await fetch('/api/update-admin-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminId, currentPin: cleanCurrent, newPin: cleanNew })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          const profiles = await this.getAdminProfiles();
+          const updated = profiles.find((p) => p.id === adminId);
+          return { success: true, message: json.message, updatedProfile: updated };
+        }
+        return json;
+      }
+    } catch {
+      // ignore
     }
 
     return {
-      success: true,
-      message: 'PIN şifreniz başarıyla güncellendi!',
-      updatedProfile
+      success: false,
+      message: 'Şifre güncellenirken sunucu bağlantı hatası oluştu.'
     };
   },
 
@@ -1113,8 +1176,7 @@ export const api = {
         console.warn('Supabase getMembers error:', err);
       }
     }
-    const bundle = await this.getDashboardBundle();
-    return bundle.members;
+    return [];
   },
 
   async addMember(member: Omit<Member, 'id'>): Promise<Member> {

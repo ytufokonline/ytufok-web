@@ -208,15 +208,18 @@ export const AdminDashboard: React.FC = () => {
       const bundle = await api.getDashboardBundle(true);
       setReservations(bundle.reservations);
       setEquipmentList(bundle.equipmentList);
-      setMembers(bundle.members);
+      let memList = bundle.members;
+      if (!memList || memList.length === 0) {
+        memList = await api.getMembers();
+      }
+      setMembers(memList);
       setAdminProfiles(bundle.adminProfiles);
       if (bundle.activeAdmin) {
         setActiveAdmin((prev) => {
           if (
             prev?.id === bundle.activeAdmin?.id &&
             prev?.full_name === bundle.activeAdmin?.full_name &&
-            prev?.title === bundle.activeAdmin?.title &&
-            prev?.pin === bundle.activeAdmin?.pin
+            prev?.title === bundle.activeAdmin?.title
           ) {
             return prev;
           }

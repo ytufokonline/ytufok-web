@@ -68,7 +68,7 @@ export interface AdminProfile {
   email?: string;
   phone: string;
   avatar_color: string;
-  pin: string;
+  pin?: string;
   pin_updated_at?: string;
 }
 

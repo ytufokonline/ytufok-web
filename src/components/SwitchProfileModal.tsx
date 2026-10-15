@@ -51,22 +51,20 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
     setError(null);
 
     try {
-      // 1. Şifreyi doğrula
-      const freshProfiles = await api.getAdminProfiles(true);
-      const latest = freshProfiles.find(p => p.id === targetProfile.id) || targetProfile;
-      const validPin = latest.pin || '19111994';
+      // Güvenlik: Şifre sunucu tarafında (RPC / Serverless API) doğrulanır
+      const result = await api.verifyAdminPin(targetProfile.id, cleanPin);
 
-      if (cleanPin !== validPin) {
-        setError('Girdiğiniz şifre hatalı!');
+      if (!result.success) {
+        setError(result.message || 'Girdiğiniz şifre hatalı!');
         setIsSubmitting(false);
         return;
       }
 
-      // 2. Başarılı ise aktif yöneticiyi güncelle
-      await api.setActiveAdmin(latest.id);
+      // Başarılı ise aktif yöneticiyi güncelle
+      await api.setActiveAdmin(targetProfile.id);
       setIsSubmitting(false);
       onClose();
-      if (onSuccess) onSuccess(latest);
+      if (onSuccess) onSuccess(targetProfile);
     } catch (err: any) {
       setError(err?.message || 'Geçiş yapılırken bir hata oluştu.');
       setIsSubmitting(false);

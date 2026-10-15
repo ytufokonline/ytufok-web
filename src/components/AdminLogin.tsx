@@ -40,39 +40,30 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
     if (!selectedProfile) return;
 
     const cleanPin = pin.trim();
-    const localValidPin = selectedProfile.pin || '19111994';
-
-    // 1. Mevcut profil şifresi eşleşiyorsa ağ beklemesi olmadan ANINDA (0ms) giriş yap
-    if (cleanPin === localValidPin) {
-      setError(null);
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      onLogin(selectedProfile);
+    if (!cleanPin) {
+      setError('Lütfen şifrenizi (PIN) giriniz.');
       return;
     }
 
-    // 2. Eşleşmediyse başka cihazdan yeni değiştirilmiş olma ihtimaline karşı buluttan kontrol et
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const freshProfiles = await api.getAdminProfiles(true);
-      setLocalProfiles(freshProfiles);
-      if (onProfilesUpdate) onProfilesUpdate(freshProfiles);
+      // Güvenlik: Şifre kontrolü asla tarayıcıda yapılmaz; güvenli sunucu (RPC/API) üzerinden doğrulanır
+      const result = await api.verifyAdminPin(selectedProfile.id, cleanPin);
 
-      const latestProfile = freshProfiles.find(p => p.id === selectedProfile.id) || selectedProfile;
-      const validPin = latestProfile.pin || '19111994';
-
-      if (cleanPin !== validPin) {
-        setError('Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
+      if (!result.success) {
+        setError(result.message || 'Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
         setIsSubmitting(false);
         return;
       }
 
+      await api.setActiveAdmin(selectedProfile.id);
       setIsSubmitting(false);
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      onLogin(latestProfile);
+      onLogin(selectedProfile);
     } catch {
-      setError('Hatalı şifre girdiniz! Lütfen kontrol edip tekrar deneyiniz.');
+      setError('Giriş yapılırken sunucu bağlantı hatası oluştu. Lütfen tekrar deneyiniz.');
       setIsSubmitting(false);
     }
   };

@@ -66,16 +66,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           <a 
             href={TAB_PATHS.home}
             onClick={(e) => handleNavClick('home', e)}
-            className="flex items-center gap-2.5 cursor-pointer group select-none"
+            className="flex items-center cursor-pointer group select-none py-1"
+            aria-label="YTÜFOK Ana Sayfa"
           >
             <img 
               src="/logo.png" 
               alt="YTÜFOK" 
-              className="h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity"
+              className="h-7 sm:h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity"
             />
-            <span className="text-sm font-semibold text-white tracking-tight font-satoshi">
-              Rezervasyon Sitesi
-            </span>
           </a>
 
           {/* Desktop Nav - Minimalist text links */}

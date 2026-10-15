@@ -491,19 +491,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         </section>
       )}
 
-      {/* 7. MANİFESTO İMZA KAPANIŞI (Apple Quiet Editorial Statement) */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 text-center space-y-4 border-t border-white/[0.08]">
-        <div className="text-[11px] font-mono tracking-[0.3em] uppercase text-white/30">
-          YTÜFOK MANİFESTO
-        </div>
-        <p className="text-2xl sm:text-3xl lg:text-4xl font-light text-white font-club tracking-tight leading-snug">
-          "Bir kare çekeriz; bir asır kalır."
-        </p>
-        <span className="text-xs font-mono text-white/40 block tracking-wider pt-2">
-          YILDIZ TEKNİK ÜNİVERSİTESİ FOTOĞRAF KULÜBÜ • DAVUTPAŞA KAMPÜSÜ
-        </span>
-      </section>
-
     </div>
   );
 };

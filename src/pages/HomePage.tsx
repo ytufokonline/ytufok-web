@@ -47,8 +47,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
       <section className="pt-8 sm:pt-14 lg:pt-20 border-b border-white/[0.08] pb-20 sm:pb-28">
         <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left space-y-10 sm:space-y-12">
           
-          {/* YTÜFOK Official Logo (Left-Aligned, Crisp Scale - Enlaraged 15%) */}
-          <div className="w-64 sm:w-[330px] md:w-[370px] lg:w-[440px]">
+          {/* YTÜFOK Official Logo (Left-Aligned, Crisp Scale) */}
+          <div className="w-56 sm:w-72 md:w-80 lg:w-96">
             <img
               src="/ytufok-hero-logo.png?v=2"
               alt="YTÜFOK - Yıldız Teknik Üniversitesi Fotoğraf Kulübü"

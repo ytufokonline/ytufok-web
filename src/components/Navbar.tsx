@@ -62,40 +62,43 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           
-          {/* Brand - Apple style minimal brand mark */}
-          <a 
-            href={TAB_PATHS.home}
-            onClick={(e) => handleNavClick('home', e)}
-            className="flex items-center cursor-pointer group select-none py-1"
-            aria-label="YTÜFOK Ana Sayfa"
-          >
-            <img 
-              src="/logo.png" 
-              alt="YTÜFOK" 
-              className="h-7 sm:h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity"
-            />
-          </a>
+          {/* Brand & Desktop Nav Group */}
+          <div className="flex items-center gap-6 lg:gap-8">
+            {/* Brand - Apple style minimal brand mark */}
+            <a 
+              href={TAB_PATHS.home}
+              onClick={(e) => handleNavClick('home', e)}
+              className="flex items-center cursor-pointer group select-none py-1"
+              aria-label="YTÜFOK Ana Sayfa"
+            >
+              <img 
+                src="/logo.png" 
+                alt="YTÜFOK" 
+                className="h-7 sm:h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity"
+              />
+            </a>
 
-          {/* Desktop Nav - Minimalist text links */}
-          <nav className="hidden md:flex items-center gap-5 lg:gap-7">
-            {navItems.map((item) => {
-              const isActive = activeTab === item.id;
-              return (
-                <a
-                  key={item.id}
-                  href={item.path}
-                  onClick={(e) => handleNavClick(item.id, e)}
-                  className={`text-[13px] tracking-tight transition-colors duration-150 relative py-1 ${
-                    isActive
-                      ? 'text-white font-medium after:absolute after:bottom-0 after:inset-x-0 after:h-[1.5px] after:bg-white'
-                      : 'text-white/60 hover:text-white'
-                  }`}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-          </nav>
+            {/* Desktop Nav - Minimalist text links */}
+            <nav className="hidden md:flex items-center gap-5 lg:gap-7">
+              {navItems.map((item) => {
+                const isActive = activeTab === item.id;
+                return (
+                  <a
+                    key={item.id}
+                    href={item.path}
+                    onClick={(e) => handleNavClick(item.id, e)}
+                    className={`text-[13px] tracking-tight transition-colors duration-150 relative py-1 ${
+                      isActive
+                        ? 'text-white font-medium after:absolute after:bottom-0 after:inset-x-0 after:h-[1.5px] after:bg-white'
+                        : 'text-white/60 hover:text-white'
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
+            </nav>
+          </div>
 
           {/* Desktop Admin / User Profile Area */}
           <div className="hidden md:flex items-center gap-3">

@@ -967,8 +967,8 @@ export const AdminDashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <RefreshCw className="w-8 h-8 text-[#8193b2] animate-spin" />
-        <p className="text-sm text-[#a9b9d3]">Yönetici oturumu ve veriler yükleniyor...</p>
+        <RefreshCw className="w-8 h-8 text-white/60 animate-spin" />
+        <p className="text-sm text-white/70">Yönetici oturumu ve veriler yükleniyor...</p>
       </div>
     );
   }
@@ -988,16 +988,16 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Top Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-[#657796]/20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#301322] border border-[#657796]/40 text-[#eed1d1] text-xs font-semibold mb-2 uppercase tracking-wider">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#8193b2]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/35 border border-white/15 text-[#eed1d1] text-xs font-semibold mb-2 uppercase tracking-wider">
+            <ShieldCheck className="w-3.5 h-3.5 text-white/60" />
             <span>Kulüp Yönetim Kurulu</span>
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight font-club">
             Yönetim ve Zimmet Kontrol Paneli
           </h1>
-          <p className="text-[#a9b9d3] text-xs sm:text-sm mt-1">
+          <p className="text-white/70 text-xs sm:text-sm mt-1">
             Ekipman zimmet takibi, anlık onay, denetim izi ve üye whitelist.
           </p>
         </div>
@@ -1005,39 +1005,39 @@ export const AdminDashboard: React.FC = () => {
         {/* Active Board Member Profile & Switcher */}
         <div className="flex flex-wrap items-center gap-3">
           {activeAdmin && (
-            <div className="flex items-center gap-3 bg-[#1c0f18] border border-[#657796]/30 px-3.5 py-2 rounded-2xl shadow-md">
-              <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
+            <div className="flex items-center gap-3 bg-black/25 border border-white/10 px-3.5 py-2 rounded-2xl shadow-md">
+              <div className="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center text-white text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
                 {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
               </div>
               <div>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-xs font-bold text-white">{activeAdmin.full_name}</span>
-                  <span className="text-[10px] font-bold text-[#eed1d1] bg-[#301322] px-2 py-0.5 rounded-full border border-[#657796]/40">
+                  <span className="text-[10px] font-bold text-[#eed1d1] bg-black/35 px-2 py-0.5 rounded-full border border-white/15">
                     {activeAdmin.title}
                   </span>
-                  <span className="text-[9px] font-bold text-[#8193b2] bg-[#657796]/15 px-1.5 py-0.5 rounded-full border border-[#657796]/30">
+                  <span className="text-[9px] font-bold text-white/60 bg-[#657796]/15 px-1.5 py-0.5 rounded-full border border-white/10">
                     Tam Yetkili
                   </span>
                 </div>
-                <span className="text-[10px] text-[#8193b2] block">YTÜFOK Yönetim Kurulu Üyesi</span>
+                <span className="text-[10px] text-white/60 block">YTÜFOK Yönetim Kurulu Üyesi</span>
               </div>
 
               <div className="flex items-center gap-1.5 ml-2">
                 <button
                   onClick={() => setShowChangePasswordModal(true)}
-                  className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
+                  className="px-2.5 py-1.5 rounded-xl bg-black/35 hover:bg-black/50 text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-white/10 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
                   title="Yönetici şifreni (PIN) değiştir"
                 >
-                  <KeyRound className="w-3.5 h-3.5 text-[#8193b2]" />
+                  <KeyRound className="w-3.5 h-3.5 text-white/60" />
                   <span className="hidden sm:inline">Şifremi Değiştir</span>
                 </button>
 
                 <button
                   onClick={() => setShowSwitchProfileModal(true)}
-                  className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
+                  className="px-2.5 py-1.5 rounded-xl bg-black/35 hover:bg-black/50 text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-white/10 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
                   title="Başka bir yönetim kurulu üyesine geç"
                 >
-                  <ArrowRightLeft className="w-3.5 h-3.5 text-[#8193b2]" />
+                  <ArrowRightLeft className="w-3.5 h-3.5 text-white/60" />
                   <span className="hidden sm:inline">Profil Değiştir</span>
                 </button>
 
@@ -1056,7 +1056,7 @@ export const AdminDashboard: React.FC = () => {
           <button
             onClick={loadAllData}
             disabled={loading}
-            className="px-3.5 py-2.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] hover:text-white text-xs font-semibold flex items-center gap-2 border border-[#657796]/30 transition-colors w-fit shadow-sm cursor-pointer"
+            className="px-3.5 py-2.5 rounded-xl bg-black/35 hover:bg-black/50 text-[#eed1d1] hover:text-white text-xs font-semibold flex items-center gap-2 border border-white/10 transition-colors w-fit shadow-sm cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Yenile</span>
@@ -1068,37 +1068,37 @@ export const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div 
           onClick={() => { setActiveTab('reservations'); setReservationFilter('pending'); }}
-          className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 cursor-pointer hover:border-[#657796] transition-all"
+          className="p-5 rounded-2xl bg-black/25 border border-white/10 cursor-pointer hover:border-white/30 transition-all"
         >
-          <div className="flex items-center justify-between text-xs text-[#a9b9d3] font-semibold mb-2">
+          <div className="flex items-center justify-between text-xs text-white/70 font-semibold mb-2">
             <span>Onay Bekleyen</span>
-            <Clock className="w-4 h-4 text-[#8193b2]" />
+            <Clock className="w-4 h-4 text-white/60" />
           </div>
           <div className="text-3xl font-bold text-white font-club">
             {pendingCount}
           </div>
-          <p className="text-[11px] text-[#8193b2] mt-1">İncelenecek yeni talep</p>
+          <p className="text-[11px] text-white/60 mt-1">İncelenecek yeni talep</p>
         </div>
 
         <div 
           onClick={() => setActiveTab('tracking')}
-          className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 cursor-pointer hover:border-[#657796] transition-all"
+          className="p-5 rounded-2xl bg-black/25 border border-white/10 cursor-pointer hover:border-white/30 transition-all"
         >
-          <div className="flex items-center justify-between text-xs text-[#a9b9d3] font-semibold mb-2">
+          <div className="flex items-center justify-between text-xs text-white/70 font-semibold mb-2">
             <span>Zimmette (Dışarıda)</span>
-            <Camera className="w-4 h-4 text-[#8193b2]" />
+            <Camera className="w-4 h-4 text-white/60" />
           </div>
           <div className="text-3xl font-bold text-white font-club">
             {inUseCount}
           </div>
-          <p className="text-[11px] text-[#8193b2] mt-1">Öğrencinin elindeki ekipman</p>
+          <p className="text-[11px] text-white/60 mt-1">Öğrencinin elindeki ekipman</p>
         </div>
 
         <div 
           onClick={() => { setActiveTab('reservations'); setReservationFilter('in_use'); }}
-          className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 cursor-pointer hover:border-rose-400 transition-all"
+          className="p-5 rounded-2xl bg-black/25 border border-white/10 cursor-pointer hover:border-rose-400 transition-all"
         >
-          <div className="flex items-center justify-between text-xs text-[#a9b9d3] font-semibold mb-2">
+          <div className="flex items-center justify-between text-xs text-white/70 font-semibold mb-2">
             <span>Geciken İadeler</span>
             <AlertTriangle className="w-4 h-4 text-rose-400" />
           </div>
@@ -1110,16 +1110,16 @@ export const AdminDashboard: React.FC = () => {
 
         <div 
           onClick={() => setActiveTab('equipment')}
-          className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 cursor-pointer hover:border-[#657796] transition-all"
+          className="p-5 rounded-2xl bg-black/25 border border-white/10 cursor-pointer hover:border-white/30 transition-all"
         >
-          <div className="flex items-center justify-between text-xs text-[#a9b9d3] font-semibold mb-2">
+          <div className="flex items-center justify-between text-xs text-white/70 font-semibold mb-2">
             <span>Toplam Demirbaş</span>
-            <Package className="w-4 h-4 text-[#8193b2]" />
+            <Package className="w-4 h-4 text-white/60" />
           </div>
           <div className="text-3xl font-bold text-white font-club">
             {totalEquipment}
           </div>
-          <p className="text-[11px] text-[#8193b2] mt-1">Kayıtlı makine ve lens</p>
+          <p className="text-[11px] text-white/60 mt-1">Kayıtlı makine ve lens</p>
         </div>
       </div>
 
@@ -1212,13 +1212,13 @@ export const AdminDashboard: React.FC = () => {
       {/* TAB 1: RESERVATIONS */}
       {activeTab === 'reservations' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-black/25 border border-white/10">
             <input
               type="text"
               placeholder="Kod, öğrenci veya ekipman ara..."
               value={searchReservationQuery}
               onChange={(e) => setSearchReservationQuery(e.target.value)}
-              className="w-full sm:w-72 px-3 py-1.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+              className="w-full sm:w-72 px-3 py-1.5 rounded-xl bg-black/35 border border-white/10 text-white text-xs"
             />
             <div className="flex flex-wrap gap-1 text-xs">
               {['all', 'pending', 'approved', 'in_use', 'returned', 'rejected'].map(f => (
@@ -1226,7 +1226,7 @@ export const AdminDashboard: React.FC = () => {
                   key={f}
                   onClick={() => setReservationFilter(f)}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold ${
-                    reservationFilter === f ? 'bg-white text-[#301322] font-bold' : 'bg-[#301322] text-[#eed1d1] hover:text-white'
+                    reservationFilter === f ? 'bg-white text-black font-bold' : 'bg-black/35 text-[#eed1d1] hover:text-white'
                   }`}
                 >
                   {f === 'all' ? 'Tümü' : f === 'pending' ? 'Onay Bekleyen' : f === 'approved' ? 'Onaylı' : f === 'in_use' ? 'Zimmette' : f === 'returned' ? 'İade' : 'Reddedilen'}
@@ -1235,10 +1235,10 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
+          <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-[#eed1d1]">
-                <thead className="bg-[#41041d] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+                <thead className="bg-black/35 text-[10px] uppercase text-white/60 border-b border-white/10">
                   <tr>
                     <th className="p-3.5">Kod & Talep Zamanı</th>
                     <th className="p-3.5">Öğrenci</th>
@@ -1248,20 +1248,20 @@ export const AdminDashboard: React.FC = () => {
                     <th className="p-3.5 text-right">İşlem</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#657796]/15">
+                <tbody className="divide-y divide-white/10">
                   {filteredReservations.map(r => (
-                    <tr key={r.id} className="hover:bg-[#301322]/40">
+                    <tr key={r.id} className="hover:bg-black/20">
                       <td className="p-3.5">
                         <span className="font-mono font-bold text-white block">{r.reservation_code}</span>
                         {r.created_at && (
-                          <div className="text-[10px] text-[#8193b2] flex items-center gap-1 mt-0.5" title="Sisteme rezervasyon girilme anı">
-                            <Clock className="w-3 h-3 text-[#8193b2] shrink-0" />
+                          <div className="text-[10px] text-white/60 flex items-center gap-1 mt-0.5" title="Sisteme rezervasyon girilme anı">
+                            <Clock className="w-3 h-3 text-white/60 shrink-0" />
                             <span className="font-mono">{new Date(r.created_at).toLocaleDateString('tr-TR')} {new Date(r.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
                         )}
                         {r.trip && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-sans font-bold text-[#eed1d1] bg-[#301322] px-2 py-0.5 rounded-full border border-[#657796]/40 mt-1">
-                            <Compass className="w-3 h-3 text-[#8193b2]" />
+                          <span className="inline-flex items-center gap-1 text-[9px] font-sans font-bold text-[#eed1d1] bg-black/35 px-2 py-0.5 rounded-full border border-white/15 mt-1">
+                            <Compass className="w-3 h-3 text-white/60" />
                             <span>{r.trip.title}</span>
                           </span>
                         )}
@@ -1269,9 +1269,9 @@ export const AdminDashboard: React.FC = () => {
                       <td className="p-3.5">
                         <strong className="text-white block">{r.member?.full_name}</strong>
                         {!isBoardMemberObj(r.member) && (
-                          <span className="text-[#a9b9d3] font-mono text-[11px]">{r.student_number}</span>
+                          <span className="text-white/70 font-mono text-[11px]">{r.student_number}</span>
                         )}
-                        <span className="text-[9px] text-[#8193b2] block mt-0.5">
+                        <span className="text-[9px] text-white/60 block mt-0.5">
                           {isBoardMemberObj(r.member)
                             ? 'Yönetim Kurulu Üyesi'
                             : r.member?.member_type === 'active'
@@ -1285,14 +1285,14 @@ export const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="p-3.5">
                         <strong className="text-white block text-xs">{r.equipment?.name}</strong>
-                        <span className="text-[#8193b2] font-mono text-[10px]">{r.equipment?.serial_number}</span>
+                        <span className="text-white/60 font-mono text-[10px]">{r.equipment?.serial_number}</span>
                         {r.purpose && (
-                          <div className="text-[10px] text-[#a9b9d3] mt-0.5 line-clamp-1" title={r.purpose}>
+                          <div className="text-[10px] text-white/70 mt-0.5 line-clamp-1" title={r.purpose}>
                             {r.purpose}
                           </div>
                         )}
                         {r.additional_notes && (
-                          <div className="text-[10px] text-[#eed1d1] bg-[#301322] px-2 py-0.5 rounded-md border border-[#657796]/30 mt-1 inline-block" title={r.additional_notes}>
+                          <div className="text-[10px] text-[#eed1d1] bg-black/35 px-2 py-0.5 rounded-md border border-white/10 mt-1 inline-block" title={r.additional_notes}>
                             💬 {r.additional_notes}
                           </div>
                         )}
@@ -1316,7 +1316,7 @@ export const AdminDashboard: React.FC = () => {
                           </div>
                         ) : null}
                         {r.checked_out_by && (
-                          <div className="text-[10px] text-[#8193b2]">
+                          <div className="text-[10px] text-white/60">
                             Teslim: <strong>{cleanAdminName(r.checked_out_by)}</strong>
                           </div>
                         )}
@@ -1334,13 +1334,13 @@ export const AdminDashboard: React.FC = () => {
                           <>
                             <button
                               onClick={() => handleApprove(r.id)}
-                              className="px-2.5 py-1 rounded-lg bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                             >
                               Onayla
                             </button>
                             <button
                               onClick={() => setRejectModalData({ id: r.id, code: r.reservation_code })}
-                              className="px-2.5 py-1 rounded-lg bg-[#1c0d18] text-rose-300 text-xs hover:bg-rose-950/40 border border-rose-500/30 transition-colors cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg bg-black/30 text-rose-300 text-xs hover:bg-rose-950/40 border border-rose-500/30 transition-colors cursor-pointer"
                             >
                               Reddet
                             </button>
@@ -1357,18 +1357,18 @@ export const AdminDashboard: React.FC = () => {
                         {r.status === 'in_use' && (
                           <button
                             onClick={() => setReturnModalData({ id: r.id, equipmentName: r.equipment?.name || 'Ekipman' })}
-                            className="px-2.5 py-1 rounded-lg bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                           >
                             İade Al
                           </button>
                         )}
                         {['returned', 'rejected', 'cancelled'].includes(r.status) && (
                           <div className="inline-flex items-center gap-2">
-                            <span className="text-[#a9b9d3] text-[11px]">Kapatıldı</span>
+                            <span className="text-white/70 text-[11px]">Kapatıldı</span>
                             <button
                               onClick={() => handleDeleteReservation(r)}
                               title="Kaydı Sil"
-                              className="p-1 rounded-lg bg-[#301322] hover:bg-rose-950/70 text-[#8193b2] hover:text-rose-300 border border-[#657796]/30 hover:border-rose-500/30 transition-colors inline-flex items-center cursor-pointer"
+                              className="p-1 rounded-lg bg-black/35 hover:bg-rose-950/70 text-white/60 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-colors inline-flex items-center cursor-pointer"
                             >
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -1389,41 +1389,41 @@ export const AdminDashboard: React.FC = () => {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {currentlyInUseList.length === 0 ? (
-              <div className="col-span-full py-16 text-center rounded-2xl bg-[#1c0f18] border border-[#657796]/20 text-[#a9b9d3]">
+              <div className="col-span-full py-16 text-center rounded-2xl bg-black/25 border border-white/10 text-white/70">
                 Şu anda dışarıda zimmette olan makine yok.
               </div>
             ) : (
               currentlyInUseList.map(res => (
-                <div key={res.id} className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-3 shadow-lg">
+                <div key={res.id} className="p-5 rounded-2xl bg-black/25 border border-white/10 space-y-3 shadow-lg">
                   <div className="flex justify-between items-center">
                     <span className="font-mono text-xs font-bold text-white">{res.reservation_code}</span>
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#657796] text-white">Zimmette</span>
                   </div>
                   <div>
                     <h4 className="font-bold text-white text-sm font-club">{res.equipment?.name}</h4>
-                    <span className="text-xs text-[#8193b2] font-mono">{res.equipment?.serial_number}</span>
+                    <span className="text-xs text-white/60 font-mono">{res.equipment?.serial_number}</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#41041d] border border-[#657796]/20 text-xs space-y-1.5">
+                  <div className="p-3 rounded-xl bg-[#41041d] border border-white/10 text-xs space-y-1.5">
                     <div className="text-white font-bold">
                       {res.member?.full_name} {!isBoardMemberObj(res.member) && `(${res.student_number})`}
                     </div>
-                    <div className="text-[#a9b9d3]">Tel: {res.member?.phone}</div>
+                    <div className="text-white/70">Tel: {res.member?.phone}</div>
                     <div className="text-[#eed1d1]">Teslim: <strong className="text-white">{res.pickup_date}</strong> → İade: <strong className="text-white">{res.return_date}</strong></div>
                     {res.approved_by && (
-                      <div className="text-[11px] pt-1 border-t border-[#657796]/15">
+                      <div className="text-[11px] pt-1 border-t border-white/[0.08]">
                         <span className="text-emerald-400 font-semibold">Onay: </span>
                         <strong className="text-emerald-300 font-semibold">{cleanAdminName(res.approved_by)}</strong>
                       </div>
                     )}
                     {res.checked_out_by && (
-                      <div className="text-[11px] text-[#8193b2]">
+                      <div className="text-[11px] text-white/60">
                         Teslim Eden: <strong>{cleanAdminName(res.checked_out_by)}</strong>
                       </div>
                     )}
                   </div>
                   <button
                     onClick={() => setReturnModalData({ id: res.id, equipmentName: res.equipment?.name || 'Ekipman' })}
-                    className="w-full py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                    className="w-full py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     İade Alındı Olarak İşaretle
                   </button>
@@ -1441,7 +1441,7 @@ export const AdminDashboard: React.FC = () => {
             <h3 className="text-sm font-bold text-white font-club">Kulüp Demirbaş Listesi</h3>
             <button
               onClick={() => setShowAddEquipmentModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Yeni Ekipman Ekle</span>
@@ -1450,26 +1450,26 @@ export const AdminDashboard: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {equipmentList.map(item => (
-              <div key={item.id} className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-2 flex flex-col justify-between">
+              <div key={item.id} className="p-4 rounded-2xl bg-black/25 border border-white/10 space-y-2 flex flex-col justify-between">
                 <div>
                   <div className="h-32 rounded-xl overflow-hidden bg-black mb-2 relative group">
                     <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                     <button
                       onClick={() => handleOpenEditEquipment(item)}
                       title="Ekipmanı Düzenle"
-                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/75 hover:bg-[#301322] text-white/80 hover:text-white border border-white/10 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow"
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/75 hover:bg-black/35 text-white/80 hover:text-white border border-white/10 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                   </div>
                   <h4 className="text-xs font-bold text-white font-club">{item.name}</h4>
-                  <div className="text-[11px] font-mono text-[#a9b9d3]">{item.serial_number}</div>
-                  <div className="text-[11px] text-[#8193b2] mt-1 flex items-center justify-between">
+                  <div className="text-[11px] font-mono text-white/70">{item.serial_number}</div>
+                  <div className="text-[11px] text-white/60 mt-1 flex items-center justify-between">
                     <span>Kondisyon:</span>
                     <span className="text-[#eed1d1] font-medium truncate max-w-[120px]">{item.current_condition || 'değerlendirilecek'}</span>
                   </div>
                 </div>
-                <div className="pt-2 border-t border-[#657796]/20 flex justify-between items-center text-xs">
+                <div className="pt-2 border-t border-white/10 flex justify-between items-center text-xs">
                   <StatusBadge status={item.status} type="equipment" size="sm" />
                   <button
                     onClick={async () => {
@@ -1482,7 +1482,7 @@ export const AdminDashboard: React.FC = () => {
                         alert(err?.message || 'Ekipman durumu güncellenirken hata oluştu.');
                       }
                     }}
-                    className="text-[11px] text-[#8193b2] hover:text-white underline cursor-pointer"
+                    className="text-[11px] text-white/60 hover:text-white underline cursor-pointer"
                   >
                     {item.status === 'maintenance' ? 'Müsait Yap' : 'Bakıma Al'}
                   </button>
@@ -1491,15 +1491,15 @@ export const AdminDashboard: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <button
                     onClick={() => handleOpenEditEquipment(item)}
-                    className="py-1.5 rounded-xl bg-[#41041d] hover:bg-[#301322] text-[11px] text-[#eed1d1] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="py-1.5 rounded-xl bg-[#41041d] hover:bg-black/35 text-[11px] text-[#eed1d1] hover:text-white font-medium border border-white/10 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
-                    <Pencil className="w-3 h-3 text-[#8193b2]" />
+                    <Pencil className="w-3 h-3 text-white/60" />
                     <span>Düzenle</span>
                   </button>
 
                   <button
                     onClick={() => handleDeleteEquipment(item)}
-                    className="py-1.5 rounded-xl bg-[#41041d] hover:bg-rose-950/60 text-[11px] text-[#8193b2] hover:text-rose-300 font-medium border border-[#657796]/30 hover:border-rose-500/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="py-1.5 rounded-xl bg-[#41041d] hover:bg-rose-950/60 text-[11px] text-white/60 hover:text-rose-300 font-medium border border-white/10 hover:border-rose-500/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                     <span>Sil</span>
@@ -1508,9 +1508,9 @@ export const AdminDashboard: React.FC = () => {
 
                 <button
                   onClick={() => setSelectedEquipmentForHistory(item)}
-                  className="w-full mt-1 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] text-[#eed1d1] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full mt-1 py-1.5 rounded-xl bg-black/35 hover:bg-black/50 text-[11px] text-[#eed1d1] hover:text-white font-medium border border-white/10 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <History className="w-3.5 h-3.5 text-[#8193b2]" />
+                  <History className="w-3.5 h-3.5 text-white/60" />
                   <span>Kullanım Geçmişi ({reservations.filter(r => r.equipment_id === item.id && r.status !== 'rejected').length})</span>
                 </button>
               </div>
@@ -1525,11 +1525,11 @@ export const AdminDashboard: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
               <h3 className="text-sm font-bold text-white font-club">Aktif Üyeler & Whitelist</h3>
-              <p className="text-xs text-[#a9b9d3]">Öğrenci numarası doğrulanan kulüp üyeleri ve zimmet geçmişleri.</p>
+              <p className="text-xs text-white/70">Öğrenci numarası doğrulanan kulüp üyeleri ve zimmet geçmişleri.</p>
             </div>
             <button
               onClick={() => setShowAddMemberModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>Üye Ekle</span>
@@ -1537,7 +1537,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Members Search & Filter Toolbar */}
-          <div className="p-3.5 rounded-2xl bg-[#1c0f18] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="p-3.5 rounded-2xl bg-black/25 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="relative w-full sm:w-80">
               <Search className="w-3.5 h-3.5 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -1603,9 +1603,9 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
+          <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
             <table className="w-full text-left text-xs text-[#eed1d1]">
-              <thead className="bg-[#41041d] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+              <thead className="bg-black/35 text-[10px] uppercase text-white/60 border-b border-white/10">
                 <tr>
                   <th className="p-3.5">Öğrenci No</th>
                   <th className="p-3.5">İsim & Yetki</th>
@@ -1617,7 +1617,7 @@ export const AdminDashboard: React.FC = () => {
                   <th className="p-3.5 text-right">İşlemler</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#657796]/15">
+              <tbody className="divide-y divide-white/10">
                 {filteredMembers.map(m => {
                   const mReservations = reservations.filter(r => (r.member_id === m.id || r.student_number === m.student_number) && r.status !== 'rejected');
                   const mInUse = mReservations.filter(r => r.status === 'in_use').length;
@@ -1625,16 +1625,16 @@ export const AdminDashboard: React.FC = () => {
                   const isAudit = Boolean(m.role === 'audit' || m.member_type === 'audit');
 
                   return (
-                    <tr key={m.id} className="hover:bg-[#301322]/40 transition-colors">
+                    <tr key={m.id} className="hover:bg-black/20 transition-colors">
                       <td className="p-3.5 font-mono font-bold text-white">
-                        {isBoard ? <span className="text-[#8193b2]">—</span> : m.student_number}
+                        {isBoard ? <span className="text-white/60">—</span> : m.student_number}
                       </td>
                       <td className="p-3.5">
                         <div className="flex items-center gap-2">
                           <strong className="text-white font-bold">{m.full_name}</strong>
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-                            isBoard || isAudit ? 'bg-[#657796]/20 text-[#eed1d1] border border-[#657796]/40' :
-                            'text-[#8193b2]'
+                            isBoard || isAudit ? 'bg-[#657796]/20 text-[#eed1d1] border border-white/15' :
+                            'text-white/60'
                           }`}>
                             {isBoard ? 'Yönetim Kurulu' : isAudit ? 'Denetim Kurulu' : 'Üye'}
                           </span>
@@ -1642,13 +1642,13 @@ export const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="p-3.5">
                         {isBoard ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#eed1d1] border border-[#657796]/40 flex items-center gap-1 w-fit">
-                            <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/35 text-[#eed1d1] border border-white/15 flex items-center gap-1 w-fit">
+                            <ShieldCheck className="w-3 h-3 text-white/60" />
                             <span>Yönetim Kurulu Üyesi</span>
                           </span>
                         ) : isAudit ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#eed1d1] border border-[#657796]/40 flex items-center gap-1 w-fit">
-                            <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/35 text-[#eed1d1] border border-white/15 flex items-center gap-1 w-fit">
+                            <ShieldCheck className="w-3 h-3 text-white/60" />
                             <span>Denetim Kurulu Üyesi</span>
                           </span>
                         ) : m.member_type === 'honorary_active' ? (
@@ -1672,14 +1672,14 @@ export const AdminDashboard: React.FC = () => {
                           </span>
                         )}
                       </td>
-                      <td className="p-3.5 text-[#a9b9d3]">{m.department}</td>
+                      <td className="p-3.5 text-white/70">{m.department}</td>
                       <td className="p-3.5">
                         <button
                           onClick={() => setSelectedMemberForHistory(m)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-xs font-medium text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-black/35 hover:bg-black/50 text-xs font-medium text-[#eed1d1] hover:text-white border border-white/10 transition-colors cursor-pointer"
                           title="Üyenin zimmet ve kullanım geçmişini aç"
                         >
-                          <History className="w-3.5 h-3.5 text-[#8193b2]" />
+                          <History className="w-3.5 h-3.5 text-white/60" />
                           <span>{mReservations.length} Zimmet</span>
                           {mInUse > 0 && (
                             <span className="w-2 h-2 rounded-full bg-[#8193b2] animate-pulse" title="Şu an zimmette ekipmanı var"></span>
@@ -1693,7 +1693,7 @@ export const AdminDashboard: React.FC = () => {
                             <span>{m.penalty_count} Ceza</span>
                           </div>
                         ) : (
-                          <span className="text-[#8193b2]">0 Ceza</span>
+                          <span className="text-white/60">0 Ceza</span>
                         )}
                       </td>
                       <td className="p-3.5">
@@ -1713,7 +1713,7 @@ export const AdminDashboard: React.FC = () => {
                         {!isBoard && !isAudit && (
                           <button
                             onClick={() => handleToggleMemberType(m)}
-                            className="px-2 py-1 rounded-lg bg-[#41041d] hover:bg-[#301322] text-[11px] font-semibold text-[#eed1d1] border border-[#657796]/30 transition-colors cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-[#41041d] hover:bg-black/35 text-[11px] font-semibold text-[#eed1d1] border border-white/10 transition-colors cursor-pointer"
                             title={
                               m.member_type === 'normal' ? 'Bu üyeyi Aktif Üye yap (5 gün önce rezervasyon & Bireysel Çekim)' :
                               m.member_type === 'active' ? 'Bu üyeyi Normal Üye yap (3 gün önce rezervasyon)' :
@@ -1739,7 +1739,7 @@ export const AdminDashboard: React.FC = () => {
                           onClick={() => handleToggleMemberStatus(m)}
                           className={`px-2 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                             m.status === 'active' 
-                              ? 'bg-[#301322] hover:bg-rose-900/40 text-rose-300 border border-rose-500/30' 
+                              ? 'bg-black/35 hover:bg-rose-900/40 text-rose-300 border border-rose-500/30' 
                               : 'bg-emerald-950 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-500/30'
                           }`}
                         >
@@ -1747,16 +1747,16 @@ export const AdminDashboard: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleOpenEditMember(m)}
-                          className="px-2 py-1 rounded-lg bg-[#41041d] hover:bg-[#301322] text-xs font-semibold text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer inline-flex items-center gap-1"
+                          className="px-2 py-1 rounded-lg bg-[#41041d] hover:bg-black/35 text-xs font-semibold text-[#eed1d1] hover:text-white border border-white/10 transition-colors cursor-pointer inline-flex items-center gap-1"
                           title="Üye Bilgilerini Düzenle"
                         >
-                          <Pencil className="w-3 h-3 text-[#8193b2]" />
+                          <Pencil className="w-3 h-3 text-white/60" />
                           <span>Düzenle</span>
                         </button>
                         {!isBoard && (
                           <button
                             onClick={() => handleDeleteMember(m)}
-                            className="px-2 py-1 rounded-lg bg-[#301322] hover:bg-rose-900/60 text-xs font-semibold text-rose-300 hover:text-rose-100 border border-rose-500/30 transition-colors cursor-pointer inline-flex items-center gap-1"
+                            className="px-2 py-1 rounded-lg bg-black/35 hover:bg-rose-900/60 text-xs font-semibold text-rose-300 hover:text-rose-100 border border-rose-500/30 transition-colors cursor-pointer inline-flex items-center gap-1"
                             title="Üyeyi Whitelist'ten Sil"
                           >
                             <Trash2 className="w-3 h-3 text-rose-400" />
@@ -1777,16 +1777,16 @@ export const AdminDashboard: React.FC = () => {
       {activeTab === 'history' && (
         <div className="space-y-6">
           {/* Header & Export Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/30">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-black/25 border border-white/10">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <History className="w-4 h-4 text-[#8193b2]" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#8193b2]">Arşiv & Zimmet Denetim Kayıtları</span>
+                <History className="w-4 h-4 text-white/60" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/60">Arşiv & Zimmet Denetim Kayıtları</span>
               </div>
               <h3 className="text-base font-bold text-white font-club">
                 Tüm Üyelerin Ekipman Kullanım & Zimmet Geçmişi
               </h3>
-              <p className="text-xs text-[#a9b9d3] mt-0.5">
+              <p className="text-xs text-white/70 mt-0.5">
                 Kulüp üyelerinin geçmişten bugüne tüm makine, lens ve aksesuar zimmet kayıtları, teslim-iade kronolojisi ve kontrol notları.
               </p>
             </div>
@@ -1794,7 +1794,7 @@ export const AdminDashboard: React.FC = () => {
               {reservations.length > 0 && (
                 <button
                   onClick={handleClearReservationHistory}
-                  className="px-3.5 py-2 rounded-xl bg-[#301322] hover:bg-rose-950/70 border border-rose-500/30 text-rose-300 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shrink-0 cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-black/35 hover:bg-rose-950/70 border border-rose-500/30 text-rose-300 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shrink-0 cursor-pointer"
                   title="Tüm zimmet ve rezervasyon kayıtlarını temizle"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-rose-400" />
@@ -1803,7 +1803,7 @@ export const AdminDashboard: React.FC = () => {
               )}
               <button
                 onClick={handleExportHistoryCSV}
-                className="px-4 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <Download className="w-4 h-4" />
                 <span>CSV Olarak Dışa Aktar</span>
@@ -1813,46 +1813,46 @@ export const AdminDashboard: React.FC = () => {
 
           {/* KPI Stats for History */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-              <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Zimmet Hareketi</span>
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+              <span className="text-white/60 text-[10px] uppercase font-bold block">Toplam Zimmet Hareketi</span>
               <div className="text-2xl font-bold text-white font-club mt-1">{reservations.filter(r => r.status !== 'rejected').length}</div>
-              <span className="text-[11px] text-[#a9b9d3]">Kayıtlı tüm zimmetler</span>
+              <span className="text-[11px] text-white/70">Kayıtlı tüm zimmetler</span>
             </div>
-            <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-              <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Başarıyla İade Edilen</span>
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+              <span className="text-white/60 text-[10px] uppercase font-bold block">Başarıyla İade Edilen</span>
               <div className="text-2xl font-bold text-emerald-400 font-club mt-1">
                 {reservations.filter(r => r.status === 'returned').length}
               </div>
-              <span className="text-[11px] text-[#a9b9d3]">Eksiksiz tamamlanan zimmet</span>
+              <span className="text-[11px] text-white/70">Eksiksiz tamamlanan zimmet</span>
             </div>
-            <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-              <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Şu An Zimmette (Dışarıda)</span>
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+              <span className="text-white/60 text-[10px] uppercase font-bold block">Şu An Zimmette (Dışarıda)</span>
               <div className="text-2xl font-bold text-[#eed1d1] font-club mt-1">
                 {reservations.filter(r => r.status === 'in_use').length}
               </div>
-              <span className="text-[11px] text-[#a9b9d3]">Üyelerin elindeki ekipman</span>
+              <span className="text-[11px] text-white/70">Üyelerin elindeki ekipman</span>
             </div>
-            <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-              <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Gecikmeli / Cezalı İadeler</span>
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+              <span className="text-white/60 text-[10px] uppercase font-bold block">Gecikmeli / Cezalı İadeler</span>
               <div className="text-2xl font-bold text-rose-400 font-club mt-1">
                 {reservations.filter(r => (r.return_condition_notes || '').includes('gecikmeli') || r.status === 'overdue').length}
               </div>
-              <span className="text-[11px] text-[#a9b9d3]">Ceza puanı işletilen kayıtlar</span>
+              <span className="text-[11px] text-white/70">Ceza puanı işletilen kayıtlar</span>
             </div>
           </div>
 
           {/* Filter Toolbar */}
-          <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-3">
+          <div className="p-4 rounded-2xl bg-black/25 border border-white/10 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
               {/* Search */}
               <div className="relative">
-                <Search className="w-3.5 h-3.5 text-[#8193b2] absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-white/60 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Üye, öğrenci no, ekipman, amaç..."
                   value={historySearchQuery}
                   onChange={(e) => setHistorySearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs placeholder-white/30"
                 />
               </div>
 
@@ -1861,7 +1861,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={historyMemberFilter}
                   onChange={(e) => setHistoryMemberFilter(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                 >
                   <option value="all">Tüm Üyeler ({members.length})</option>
                   {members.map(m => (
@@ -1877,7 +1877,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={historyEquipmentFilter}
                   onChange={(e) => setHistoryEquipmentFilter(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                 >
                   <option value="all">Tüm Ekipmanlar ({equipmentList.length})</option>
                   {equipmentList.map(e => (
@@ -1893,7 +1893,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={historyStatusFilter}
                   onChange={(e) => setHistoryStatusFilter(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                 >
                   <option value="all">Tüm Durumlar</option>
                   <option value="returned">İade Alındı (Tamamlandı)</option>
@@ -1909,7 +1909,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={historyAdminFilter}
                   onChange={(e) => setHistoryAdminFilter(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                 >
                   <option value="all">Tüm Yöneticiler ({adminProfiles.length})</option>
                   {adminProfiles.map(p => (
@@ -1922,8 +1922,8 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {(historySearchQuery || historyMemberFilter !== 'all' || historyEquipmentFilter !== 'all' || historyStatusFilter !== 'all' || historyAdminFilter !== 'all') && (
-              <div className="flex items-center justify-between text-xs pt-2 border-t border-[#657796]/20">
-                <span className="text-[#a9b9d3]">
+              <div className="flex items-center justify-between text-xs pt-2 border-t border-white/10">
+                <span className="text-white/70">
                   Filtrelenen: <strong className="text-white">{filteredHistoryReservations.length}</strong> kayıt
                 </span>
                 <button
@@ -1934,7 +1934,7 @@ export const AdminDashboard: React.FC = () => {
                     setHistoryStatusFilter('all');
                     setHistoryAdminFilter('all');
                   }}
-                  className="text-[11px] text-[#8193b2] hover:text-white underline cursor-pointer"
+                  className="text-[11px] text-white/60 hover:text-white underline cursor-pointer"
                 >
                   Filtreleri Temizle
                 </button>
@@ -1943,11 +1943,11 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Results Table */}
-          <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
+          <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
             {filteredHistoryReservations.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-[#eed1d1]">
-                  <thead className="bg-[#41041d] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+                  <thead className="bg-black/35 text-[10px] uppercase text-white/60 border-b border-white/10">
                     <tr>
                       <th className="p-3.5">Takip Kodu & Statü</th>
                       <th className="p-3.5">Üye Bilgisi</th>
@@ -1959,9 +1959,9 @@ export const AdminDashboard: React.FC = () => {
                       <th className="p-3.5 text-right">İşlem</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#657796]/15">
+                  <tbody className="divide-y divide-white/10">
                     {filteredHistoryReservations.map(res => (
-                      <tr key={res.id} className="hover:bg-[#301322]/40 transition-colors">
+                      <tr key={res.id} className="hover:bg-black/20 transition-colors">
                         <td className="p-3.5">
                           <div className="font-mono font-bold text-white text-xs">{res.reservation_code}</div>
                           <div className="mt-1">
@@ -1976,10 +1976,10 @@ export const AdminDashboard: React.FC = () => {
                             }}
                             className="text-left group cursor-pointer"
                           >
-                            <strong className="text-white group-hover:text-[#8193b2] transition-colors block font-semibold">
+                            <strong className="text-white group-hover:text-white/60 transition-colors block font-semibold">
                               {res.member?.full_name || res.student_number}
                             </strong>
-                            <span className="text-[11px] font-mono text-[#a9b9d3] block">
+                            <span className="text-[11px] font-mono text-white/70 block">
                               {isBoardMemberObj(res.member) ? res.member?.department : `${res.student_number} • ${res.member?.department}`}
                             </span>
                           </button>
@@ -1995,13 +1995,13 @@ export const AdminDashboard: React.FC = () => {
                             <img
                               src={res.equipment?.image_url}
                               alt=""
-                              className="w-10 h-10 rounded-lg object-cover bg-black border border-[#657796]/30 shrink-0"
+                              className="w-10 h-10 rounded-lg object-cover bg-black border border-white/10 shrink-0"
                             />
                             <div>
-                              <strong className="text-white group-hover:text-[#8193b2] transition-colors block text-xs">
+                              <strong className="text-white group-hover:text-white/60 transition-colors block text-xs">
                                 {res.equipment?.name || 'Ekipman'}
                               </strong>
-                              <span className="text-[11px] font-mono text-[#8193b2]">
+                              <span className="text-[11px] font-mono text-white/60">
                                 {res.equipment?.serial_number}
                               </span>
                             </div>
@@ -2030,18 +2030,18 @@ export const AdminDashboard: React.FC = () => {
                             ) : null}
                             {res.checked_out_by && (
                               <div className="flex items-center gap-1.5 text-[#eed1d1]">
-                                <span className="text-[#8193b2] font-semibold text-[10px] w-12 shrink-0">Teslim:</span>
+                                <span className="text-white/60 font-semibold text-[10px] w-12 shrink-0">Teslim:</span>
                                 <span className="text-cyan-400 font-medium truncate">{cleanAdminName(res.checked_out_by)}</span>
                               </div>
                             )}
                             {res.returned_to && (
                               <div className="flex items-center gap-1.5 text-[#eed1d1]">
-                                <span className="text-[#8193b2] font-semibold text-[10px] w-12 shrink-0">İade:</span>
+                                <span className="text-white/60 font-semibold text-[10px] w-12 shrink-0">İade:</span>
                                 <span className="text-white/80 font-medium truncate">{cleanAdminName(res.returned_to)}</span>
                               </div>
                             )}
                             {!res.approved_by && !res.checked_out_by && !res.returned_to && (
-                              <span className="text-[#8193b2] text-[10px] italic">İşlem kaydı yok</span>
+                              <span className="text-white/60 text-[10px] italic">İşlem kaydı yok</span>
                             )}
                           </div>
                         </td>
@@ -2050,7 +2050,7 @@ export const AdminDashboard: React.FC = () => {
                         </td>
                         <td className="p-3.5 max-w-xs">
                           {res.return_condition_notes ? (
-                            <div className="text-xs text-[#a9b9d3] flex items-start gap-1">
+                            <div className="text-xs text-white/70 flex items-start gap-1">
                               {res.return_condition_notes.includes('gecikmeli') ? (
                                 <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
                               ) : (
@@ -2061,14 +2061,14 @@ export const AdminDashboard: React.FC = () => {
                               </span>
                             </div>
                           ) : res.status === 'in_use' ? (
-                            <span className="text-[#8193b2] text-[11px]">Şu an zimmette, iade bekleniyor</span>
+                            <span className="text-white/60 text-[11px]">Şu an zimmette, iade bekleniyor</span>
                           ) : res.status === 'rejected' || res.rejection_reason ? (
                             <div className="text-rose-400 text-[11px] space-y-0.5">
                               <span className="font-semibold block">Red Gerekçesi:</span>
                               <span className="text-rose-300 font-medium">{res.rejection_reason || 'Gerekçe belirtilmedi'}</span>
                             </div>
                           ) : (
-                            <span className="text-[#8193b2] text-[11px]">-</span>
+                            <span className="text-white/60 text-[11px]">-</span>
                           )}
                         </td>
                         <td className="p-3.5 text-right whitespace-nowrap">
@@ -2078,15 +2078,15 @@ export const AdminDashboard: React.FC = () => {
                                 const found = members.find(m => m.id === res.member_id || m.student_number === res.student_number);
                                 if (found) setSelectedMemberForHistory(found);
                               }}
-                              className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                              className="px-2.5 py-1.5 rounded-xl bg-black/35 hover:bg-black/50 text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-white/10 transition-colors inline-flex items-center gap-1 cursor-pointer"
                             >
-                              <User className="w-3 h-3 text-[#8193b2]" />
+                              <User className="w-3 h-3 text-white/60" />
                               <span>Üye Geçmişi</span>
                             </button>
                             <button
                               onClick={() => handleDeleteReservation(res)}
                               title="Kaydı Sil"
-                              className="p-1.5 rounded-xl bg-[#301322] hover:bg-rose-950/70 text-[#8193b2] hover:text-rose-300 border border-[#657796]/30 hover:border-rose-500/30 transition-colors inline-flex items-center cursor-pointer"
+                              className="p-1.5 rounded-xl bg-black/35 hover:bg-rose-950/70 text-white/60 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-colors inline-flex items-center cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -2099,9 +2099,9 @@ export const AdminDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="p-12 text-center space-y-3">
-                <History className="w-10 h-10 text-[#8193b2] mx-auto opacity-50" />
+                <History className="w-10 h-10 text-white/60 mx-auto opacity-50" />
                 <h4 className="text-sm font-bold text-white">Aranan Kriterlere Uygun Kayıt Bulunamadı</h4>
-                <p className="text-xs text-[#a9b9d3]">Filtreleri sıfırlayarak tüm zimmet kayıtlarını görüntüleyebilirsiniz.</p>
+                <p className="text-xs text-white/70">Filtreleri sıfırlayarak tüm zimmet kayıtlarını görüntüleyebilirsiniz.</p>
               </div>
             )}
           </div>
@@ -2118,7 +2118,7 @@ export const AdminDashboard: React.FC = () => {
                 <Droplets className="w-5 h-5 text-rose-400" />
                 <span>Karanlık Oda & Randevu Yönetimi</span>
               </h3>
-              <p className="text-xs text-[#a9b9d3] mt-1">
+              <p className="text-xs text-white/70 mt-1">
                 Kulüpler Vadisi Davutpaşa Kampüsü karanlık oda randevu saatlerini belirleme, onay ve nöbetçi rehberlik takibi.
               </p>
             </div>
@@ -2127,7 +2127,7 @@ export const AdminDashboard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowAddSlotModal(true)}
-                className="px-4 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Yeni Seans Aç</span>
@@ -2136,14 +2136,14 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Sub-tab Navigation: Talepler vs Seans Saatleri */}
-          <div className="flex items-center gap-2 border-b border-[#657796]/20 pb-2">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-2">
             <button
               type="button"
               onClick={() => setDarkroomSubTab('reservations')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                 darkroomSubTab === 'reservations'
-                  ? 'bg-[#301322] text-white border border-rose-500/40 shadow-sm'
-                  : 'text-[#8193b2] hover:text-white'
+                  ? 'bg-black/35 text-white border border-rose-500/40 shadow-sm'
+                  : 'text-white/60 hover:text-white'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -2158,8 +2158,8 @@ export const AdminDashboard: React.FC = () => {
               onClick={() => setDarkroomSubTab('slots')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                 darkroomSubTab === 'slots'
-                  ? 'bg-[#301322] text-white border border-rose-500/40 shadow-sm'
-                  : 'text-[#8193b2] hover:text-white'
+                  ? 'bg-black/35 text-white border border-rose-500/40 shadow-sm'
+                  : 'text-white/60 hover:text-white'
               }`}
             >
               <Clock className="w-3.5 h-3.5 text-rose-400" />
@@ -2176,56 +2176,56 @@ export const AdminDashboard: React.FC = () => {
 
           {/* Quick Metrics */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-              <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Seans Talebi</span>
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+              <span className="text-white/60 text-[10px] uppercase font-bold block">Toplam Seans Talebi</span>
               <div className="text-2xl font-bold text-white font-club mt-1">
                 {darkroomReservations.length}
               </div>
-              <span className="text-[11px] text-[#a9b9d3]">Kayıtlı tüm seanslar</span>
+              <span className="text-[11px] text-white/70">Kayıtlı tüm seanslar</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-              <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Onay Bekleyen</span>
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+              <span className="text-white/60 text-[10px] uppercase font-bold block">Onay Bekleyen</span>
               <div className="text-2xl font-bold text-[#eed1d1] font-club mt-1">
                 {darkroomReservations.filter(r => r.status === 'pending').length}
               </div>
-              <span className="text-[11px] text-[#a9b9d3]">Yönetim onayı gereken</span>
+              <span className="text-[11px] text-white/70">Yönetim onayı gereken</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-              <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Onaylanan / Yaklaşan</span>
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+              <span className="text-white/60 text-[10px] uppercase font-bold block">Onaylanan / Yaklaşan</span>
               <div className="text-2xl font-bold text-emerald-400 font-club mt-1">
                 {darkroomReservations.filter(r => r.status === 'approved').length}
               </div>
-              <span className="text-[11px] text-[#a9b9d3]">Hazırlık bekleyen seans</span>
+              <span className="text-[11px] text-white/70">Hazırlık bekleyen seans</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-              <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Tamamlanan Banyo/Baskı</span>
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+              <span className="text-white/60 text-[10px] uppercase font-bold block">Tamamlanan Banyo/Baskı</span>
               <div className="text-2xl font-bold text-cyan-400 font-club mt-1">
                 {darkroomReservations.filter(r => r.status === 'completed').length}
               </div>
-              <span className="text-[11px] text-[#a9b9d3]">Başarıyla sonuçlanan</span>
+              <span className="text-[11px] text-white/70">Başarıyla sonuçlanan</span>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 flex flex-col sm:flex-row gap-3">
+          <div className="p-4 rounded-2xl bg-black/25 border border-white/10 flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="w-3.5 h-3.5 text-[#8193b2] absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-white/60 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Öğrenci no, üye adı, kod veya not ara..."
                 value={darkroomSearchQuery}
                 onChange={(e) => setDarkroomSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs placeholder-white/30"
               />
             </div>
 
             <select
               value={darkroomFilter}
               onChange={(e) => setDarkroomFilter(e.target.value)}
-              className="p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs w-full sm:w-56"
+              className="p-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs w-full sm:w-56"
             >
               <option value="all">Tüm Durumlar ({darkroomReservations.length})</option>
               <option value="pending">Onay Bekleyenler</option>
@@ -2236,11 +2236,11 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Darkroom Reservations Table */}
-          <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
+          <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
             {filteredDarkroomReservations.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-[#eed1d1]">
-                  <thead className="bg-[#41041d] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+                  <thead className="bg-black/35 text-[10px] uppercase text-white/60 border-b border-white/10">
                     <tr>
                       <th className="p-3.5">Takip Kodu & Statü</th>
                       <th className="p-3.5">Tarih & Seans Saati</th>
@@ -2251,14 +2251,14 @@ export const AdminDashboard: React.FC = () => {
                       <th className="p-3.5 text-right">İşlemler</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#657796]/15">
+                  <tbody className="divide-y divide-white/10">
                     {filteredDarkroomReservations.map(res => (
-                      <tr key={res.id} className="hover:bg-[#301322]/40 transition-colors">
+                      <tr key={res.id} className="hover:bg-black/20 transition-colors">
                         <td className="p-3.5">
                           <div className="font-mono font-bold text-white text-xs">{res.reservation_code}</div>
                           <div className="mt-1">
                             {res.status === 'pending' && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#eed1d1] border border-[#657796]/40">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/35 text-[#eed1d1] border border-white/15">
                                 Onay Bekliyor
                               </span>
                             )}
@@ -2289,12 +2289,12 @@ export const AdminDashboard: React.FC = () => {
 
                         <td className="p-3.5">
                           <strong className="text-white block font-semibold">{res.member?.full_name || res.student_number}</strong>
-                          <span className="text-[11px] font-mono text-[#a9b9d3] block">
+                          <span className="text-[11px] font-mono text-white/70 block">
                             {res.student_number} • {res.department || res.member?.department}
                           </span>
                           <div className="flex flex-wrap gap-1 mt-1 text-[9px]">
                             {res.has_washed_film_before !== undefined && (
-                              <span className={`px-1.5 py-0.5 rounded border ${res.has_washed_film_before ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/30' : 'bg-[#301322] text-[#eed1d1] border-[#657796]/40'}`}>
+                              <span className={`px-1.5 py-0.5 rounded border ${res.has_washed_film_before ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/30' : 'bg-black/35 text-[#eed1d1] border-white/15'}`}>
                                 {res.has_washed_film_before ? 'Film Yıkamış' : 'İlk Film Banyosu'}
                               </span>
                             )}
@@ -2317,11 +2317,11 @@ export const AdminDashboard: React.FC = () => {
                             {res.process_type === 'photo_print' && 'Kağıda Fotoğraf Baskısı'}
                             {res.process_type === 'film_scan' && 'Film Tarama'}
                           </div>
-                          <span className="text-[11px] text-[#8193b2] block mt-0.5">
+                          <span className="text-[11px] text-white/60 block mt-0.5">
                             {res.process_type === 'photo_print' ? `${res.film_count} Baskı Adedi` : `${res.film_count} Rulo Film`}
                           </span>
                           {res.film_brands_and_asa && (
-                            <div className="text-[10px] text-[#eed1d1] font-mono mt-0.5 bg-[#41041d] p-1 rounded border border-[#657796]/20">
+                            <div className="text-[10px] text-[#eed1d1] font-mono mt-0.5 bg-[#41041d] p-1 rounded border border-white/10">
                               Filmler: {res.film_brands_and_asa}
                             </div>
                           )}
@@ -2331,7 +2331,7 @@ export const AdminDashboard: React.FC = () => {
                             </div>
                           )}
                           {res.notes && (
-                            <span className="text-[10px] text-[#a9b9d3] italic block mt-0.5 max-w-xs truncate" title={res.notes}>
+                            <span className="text-[10px] text-white/70 italic block mt-0.5 max-w-xs truncate" title={res.notes}>
                               Not: {res.notes}
                             </span>
                           )}
@@ -2342,11 +2342,11 @@ export const AdminDashboard: React.FC = () => {
                             {res.process_type === 'film_scan' ? '🖥️ Negatif Film Tarayıcı' : res.chemical_source === 'club' ? '🧪 Kulüp Kimyasalları' : '🧴 Kendi Kimyası'}
                           </span>
                           {res.needs_assistance ? (
-                            <span className="text-[10px] text-[#eed1d1] font-bold bg-[#301322] px-1.5 py-0.5 rounded border border-[#657796]/30 inline-block mt-1">
+                            <span className="text-[10px] text-[#eed1d1] font-bold bg-black/35 px-1.5 py-0.5 rounded border border-white/10 inline-block mt-1">
                               Rehberlik İstiyor
                             </span>
                           ) : (
-                            <span className="text-[10px] text-[#8193b2] block mt-1">
+                            <span className="text-[10px] text-white/60 block mt-1">
                               Bağımsız Çalışma
                             </span>
                           )}
@@ -2370,7 +2370,7 @@ export const AdminDashboard: React.FC = () => {
                                 Onay: <span className="text-emerald-300 font-medium">{cleanAdminName(res.approved_by)}</span>
                               </div>
                               {res.supervisor && (
-                                <span className="text-[10px] text-[#8193b2] block">Rehber: {res.supervisor}</span>
+                                <span className="text-[10px] text-white/60 block">Rehber: {res.supervisor}</span>
                               )}
                             </div>
                           ) : res.rejection_reason ? (
@@ -2379,7 +2379,7 @@ export const AdminDashboard: React.FC = () => {
                               <span className="text-[11px] text-rose-300 italic block">Gerekçe: {res.rejection_reason}</span>
                             </div>
                           ) : (
-                            <span className="text-[11px] text-[#8193b2] italic block">Onay Bekliyor</span>
+                            <span className="text-[11px] text-white/60 italic block">Onay Bekliyor</span>
                           )}
                         </td>
 
@@ -2417,7 +2417,7 @@ export const AdminDashboard: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => handleRejectDarkroom(res.id)}
-                                  className="px-2 py-1.5 rounded-xl bg-[#301322] hover:bg-rose-950 text-rose-300 text-[11px] font-semibold border border-[#657796]/30 transition-colors cursor-pointer"
+                                  className="px-2 py-1.5 rounded-xl bg-black/35 hover:bg-rose-950 text-rose-300 text-[11px] font-semibold border border-white/10 transition-colors cursor-pointer"
                                 >
                                   İptal
                                 </button>
@@ -2445,9 +2445,9 @@ export const AdminDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="p-12 text-center space-y-3">
-                <Droplets className="w-10 h-10 text-[#8193b2] mx-auto opacity-50" />
+                <Droplets className="w-10 h-10 text-white/60 mx-auto opacity-50" />
                 <h4 className="text-sm font-bold text-white">Kayıt Bulunamadı</h4>
-                <p className="text-xs text-[#a9b9d3]">Filtre kriterlerine uygun karanlık oda rezervasyonu bulunamadı.</p>
+                <p className="text-xs text-white/70">Filtre kriterlerine uygun karanlık oda rezervasyonu bulunamadı.</p>
               </div>
             )}
           </div>
@@ -2459,36 +2459,36 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-6">
               {/* Quick Metrics */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-                  <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Açık Seans</span>
+                <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+                  <span className="text-white/60 text-[10px] uppercase font-bold block">Toplam Açık Seans</span>
                   <div className="text-2xl font-bold text-white font-club mt-1">
                     {darkroomSlots.length}
                   </div>
-                  <span className="text-[11px] text-[#a9b9d3]">Yöneticilerin açtığı saatler</span>
+                  <span className="text-[11px] text-white/70">Yöneticilerin açtığı saatler</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-                  <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Müsait (Boş) Kontenjan</span>
+                <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+                  <span className="text-white/60 text-[10px] uppercase font-bold block">Müsait (Boş) Kontenjan</span>
                   <div className="text-2xl font-bold text-emerald-400 font-club mt-1">
                     {darkroomSlots.filter(s => !darkroomReservations.some(r => r.slot_id === s.id && r.status !== 'cancelled' && r.status !== 'rejected')).length}
                   </div>
-                  <span className="text-[11px] text-[#a9b9d3]">Randevuya hazır seans</span>
+                  <span className="text-[11px] text-white/70">Randevuya hazır seans</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
-                  <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Rezerve Edilen Seanslar</span>
+                <div className="p-4 rounded-2xl bg-black/25 border border-white/10">
+                  <span className="text-white/60 text-[10px] uppercase font-bold block">Rezerve Edilen Seanslar</span>
                   <div className="text-2xl font-bold text-rose-400 font-club mt-1">
                     {darkroomSlots.filter(s => darkroomReservations.some(r => r.slot_id === s.id && r.status !== 'cancelled' && r.status !== 'rejected')).length}
                   </div>
-                  <span className="text-[11px] text-[#a9b9d3]">Öğrencilerce ayırtılan seans</span>
+                  <span className="text-[11px] text-white/70">Öğrencilerce ayırtılan seans</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#1c0f18] border border-white/10 flex flex-col justify-between">
+                <div className="p-4 rounded-2xl bg-black/25 border border-white/10 flex flex-col justify-between">
                   <span className="text-white/40 text-[10px] uppercase font-mono block">Hızlı Aksiyon</span>
                   <button
                     type="button"
                     onClick={() => setShowAddSlotModal(true)}
-                    className="w-full mt-2 py-2 px-3 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="w-full mt-2 py-2 px-3 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Seans Tanımla</span>
@@ -2497,7 +2497,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {/* Hızlı Toplu Seans Açma Çubuğu */}
-              <div className="p-5 rounded-2xl bg-[#1c0f18] border border-white/10 space-y-3">
+              <div className="p-5 rounded-2xl bg-black/25 border border-white/10 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <h4 className="text-sm font-semibold text-white flex items-center gap-2">
@@ -2518,7 +2518,7 @@ export const AdminDashboard: React.FC = () => {
                           handleCreateBulkStandardSlots(todayStr, 'all');
                         }
                       }}
-                      className="px-3.5 py-1.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-rose-300 border border-rose-500/30 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl bg-black/30 hover:bg-black/40 text-rose-300 border border-rose-500/30 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer"
                     >
                       Bugün İçin Aç (6 Seans)
                     </button>
@@ -2531,7 +2531,7 @@ export const AdminDashboard: React.FC = () => {
                           handleCreateBulkStandardSlots(tomorrow, 'all');
                         }
                       }}
-                      className="px-3.5 py-1.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer"
                     >
                       Yarın İçin Aç (6 Seans)
                     </button>
@@ -2540,15 +2540,15 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {/* Açık Seanslar Listesi / Tablosu */}
-              <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
-                <div className="p-4 border-b border-[#657796]/20 bg-[#41041d] flex items-center justify-between">
+              <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
+                <div className="p-4 border-b border-white/10 bg-[#41041d] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-rose-400" />
                     <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                       Yöneticiler Tarafından Açılmış Seanslar ({darkroomSlots.length})
                     </h4>
                   </div>
-                  <span className="text-[11px] text-[#8193b2]">
+                  <span className="text-[11px] text-white/60">
                     * Üyeler yalnızca burada listelenen saatlere randevu alabilir.
                   </span>
                 </div>
@@ -2556,7 +2556,7 @@ export const AdminDashboard: React.FC = () => {
                 {darkroomSlots.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs text-[#eed1d1]">
-                      <thead className="bg-[#41041d]/70 text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
+                      <thead className="bg-black/35/70 text-[10px] uppercase text-white/60 border-b border-white/10">
                         <tr>
                           <th className="p-3.5">Tarih</th>
                           <th className="p-3.5">Seans Saati</th>
@@ -2566,7 +2566,7 @@ export const AdminDashboard: React.FC = () => {
                           <th className="p-3.5 text-right">Seansı Kapat</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#657796]/15">
+                      <tbody className="divide-y divide-white/10">
                         {darkroomSlots
                           .slice()
                           .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime))
@@ -2589,7 +2589,7 @@ export const AdminDashboard: React.FC = () => {
                               : 'bg-white/10 text-white/80 border-white/20';
 
                             return (
-                              <tr key={slot.id} className="hover:bg-[#301322]/30 transition-colors">
+                              <tr key={slot.id} className="hover:bg-black/20 transition-colors">
                                 <td className="p-3.5 whitespace-nowrap">
                                   <div className="font-bold text-white flex items-center gap-2">
                                     <Calendar className="w-3.5 h-3.5 text-rose-400" />
@@ -2601,7 +2601,7 @@ export const AdminDashboard: React.FC = () => {
                                   <div className="font-mono font-bold text-rose-300 text-xs">
                                     {slot.startTime} - {slot.endTime}
                                   </div>
-                                  <span className="text-[10px] text-[#8193b2]">net 90 dakika</span>
+                                  <span className="text-[10px] text-white/60">net 90 dakika</span>
                                 </td>
 
                                 <td className="p-3.5">
@@ -2609,7 +2609,7 @@ export const AdminDashboard: React.FC = () => {
                                     {badgeText}
                                   </span>
                                   {slot.notes && (
-                                    <div className="text-[10px] text-[#8193b2] italic mt-0.5 max-w-xs truncate">
+                                    <div className="text-[10px] text-white/60 italic mt-0.5 max-w-xs truncate">
                                       {slot.notes}
                                     </div>
                                   )}
@@ -2631,7 +2631,7 @@ export const AdminDashboard: React.FC = () => {
                                       <div className="text-[11px] text-[#eed1d1] mt-0.5">
                                         {bookedRes?.member?.full_name || bookedRes?.student_number} ({bookedRes?.reservation_code})
                                       </div>
-                                      <div className="text-[10px] text-[#8193b2]">
+                                      <div className="text-[10px] text-white/60">
                                         Statü: <strong className="text-white">{bookedRes?.status}</strong>
                                       </div>
                                     </div>
@@ -2647,7 +2647,7 @@ export const AdminDashboard: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => handleDeleteSlot(slot)}
-                                    className="p-1.5 rounded-xl bg-[#301322] hover:bg-rose-950 text-[#8193b2] hover:text-rose-400 border border-[#657796]/30 transition-colors cursor-pointer"
+                                    className="p-1.5 rounded-xl bg-black/35 hover:bg-rose-950 text-white/60 hover:text-rose-400 border border-white/10 transition-colors cursor-pointer"
                                     title="Seansı Kapat / Sil"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -2661,11 +2661,11 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 ) : (
                   <div className="p-12 text-center space-y-3">
-                    <div className="w-12 h-12 rounded-2xl bg-[#301322] border border-[#657796]/30 text-rose-300 flex items-center justify-center mx-auto shadow-inner">
+                    <div className="w-12 h-12 rounded-2xl bg-black/35 border border-white/10 text-rose-300 flex items-center justify-center mx-auto shadow-inner">
                       <Clock className="w-6 h-6" />
                     </div>
                     <h4 className="text-sm font-bold text-white font-club">Açık Seans Bulunmuyor</h4>
-                    <p className="text-xs text-[#a9b9d3] max-w-md mx-auto leading-relaxed">
+                    <p className="text-xs text-white/70 max-w-md mx-auto leading-relaxed">
                       Default olarak hiçbir randevu saati açık değildir. Üyelerin randevu alabilmesi için yukarıdaki <strong>"+ Yeni Seans Aç"</strong> butonunu veya hızlı butonları kullanarak nöbet gün ve saatlerinizi tanımlayınız.
                     </p>
                   </div>
@@ -2680,16 +2680,16 @@ export const AdminDashboard: React.FC = () => {
       {activeTab === 'trips' && (
         <div className="space-y-6">
           {/* Header & Quick Action */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#657796]/20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/10">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Compass className="w-5 h-5 text-[#8193b2]" />
+                <Compass className="w-5 h-5 text-white/60" />
                 <h2 className="text-xl font-bold text-white font-club">Kulüp Gezileri Yönetimi</h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#eed1d1] border border-[#657796]/40">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-black/35 text-[#eed1d1] border border-white/15">
                   {trips.length} Gezi
                 </span>
               </div>
-              <p className="text-xs text-[#a9b9d3]">
+              <p className="text-xs text-white/70">
                 Fotoğraf gezileri tanımlayın. Üyeler kamera rezerve ederken bu gezileri seçebilir.
               </p>
             </div>
@@ -2700,7 +2700,7 @@ export const AdminDashboard: React.FC = () => {
                 resetTripForm();
                 setShowAddTripModal(true);
               }}
-              className="px-4 py-2.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Yeni Gezi Tanımla</span>
@@ -2708,7 +2708,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Rules Summary Banner */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#140911] border border-white/10 space-y-3">
+          <div className="p-4 sm:p-5 rounded-2xl bg-black/35 border border-white/10 space-y-3">
             <div className="flex items-center gap-2 text-xs font-semibold text-white/90">
               <Sparkles className="w-4 h-4 text-white/60" />
               <span>Gezilerde Kamera Rezervasyon Kuralları (Otomatik Sistem Doğrulaması)</span>
@@ -2737,7 +2737,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Search & Filter Toolbar */}
-          <div className="p-3.5 rounded-2xl bg-[#1c0f18] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="p-3.5 rounded-2xl bg-black/25 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="relative w-full sm:w-80">
               <Search className="w-3.5 h-3.5 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -2769,10 +2769,10 @@ export const AdminDashboard: React.FC = () => {
 
           {/* Trips Cards Grid */}
           {filteredTrips.length === 0 ? (
-            <div className="p-12 text-center rounded-2xl bg-[#1c0f18] border border-[#657796]/20 space-y-3">
-              <Compass className="w-10 h-10 text-[#8193b2] mx-auto opacity-50" />
+            <div className="p-12 text-center rounded-2xl bg-black/25 border border-white/10 space-y-3">
+              <Compass className="w-10 h-10 text-white/60 mx-auto opacity-50" />
               <h4 className="text-white font-bold text-sm">Tanımlı Gezi Bulunamadı</h4>
-              <p className="text-xs text-[#a9b9d3] max-w-sm mx-auto">
+              <p className="text-xs text-white/70 max-w-sm mx-auto">
                 {tripSearchQuery ? 'Arama kriterlerinize uygun gezi bulunamadı.' : 'Henüz sisteme tanımlanmış bir gezi yok. "Yeni Gezi Tanımla" butonu ile gezi oluşturabilirsiniz.'}
               </p>
             </div>
@@ -2793,8 +2793,8 @@ export const AdminDashboard: React.FC = () => {
                     key={trip.id}
                     className={`p-5 rounded-2xl border transition-all space-y-4 ${
                       trip.is_active
-                        ? 'bg-[#1c0f18] border-[#657796]/30 hover:border-[#657796]/60 shadow-xl'
-                        : 'bg-[#160b13] border-[#657796]/15 opacity-75'
+                        ? 'bg-black/25 border-white/10 hover:border-white/25 shadow-xl'
+                        : 'bg-black/35 border-white/[0.08] opacity-75'
                     }`}
                   >
                     {/* Header */}
@@ -2810,7 +2810,7 @@ export const AdminDashboard: React.FC = () => {
                             {trip.is_active ? 'Yayında' : 'Pasif'}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-[#8193b2]">
+                        <div className="flex items-center gap-1.5 text-xs text-white/60">
                           <MapPin className="w-3.5 h-3.5" />
                           <span>{trip.destination}</span>
                         </div>
@@ -2820,21 +2820,21 @@ export const AdminDashboard: React.FC = () => {
                         <span className="text-xs font-mono font-bold text-white block">
                           {formatDateRangeTr(trip.start_date, trip.end_date)}
                         </span>
-                        <span className="text-[10px] text-[#8193b2] block">
+                        <span className="text-[10px] text-white/60 block">
                           Geziden {activeEligibility.daysBeforeTrip} gün önce
                         </span>
                       </div>
                     </div>
 
                     {trip.description && (
-                      <p className="text-xs text-[#a9b9d3] leading-relaxed line-clamp-2">
+                      <p className="text-xs text-white/70 leading-relaxed line-clamp-2">
                         {trip.description}
                       </p>
                     )}
 
                     {/* Reservation Timeline Details */}
-                    <div className="p-3.5 rounded-xl bg-[#41041d] border border-[#657796]/20 space-y-2 text-xs">
-                      <div className="text-[11px] font-bold text-[#8193b2] uppercase tracking-wider flex items-center justify-between">
+                    <div className="p-3.5 rounded-xl bg-[#41041d] border border-white/10 space-y-2 text-xs">
+                      <div className="text-[11px] font-bold text-white/60 uppercase tracking-wider flex items-center justify-between">
                         <span>Rezervasyon Açılış Takvimi:</span>
                         <span className="text-[#eed1d1] font-mono">Bugün: {formatDateTr(getLocalDateString())}</span>
                       </div>
@@ -2844,7 +2844,7 @@ export const AdminDashboard: React.FC = () => {
                         <div className={`p-2 rounded-lg border ${
                           activeEligibility.isOpen
                             ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
-                            : 'bg-[#1c0f18] border-[#657796]/20 text-[#a9b9d3]'
+                            : 'bg-black/25 border-white/10 text-white/70'
                         }`}>
                           <div className="flex items-center justify-between text-[11px] font-bold mb-0.5">
                             <span>★ Aktif Üye (5 Gün)</span>
@@ -2861,7 +2861,7 @@ export const AdminDashboard: React.FC = () => {
                         <div className={`p-2 rounded-lg border ${
                           normalEligibility.isOpen
                             ? 'bg-blue-950/40 border-blue-500/40 text-blue-300'
-                            : 'bg-[#1c0f18] border-[#657796]/20 text-[#a9b9d3]'
+                            : 'bg-black/25 border-white/10 text-white/70'
                         }`}>
                           <div className="flex items-center justify-between text-[11px] font-bold mb-0.5">
                             <span>Normal Üye (3 Gün)</span>
@@ -2877,14 +2877,14 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                     {/* Stats & Actions */}
-                    <div className="flex items-center justify-between pt-2 border-t border-[#657796]/15">
+                    <div className="flex items-center justify-between pt-2 border-t border-white/[0.08]">
                       <div className="flex items-center gap-2 flex-wrap">
                         {activeTripReservations.length > 0 ? (
                           <span className="px-2.5 py-1 rounded-lg bg-emerald-950/40 text-xs font-semibold text-emerald-300 border border-emerald-500/30">
                             📷 {activeTripReservations.length} Kamera Rezerve Edildi
                           </span>
                         ) : (
-                          <span className="px-2.5 py-1 rounded-lg bg-[#41041d] text-xs font-semibold text-[#8193b2] border border-[#657796]/20">
+                          <span className="px-2.5 py-1 rounded-lg bg-[#41041d] text-xs font-semibold text-white/60 border border-white/10">
                             📷 0 Kamera Rezerve
                           </span>
                         )}
@@ -2901,7 +2901,7 @@ export const AdminDashboard: React.FC = () => {
                           onClick={() => handleToggleTripActive(trip)}
                           className={`p-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer border ${
                             trip.is_active
-                              ? 'bg-[#41041d] hover:bg-[#301322] text-[#8193b2] hover:text-white border-[#657796]/30'
+                              ? 'bg-[#41041d] hover:bg-black/35 text-white/60 hover:text-white border-white/10'
                               : 'bg-emerald-950/50 hover:bg-emerald-900 text-emerald-300 border-emerald-500/40'
                           }`}
                           title={trip.is_active ? 'Geziyi pasife al (üyelerin seçimine kapat)' : 'Geziyi yayına al'}
@@ -2912,7 +2912,7 @@ export const AdminDashboard: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleEditTrip(trip)}
-                          className="px-3 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-xs font-semibold text-white transition-colors cursor-pointer border border-[#657796]/30"
+                          className="px-3 py-2 rounded-xl bg-black/35 hover:bg-black/50 text-xs font-semibold text-white transition-colors cursor-pointer border border-white/10"
                         >
                           Düzenle
                         </button>
@@ -2938,14 +2938,14 @@ export const AdminDashboard: React.FC = () => {
       {/* TAB 5: SUPABASE GUIDE & SETTINGS */}
       {activeTab === 'supabase' && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-[#1c0f18] border border-[#657796]/30 shadow-lg space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#657796]/20">
+          <div className="p-6 rounded-2xl bg-black/25 border border-white/10 shadow-lg space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
               <div>
                 <h3 className="text-base font-bold text-white font-club flex items-center gap-2">
-                  <Package className="w-5 h-5 text-[#8193b2]" />
+                  <Package className="w-5 h-5 text-white/60" />
                   Ortak Veritabanı & Supabase Bağlantısı
                 </h3>
-                <p className="text-xs text-[#a9b9d3] mt-1">
+                <p className="text-xs text-white/70 mt-1">
                   Ekipman açıklamaları, demirbaş detayları, paket içerikleri ve durumları doğrudan Supabase veritabanına kaydedilir. Sayfa yenilendiğinde veya başka bir cihazdan girildiğinde en güncel veriler kalıcı olarak veritabanından çekilir.
                 </p>
               </div>
@@ -2987,7 +2987,7 @@ export const AdminDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSupabaseFeedback(null)}
-                  className="text-[#8193b2] hover:text-white"
+                  className="text-white/60 hover:text-white"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -2998,7 +2998,7 @@ export const AdminDashboard: React.FC = () => {
             <form onSubmit={handleSaveAndTestSupabase} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">
+                  <label className="text-[11px] font-semibold text-white/60 block">
                     Supabase Project URL
                   </label>
                   <input
@@ -3006,15 +3006,15 @@ export const AdminDashboard: React.FC = () => {
                     value={supabaseUrlInput}
                     onChange={(e) => setSupabaseUrlInput(e.target.value)}
                     placeholder="https://xyzproject.supabase.co"
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white font-mono text-xs focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-white/25"
                   />
-                  <span className="text-[10px] text-[#8193b2] block">
+                  <span className="text-[10px] text-white/60 block">
                     Supabase Panel {'>'} Project Settings {'>'} API bölümünden alınır.
                   </span>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">
+                  <label className="text-[11px] font-semibold text-white/60 block">
                     Supabase Anon / Public API Key
                   </label>
                   <input
@@ -3022,9 +3022,9 @@ export const AdminDashboard: React.FC = () => {
                     value={supabaseKeyInput}
                     onChange={(e) => setSupabaseKeyInput(e.target.value)}
                     placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white font-mono text-xs focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-white/25"
                   />
-                  <span className="text-[10px] text-[#8193b2] block">
+                  <span className="text-[10px] text-white/60 block">
                     Supabase Panel {'>'} Project Settings {'>'} API {'>'} anon / public anahtarı.
                   </span>
                 </div>
@@ -3034,7 +3034,7 @@ export const AdminDashboard: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isTestingSupabase}
-                  className="px-4 py-2.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   {isTestingSupabase ? (
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -3048,7 +3048,7 @@ export const AdminDashboard: React.FC = () => {
                   type="button"
                   onClick={handleSyncEquipmentToSupabase}
                   disabled={isSyncingSupabase || !supabaseConfig.isConfigured}
-                  className="px-4 py-2.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] disabled:opacity-50 text-white font-mono uppercase tracking-wider text-xs transition-colors border border-white/20 cursor-pointer flex items-center gap-2"
+                  className="px-4 py-2.5 rounded-xl bg-black/30 hover:bg-black/40 disabled:opacity-50 text-white font-mono uppercase tracking-wider text-xs transition-colors border border-white/20 cursor-pointer flex items-center gap-2"
                   title="Mevcut envanteri Supabase 'equipment' tablosuna aktarır veya günceller."
                 >
                   {isSyncingSupabase ? (
@@ -3062,13 +3062,13 @@ export const AdminDashboard: React.FC = () => {
             </form>
 
             {/* SQL Guide Note */}
-            <div className="p-4 rounded-xl bg-[#41041d] border border-[#657796]/20 space-y-2 text-xs">
+            <div className="p-4 rounded-xl bg-[#41041d] border border-white/10 space-y-2 text-xs">
               <div className="flex items-center gap-2 text-[#eed1d1] font-semibold">
-                <Info className="w-4 h-4 text-[#8193b2]" />
+                <Info className="w-4 h-4 text-white/60" />
                 <span>Supabase Tablo Şeması Kurulumu</span>
               </div>
-              <p className="text-[#a9b9d3]">
-                Supabase projenizde tablolar henüz oluşturulmadıysa, proje kökündeki <code className="text-[#eed1d1] bg-[#1c0f18] px-1.5 py-0.5 rounded">supabase/schema.sql</code> dosyasının içeriğini kopyalayıp Supabase panelinizdeki <strong>SQL Editor</strong> bölümüne yapıştırarak <strong>Run</strong> butonuna tıklayınız. Tablolar otomatik olarak RLS izinleri ve tetikleyicileriyle hazır hale gelecektir.
+              <p className="text-white/70">
+                Supabase projenizde tablolar henüz oluşturulmadıysa, proje kökündeki <code className="text-[#eed1d1] bg-black/25 px-1.5 py-0.5 rounded">supabase/schema.sql</code> dosyasının içeriğini kopyalayıp Supabase panelinizdeki <strong>SQL Editor</strong> bölümüne yapıştırarak <strong>Run</strong> butonuna tıklayınız. Tablolar otomatik olarak RLS izinleri ve tetikleyicileriyle hazır hale gelecektir.
               </p>
             </div>
           </div>
@@ -3078,22 +3078,22 @@ export const AdminDashboard: React.FC = () => {
       {/* TAB: ANNOUNCEMENTS & NOTES */}
       {activeTab === 'announcements' && (
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/30 shadow-md">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-black/25 border border-white/10 shadow-md">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Bell className="w-4 h-4 text-[#8193b2]" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#8193b2]">Kulüp Bildirimleri</span>
+                <Bell className="w-4 h-4 text-white/60" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/60">Kulüp Bildirimleri</span>
               </div>
               <h3 className="text-base font-bold text-white font-club">
                 Duyurular, Notlar ve Kural Hatırlatmaları
               </h3>
-              <p className="text-xs text-[#a9b9d3] mt-0.5">
+              <p className="text-xs text-white/70 mt-0.5">
                 Ana sayfadaki "Duyurular & Hatırlatmalar" bölümünde yayınlanan tek cümlelik bildirimler ve yönetici notları.
               </p>
             </div>
             <button
               onClick={() => setShowAddAnnouncementModal(true)}
-              className="px-4 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Yeni Not / Duyuru Ekle</span>
@@ -3105,20 +3105,20 @@ export const AdminDashboard: React.FC = () => {
             {announcements.map((ann) => (
               <div
                 key={ann.id}
-                className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 hover:border-[#657796]/40 transition-all flex flex-col justify-between space-y-4"
+                className="p-5 rounded-2xl bg-black/25 border border-white/10 hover:border-white/15 transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-[#301322] text-[#eed1d1] border border-[#657796]/30">
+                    <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-black/35 text-[#eed1d1] border border-white/10">
                       {ann.category}
                     </span>
                     <div className="flex items-center gap-2">
                       {ann.is_pinned && (
-                        <span className="text-[10px] font-bold text-[#8193b2] bg-[#657796]/20 px-2 py-0.5 rounded-full border border-[#657796]/40">
+                        <span className="text-[10px] font-bold text-white/60 bg-[#657796]/20 px-2 py-0.5 rounded-full border border-white/15">
                           📌 Sabitlendi
                         </span>
                       )}
-                      <span className="text-[11px] text-[#a9b9d3]">
+                      <span className="text-[11px] text-white/70">
                         {new Date(ann.created_at).toLocaleDateString('tr-TR')}
                       </span>
                     </div>
@@ -3128,16 +3128,16 @@ export const AdminDashboard: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#657796]/15">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/[0.08]">
                   <button
                     onClick={() => handleTogglePinAnnouncement(ann)}
-                    className="px-2.5 py-1.5 rounded-lg bg-[#41041d] hover:bg-[#301322] text-[11px] font-semibold text-[#eed1d1] border border-[#657796]/30 transition-colors cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg bg-[#41041d] hover:bg-black/35 text-[11px] font-semibold text-[#eed1d1] border border-white/10 transition-colors cursor-pointer"
                   >
                     {ann.is_pinned ? 'Sabitlemeyi Kaldır' : '📌 Öne Çıkar'}
                   </button>
                   <button
                     onClick={() => handleDeleteAnnouncement(ann.id)}
-                    className="px-2.5 py-1.5 rounded-lg bg-[#301322] hover:bg-rose-900/40 text-rose-300 border border-rose-500/30 text-[11px] font-semibold transition-colors cursor-pointer flex items-center gap-1"
+                    className="px-2.5 py-1.5 rounded-lg bg-black/35 hover:bg-rose-900/40 text-rose-300 border border-rose-500/30 text-[11px] font-semibold transition-colors cursor-pointer flex items-center gap-1"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Sil</span>
@@ -3152,15 +3152,15 @@ export const AdminDashboard: React.FC = () => {
       {/* Add Announcement Modal */}
       {showAddAnnouncementModal && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
+          <div className="bg-black/25 border border-white/15 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <Bell className="w-5 h-5 text-[#8193b2]" />
+                <Bell className="w-5 h-5 text-white/60" />
                 <h3 className="text-base font-bold text-white font-club">Yeni Not / Duyuru Ekle</h3>
               </div>
               <button
                 onClick={() => setShowAddAnnouncementModal(false)}
-                className="p-1 rounded-lg text-[#a9b9d3] hover:text-white hover:bg-[#301322] transition-colors"
+                className="p-1 rounded-lg text-white/70 hover:text-white hover:bg-black/35 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -3177,7 +3177,7 @@ export const AdminDashboard: React.FC = () => {
                   onChange={(e) => setNewAnnContent(e.target.value)}
                   placeholder="Örn: Hafta sonu gezi hazırlığı sebebiyle perşembe günü ekipman teslim saatleri 17:00'ye kadar uzatılmıştır."
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2] focus:outline-none focus:border-[#657796]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs placeholder-white/30 focus:outline-none focus:border-white/25"
                 />
               </div>
 
@@ -3188,7 +3188,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={newAnnCategory}
                   onChange={(e) => setNewAnnCategory(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs focus:outline-none focus:border-[#657796]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs focus:outline-none focus:border-white/25"
                 >
                   <option value="Ekipman & Kural">Ekipman & Kural</option>
                   <option value="Kural & Yönetmelik">Kural & Yönetmelik</option>
@@ -3204,24 +3204,24 @@ export const AdminDashboard: React.FC = () => {
                   id="ann_is_pinned"
                   checked={newAnnIsPinned}
                   onChange={(e) => setNewAnnIsPinned(e.target.checked)}
-                  className="rounded border-[#657796]/40 bg-[#41041d] text-[#657796] focus:ring-0 cursor-pointer"
+                  className="rounded border-white/15 bg-[#41041d] text-[#657796] focus:ring-0 cursor-pointer"
                 />
                 <label htmlFor="ann_is_pinned" className="text-xs text-[#eed1d1] cursor-pointer">
                   📌 En başta sabitle (Öne Çıkar)
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#657796]/20">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowAddAnnouncementModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#a9b9d3] hover:text-white bg-[#41041d] border border-[#657796]/20"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-white/70 hover:text-white bg-[#41041d] border border-white/10"
                 >
                   Vazgeç
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl text-xs font-mono uppercase tracking-wider text-white bg-[#1c0d18] hover:bg-[#281323] border border-white/20 transition-colors cursor-pointer"
+                  className="px-5 py-2 rounded-xl text-xs font-mono uppercase tracking-wider text-white bg-black/30 hover:bg-black/40 border border-white/20 transition-colors cursor-pointer"
                 >
                   Yayınla
                 </button>
@@ -3234,7 +3234,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Return Modal */}
       {returnModalData && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-black/25 border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-4">
             <h3 className="text-sm font-bold text-white font-club">İade Kontrolü ve Onay</h3>
             <p className="text-xs text-[#eed1d1]">{returnModalData.equipmentName} iade alındı. Hasar/eksik parça kontrol notu:</p>
             <input
@@ -3244,8 +3244,8 @@ export const AdminDashboard: React.FC = () => {
               className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-xs text-white"
             />
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setReturnModalData(null)} className="px-4 py-2 rounded-xl bg-[#1c0d18] text-xs text-white/70 hover:text-white cursor-pointer">Vazgeç</button>
-              <button onClick={handleConfirmReturn} className="px-4 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">İadeyi Tamamla</button>
+              <button onClick={() => setReturnModalData(null)} className="px-4 py-2 rounded-xl bg-black/30 text-xs text-white/70 hover:text-white cursor-pointer">Vazgeç</button>
+              <button onClick={handleConfirmReturn} className="px-4 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">İadeyi Tamamla</button>
             </div>
           </div>
         </div>
@@ -3254,17 +3254,17 @@ export const AdminDashboard: React.FC = () => {
       {/* Reject Modal */}
       {rejectModalData && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-black/25 border border-white/15 rounded-2xl max-w-md w-full p-6 space-y-4">
             <h3 className="text-sm font-bold text-white font-club">Talebi Reddet ({rejectModalData.code})</h3>
             <textarea
               rows={2}
               placeholder="Red gerekçesi..."
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-xs text-white"
+              className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-xs text-white"
             />
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setRejectModalData(null)} className="px-4 py-2 rounded-xl bg-[#301322] text-xs text-[#eed1d1]">İptal</button>
+              <button onClick={() => setRejectModalData(null)} className="px-4 py-2 rounded-xl bg-black/35 text-xs text-[#eed1d1]">İptal</button>
               <button onClick={handleConfirmReject} className="px-4 py-2 rounded-xl bg-rose-700 text-white font-bold text-xs">Reddet</button>
             </div>
           </div>
@@ -3274,7 +3274,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Add Equipment Modal */}
       {showAddEquipmentModal && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-md w-full p-6 space-y-3">
+          <div className="bg-black/25 border border-white/15 rounded-2xl max-w-md w-full p-6 space-y-3">
             <h3 className="text-sm font-bold text-white font-club">Yeni Ekipman Ekle</h3>
             <form onSubmit={handleAddEquipment} className="space-y-3 text-xs">
               <input
@@ -3282,14 +3282,14 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Ekipman Adı (örn: Canon EOS 5D Mark II)"
                 value={newEquipName}
                 onChange={e => setNewEquipName(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white"
+                className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white"
                 required
               />
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={newEquipBrand}
                   onChange={e => setNewEquipBrand(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white"
+                  className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white"
                 >
                   <option value="Canon">Canon</option>
                   <option value="Fujifilm">Fujifilm</option>
@@ -3300,7 +3300,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={newEquipCategory}
                   onChange={e => setNewEquipCategory(e.target.value as any)}
-                  className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white"
+                  className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white"
                 >
                   <option value="camera">Dijital Gövde</option>
                   <option value="analog">Analog Makine</option>
@@ -3315,12 +3315,12 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Seri / Demirbaş No (örn: YTU-EOS-5D2)"
                 value={newEquipSerial}
                 onChange={e => setNewEquipSerial(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white"
+                className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white"
                 required
               />
               <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setShowAddEquipmentModal(false)} className="px-3 py-1.5 rounded-lg bg-[#1c0d18] text-white/70 hover:text-white cursor-pointer text-xs">İptal</button>
-                <button type="submit" className="px-4 py-1.5 rounded-lg bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">Kaydet</button>
+                <button type="button" onClick={() => setShowAddEquipmentModal(false)} className="px-3 py-1.5 rounded-lg bg-black/30 text-white/70 hover:text-white cursor-pointer text-xs">İptal</button>
+                <button type="submit" className="px-4 py-1.5 rounded-lg bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">Kaydet</button>
               </div>
             </form>
           </div>
@@ -3330,10 +3330,10 @@ export const AdminDashboard: React.FC = () => {
       {/* Edit Equipment Modal */}
       {editingEquipment && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
+          <div className="bg-black/25 border border-white/15 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <Pencil className="w-4 h-4 text-[#8193b2]" />
+                <Pencil className="w-4 h-4 text-white/60" />
                 <h3 className="text-sm font-bold text-white font-club">Ekipmanı Düzenle</h3>
               </div>
               <button
@@ -3348,23 +3348,23 @@ export const AdminDashboard: React.FC = () => {
             <form onSubmit={handleSaveEditEquipment} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Ekipman Adı *</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Ekipman Adı *</label>
                   <input
                     type="text"
                     value={editEquipName}
                     onChange={e => setEditEquipName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                     required
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Seri / Demirbaş No *</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Seri / Demirbaş No *</label>
                   <input
                     type="text"
                     value={editEquipSerial}
                     onChange={e => setEditEquipSerial(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white font-mono focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white font-mono focus:outline-none focus:border-white/25"
                     required
                   />
                 </div>
@@ -3372,11 +3372,11 @@ export const AdminDashboard: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Kategori</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Kategori</label>
                   <select
                     value={editEquipCategory}
                     onChange={e => setEditEquipCategory(e.target.value as EquipmentCategory)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   >
                     <option value="camera">Dijital Gövde</option>
                     <option value="analog">Analog Makine</option>
@@ -3388,33 +3388,33 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Marka</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Marka</label>
                   <input
                     type="text"
                     value={editEquipBrand}
                     onChange={e => setEditEquipBrand(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Model</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Model</label>
                   <input
                     type="text"
                     value={editEquipModel}
                     onChange={e => setEditEquipModel(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Müsaitlik Durumu</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Müsaitlik Durumu</label>
                   <select
                     value={editEquipStatus}
                     onChange={e => setEditEquipStatus(e.target.value as EquipmentStatus)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   >
                     <option value="available">🟢 Müsait (Rezerve Edilebilir)</option>
                     <option value="in_use">🔵 Kullanımda / Zimmette</option>
@@ -3424,29 +3424,29 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Kondisyon Notu</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Kondisyon Notu</label>
                   <input
                     type="text"
                     value={editEquipCondition}
                     onChange={e => setEditEquipCondition(e.target.value)}
                     placeholder="Örn: Kusursuz, vizörde hafif toz"
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-[#8193b2] block">Görsel URL / Dosya Yolu</label>
+                <label className="text-[11px] font-semibold text-white/60 block">Görsel URL / Dosya Yolu</label>
                 <div className="flex gap-2 items-center">
                   <input
                     type="text"
                     value={editEquipImageUrl}
                     onChange={e => setEditEquipImageUrl(e.target.value)}
                     placeholder="/equipment/canon-eos-1000d.jpg veya https://..."
-                    className="flex-1 p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white font-mono text-[11px] focus:outline-none focus:border-[#657796]"
+                    className="flex-1 p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white font-mono text-[11px] focus:outline-none focus:border-white/25"
                   />
                   {editEquipImageUrl && (
-                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-black shrink-0 border border-[#657796]/30">
+                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-black shrink-0 border border-white/10">
                       <img src={editEquipImageUrl} alt="Önizleme" className="w-full h-full object-cover" />
                     </div>
                   )}
@@ -3454,39 +3454,39 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-[#8193b2] block">Açıklama</label>
+                <label className="text-[11px] font-semibold text-white/60 block">Açıklama</label>
                 <textarea
                   rows={2}
                   value={editEquipDescription}
                   onChange={e => setEditEquipDescription(e.target.value)}
                   placeholder="Ekipman tanıtımı ve kullanım bilgisi..."
-                  className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                  className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white resize-none focus:outline-none focus:border-white/25"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-[#8193b2] block">Çanta & Paket İçeriği (Virgül veya yeni satırla ayırın)</label>
+                <label className="text-[11px] font-semibold text-white/60 block">Çanta & Paket İçeriği (Virgül veya yeni satırla ayırın)</label>
                 <textarea
                   rows={2}
                   value={editEquipPackageContents}
                   onChange={e => setEditEquipPackageContents(e.target.value)}
                   placeholder="Gövde, 1x LP-E5 Batarya, Şarj Aleti, Askı..."
-                  className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                  className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white resize-none focus:outline-none focus:border-white/25"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#657796]/20">
+              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setEditingEquipment(null)}
-                  className="px-4 py-2 rounded-xl bg-[#1c0d18] text-white/70 hover:text-white transition-colors cursor-pointer text-xs"
+                  className="px-4 py-2 rounded-xl bg-black/30 text-white/70 hover:text-white transition-colors cursor-pointer text-xs"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingEquipment}
-                  className="px-5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-2"
+                  className="px-5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-2"
                 >
                   {isSavingEquipment && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   {isSavingEquipment ? 'Veritabanına Kaydediliyor...' : 'Değişiklikleri Kaydet'}
@@ -3500,7 +3500,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Add Member Modal */}
       {showAddMemberModal && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-3">
+          <div className="bg-black/25 border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-3">
             <h3 className="text-sm font-bold text-white font-club">Whitelist'e Üye Ekle</h3>
             <form onSubmit={handleAddMember} className="space-y-3 text-xs">
               <input
@@ -3540,8 +3540,8 @@ export const AdminDashboard: React.FC = () => {
                 </select>
               </div>
               <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setShowAddMemberModal(false)} className="px-3 py-1.5 rounded-lg bg-[#1c0d18] text-white/70 hover:text-white cursor-pointer text-xs">İptal</button>
-                <button type="submit" className="px-4 py-1.5 rounded-lg bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">Ekle</button>
+                <button type="button" onClick={() => setShowAddMemberModal(false)} className="px-3 py-1.5 rounded-lg bg-black/30 text-white/70 hover:text-white cursor-pointer text-xs">İptal</button>
+                <button type="submit" className="px-4 py-1.5 rounded-lg bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">Ekle</button>
               </div>
             </form>
           </div>
@@ -3551,10 +3551,10 @@ export const AdminDashboard: React.FC = () => {
       {/* Edit Member Modal */}
       {editingMember && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-[#657796]/20">
+          <div className="bg-black/25 border border-white/15 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <Pencil className="w-4 h-4 text-[#8193b2]" />
+                <Pencil className="w-4 h-4 text-white/60" />
                 <h3 className="text-sm font-bold text-white font-club">Üye Bilgilerini Düzenle</h3>
               </div>
               <button
@@ -3569,23 +3569,23 @@ export const AdminDashboard: React.FC = () => {
             <form onSubmit={handleSaveEditMember} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Ad Soyad *</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Ad Soyad *</label>
                   <input
                     type="text"
                     value={editMemberName}
                     onChange={e => setEditMemberName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                     required
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Öğrenci Numarası *</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Öğrenci Numarası *</label>
                   <input
                     type="text"
                     value={editMemberNo}
                     onChange={e => setEditMemberNo(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white font-mono focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white font-mono focus:outline-none focus:border-white/25"
                     required
                   />
                 </div>
@@ -3593,34 +3593,34 @@ export const AdminDashboard: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Üniversite / Bölüm</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Üniversite / Bölüm</label>
                   <input
                     type="text"
                     value={editMemberDept}
                     onChange={e => setEditMemberDept(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Telefon</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Telefon</label>
                   <input
                     type="text"
                     value={editMemberPhone}
                     onChange={e => setEditMemberPhone(e.target.value)}
                     placeholder="+90 5XX XXX XX XX"
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Üye Statüsü / Gezi Önceliği</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Üye Statüsü / Gezi Önceliği</label>
                   <select
                     value={editMemberType}
                     onChange={e => setEditMemberType(e.target.value as any)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   >
                     <option value="active">★ Aktif Üye (Geziden 5 gün önce & Bireysel Çekim)</option>
                     <option value="normal">Normal Üye (Geziden 3 gün önce)</option>
@@ -3630,11 +3630,11 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Hesap Durumu</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Hesap Durumu</label>
                   <select
                     value={editMemberStatus}
                     onChange={e => setEditMemberStatus(e.target.value as any)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   >
                     <option value="active">🟢 Aktif (Zimmet Alabilir)</option>
                     <option value="suspended">🔴 Askıda / Cezalı (Engelli)</option>
@@ -3645,37 +3645,37 @@ export const AdminDashboard: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Ceza Puanı</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Ceza Puanı</label>
                   <input
                     type="number"
                     min={0}
                     max={10}
                     value={editMemberPenalty}
                     onChange={e => setEditMemberPenalty(parseInt(e.target.value) || 0)}
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#8193b2] block">Ceza Nedeni</label>
+                  <label className="text-[11px] font-semibold text-white/60 block">Ceza Nedeni</label>
                   <input
                     type="text"
                     value={editMemberPenaltyReason}
                     onChange={e => setEditMemberPenaltyReason(e.target.value)}
                     placeholder="Örn: 2 gün gecikmeli iade"
-                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white focus:outline-none focus:border-[#657796]"
+                    className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white focus:outline-none focus:border-white/25"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-[#8193b2] block">Yönetici Notu</label>
+                <label className="text-[11px] font-semibold text-white/60 block">Yönetici Notu</label>
                 <textarea
                   rows={2}
                   value={editMemberNotes}
                   onChange={e => setEditMemberNotes(e.target.value)}
                   placeholder="Üye hakkında kulüp notu..."
-                  className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white resize-none focus:outline-none focus:border-[#657796]"
+                  className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white resize-none focus:outline-none focus:border-white/25"
                 />
               </div>
 
@@ -3683,13 +3683,13 @@ export const AdminDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setEditingMember(null)}
-                  className="px-4 py-2 rounded-xl bg-[#1c0d18] text-white/70 hover:text-white transition-colors cursor-pointer text-xs"
+                  className="px-4 py-2 rounded-xl bg-black/30 text-white/70 hover:text-white transition-colors cursor-pointer text-xs"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                 >
                   Değişiklikleri Kaydet
                 </button>
@@ -3700,7 +3700,7 @@ export const AdminDashboard: React.FC = () => {
       )}
       {showAddSlotModal && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-white/10 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+          <div className="bg-black/25 border border-white/10 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-white/5 text-white border border-white/10">
@@ -3760,11 +3760,11 @@ export const AdminDashboard: React.FC = () => {
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       newSlotProcess === 'film_wash'
                         ? 'bg-rose-950/80 border-rose-500 text-white font-bold ring-2 ring-rose-500/30'
-                        : 'bg-[#41041d] border-[#657796]/20 text-[#8193b2] hover:text-white'
+                        : 'bg-[#41041d] border-white/10 text-white/60 hover:text-white'
                     }`}
                   >
                     <span className="text-[11px] block font-semibold">Film Yıkama</span>
-                    <span className="text-[9px] text-[#8193b2] block mt-0.5">& Negatif Tarama</span>
+                    <span className="text-[9px] text-white/60 block mt-0.5">& Negatif Tarama</span>
                   </button>
 
                   <button
@@ -3772,12 +3772,12 @@ export const AdminDashboard: React.FC = () => {
                     onClick={() => setNewSlotProcess('photo_print')}
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       newSlotProcess === 'photo_print'
-                        ? 'bg-[#301322] border-rose-400 text-white font-bold ring-2 ring-rose-400/30'
-                        : 'bg-[#41041d] border-[#657796]/20 text-[#8193b2] hover:text-white'
+                        ? 'bg-black/35 border-rose-400 text-white font-bold ring-2 ring-rose-400/30'
+                        : 'bg-[#41041d] border-white/10 text-white/60 hover:text-white'
                     }`}
                   >
                     <span className="text-[11px] block font-semibold">Kağıda Baskı</span>
-                    <span className="text-[9px] text-[#8193b2] block mt-0.5">Agrandisör ile</span>
+                    <span className="text-[9px] text-white/60 block mt-0.5">Agrandisör ile</span>
                   </button>
                 </div>
               </div>
@@ -3808,7 +3808,7 @@ export const AdminDashboard: React.FC = () => {
                         className={`p-2 rounded-xl text-[11px] font-mono border transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-rose-500/20 border-rose-500 text-rose-300 font-bold'
-                            : 'bg-[#41041d] border-[#657796]/20 text-[#eed1d1] hover:border-[#657796]/50'
+                            : 'bg-[#41041d] border-white/10 text-[#eed1d1] hover:border-white/20'
                         }`}
                       >
                         {item.no}. Seans: {item.start}-{item.end}
@@ -3821,22 +3821,22 @@ export const AdminDashboard: React.FC = () => {
               {/* Saat Girişi (Başlangıç & Bitiş) */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-[#8193b2] block mb-1">Başlangıç Saati</label>
+                  <label className="text-[10px] text-white/60 block mb-1">Başlangıç Saati</label>
                   <input
                     type="time"
                     value={newSlotStartTime}
                     onChange={e => setNewSlotStartTime(e.target.value)}
-                    className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white font-mono"
+                    className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white font-mono"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-[#8193b2] block mb-1">Bitiş Saati</label>
+                  <label className="text-[10px] text-white/60 block mb-1">Bitiş Saati</label>
                   <input
                     type="time"
                     value={newSlotEndTime}
                     onChange={e => setNewSlotEndTime(e.target.value)}
-                    className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white font-mono"
+                    className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white font-mono"
                     required
                   />
                 </div>
@@ -3850,7 +3850,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={newSlotSupervisor || (activeAdmin ? `${activeAdmin.full_name} (${activeAdmin.short_title})` : '')}
                   onChange={e => setNewSlotSupervisor(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white"
+                  className="w-full p-2.5 rounded-xl bg-[#41041d] border border-white/10 text-white"
                 >
                   {adminProfiles.map(p => (
                     <option key={p.id} value={`${p.full_name} (${p.short_title})`}>
@@ -3871,11 +3871,11 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="Örn: B&W kimyaları taze hazırlandı, agrandisör 50mm lens takılı"
                   value={newSlotNotes}
                   onChange={e => setNewSlotNotes(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white placeholder-[#8193b2]"
+                  className="w-full p-2 rounded-xl bg-[#41041d] border border-white/10 text-white placeholder-white/30"
                 />
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 border-t border-[#657796]/20">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => {
@@ -3884,7 +3884,7 @@ export const AdminDashboard: React.FC = () => {
                       setShowAddSlotModal(false);
                     }
                   }}
-                  className="w-full sm:w-auto px-3 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-rose-300 font-semibold text-[11px] border border-rose-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full sm:w-auto px-3 py-2 rounded-xl bg-black/35 hover:bg-black/50 text-rose-300 font-semibold text-[11px] border border-rose-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Tüm Gün 6 Seansı Aç</span>
@@ -3894,13 +3894,13 @@ export const AdminDashboard: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowAddSlotModal(false)}
-                    className="px-4 py-2 rounded-xl bg-[#301322] text-[#eed1d1] text-xs hover:text-white cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-black/35 text-[#eed1d1] text-xs hover:text-white cursor-pointer"
                   >
                     İptal
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                    className="px-5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     Seansı Aç
                   </button>
@@ -3918,12 +3918,12 @@ export const AdminDashboard: React.FC = () => {
         >
           <div 
             onClick={e => e.stopPropagation()}
-            className="relative max-w-2xl w-full bg-[#1c0f18] border border-[#657796]/40 rounded-3xl overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
+            className="relative max-w-2xl w-full bg-black/25 border border-white/15 rounded-3xl overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
           >
-            <div className="p-6 border-b border-[#657796]/20 flex items-start justify-between bg-[#41041d]">
+            <div className="p-6 border-b border-white/10 flex items-start justify-between bg-[#41041d]">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs uppercase font-bold text-[#8193b2]">
+                  <span className="text-xs uppercase font-bold text-white/60">
                     {selectedEquipmentForHistory.brand} • {selectedEquipmentForHistory.model}
                   </span>
                   <StatusBadge status={selectedEquipmentForHistory.status} type="equipment" size="sm" />
@@ -3931,13 +3931,13 @@ export const AdminDashboard: React.FC = () => {
                 <h3 className="text-base font-bold text-white font-club">
                   {selectedEquipmentForHistory.name} — Kullanım & Zimmet Geçmişi
                 </h3>
-                <span className="text-xs font-mono text-[#a9b9d3]">
+                <span className="text-xs font-mono text-white/70">
                   Demirbaş Kodu: {selectedEquipmentForHistory.serial_number}
                 </span>
               </div>
               <button
                 onClick={() => setSelectedEquipmentForHistory(null)}
-                className="p-2 rounded-xl bg-[#301322] text-[#a9b9d3] hover:text-white cursor-pointer"
+                className="p-2 rounded-xl bg-black/35 text-white/70 hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -3945,21 +3945,21 @@ export const AdminDashboard: React.FC = () => {
 
             <div className="p-6 overflow-y-auto space-y-4">
               {/* Stats Bar */}
-              <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-[#41041d] border border-[#657796]/30 text-center text-xs">
+              <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-[#41041d] border border-white/10 text-center text-xs">
                 <div>
-                  <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Zimmet</span>
+                  <span className="text-white/60 text-[10px] uppercase font-bold block">Toplam Zimmet</span>
                   <strong className="text-white text-base font-club">
                     {reservations.filter(r => r.equipment_id === selectedEquipmentForHistory.id && r.status !== 'rejected').length} Kez
                   </strong>
                 </div>
                 <div>
-                  <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Tamamlanan İade</span>
-                  <strong className="text-[#a9b9d3] text-base font-club">
+                  <span className="text-white/60 text-[10px] uppercase font-bold block">Tamamlanan İade</span>
+                  <strong className="text-white/70 text-base font-club">
                     {reservations.filter(r => r.equipment_id === selectedEquipmentForHistory.id && r.status === 'returned').length} Kez
                   </strong>
                 </div>
                 <div>
-                  <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Kondisyon</span>
+                  <span className="text-white/60 text-[10px] uppercase font-bold block">Kondisyon</span>
                   <strong className="text-white text-xs font-semibold block truncate">
                     {selectedEquipmentForHistory.current_condition || 'değerlendirilecek'}
                   </strong>
@@ -3968,7 +3968,7 @@ export const AdminDashboard: React.FC = () => {
 
               {reservations.filter(r => r.equipment_id === selectedEquipmentForHistory.id && r.status !== 'rejected').length > 0 ? (
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8193b2] flex items-center gap-1.5">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-white/60 flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5" />
                     <span>Zimmet Kronolojisi</span>
                   </h4>
@@ -3979,7 +3979,7 @@ export const AdminDashboard: React.FC = () => {
                     .map(res => (
                       <div
                         key={res.id}
-                        className="p-4 rounded-2xl bg-[#41041d] border border-[#657796]/20 space-y-2 hover:border-[#657796]/40 transition-colors"
+                        className="p-4 rounded-2xl bg-[#41041d] border border-white/10 space-y-2 hover:border-white/15 transition-colors"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
@@ -3988,14 +3988,14 @@ export const AdminDashboard: React.FC = () => {
                             </span>
                             <StatusBadge status={res.status} type="reservation" size="sm" />
                           </div>
-                          <span className="text-[11px] text-[#8193b2] font-mono">
+                          <span className="text-[11px] text-white/60 font-mono">
                             {res.pickup_date} → {res.return_date}
                           </span>
                         </div>
 
-                        <div className="text-xs flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[#657796]/10">
+                        <div className="text-xs flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/[0.06]">
                           <div>
-                            <span className="text-[#a9b9d3]">Kullanan Üye: </span>
+                            <span className="text-white/70">Kullanan Üye: </span>
                             <strong className="text-white">
                               {res.member?.full_name || res.student_number} ({res.student_number})
                             </strong>
@@ -4011,8 +4011,8 @@ export const AdminDashboard: React.FC = () => {
                           ) : null}
                         </div>
 
-                        <div className="text-xs text-[#eed1d1] bg-[#1c0f18] p-2.5 rounded-xl border border-[#657796]/20">
-                          <span className="text-[10px] text-[#8193b2] block font-bold uppercase tracking-wider">
+                        <div className="text-xs text-[#eed1d1] bg-black/25 p-2.5 rounded-xl border border-white/10">
+                          <span className="text-[10px] text-white/60 block font-bold uppercase tracking-wider">
                             Proje / Kullanım Amacı:
                           </span>
                           <span>{res.purpose}</span>
@@ -4026,7 +4026,7 @@ export const AdminDashboard: React.FC = () => {
                         )}
 
                         {res.return_condition_notes && (
-                          <div className="text-[11px] text-[#8193b2] flex items-start gap-1.5 pt-1">
+                          <div className="text-[11px] text-white/60 flex items-start gap-1.5 pt-1">
                             <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                             <span>İade Notu: <strong className="text-[#eed1d1]">{res.return_condition_notes}</strong></span>
                           </div>
@@ -4035,18 +4035,18 @@ export const AdminDashboard: React.FC = () => {
                     ))}
                 </div>
               ) : (
-                <div className="p-8 text-center rounded-2xl bg-[#41041d] border border-[#657796]/20 space-y-2">
-                  <History className="w-8 h-8 text-[#8193b2] mx-auto opacity-60" />
+                <div className="p-8 text-center rounded-2xl bg-[#41041d] border border-white/10 space-y-2">
+                  <History className="w-8 h-8 text-white/60 mx-auto opacity-60" />
                   <h4 className="text-xs font-bold text-white">Geçmiş Kullanım Kaydı Bulunmuyor</h4>
-                  <p className="text-[11px] text-[#a9b9d3]">Bu ekipman henüz bir üyeye zimmetlenmemiştir.</p>
+                  <p className="text-[11px] text-white/70">Bu ekipman henüz bir üyeye zimmetlenmemiştir.</p>
                 </div>
               )}
             </div>
 
-            <div className="p-4 border-t border-[#657796]/20 bg-[#41041d] flex justify-end">
+            <div className="p-4 border-t border-white/10 bg-[#41041d] flex justify-end">
               <button
                 onClick={() => setSelectedEquipmentForHistory(null)}
-                className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-black/35 hover:bg-black/50 text-[#eed1d1] text-xs font-semibold cursor-pointer"
               >
                 Kapat
               </button>
@@ -4070,12 +4070,12 @@ export const AdminDashboard: React.FC = () => {
           >
             <div 
               onClick={e => e.stopPropagation()}
-              className="relative max-w-3xl w-full bg-[#1c0f18] border border-[#657796]/40 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+              className="relative max-w-3xl w-full bg-black/25 border border-white/15 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
             >
               {/* Modal Header */}
-              <div className="p-6 border-b border-[#657796]/20 bg-[#41041d] flex items-start justify-between gap-4">
+              <div className="p-6 border-b border-white/10 bg-[#41041d] flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-[#140911] flex items-center justify-center text-white/90 font-medium text-lg border border-white/15 shadow-inner shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-black/35 flex items-center justify-center text-white/90 font-medium text-lg border border-white/15 shadow-inner shrink-0">
                     {selectedMemberForHistory.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div>
@@ -4085,8 +4085,8 @@ export const AdminDashboard: React.FC = () => {
                       </h3>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         isBoardMemberObj(selectedMemberForHistory)
-                          ? 'bg-[#657796]/20 text-[#eed1d1] border border-[#657796]/40'
-                          : 'bg-[#301322] text-[#8193b2] border border-[#657796]/20'
+                          ? 'bg-[#657796]/20 text-[#eed1d1] border border-white/15'
+                          : 'bg-black/35 text-white/60 border border-white/10'
                       }`}>
                         {isBoardMemberObj(selectedMemberForHistory) ? 'Yönetim Kurulu Üyesi' : 'Kulüp Üyesi'}
                       </span>
@@ -4100,7 +4100,7 @@ export const AdminDashboard: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-[#a9b9d3] flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <div className="text-xs text-white/70 flex flex-wrap items-center gap-x-3 gap-y-1">
                       {!isBoardMemberObj(selectedMemberForHistory) && (
                         <>
                           <span className="font-mono text-white font-bold">{selectedMemberForHistory.student_number}</span>
@@ -4120,7 +4120,7 @@ export const AdminDashboard: React.FC = () => {
 
                 <button
                   onClick={() => setSelectedMemberForHistory(null)}
-                  className="p-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#a9b9d3] hover:text-white transition-colors cursor-pointer shrink-0"
+                  className="p-2 rounded-xl bg-black/35 hover:bg-black/50 text-white/70 hover:text-white transition-colors cursor-pointer shrink-0"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -4145,12 +4145,12 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Member Notes if any */}
                 {selectedMemberForHistory.notes && (
-                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-[#657796]/20 text-xs text-[#eed1d1] flex items-center justify-between">
+                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-white/10 text-xs text-[#eed1d1] flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] font-bold text-[#8193b2] uppercase tracking-wider block">Yönetim Notu</span>
+                      <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider block">Yönetim Notu</span>
                       <span>{selectedMemberForHistory.notes}</span>
                     </div>
-                    <div className="text-[11px] text-[#8193b2] font-mono">
+                    <div className="text-[11px] text-white/60 font-mono">
                       Katılım: {selectedMemberForHistory.membership_year || 2024}
                     </div>
                   </div>
@@ -4158,21 +4158,21 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Stats Summary */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-[#657796]/20">
-                    <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Toplam Talep</span>
+                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-white/10">
+                    <span className="text-white/60 text-[10px] uppercase font-bold block">Toplam Talep</span>
                     <strong className="text-white text-xl font-club">{memberResList.length} Kez</strong>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-[#657796]/20">
-                    <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Tamamlanan İade</span>
+                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-white/10">
+                    <span className="text-white/60 text-[10px] uppercase font-bold block">Tamamlanan İade</span>
                     <strong className="text-emerald-400 text-xl font-club">{completedReturns} Kez</strong>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-[#657796]/20">
-                    <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Şu An Zimmette</span>
+                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-white/10">
+                    <span className="text-white/60 text-[10px] uppercase font-bold block">Şu An Zimmette</span>
                     <strong className="text-white text-xl font-club">{currentInUse} Ekipman</strong>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-[#657796]/20">
-                    <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Ceza Puanı</span>
-                    <strong className={`text-xl font-club ${selectedMemberForHistory.penalty_count > 0 ? 'text-rose-400' : 'text-[#a9b9d3]'}`}>
+                  <div className="p-3.5 rounded-2xl bg-[#41041d] border border-white/10">
+                    <span className="text-white/60 text-[10px] uppercase font-bold block">Ceza Puanı</span>
+                    <strong className={`text-xl font-club ${selectedMemberForHistory.penalty_count > 0 ? 'text-rose-400' : 'text-white/70'}`}>
                       {selectedMemberForHistory.penalty_count}
                     </strong>
                   </div>
@@ -4180,7 +4180,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Reservation Timeline */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8193b2] flex items-center gap-1.5">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-white/60 flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5" />
                     <span>Üyenin Ekipman Zimmet Kronolojisi ({memberResList.length})</span>
                   </h4>
@@ -4190,7 +4190,7 @@ export const AdminDashboard: React.FC = () => {
                       {memberResList.map(res => (
                         <div
                           key={res.id}
-                          className="p-4 rounded-2xl bg-[#41041d] border border-[#657796]/20 space-y-3 hover:border-[#657796]/40 transition-colors"
+                          className="p-4 rounded-2xl bg-[#41041d] border border-white/10 space-y-3 hover:border-white/15 transition-colors"
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <div className="flex items-center gap-2">
@@ -4198,7 +4198,7 @@ export const AdminDashboard: React.FC = () => {
                               <StatusBadge status={res.status} type="reservation" size="sm" />
                             </div>
                             <div className="text-right">
-                              <span className="text-xs font-mono text-[#8193b2] block">
+                              <span className="text-xs font-mono text-white/60 block">
                                 {res.pickup_date} → {res.return_date}
                               </span>
                               {res.status === 'rejected' ? (
@@ -4213,36 +4213,36 @@ export const AdminDashboard: React.FC = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#1c0f18] border border-[#657796]/20">
+                          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-black/25 border border-white/10">
                             <img
                               src={res.equipment?.image_url}
                               alt=""
-                              className="w-12 h-12 rounded-lg object-cover bg-black border border-[#657796]/30 shrink-0"
+                              className="w-12 h-12 rounded-lg object-cover bg-black border border-white/10 shrink-0"
                             />
                             <div>
                               <strong className="text-white text-xs block font-club">
                                 {res.equipment?.name || 'Ekipman'}
                               </strong>
-                              <span className="text-[11px] font-mono text-[#8193b2]">
+                              <span className="text-[11px] font-mono text-white/60">
                                 Demirbaş No: {res.equipment?.serial_number}
                               </span>
                             </div>
                           </div>
 
                           <div className="text-xs text-[#eed1d1]">
-                            <span className="text-[10px] text-[#8193b2] block uppercase font-bold">Proje / Çekim Amacı:</span>
+                            <span className="text-[10px] text-white/60 block uppercase font-bold">Proje / Çekim Amacı:</span>
                             <p>{res.purpose}</p>
                           </div>
 
                           {res.return_condition_notes && (
-                            <div className="text-xs p-2 rounded-xl bg-[#1c0f18] border border-[#657796]/20 flex items-start gap-1.5">
+                            <div className="text-xs p-2 rounded-xl bg-black/25 border border-white/10 flex items-start gap-1.5">
                               {res.return_condition_notes.includes('gecikmeli') ? (
                                 <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
                               ) : (
                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                               )}
                               <div>
-                                <span className="text-[10px] uppercase font-bold text-[#8193b2] block">İade Kontrol & Zimmet Notu</span>
+                                <span className="text-[10px] uppercase font-bold text-white/60 block">İade Kontrol & Zimmet Notu</span>
                                 <span className={res.return_condition_notes.includes('gecikmeli') ? 'text-rose-300 font-semibold' : 'text-[#eed1d1]'}>
                                   {res.return_condition_notes}
                                 </span>
@@ -4260,17 +4260,17 @@ export const AdminDashboard: React.FC = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-8 text-center rounded-2xl bg-[#41041d] border border-[#657796]/20 space-y-2">
-                      <History className="w-8 h-8 text-[#8193b2] mx-auto opacity-60" />
+                    <div className="p-8 text-center rounded-2xl bg-[#41041d] border border-white/10 space-y-2">
+                      <History className="w-8 h-8 text-white/60 mx-auto opacity-60" />
                       <h4 className="text-xs font-bold text-white">Zimmet Kaydı Bulunmuyor</h4>
-                      <p className="text-[11px] text-[#a9b9d3]">Bu üye henüz kulüpten ekipman teslim almamıştır.</p>
+                      <p className="text-[11px] text-white/70">Bu üye henüz kulüpten ekipman teslim almamıştır.</p>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Modal Footer */}
-              <div className="p-4 border-t border-[#657796]/20 bg-[#41041d] flex items-center justify-between gap-3">
+              <div className="p-4 border-t border-white/10 bg-[#41041d] flex items-center justify-between gap-3">
                 <button
                   onClick={async () => {
                     await handleToggleMemberStatus(selectedMemberForHistory);
@@ -4278,7 +4278,7 @@ export const AdminDashboard: React.FC = () => {
                   }}
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
                     selectedMemberForHistory.status === 'active'
-                      ? 'bg-[#301322] hover:bg-rose-900/60 text-rose-300 border-rose-500/30'
+                      ? 'bg-black/35 hover:bg-rose-900/60 text-rose-300 border-rose-500/30'
                       : 'bg-emerald-900/40 hover:bg-emerald-800/60 text-emerald-300 border-emerald-500/30'
                   }`}
                 >
@@ -4287,7 +4287,7 @@ export const AdminDashboard: React.FC = () => {
 
                 <button
                   onClick={() => setSelectedMemberForHistory(null)}
-                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-black/35 hover:bg-black/50 text-[#eed1d1] text-xs font-semibold cursor-pointer"
                 >
                   Kapat
                 </button>
@@ -4312,17 +4312,17 @@ export const AdminDashboard: React.FC = () => {
       {/* Add / Edit Trip Modal */}
       {showAddTripModal && (
         <div className="fixed inset-0 z-50 bg-[#41041d]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in">
-            <div className="flex items-center justify-between border-b border-[#657796]/20 pb-3">
+          <div className="bg-black/25 border border-white/15 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-[#301322] text-[#eed1d1] border border-[#657796]/40">
+                <div className="p-2 rounded-xl bg-black/35 text-[#eed1d1] border border-white/15">
                   <Compass className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white font-club">
                     {editingTrip ? 'Geziyi Düzenle' : 'Yeni Kulüp Gezisi Tanımla'}
                   </h3>
-                  <p className="text-[11px] text-[#8193b2]">
+                  <p className="text-[11px] text-white/60">
                     Kamera rezervasyon formunda kullanım alanı olarak listelenir.
                   </p>
                 </div>
@@ -4333,7 +4333,7 @@ export const AdminDashboard: React.FC = () => {
                   setShowAddTripModal(false);
                   setEditingTrip(null);
                 }}
-                className="p-1 rounded-lg text-[#8193b2] hover:text-white hover:bg-[#301322] cursor-pointer"
+                className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-black/35 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -4341,48 +4341,48 @@ export const AdminDashboard: React.FC = () => {
 
             <form onSubmit={handleSaveTrip} className="space-y-4 text-xs">
               <div>
-                <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">Gezi Başlığı *</label>
+                <label className="block text-[11px] font-semibold text-white/70 mb-1">Gezi Başlığı *</label>
                 <input
                   type="text"
                   placeholder="Örn: Kapadokya Sonbahar Fotoğraf Gezisi"
                   value={newTripTitle}
                   onChange={(e) => setNewTripTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">Rota / Gidilecek Yer *</label>
+                <label className="block text-[11px] font-semibold text-white/70 mb-1">Rota / Gidilecek Yer *</label>
                 <input
                   type="text"
                   placeholder="Örn: Göreme & Uçhisar, Nevşehir"
                   value={newTripDestination}
                   onChange={(e) => setNewTripDestination(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">Başlangıç Tarihi *</label>
+                  <label className="block text-[11px] font-semibold text-white/70 mb-1">Başlangıç Tarihi *</label>
                   <input
                     type="date"
                     value={newTripStartDate}
                     onChange={(e) => setNewTripStartDate(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">Bitiş Tarihi *</label>
+                  <label className="block text-[11px] font-semibold text-white/70 mb-1">Bitiş Tarihi *</label>
                   <input
                     type="date"
                     min={newTripStartDate}
                     value={newTripEndDate}
                     onChange={(e) => setNewTripEndDate(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                     required
                   />
                 </div>
@@ -4390,7 +4390,7 @@ export const AdminDashboard: React.FC = () => {
 
               {/* Dynamic Live Calculator Box inside modal */}
               {newTripStartDate && (
-                <div className="p-3.5 rounded-xl bg-[#41041d] border border-[#657796]/40 space-y-2 text-xs">
+                <div className="p-3.5 rounded-xl bg-[#41041d] border border-white/15 space-y-2 text-xs">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#eed1d1] block">
                     ⚡ Otomatik Rezervasyon Açılış Önizlemesi:
                   </span>
@@ -4412,13 +4412,13 @@ export const AdminDashboard: React.FC = () => {
               )}
 
               <div>
-                <label className="block text-[11px] font-semibold text-[#a9b9d3] mb-1">Açıklama / Rota Detayı (Opsiyonel)</label>
+                <label className="block text-[11px] font-semibold text-white/70 mb-1">Açıklama / Rota Detayı (Opsiyonel)</label>
                 <textarea
                   rows={2}
                   placeholder="Gezi rotası, çekim konsepti ve katılımcılara yönelik notlar..."
                   value={newTripDescription}
                   onChange={(e) => setNewTripDescription(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-[#657796]/30 text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[#41041d] border border-white/10 text-white text-xs"
                 />
               </div>
 
@@ -4428,27 +4428,27 @@ export const AdminDashboard: React.FC = () => {
                   id="tripIsActive"
                   checked={newTripIsActive}
                   onChange={(e) => setNewTripIsActive(e.target.checked)}
-                  className="rounded bg-[#41041d] border-[#657796]/30 text-[#657796]"
+                  className="rounded bg-[#41041d] border-white/10 text-[#657796]"
                 />
                 <label htmlFor="tripIsActive" className="text-xs text-[#eed1d1] cursor-pointer">
                   Gezi hemen yayına alınsın ve rezervasyon formunda görünsün
                 </label>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#657796]/20">
+              <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => {
                     setShowAddTripModal(false);
                     setEditingTrip(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-black/35 hover:bg-black/50 text-[#eed1d1] text-xs font-semibold cursor-pointer"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                 >
                   {editingTrip ? 'Geziyi Güncelle' : 'Geziyi Kaydet & Yayınla'}
                 </button>

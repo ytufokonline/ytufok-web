@@ -109,8 +109,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className={`flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl border transition-all cursor-pointer shadow-sm ${
                     activeTab === 'admin'
-                      ? 'bg-[#301322] border-[#657796] ring-1 ring-[#657796]/40 text-white'
-                      : 'bg-[#1c0f18] hover:bg-[#251520] border-[#657796]/30 text-white'
+                      ? 'bg-black/35 border-[#657796] ring-1 ring-[#657796]/40 text-white'
+                      : 'bg-[#2c0615] hover:bg-[#251520] border-[#657796]/30 text-white'
                   }`}
                 >
                   <div className="w-7 h-7 rounded-lg bg-[#241120] flex items-center justify-center text-white text-[11px] font-mono font-medium shadow-inner border border-white/15 shrink-0">
@@ -129,13 +129,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                       {pendingCount}
                     </span>
                   )}
-                  <ChevronDown className={`w-3.5 h-3.5 text-[#8193b2] transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3.5 h-3.5 text-white/60 transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Dropdown Menu */}
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#1c0f18] border border-[#657796]/40 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-4 py-2.5 border-b border-[#657796]/20 bg-[#41041d]/50">
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#2c0615] border border-white/20 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-4 py-2.5 border-b border-white/10 bg-[#41041d]/50">
                       <div className="flex items-center gap-2">
                         <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
                         <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-400">Aktif Yönetici Oturumu</span>
@@ -143,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <div className="text-xs font-bold text-white mt-1 truncate">
                         {activeAdmin.full_name}
                       </div>
-                      <div className="text-[11px] text-[#8193b2]">
+                      <div className="text-[11px] text-white/60">
                         {activeAdmin.title}
                       </div>
                     </div>
@@ -154,12 +154,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                         onClick={(e) => handleNavClick('admin', e)}
                         className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer ${
                           activeTab === 'admin'
-                            ? 'bg-[#301322] text-white font-semibold'
-                            : 'text-[#eed1d1] hover:text-white hover:bg-[#301322]'
+                            ? 'bg-black/35 text-white font-semibold'
+                            : 'text-white hover:text-white hover:bg-black/35'
                         }`}
                       >
                         <span className="flex items-center gap-2">
-                          <ShieldCheck className="w-4 h-4 text-[#8193b2]" />
+                          <ShieldCheck className="w-4 h-4 text-white/60" />
                           Yönetim Paneli
                         </span>
                         {pendingCount > 0 && (
@@ -176,14 +176,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                             setProfileDropdownOpen(false);
                             onSwitchProfile();
                           }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#eed1d1] hover:text-white hover:bg-[#301322] transition-colors cursor-pointer"
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-white hover:text-white hover:bg-black/35 transition-colors cursor-pointer"
                         >
-                          <ArrowRightLeft className="w-4 h-4 text-[#8193b2]" />
+                          <ArrowRightLeft className="w-4 h-4 text-white/60" />
                           <span>Başka Profile Geçiş Yap</span>
                         </button>
                       )}
 
-                      <div className="pt-1 mt-1 border-t border-[#657796]/20">
+                      <div className="pt-1 mt-1 border-t border-white/10">
                         <button
                           type="button"
                           onClick={() => {
@@ -210,7 +210,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'bg-white/[0.05] hover:bg-white/[0.1] text-white/90 hover:text-white border border-white/[0.1]'
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-[#8193b2]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-white/60" />
                 <span>Yönetim</span>
                 {pendingCount > 0 && (
                   <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded text-[10px] font-bold bg-[#657796] text-white">
@@ -228,7 +228,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 onClick={() => handleNavClick('admin')}
                 className={`p-1.5 rounded-xl border flex items-center gap-1.5 ${
-                  activeTab === 'admin' ? 'bg-[#301322] border-[#657796]' : 'bg-[#1c0f18] border-[#657796]/30'
+                  activeTab === 'admin' ? 'bg-black/35 border-[#657796]' : 'bg-[#2c0615] border-[#657796]/30'
                 }`}
               >
                 <div className="w-6 h-6 rounded-lg bg-[#241120] flex items-center justify-center text-white text-[10px] font-mono font-medium border border-white/15">
@@ -242,7 +242,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="p-2 rounded-lg bg-white/[0.05] text-white/80 border border-white/[0.08]"
                 aria-label="Admin Paneli"
               >
-                <ShieldCheck className="w-4 h-4 text-[#8193b2]" />
+                <ShieldCheck className="w-4 h-4 text-white/60" />
               </a>
             )}
 
@@ -282,20 +282,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Mobile Profile & Admin Block */}
           {activeAdmin ? (
             <div className="pt-3 border-t border-white/[0.08] space-y-2">
-              <div className="p-3 rounded-2xl bg-[#1c0f18] border border-[#657796]/30 flex items-center justify-between gap-3">
+              <div className="p-3 rounded-2xl bg-[#2c0615] border border-[#657796]/30 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
                     {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-white truncate">{activeAdmin.full_name}</div>
-                    <div className="text-[10px] text-[#8193b2]">{activeAdmin.title}</div>
+                    <div className="text-[10px] text-white/60">{activeAdmin.title}</div>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={(e) => handleNavClick('admin', e)}
-                  className="px-2.5 py-1 rounded-lg bg-[#301322] text-[#eed1d1] text-[11px] font-semibold border border-[#657796]/30"
+                  className="px-2.5 py-1 rounded-lg bg-black/35 text-white text-[11px] font-semibold border border-[#657796]/30"
                 >
                   Panele Git
                 </button>
@@ -309,9 +309,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setMobileMenuOpen(false);
                       onSwitchProfile();
                     }}
-                    className="px-3 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-xs font-semibold text-[#eed1d1] border border-[#657796]/30 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="px-3 py-2 rounded-xl bg-black/35 hover:bg-[#421d31] text-xs font-semibold text-white border border-[#657796]/30 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <ArrowRightLeft className="w-3.5 h-3.5 text-[#8193b2]" />
+                    <ArrowRightLeft className="w-3.5 h-3.5 text-white/60" />
                     <span>Profil Değiştir</span>
                   </button>
                 )}
@@ -340,7 +340,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#8193b2]" />
+                  <ShieldCheck className="w-4 h-4 text-white/60" />
                   Yönetici Portalı
                 </span>
                 {pendingCount > 0 && (

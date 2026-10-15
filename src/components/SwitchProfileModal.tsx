@@ -81,22 +81,22 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#1c0f18] border border-[#657796]/30 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl space-y-0">
+      <div className="bg-[#2c0615] border border-white/15 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl space-y-0">
         {/* Header */}
-        <div className="p-5 border-b border-[#657796]/20 bg-[#41041d]/90 flex items-start justify-between">
+        <div className="p-5 border-b border-white/10 bg-black/25 flex items-start justify-between">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#301322] border border-[#657796]/40 text-[#eed1d1] text-[10px] font-bold uppercase tracking-wider mb-1.5">
-              <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/35 border border-white/20 text-[#eed1d1] text-[10px] font-bold uppercase tracking-wider mb-1.5">
+              <ShieldCheck className="w-3 h-3 text-white/60" />
               <span>Yönetim Kurulu</span>
             </div>
             <h3 className="text-base font-bold text-white font-club">Aktif Yönetici Profilini Değiştir</h3>
-            <p className="text-[11px] text-[#a9b9d3] mt-0.5">
+            <p className="text-[11px] text-white/70 mt-0.5">
               Geçmek istediğiniz yönetim kurulu profilini seçip PIN şifrenizi giriniz.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-[#301322] text-[#8193b2] hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-black/35 text-white/60 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -113,10 +113,10 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                 key={profile.id}
                 className={`rounded-2xl border transition-all ${
                   isCurrent
-                    ? 'bg-[#301322]/80 border-[#657796]/50'
+                    ? 'bg-black/35/80 border-white/25'
                     : isSelected
-                    ? 'bg-[#301322] border-[#657796] shadow-lg ring-1 ring-[#657796]/50'
-                    : 'bg-[#41041d] border-[#657796]/20 hover:border-[#657796]/50 hover:bg-[#1a0e17]'
+                    ? 'bg-black/35 border-white/30 shadow-lg ring-1 ring-white/20'
+                    : 'bg-black/35 border-white/10 hover:border-white/25 hover:bg-black/40'
                 }`}
               >
                 <div
@@ -124,14 +124,14 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                   className="p-3.5 flex items-center justify-between gap-3 cursor-pointer"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-md shrink-0 border border-white/15">
+                    <div className="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center text-white text-xs font-mono font-medium shadow-md shrink-0 border border-white/15">
                       {profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
                     <div className="min-w-0">
                       <strong className="text-white text-xs font-semibold block truncate">
                         {profile.full_name}
                       </strong>
-                      <div className="text-[10px] text-[#a9b9d3]">
+                      <div className="text-[10px] text-white/70">
                         {profile.title}
                       </div>
                     </div>
@@ -145,7 +145,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                       </span>
                     ) : (
                       <span className={`text-[11px] font-medium transition-colors ${
-                        isSelected ? 'text-[#eed1d1] font-bold' : 'text-[#8193b2]'
+                        isSelected ? 'text-[#eed1d1] font-bold' : 'text-white/60'
                       }`}>
                         {isSelected ? 'Şifre Girin ↓' : 'Seç →'}
                       </span>
@@ -160,14 +160,14 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                       e.preventDefault();
                       handleConfirmSwitch(profile);
                     }}
-                    className="px-3.5 pb-3.5 pt-1 border-t border-[#657796]/20 space-y-2 animate-in fade-in duration-150"
+                    className="px-3.5 pb-3.5 pt-1 border-t border-white/10 space-y-2 animate-in fade-in duration-150"
                   >
                     <div className="text-[11px] text-[#eed1d1]">
                       <strong>{profile.full_name}</strong> hesabına geçmek için şifrenizi giriniz:
                     </div>
 
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#8193b2]">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/60">
                         <KeyRound className="w-3.5 h-3.5" />
                       </div>
                       <input
@@ -179,12 +179,12 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                         }}
                         placeholder="Yönetici PIN Şifresi"
                         autoFocus
-                        className="w-full pl-9 pr-9 py-2 rounded-xl bg-[#41041d] border border-[#657796]/40 text-white text-xs focus:outline-none focus:border-[#657796] focus:ring-1 focus:ring-[#657796]"
+                        className="w-full pl-9 pr-9 py-2 rounded-xl bg-black/35 border border-white/20 text-white text-xs focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-[#657796]"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPin(!showPin)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#8193b2] hover:text-white cursor-pointer"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-white/60 hover:text-white cursor-pointer"
                       >
                         {showPin ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                       </button>
@@ -205,14 +205,14 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                           setError(null);
                           setPinInput('');
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-[#1c0f18] text-[#8193b2] hover:text-white text-xs font-medium cursor-pointer"
+                        className="px-3 py-1.5 rounded-lg bg-[#2c0615] text-white/60 hover:text-white text-xs font-medium cursor-pointer"
                       >
                         İptal
                       </button>
                       <button
                         type="submit"
                         disabled={isSubmitting || !pinInput.trim()}
-                        className="px-4 py-1.5 rounded-lg bg-[#1e0e1b] hover:bg-[#281324] disabled:opacity-50 text-white border border-white/20 hover:border-white/40 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+                        className="px-4 py-1.5 rounded-lg bg-black/40 hover:bg-black/50 disabled:opacity-50 text-white border border-white/20 hover:border-white/40 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
                       >
                         <span>Hesaba Geç</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -226,8 +226,8 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
         </div>
 
         {/* Footer with Global Sign Out Option */}
-        <div className="p-4 border-t border-[#657796]/20 bg-[#41041d] flex items-center justify-between gap-3 text-xs">
-          <div className="text-[11px] text-[#8193b2]">
+        <div className="p-4 border-t border-white/10 bg-black/35 flex items-center justify-between gap-3 text-xs">
+          <div className="text-[11px] text-white/60">
             {activeAdmin ? (
               <span>Aktif: <strong className="text-white">{activeAdmin.full_name}</strong></span>
             ) : (
@@ -248,7 +248,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] text-[11px] font-medium cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-black/35 hover:bg-[#421d31] text-[#eed1d1] text-[11px] font-medium cursor-pointer"
             >
               Kapat
             </button>

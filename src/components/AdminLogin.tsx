@@ -105,7 +105,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                   setStudentNumber(e.target.value);
                   if (error) setError(null);
                 }}
-                placeholder="21065054"
                 autoFocus
                 disabled={isSubmitting}
                 className="w-full px-4 py-3 rounded-2xl bg-[#0b0409]/90 border border-white/10 text-white placeholder-white/20 text-sm focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 transition-all font-mono shadow-inner disabled:opacity-50"

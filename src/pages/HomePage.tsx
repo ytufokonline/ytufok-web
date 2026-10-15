@@ -41,13 +41,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
   }, []);
 
   return (
-    <div className="space-y-24 sm:space-y-32 pb-24">
+    <div className="space-y-20 sm:space-y-28 pb-24 text-[#dce4ef]">
       
-      {/* 1. HERO SECTION (Apple.com Minimalist & Large Whitespace) */}
+      {/* 1. HERO SECTION (Apple Editorial Minimalist) */}
       <section className="pt-16 sm:pt-24 lg:pt-32 pb-16 border-b border-white/[0.08]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           
-          <div className="text-xs font-semibold text-[#8193b2] tracking-[0.14em] uppercase">
+          <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
             Yıldız Teknik Üniversitesi Fotoğraf Kulübü
           </div>
 
@@ -55,73 +55,74 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             YTÜFOK Ekipman Havuzu
           </h1>
 
-          <p className="text-base sm:text-lg text-[#a9b9d3] max-w-2xl mx-auto font-normal leading-relaxed">
-            Kulüp üyeleri için geliştirilmiş demirbaş takip ve rezervasyon sistemi. Gövde, lens ve analog ekipmanlar için öğrenci numaranızla kolayca talep oluşturun.
+          <p className="text-base sm:text-lg text-white/60 font-light max-w-2xl mx-auto leading-relaxed">
+            Kulüp üyeleri için geliştirilmiş demirbaş takip ve rezervasyon sistemi. Gövde, lens ve analog ekipmanlar için öğrenci numaranızla doğrudan talep oluşturun.
           </p>
 
           {/* Action Triggers */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => onNavigate('reserve')}
-              className="px-6 py-3 rounded-lg bg-white hover:bg-[#dce4ef] text-[#12080f] font-semibold text-sm transition-all duration-150 cursor-pointer shadow-sm active:scale-[0.98]"
+              className="px-6 py-3 rounded-xl bg-white text-black hover:bg-white/90 font-semibold text-xs uppercase tracking-wider transition-all duration-150 cursor-pointer shadow-lg active:scale-[0.98]"
             >
               Rezervasyon Yap
             </button>
 
             <button
               onClick={() => onNavigate('equipment')}
-              className="px-6 py-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-white font-medium text-sm border border-white/[0.12] transition-all duration-150 cursor-pointer active:scale-[0.98]"
+              className="px-6 py-3 rounded-xl border border-white/10 text-white/80 hover:text-white hover:border-white/30 hover:bg-white/[0.04] font-medium text-xs uppercase tracking-wider transition-all duration-150 cursor-pointer active:scale-[0.98]"
             >
               Ekipmanları İncele
             </button>
 
             <button
               onClick={() => onNavigate('darkroom')}
-              className="px-5 py-3 rounded-lg bg-[#301322]/70 hover:bg-[#301322] text-rose-200 hover:text-white font-medium text-sm border border-rose-500/30 hover:border-rose-500/50 transition-all duration-150 flex items-center gap-2 cursor-pointer active:scale-[0.98]"
+              className="px-5 py-3 rounded-xl border border-white/10 text-white/80 hover:text-white hover:border-white/30 hover:bg-white/[0.04] font-medium text-xs uppercase tracking-wider transition-all duration-150 flex items-center gap-2 cursor-pointer active:scale-[0.98]"
             >
-              <Droplets className="w-4 h-4 text-rose-400" />
+              <Droplets className="w-3.5 h-3.5 text-white/60" />
               <span>Karanlık Oda (1,5 Saat)</span>
             </button>
           </div>
 
           {/* Key Facts Strip */}
-          <div className="pt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto text-left border-t border-white/[0.06]">
+          <div className="pt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto text-left border-t border-white/[0.08]">
             <div className="space-y-1">
-              <span className="text-[11px] uppercase font-semibold text-[#8193b2] tracking-wider block">Teslimat & İade</span>
-              <strong className="text-sm text-white font-medium block">Kulüpler Vadisi, Davutpaşa</strong>
-              <span className="text-xs text-[#a9b9d3]">Tek yetkili teslim ve iade noktasıdır.</span>
+              <span className="text-[10px] font-mono uppercase text-white/40 tracking-wider block">Teslimat & İade</span>
+              <strong className="text-sm text-white font-medium block">Kulüpler Vadisi</strong>
+              <span className="text-xs text-white/50 font-light">Davutpaşa Kampüsü tek teslimat noktasıdır.</span>
             </div>
 
             <div className="space-y-1">
-              <span className="text-[11px] uppercase font-semibold text-[#8193b2] tracking-wider block">Kullanım Kuralı</span>
+              <span className="text-[10px] font-mono uppercase text-white/40 tracking-wider block">Kullanım Kuralı</span>
               <strong className="text-sm text-white font-medium block">Maksimum 2 Gün</strong>
-              <span className="text-xs text-[#a9b9d3]">Standart bireysel çekim süresidir.</span>
+              <span className="text-xs text-white/50 font-light">Standart bireysel çekim süresidir.</span>
             </div>
 
             <div className="space-y-1">
-              <span className="text-[11px] uppercase font-semibold text-[#8193b2] tracking-wider block">Yönetim Süreci</span>
+              <span className="text-[10px] font-mono uppercase text-white/40 tracking-wider block">Yönetim Süreci</span>
               <strong className="text-sm text-white font-medium block">24 Saat İçinde Onay</strong>
-              <span className="text-xs text-[#a9b9d3]">Talepler yönetim kurulunca incelenir.</span>
+              <span className="text-xs text-white/50 font-light">Talepler yönetim kurulunca incelenir.</span>
             </div>
           </div>
 
         </div>
       </section>
 
-      {/* 2. AIRBNB-STYLE EQUIPMENT CATALOG CARDS */}
+      {/* 2. EQUIPMENT CATALOG CARDS */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex items-end justify-between border-b border-white/[0.06] pb-4">
+        <div className="flex items-end justify-between border-b border-white/[0.08] pb-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight">
+            <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 block">Katalog</span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight mt-1">
               Öne Çıkan Ekipmanlar
             </h2>
-            <p className="text-xs sm:text-sm text-[#a9b9d3] mt-1">
+            <p className="text-xs sm:text-sm text-white/50 font-light mt-1">
               Kulüp demirbaşındaki gövde ve profesyonel lensler
             </p>
           </div>
           <button
             onClick={() => onNavigate('equipment')}
-            className="text-xs font-semibold text-[#8193b2] hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
+            className="text-xs font-mono text-white/60 hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
           >
             <span>Tüm Ekipmanlar</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -132,14 +133,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           {featuredEquipment.map((item) => (
             <div
               key={item.id}
-              className="surface-card-hover overflow-hidden flex flex-col group cursor-pointer"
+              className="rounded-2xl border border-white/[0.08] hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.04] transition-all overflow-hidden flex flex-col group cursor-pointer"
               onClick={() => {
                 onSelectEquipmentToReserve(item.id);
                 onNavigate('reserve');
               }}
             >
-              {/* Image Frame with 4:3 Aspect Ratio */}
-              <div className="relative aspect-[4/3] bg-black/50 overflow-hidden">
+              {/* Image Frame */}
+              <div className="relative aspect-[4/3] bg-black/60 overflow-hidden">
                 <img
                   src={item.image_url}
                   alt={item.name}
@@ -149,31 +150,31 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                   <StatusBadge status={item.status} type="equipment" size="sm" />
                 </div>
                 <div className="absolute bottom-3 left-3">
-                  <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[10px] font-mono text-white/80 border border-white/[0.1]">
+                  <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-md text-[10px] font-mono text-white/80 border border-white/10">
                     {item.serial_number}
                   </span>
                 </div>
               </div>
 
               {/* Card Meta Content */}
-              <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                 <div>
-                  <div className="text-[11px] font-medium text-[#8193b2] uppercase tracking-wider">
+                  <div className="text-[10px] font-mono text-white/40 uppercase tracking-wider">
                     {item.brand} • {item.category === 'camera' ? 'DSLR Gövde' : item.category === 'lens' ? 'Objektif' : 'Ekipman'}
                   </div>
-                  <h3 className="text-sm font-semibold text-white font-club mt-0.5">
+                  <h3 className="text-base font-semibold text-white font-club mt-1 tracking-tight">
                     {item.name}
                   </h3>
-                  <p className="text-xs text-[#a9b9d3] mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-white/60 font-light mt-1.5 line-clamp-2 leading-relaxed">
                     {item.description}
                   </p>
                 </div>
 
                 <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                  <span className="text-[#a9b9d3] text-[11px]">
-                    Kondisyon: <strong className="text-white">{item.current_condition || 'Standart'}</strong>
+                  <span className="text-white/40 text-[11px] font-mono">
+                    Kondisyon: <strong className="text-white font-normal">{item.current_condition || 'Standart'}</strong>
                   </span>
-                  <span className="text-white/80 group-hover:text-white font-medium flex items-center gap-1 transition-colors">
+                  <span className="text-white/80 group-hover:text-white font-mono text-xs flex items-center gap-1 transition-colors">
                     <span>Rezerve Et</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                   </span>
@@ -184,15 +185,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         </div>
       </section>
 
-      {/* 3. AKTİF KULÜP GEZİLERİ (Airbnb Experiences Style) */}
+      {/* 3. AKTİF KULÜP GEZİLERİ */}
       {activeTrips.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex items-end justify-between border-b border-white/[0.06] pb-4">
+          <div className="flex items-end justify-between border-b border-white/[0.08] pb-4">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight">
+              <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 block">Etkinlikler</span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight mt-1">
                 Aktif Kulüp Gezileri
               </h2>
-              <p className="text-xs sm:text-sm text-[#a9b9d3] mt-1">
+              <p className="text-xs sm:text-sm text-white/50 font-light mt-1">
                 Etkinlik tarihine göre ekipman rezervasyonu yapabilirsiniz
               </p>
             </div>
@@ -202,30 +204,30 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             {activeTrips.map((trip) => (
               <div
                 key={trip.id}
-                className="surface-card p-5 flex flex-col justify-between space-y-4"
+                className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 flex flex-col justify-between space-y-4"
               >
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-200 border border-emerald-500/20">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-full border border-emerald-400/30 text-emerald-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                       Aktif Gezi
                     </span>
-                    <span className="text-xs font-mono text-[#a9b9d3]">
+                    <span className="text-xs font-mono text-white/50">
                       {formatDateRangeTr(trip.start_date, trip.end_date)}
                     </span>
                   </div>
 
-                  <h3 className="text-base font-semibold text-white font-club">
+                  <h3 className="text-base font-semibold text-white font-club tracking-tight">
                     {trip.title}
                   </h3>
 
-                  <div className="flex items-center gap-1.5 text-xs text-[#8193b2]">
+                  <div className="flex items-center gap-1.5 text-xs text-white/50 font-mono">
                     <MapPin className="w-3.5 h-3.5 shrink-0" />
                     <span>{trip.destination}</span>
                   </div>
 
                   {trip.description && (
-                    <p className="text-xs text-[#a9b9d3] leading-relaxed pt-1">
+                    <p className="text-xs text-white/60 font-light leading-relaxed pt-1">
                       {trip.description}
                     </p>
                   )}
@@ -234,9 +236,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 <div className="pt-4 border-t border-white/[0.06]">
                   <button
                     onClick={() => onNavigate('reserve')}
-                    className="w-full py-2.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/[0.08]"
+                    className="w-full py-2.5 rounded-xl border border-white/10 hover:border-white/30 text-white text-xs font-mono transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <Calendar className="w-3.5 h-3.5 text-[#8193b2]" />
+                    <Calendar className="w-3.5 h-3.5 text-white/50" />
                     <span>Gezi İçin Ekipman Rezerve Et</span>
                   </button>
                 </div>
@@ -246,13 +248,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         </section>
       )}
 
-      {/* 4. DUYURULAR (Apple Newsroom Style Feed) */}
+      {/* 4. DUYURULAR */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <div className="border-b border-white/[0.06] pb-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight">
+        <div className="border-b border-white/[0.08] pb-4">
+          <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 block">Haberler</span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight mt-1">
             Kulüp Bildirimleri
           </h2>
-          <p className="text-xs sm:text-sm text-[#a9b9d3] mt-1">
+          <p className="text-xs sm:text-sm text-white/50 font-light mt-1">
             Ekipman kuralları, atölye ve teslimat duyuruları
           </p>
         </div>
@@ -261,17 +264,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           {announcements.map((ann) => (
             <div 
               key={ann.id}
-              className="surface-card p-5 flex flex-col justify-between space-y-3"
+              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-white/[0.05] text-[#dce4ef] border border-white/[0.08]">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-white/10 text-white/60">
                   {ann.category}
                 </span>
-                <span className="text-xs text-[#a9b9d3]">
+                <span className="text-xs font-mono text-white/40">
                   {new Date(ann.created_at).toLocaleDateString('tr-TR')}
                 </span>
               </div>
-              <p className="text-sm text-white font-normal leading-relaxed">
+              <p className="text-sm text-white/90 font-light leading-relaxed">
                 {ann.content || ann.title}
               </p>
             </div>

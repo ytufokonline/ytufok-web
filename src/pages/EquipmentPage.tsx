@@ -104,64 +104,59 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-14 text-[#dce4ef]">
       
       {/* Header */}
-      <div className="border-b border-white/[0.08] pb-6 space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-bold text-white font-club tracking-tight">
+      <header className="space-y-3">
+        <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
+          Envanter & Ekipman
+        </div>
+        <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white font-club">
           Kamera ve Ekipman Havuzu
         </h1>
-        <p className="text-sm text-[#a9b9d3] max-w-2xl leading-relaxed">
-          Kulüp bünyesindeki Canon DSLR gövdeler, profesyonel lensler, analog makineler ve aksesuarlar.
+        <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-2xl">
+          Kulüp bünyesindeki Full Frame ve Crop DSLR gövdeler, profesyonel L serisi objektifler, analog makineler ve çekim aksesuarları.
         </p>
-      </div>
+      </header>
 
-      {/* Educational Guide Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-950/40 via-purple-900/20 to-[#180a15] border border-purple-500/30 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl shadow-purple-950/30">
-        <div className="flex items-start sm:items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl shrink-0 shadow-inner">
-            📖
+      {/* Educational Guide Highlight (Apple Editorial Highlight) */}
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div className="space-y-2 max-w-2xl">
+          <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40">
+            Fotoğrafçılık & Ekipman Rehberi
           </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold tracking-wide uppercase border border-purple-500/30">
-                Kulüp Demirbaşı
-              </span>
-              <span className="text-xs text-white/50">• Fotoğrafçılık & Ekipman Rehberi</span>
-            </div>
-            <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
-              Hangi Çekim Türü İçin Hangi Ekipman Alınmalı?
-            </h2>
-            <p className="text-xs text-white/70 max-w-xl leading-relaxed">
-              Sokak, portre, mimarlık veya konser çekimleri için hazır gövde + lens kombolarını rehber sayfamızda inceleyin.
-            </p>
-          </div>
+          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+            Hangi Çekim Türü İçin Hangi Ekipman Alınmalı?
+          </h2>
+          <p className="text-xs sm:text-sm text-white/60 font-light leading-relaxed">
+            Sokak, portre, mimarlık veya konser çekimleri için en uygun gövde + lens kombolarını rehber sayfamızda inceleyin.
+          </p>
         </div>
         <button
           onClick={() => onNavigate('guide')}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-lg shadow-purple-900/40 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-semibold uppercase tracking-wider transition-all shadow-md shrink-0 cursor-pointer"
         >
-          <BookOpen className="w-4 h-4" />
-          <span>Rehbere Git</span>
-          <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>Rehberi Aç</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Clean Airbnb-Style Category Bar & Search */}
+      {/* Category Bar & Search */}
       <div className="space-y-6">
         
         {/* Category Horizontal Tab Bar */}
-        <div className="flex items-center gap-8 overflow-x-auto border-b border-white/[0.08] pb-3 text-xs scrollbar-none">
+        <div className="flex items-center gap-6 sm:gap-8 overflow-x-auto border-b border-white/[0.08] pb-3 text-xs scrollbar-none">
           {categories.map((cat) => {
             const isActive = selectedCategory === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`pb-3 font-medium tracking-tight whitespace-nowrap cursor-pointer transition-colors relative ${
+                className={`pb-3 font-mono text-xs tracking-wide whitespace-nowrap cursor-pointer transition-colors relative ${
                   isActive
-                    ? 'text-white font-semibold after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
-                    : 'text-white/60 hover:text-white'
+                    ? 'text-white font-medium after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
+                    : 'text-white/40 hover:text-white'
                 }`}
               >
                 {cat.label}
@@ -173,13 +168,13 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         {/* Search & Status Filters */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
           <div className="sm:col-span-8 relative">
-            <Search className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-white/30 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="Model veya demirbaş no ile ara (örn: Canon 6D, 50mm, analog)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#140a12] border border-white/[0.08] text-white placeholder-white/30 text-xs focus:outline-none"
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-white/25 text-xs font-mono focus:border-white/40 transition-all"
             />
           </div>
 
@@ -188,7 +183,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               aria-label="Duruma göre filtrele"
-              className="w-full px-3 py-2.5 rounded-lg bg-[#140a12] border border-white/[0.08] text-white/90 text-xs focus:outline-none cursor-pointer"
+              className="w-full px-4 py-3 rounded-xl bg-[#140911] border border-white/10 text-white text-xs font-mono focus:border-white/40 transition-all cursor-pointer"
             >
               <option value="all">Tüm Durumlar</option>
               <option value="available">Yalnızca Müsait Olanlar</option>
@@ -200,41 +195,41 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         </div>
 
         {/* Minimal Single Notice Banner */}
-        <div className="surface-subtle p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-white/50">
           <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#8193b2] shrink-0" />
-            <span className="text-white/90">
-              <strong>Teslim & İade:</strong> Kulüpler Vadisi, Davutpaşa Kampüsü (Tek yetkili nokta).
+            <MapPin className="w-3.5 h-3.5 text-white/40 shrink-0" />
+            <span>
+              <strong className="text-white font-normal">Teslim & İade:</strong> Kulüpler Vadisi, Davutpaşa Kampüsü (Tek yetkili nokta).
             </span>
           </div>
-          <span className="text-[#a9b9d3] text-[11px]">
-            ⚠️ 5D Mark II (CF kartlı) haricindeki tüm gövdelerde üyeler kendi SD kartını getirmelidir.
+          <span className="text-white/40 text-[11px]">
+            5D Mark II (CF kartlı) haricindeki tüm gövdelerde üyeler kendi SD kartını getirmelidir.
           </span>
         </div>
       </div>
 
-      {/* Equipment Grid (Airbnb Listing Style) */}
+      {/* Equipment Grid */}
       {loading ? (
-        <div className="py-24 text-center text-[#a9b9d3]">
-          <div className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin mx-auto mb-3"></div>
+        <div className="py-24 text-center text-white/40 font-mono text-xs">
+          <div className="w-6 h-6 border border-white/20 border-t-white rounded-full animate-spin mx-auto mb-3"></div>
           Ekipmanlar yükleniyor...
         </div>
       ) : filteredEquipment.length === 0 ? (
-        <div className="py-20 text-center surface-card space-y-2">
-          <AlertCircle className="w-8 h-8 text-white/40 mx-auto" />
+        <div className="py-20 text-center rounded-2xl border border-dashed border-white/10 space-y-2">
+          <AlertCircle className="w-8 h-8 text-white/30 mx-auto" />
           <h3 className="text-sm font-semibold text-white">Ekipman Bulunamadı</h3>
-          <p className="text-xs text-[#a9b9d3]">Arama kriterlerine uygun sonuç çıkmadı.</p>
+          <p className="text-xs text-white/40 font-light">Arama kriterlerinize uygun ekipman kaydı bulunamadı.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEquipment.map((item) => (
             <div
               key={item.id}
-              className="surface-card-hover overflow-hidden flex flex-col group cursor-pointer"
+              className="rounded-2xl border border-white/[0.08] hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.04] transition-all overflow-hidden flex flex-col group cursor-pointer"
               onClick={() => setSelectedItemForModal(item)}
             >
               {/* Photo */}
-              <div className="relative aspect-[4/3] bg-black/50 overflow-hidden">
+              <div className="relative aspect-[4/3] bg-black/60 overflow-hidden">
                 <img
                   src={item.image_url}
                   alt={item.name}
@@ -244,29 +239,29 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                   <StatusBadge status={item.status} type="equipment" size="sm" />
                 </div>
                 <div className="absolute bottom-3 left-3">
-                  <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[10px] font-mono text-white/80 border border-white/[0.1]">
+                  <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-md text-[10px] font-mono text-white/80 border border-white/10">
                     {item.serial_number}
                   </span>
                 </div>
               </div>
 
               {/* Meta */}
-              <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                 <div>
-                  <div className="text-[11px] font-medium text-[#8193b2] uppercase tracking-wider">
+                  <div className="text-[10px] font-mono text-white/40 uppercase tracking-wider">
                     {item.brand} • {getCategoryLabel(item.category)}
                   </div>
-                  <h3 className="text-base font-semibold text-white font-club mt-0.5">
+                  <h3 className="text-base font-semibold text-white font-club mt-1 tracking-tight">
                     {item.name}
                   </h3>
-                  <p className="text-xs text-[#a9b9d3] mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-white/60 font-light mt-1.5 line-clamp-2 leading-relaxed">
                     {item.description}
                   </p>
                 </div>
 
                 <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between gap-3 text-xs">
-                  <span className="text-[#a9b9d3] text-[11px]">
-                    Kondisyon: <strong className="text-white">{item.current_condition || 'Standart'}</strong>
+                  <span className="text-white/40 text-[11px] font-mono">
+                    Kondisyon: <strong className="text-white font-normal">{item.current_condition || 'Standart'}</strong>
                   </span>
 
                   <button
@@ -276,10 +271,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                       onNavigate('reserve');
                     }}
                     disabled={item.status === 'maintenance'}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all ${
                       item.status === 'maintenance'
-                        ? 'bg-white/[0.04] text-white/30 cursor-not-allowed'
-                        : 'bg-white text-[#12080f] hover:bg-[#dce4ef] cursor-pointer active:scale-[0.98]'
+                        ? 'border border-white/5 text-white/20 cursor-not-allowed'
+                        : 'bg-white text-black hover:bg-white/90 cursor-pointer shadow-sm active:scale-[0.98]'
                     }`}
                   >
                     Rezerve Et
@@ -291,48 +286,48 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         </div>
       )}
 
-      {/* Detail Modal (Airbnb Listing Inspection Style) */}
+      {/* Detail Modal */}
       {selectedItemForModal && (
         <div 
           onClick={() => setSelectedItemForModal(null)}
-          className="fixed inset-0 z-50 bg-[#12080f]/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-150"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-2xl w-full surface-card overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+            className="relative max-w-2xl w-full bg-[#140911] border border-white/15 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
           >
             {/* Modal Header */}
-            <div className="p-5 border-b border-white/[0.08] flex items-start justify-between bg-[#160a13]">
+            <div className="p-6 border-b border-white/[0.08] flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs uppercase font-medium text-[#8193b2]">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-white/40">
                     {selectedItemForModal.brand} • {getCategoryLabel(selectedItemForModal.category)}
                   </span>
                   <StatusBadge status={selectedItemForModal.status} type="equipment" size="sm" />
                 </div>
-                <h2 className="text-xl font-bold text-white font-club">
+                <h2 className="text-2xl font-bold text-white font-club tracking-tight">
                   {selectedItemForModal.name}
                 </h2>
-                <span className="text-xs font-mono text-[#a9b9d3]">
-                  Demirbaş: {selectedItemForModal.serial_number}
+                <span className="text-xs font-mono text-white/40">
+                  Demirbaş No: {selectedItemForModal.serial_number}
                 </span>
               </div>
               <button
                 onClick={() => setSelectedItemForModal(null)}
-                className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/[0.06] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Tabs */}
-            <div className="flex border-b border-white/[0.08] bg-[#160a13] px-5 gap-6 text-xs">
+            <div className="flex border-b border-white/[0.08] px-6 gap-6 text-xs font-mono">
               <button
                 onClick={() => setModalTab('details')}
-                className={`py-3 font-medium transition-colors relative cursor-pointer ${
+                className={`py-3.5 transition-colors relative cursor-pointer ${
                   modalTab === 'details' || !isAdminUser
-                    ? 'text-white font-semibold after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
-                    : 'text-white/60 hover:text-white'
+                    ? 'text-white font-medium after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
+                    : 'text-white/40 hover:text-white'
                 }`}
               >
                 Özellikler & Kutu
@@ -340,10 +335,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               {isAdminUser && (
                 <button
                   onClick={() => setModalTab('history')}
-                  className={`py-3 font-medium transition-colors relative cursor-pointer ${
+                  className={`py-3.5 transition-colors relative cursor-pointer ${
                     modalTab === 'history'
-                      ? 'text-white font-semibold after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
-                      : 'text-white/60 hover:text-white'
+                      ? 'text-white font-medium after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-white'
+                      : 'text-white/40 hover:text-white'
                   }`}
                 >
                   Zimmet Geçmişi ({allReservations.filter(r => r.equipment_id === selectedItemForModal.id && r.status !== 'rejected').length})
@@ -354,7 +349,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
             {/* Modal Content */}
             {modalTab === 'details' || !isAdminUser ? (
               <div className="p-6 overflow-y-auto space-y-6">
-                <div className="aspect-[16/10] rounded-xl overflow-hidden bg-black/40 border border-white/[0.06]">
+                <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-black/60 border border-white/[0.08]">
                   <img
                     src={selectedItemForModal.image_url}
                     alt={selectedItemForModal.name}
@@ -364,27 +359,29 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
                 {selectedItemForModal.category === 'camera' && (
                   selectedItemForModal.id === 'e-5d2' ? (
-                    <div className="p-3.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs text-blue-200">
-                      <strong>Hafıza Kartı:</strong> Bu gövde CompactFlash (CF) kart ile çalışmaktadır. 32GB CF kart ve USB okuyucu çanta içerisinde hazır teslim edilir.
+                    <div className="p-4 rounded-xl border border-white/15 bg-white/[0.03] text-xs text-white/80 font-mono">
+                      <strong className="text-white block mb-0.5">Hafıza Kartı:</strong>
+                      Bu gövde CompactFlash (CF) kart ile çalışmaktadır. 32GB CF kart ve USB okuyucu çanta içerisinde hazır teslim edilir.
                     </div>
                   ) : (
-                    <div className="p-3.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-[#dce4ef]">
-                      <strong>SD Kart Uyarısı:</strong> Bu gövdeye SD kart dahil değildir. Çekime gelirken kendi SD kartınızı yanınızda getirmelisiniz.
+                    <div className="p-4 rounded-xl border border-white/[0.08] bg-white/[0.02] text-xs text-white/60 font-mono">
+                      <strong className="text-white block mb-0.5">SD Kart Uyarısı:</strong>
+                      Bu gövdeye SD kart dahil değildir. Çekime gelirken kendi SD kartınızı yanınızda getirmelisiniz.
                     </div>
                   )
                 )}
 
-                <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8193b2] mb-1.5">Açıklama</h4>
-                  <p className="text-xs text-[#dce4ef] leading-relaxed">{selectedItemForModal.description}</p>
+                <div className="space-y-1.5">
+                  <h4 className="text-[10px] font-mono uppercase tracking-wider text-white/40">Açıklama</h4>
+                  <p className="text-xs text-white/70 font-light leading-relaxed">{selectedItemForModal.description}</p>
                 </div>
 
-                <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8193b2] mb-2">Kutu İçeriği & Aksesuarlar</h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-lg bg-[#12080f] border border-white/[0.06] text-xs">
+                <div className="space-y-2">
+                  <h4 className="text-[10px] font-mono uppercase tracking-wider text-white/40">Kutu İçeriği & Aksesuarlar</h4>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 rounded-xl border border-white/[0.08] bg-white/[0.01] text-xs">
                     {selectedItemForModal.package_contents.map((pkgItem, index) => (
-                      <li key={index} className="flex items-center gap-2 text-[#dce4ef]">
-                        <Check className="w-3.5 h-3.5 text-[#8193b2] shrink-0" />
+                      <li key={index} className="flex items-center gap-2 text-white/80 font-light">
+                        <Check className="w-3.5 h-3.5 text-white/50 shrink-0" />
                         <span>{pkgItem}</span>
                       </li>
                     ))}
@@ -399,22 +396,22 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                       .filter(r => r.equipment_id === selectedItemForModal.id && r.status !== 'rejected')
                       .sort((a, b) => new Date(b.pickup_date).getTime() - new Date(a.pickup_date).getTime())
                       .map((res) => (
-                        <div key={res.id} className="p-3.5 rounded-lg bg-[#140a12] border border-white/[0.06] space-y-1.5 text-xs">
+                        <div key={res.id} className="p-4 rounded-xl border border-white/[0.08] bg-white/[0.02] space-y-1.5 text-xs">
                           <div className="flex items-center justify-between">
                             <span className="font-mono text-white font-medium">{res.reservation_code}</span>
-                            <span className="text-[#8193b2] font-mono text-[11px]">{res.pickup_date} → {res.return_date}</span>
+                            <span className="text-white/40 font-mono text-[11px]">{res.pickup_date} → {res.return_date}</span>
                           </div>
-                          <div className="text-[#a9b9d3]">
+                          <div className="text-white/60">
                             Üye: <strong className="text-white">{res.member?.full_name || res.student_number}</strong>
                           </div>
-                          <div className="text-[11px] text-[#dce4ef] pt-1 border-t border-white/[0.04]">
+                          <div className="text-[11px] text-white/50 pt-1.5 border-t border-white/[0.04]">
                             Amacı: {res.purpose}
                           </div>
                         </div>
                       ))}
                   </div>
                 ) : (
-                  <div className="py-12 text-center text-xs text-[#a9b9d3]">
+                  <div className="py-12 text-center text-xs font-mono text-white/40">
                     Bu ekipman için henüz bir kullanım kaydı bulunmamaktadır.
                   </div>
                 )}
@@ -422,10 +419,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
             )}
 
             {/* Modal Bottom Action Bar */}
-            <div className="p-4 border-t border-white/[0.08] bg-[#160a13] flex items-center justify-between gap-3">
+            <div className="p-5 border-t border-white/[0.08] flex items-center justify-between gap-3">
               <button
                 onClick={() => setSelectedItemForModal(null)}
-                className="px-4 py-2 rounded-lg text-xs text-white/70 hover:text-white transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-xs font-mono text-white/60 hover:text-white hover:border-white/30 transition-colors cursor-pointer"
               >
                 Kapat
               </button>
@@ -436,7 +433,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                   onNavigate('reserve');
                 }}
                 disabled={selectedItemForModal.status === 'maintenance'}
-                className="px-6 py-2.5 rounded-lg bg-white text-[#12080f] hover:bg-[#dce4ef] text-xs font-semibold cursor-pointer transition-all active:scale-[0.98]"
+                className="px-6 py-2.5 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-mono font-semibold cursor-pointer transition-all active:scale-[0.98] disabled:bg-white/10 disabled:text-white/20"
               >
                 Hemen Rezerve Et
               </button>

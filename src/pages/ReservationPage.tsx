@@ -263,54 +263,75 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-14 text-[#dce4ef]">
       
       {/* Editorial Header */}
-      <div className="border-b border-white/[0.08] pb-6">
-        <h1 className="text-3xl sm:text-4xl font-bold text-white font-club tracking-tight">
-          Ekipman Rezervasyonu
-        </h1>
-        <p className="text-sm text-[#a9b9d3] mt-1">
-          Demirbaş gövde ve lens talebinizi oluşturmak için formu eksiksiz doldurunuz.
-        </p>
-      </div>
+      <header className="space-y-4">
+        <div className="space-y-3">
+          <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/40">
+            YTÜFOK Rezervasyon Sistemi
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white font-club">
+            Ekipman Rezervasyonu
+          </h1>
+          <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-2xl">
+            Demirbaş gövde ve lens talebinizi oluşturmak için formu eksiksiz doldurunuz. Talepler yönetim kurulu tarafından incelenir.
+          </p>
+        </div>
+
+        {/* Minimal Specs Strip */}
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 pt-6 border-t border-white/[0.08] text-xs font-mono text-white/50">
+          <div>
+            <span className="text-white/30 uppercase mr-2 tracking-wider">Teslimat & İade:</span>
+            <span className="text-white">Davutpaşa Kulüpler Vadisi</span>
+          </div>
+          <div>
+            <span className="text-white/30 uppercase mr-2 tracking-wider">Bireysel Süre:</span>
+            <span className="text-white">Maksimum 2 Gün</span>
+          </div>
+          <div>
+            <span className="text-white/30 uppercase mr-2 tracking-wider">Geziler:</span>
+            <span className="text-white">Gezi Tarihine Özel</span>
+          </div>
+        </div>
+      </header>
 
       {submittedReservation ? (
-        /* Airbnb Checkout Confirmation Style */
-        <div className="max-w-xl mx-auto surface-card p-8 space-y-6 text-center border border-white/[0.12]">
-          <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-6 h-6" />
+        /* Success Screen */
+        <div className="max-w-xl mx-auto rounded-3xl border border-white/15 bg-[#140911] p-8 sm:p-10 space-y-6 text-center">
+          <div className="w-14 h-14 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-white mx-auto">
+            <CheckCircle2 className="w-7 h-7 stroke-[2]" />
           </div>
 
-          <div className="space-y-1">
-            <span className="text-[11px] uppercase font-semibold text-[#8193b2] tracking-wider">
-              Talep Alındı • Yönetim Onayı Bekliyor
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40">
+              Talep İletildi • Yönetim Onayı Bekliyor
             </span>
-            <h2 className="text-2xl font-bold text-white font-club">
-              Rezervasyon Talebiniz İletildi
+            <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight">
+              Rezervasyon Talebiniz Alındı
             </h2>
-            <p className="text-xs text-[#a9b9d3] max-w-sm mx-auto">
-              Talebiniz yönetim kuruluna ulaştı. İncelendikten sonra onay durumu güncellenecektir.
+            <p className="text-xs text-white/50 font-light max-w-sm mx-auto leading-relaxed">
+              Talebiniz yönetim kuruluna ulaştı. WhatsApp ve sorgulama ekranı üzerinden takip edebilirsiniz.
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-[#140a12] border border-white/[0.08] space-y-2 text-left">
-            <span className="text-[11px] text-[#a9b9d3] block">Takip Kodu:</span>
-            <div className="flex items-center justify-between">
-              <span className="text-2xl font-mono font-bold text-white tracking-wider">
+          <div className="p-5 rounded-2xl border border-white/10 bg-white/[0.02] space-y-2 text-center">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Rezervasyon Takip Kodu</span>
+            <div className="flex items-center justify-center gap-3">
+              <span className="text-3xl font-mono font-bold text-white tracking-widest">
                 {submittedReservation.reservation_code}
               </span>
               <button
                 onClick={() => copyToClipboard(submittedReservation.reservation_code)}
-                className="px-3 py-1.5 rounded-md bg-white/[0.08] hover:bg-white/[0.14] text-xs font-medium text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                className="p-2 rounded-lg border border-white/10 text-white/60 hover:text-white hover:border-white/30 transition-colors cursor-pointer"
+                title="Kopyala"
               >
-                {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedCode ? 'Kopyalandı' : 'Kopyala'}</span>
+                {copiedCode ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
             {submittedReservation.trip && (
-              <div className="pt-2 border-t border-white/[0.06] text-xs text-[#dce4ef]">
-                Kulüp Gezisi: <strong>{submittedReservation.trip.title}</strong>
+              <div className="pt-2 border-t border-white/[0.06] text-xs font-mono text-white/60">
+                Kulüp Gezisi: <strong className="text-white">{submittedReservation.trip.title}</strong>
               </div>
             )}
           </div>
@@ -318,7 +339,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
               onClick={() => onNavigate('status', submittedReservation.reservation_code)}
-              className="px-5 py-2.5 rounded-lg bg-white text-[#12080f] font-semibold text-xs hover:bg-[#dce4ef] transition-all cursor-pointer"
+              className="px-6 py-3 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-mono font-semibold transition-all cursor-pointer shadow-md"
             >
               Durumu Takip Et
             </button>
@@ -328,32 +349,32 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                 setPurpose('');
                 setTripCustomNotes('');
               }}
-              className="px-5 py-2.5 rounded-lg text-white/70 hover:text-white text-xs font-medium transition-colors cursor-pointer"
+              className="px-5 py-3 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/30 text-xs font-mono transition-colors cursor-pointer"
             >
               Yeni Talep Oluştur
             </button>
           </div>
         </div>
       ) : (
-        /* Airbnb 2-Column Checkout Layout */
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        /* 2-Column Checkout Layout */
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 items-start">
           
           {/* Left Column: Form Steps */}
           <div className="lg:col-span-7 space-y-8">
             
             {/* 1. Kimlik Doğrulama */}
-            <div className="surface-card p-6 space-y-4">
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 space-y-5">
               <div className="space-y-1">
-                <span className="text-[11px] font-semibold text-[#8193b2] uppercase tracking-wider block">Adım 1</span>
-                <h3 className="text-base font-semibold text-white font-club">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 block">1. Adım</span>
+                <h3 className="text-xl font-bold text-white font-club tracking-tight">
                   Öğrenci Numarası Doğrulama
                 </h3>
-                <p className="text-xs text-[#a9b9d3]">
+                <p className="text-xs text-white/50 font-light">
                   Rezervasyon hakkınızı ve gezi önceliğinizi belirlemek için numaranızı sorgulayınız.
                 </p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   placeholder="Öğrenci Numarası..."
@@ -363,13 +384,13 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     if (verifiedMember) setVerifiedMember(null);
                     if (showQuickRegister) setShowQuickRegister(false);
                   }}
-                  className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs font-mono focus:outline-none"
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs font-mono placeholder:text-white/25 focus:border-white/40 transition-all"
                 />
                 <button
                   type="button"
                   onClick={handleVerifyStudent}
                   disabled={verifying}
-                  className="px-5 py-2.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-white font-medium text-xs border border-white/[0.1] transition-all cursor-pointer disabled:opacity-50"
+                  className="px-6 py-3 rounded-xl bg-white text-black hover:bg-white/90 font-semibold text-xs font-mono transition-all cursor-pointer disabled:opacity-40 shadow-sm"
                 >
                   {verifying ? 'Sorgulanıyor...' : 'Doğrula'}
                 </button>
@@ -377,17 +398,17 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
               {/* Verified Member Badge */}
               {verifiedMember && (
-                <div className="p-4 rounded-lg bg-[#140a12] border border-white/[0.08] text-xs space-y-2">
+                <div className="p-4 rounded-xl border border-white/15 bg-white/[0.03] text-xs space-y-2">
                   <div className="flex items-center justify-between">
                     <strong className="text-white text-sm">
                       {verifiedMember.full_name} ({verifiedMember.student_number})
                     </strong>
-                    <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-white/[0.06] text-white border border-white/[0.08]">
+                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-emerald-400/30 text-emerald-400">
                       {memberTier === 'board' ? 'Yönetim Kurulu' : memberTier === 'audit' ? 'Denetim Kurulu' : memberTier === 'active' || memberTier === 'honorary_active' ? 'Aktif Üye' : 'Normal Üye'}
                     </span>
                   </div>
-                  <p className="text-[#a9b9d3] text-xs leading-relaxed">
-                    {verifiedMember.department} • {hasActivePrivileges ? 'Gezilerden 5 gün önce erken rezervasyon ve bireysel çekim yetkiniz aktiftir.' : 'Kulüp gezilerinden 3 gün önce rezervasyon yapabilirsiniz.'}
+                  <p className="text-white/60 text-xs font-light leading-relaxed">
+                    {verifiedMember.department} • {hasActivePrivileges ? 'Gezilerden 5 gün önce erken rezervasyon ve bireysel çekim hakkınız tanımlıdır.' : 'Kulüp gezilerinden 3 gün önce rezervasyon yapabilirsiniz.'}
                   </p>
                 </div>
               )}
@@ -395,34 +416,34 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
               {/* Error & Quick Registration */}
               {verificationError && !verifiedMember && (
                 <div className="space-y-3">
-                  <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-200">
+                  <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/[0.06] text-xs text-rose-300">
                     {verificationError}
                   </div>
 
                   {showQuickRegister && (
-                    <div className="p-4 rounded-lg bg-[#140a12] border border-white/[0.08] space-y-3">
-                      <strong className="text-xs text-white block">Normal Üye Olarak Kayıt Ol</strong>
+                    <div className="p-5 rounded-2xl border border-white/[0.08] bg-white/[0.01] space-y-3">
+                      <strong className="text-xs font-mono uppercase text-white/70 block">Normal Üye Olarak Kayıt Ol</strong>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <input
                           type="text"
                           placeholder="Ad Soyad..."
                           value={regFullName}
                           onChange={(e) => setRegFullName(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-[#1a0e17] border border-white/[0.08] text-white text-xs"
+                          className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25"
                         />
                         <input
                           type="text"
                           placeholder="Bölüm..."
                           value={regDept}
                           onChange={(e) => setRegDept(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-[#1a0e17] border border-white/[0.08] text-white text-xs"
+                          className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={handleQuickRegisterNormal}
                         disabled={regLoading}
-                        className="px-4 py-2 rounded-lg bg-white text-[#12080f] text-xs font-semibold cursor-pointer"
+                        className="px-5 py-2.5 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-mono font-semibold cursor-pointer"
                       >
                         {regLoading ? 'Kaydediliyor...' : 'Kaydol ve Devam Et'}
                       </button>
@@ -433,10 +454,10 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
             </div>
 
             {/* 2. Kullanım Amacı & Gezi Seçimi */}
-            <div className="surface-card p-6 space-y-4">
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 space-y-5">
               <div className="space-y-1">
-                <span className="text-[11px] font-semibold text-[#8193b2] uppercase tracking-wider block">Adım 2</span>
-                <h3 className="text-base font-semibold text-white font-club">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 block">2. Adım</span>
+                <h3 className="text-xl font-bold text-white font-club tracking-tight">
                   Kullanım Amacı
                 </h3>
               </div>
@@ -453,26 +474,26 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                       else if (trips[0]) applyTripDetails(trips[0]);
                     }
                   }}
-                  className={`p-4 rounded-lg border text-left transition-all ${
+                  className={`p-4 rounded-2xl border text-left transition-all ${
                     trips.length === 0
-                      ? 'border-white/[0.04] bg-white/[0.02] opacity-40 cursor-not-allowed'
+                      ? 'border-white/[0.04] bg-white/[0.01] opacity-40 cursor-not-allowed'
                       : usageType === 'trip'
-                      ? 'border-white bg-white/[0.08] cursor-pointer'
-                      : 'border-white/[0.08] bg-[#140a12] hover:bg-white/[0.04] cursor-pointer'
+                      ? 'bg-white text-black border-white shadow-md'
+                      : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] text-white/70 hover:text-white cursor-pointer'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <strong className="text-xs text-white block">Kulüp Gezisi</strong>
+                    <strong className="text-xs block font-semibold">Kulüp Gezisi</strong>
                     {trips.length === 0 && (
-                      <span className="text-[10px] font-semibold text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                      <span className="text-[9px] font-mono text-white/40 border border-white/10 px-1.5 py-0.5 rounded">
                         Aktif Gezi Yok
                       </span>
                     )}
                   </div>
-                  <span className="text-[11px] text-[#a9b9d3] block mt-0.5">
+                  <span className={`text-[11px] block mt-1 ${usageType === 'trip' ? 'text-black/70' : 'text-white/40'}`}>
                     {trips.length === 0
                       ? 'Şu anda yayında veya rezervasyona açık bir gezi bulunmuyor.'
-                      : 'Aktif üyeler 5 gün, normal üyeler 3 gün önce rezerve eder.'}
+                      : 'Aktif üyeler 5 gün, normal üyeler 3 gün önce talep eder.'}
                   </span>
                 </button>
 
@@ -482,14 +503,14 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     setUsageType('custom');
                     setPurpose('');
                   }}
-                  className={`p-4 rounded-lg border text-left transition-all cursor-pointer ${
+                  className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                     usageType === 'custom'
-                      ? 'border-white bg-white/[0.08]'
-                      : 'border-white/[0.08] bg-[#140a12] hover:bg-white/[0.04]'
+                      ? 'bg-white text-black border-white shadow-md'
+                      : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] text-white/70 hover:text-white'
                   }`}
                 >
-                  <strong className="text-xs text-white block">Bireysel Çekim / Ders</strong>
-                  <span className="text-[11px] text-[#a9b9d3] block mt-0.5">
+                  <strong className="text-xs block font-semibold">Bireysel Çekim / Ders</strong>
+                  <span className={`text-[11px] block mt-1 ${usageType === 'custom' ? 'text-black/70' : 'text-white/40'}`}>
                     Yalnızca Aktif Üyelere Özel (Maksimum 2 gün).
                   </span>
                 </button>
@@ -497,11 +518,11 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
               {/* Normal Member Warning When No Active Trips */}
               {verifiedMember && !hasActivePrivileges && trips.length === 0 && (
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex items-start gap-3">
+                <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/[0.05] text-xs text-amber-200 flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                   <div>
                     <strong className="text-white block font-semibold text-sm">Kulüp Gezisi Rezervasyonları Kapalı</strong>
-                    <p className="mt-1 text-amber-200/80 leading-relaxed text-xs">
+                    <p className="mt-1 text-amber-200/80 leading-relaxed text-xs font-light">
                       Şu anda tanımlı veya yayında aktif bir kulüp gezisi bulunmamaktadır. Kulüp yönergesi gereğince normal üyelerimiz yalnızca resmi kulüp gezileri için rezervasyon yapabilmektedir. Yeni bir gezi açıldığında rezervasyon sistemi otomatik olarak aktifleşecektir.
                     </p>
                   </div>
@@ -511,9 +532,9 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
               {/* If Trip */}
               {usageType === 'trip' && (
                 <div className="space-y-3 pt-2">
-                  <label className="block text-xs font-medium text-white">Kulüp Gezisi Seçiniz:</label>
+                  <label className="block text-xs font-mono uppercase tracking-wider text-white/70">Kulüp Gezisi Seçiniz:</label>
                   {trips.length === 0 ? (
-                    <div className="p-4 rounded-lg bg-[#140a12] border border-white/[0.08] text-xs text-[#a9b9d3]">
+                    <div className="p-4 rounded-xl border border-white/10 bg-white/[0.01] text-xs text-white/50 font-mono">
                       Şu anda tanımlı aktif kulüp gezisi bulunmamaktadır.
                     </div>
                   ) : (
@@ -524,17 +545,17 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                           <div
                             key={trip.id}
                             onClick={() => handleTripSelect(trip)}
-                            className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
+                            className={`p-4 rounded-xl border cursor-pointer transition-all ${
                               isSelected
-                                ? 'border-white bg-white/[0.08]'
-                                : 'border-white/[0.08] bg-[#140a12] hover:bg-white/[0.04]'
+                                ? 'bg-white text-black border-white shadow-md'
+                                : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] text-white'
                             }`}
                           >
                             <div className="flex items-center justify-between">
-                              <strong className="text-xs text-white">{trip.title}</strong>
-                              <span className="text-xs text-[#8193b2]">{formatDateRangeTr(trip.start_date, trip.end_date)}</span>
+                              <strong className={`text-xs ${isSelected ? 'text-black font-semibold' : 'text-white'}`}>{trip.title}</strong>
+                              <span className={`text-xs font-mono ${isSelected ? 'text-black/60' : 'text-white/40'}`}>{formatDateRangeTr(trip.start_date, trip.end_date)}</span>
                             </div>
-                            <span className="text-[11px] text-[#a9b9d3] block mt-0.5">{trip.destination}</span>
+                            <span className={`text-[11px] block mt-0.5 ${isSelected ? 'text-black/70' : 'text-white/50'}`}>{trip.destination}</span>
                           </div>
                         );
                       })}
@@ -542,7 +563,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                   )}
 
                   {selectedTrip && tripEligibility && !tripEligibility.isOpen && (
-                    <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+                    <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/[0.05] text-xs text-amber-200">
                       Bu gezi için rezervasyon dönemi henüz açılmamıştır. Açılış tarihi: <strong>{formatDateTr(tripEligibility.openDate)}</strong>.
                     </div>
                   )}
@@ -553,14 +574,14 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
               {usageType === 'custom' && (
                 <div className="space-y-3 pt-2">
                   {verifiedMember && !hasActivePrivileges ? (
-                    <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-200">
+                    <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/[0.06] text-xs text-rose-300">
                       Bireysel çekim ve ders projeleri için ekipman rezervasyonu kulüp yönergesi uyarınca yalnızca <strong>Aktif Üyelere</strong> açıktır. Lütfen Kulüp Gezisi seçeneğini tercih ediniz.
                     </div>
                   ) : (
                     <>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-xs font-medium text-white mb-1">Teslim Alma:</label>
+                          <label className="block text-xs font-mono uppercase tracking-wider text-white/70 mb-1">Teslim Alma:</label>
                           <input
                             type="date"
                             value={pickupDate}
@@ -578,12 +599,12 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                                 }
                               }
                             }}
-                            className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs"
+                            className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs font-mono"
                             required
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-white mb-1">İade Tarihi (Maks 2 Gün):</label>
+                          <label className="block text-xs font-mono uppercase tracking-wider text-white/70 mb-1">İade Tarihi (Maks 2 Gün):</label>
                           <input
                             type="date"
                             value={returnDate}
@@ -598,20 +619,20 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                                   })()
                             }
                             onChange={(e) => setReturnDate(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs"
+                            className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs font-mono"
                             required
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-medium text-white mb-1">Kullanım Amacı / Proje:</label>
+                        <label className="block text-xs font-mono uppercase tracking-wider text-white/70 mb-1">Kullanım Amacı / Proje:</label>
                         <textarea
                           rows={2}
                           placeholder="Örn: Mimarlık Fakültesi Final Proje Çekimi..."
                           value={purpose}
                           onChange={(e) => setPurpose(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs"
+                          className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25"
                           required
                         />
                       </div>
@@ -622,34 +643,34 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
             </div>
 
             {/* 3. Notlar & Kural Onayı */}
-            <div className="surface-card p-6 space-y-4">
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 space-y-4">
               <div className="space-y-1">
-                <span className="text-[11px] font-semibold text-[#8193b2] uppercase tracking-wider block">Adım 3</span>
-                <h3 className="text-base font-semibold text-white font-club">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 block">3. Adım</span>
+                <h3 className="text-xl font-bold text-white font-club tracking-tight">
                   Notlar & Kural Onayı
                 </h3>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-white mb-1">Özel Not / SD Kart Durumu (Opsiyonel):</label>
+                <label className="block text-xs font-mono uppercase tracking-wider text-white/70 mb-1">Özel Not / SD Kart Durumu (Opsiyonel):</label>
                 <textarea
                   rows={2}
                   placeholder="Ekipman teslim saati veya SD kart durumunuzu yazabilirsiniz..."
                   value={additionalNotes}
                   onChange={(e) => setAdditionalNotes(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs"
+                  className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25"
                 />
               </div>
 
               <div className="pt-2">
-                <label className="flex items-start gap-2.5 cursor-pointer">
+                <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={rulesAccepted}
                     onChange={(e) => setRulesAccepted(e.target.checked)}
-                    className="mt-0.5 rounded bg-[#140a12] border-white/20 text-white"
+                    className="mt-0.5 rounded bg-white/10 border-white/20 text-white cursor-pointer"
                   />
-                  <span className="text-xs text-[#a9b9d3] leading-relaxed">
+                  <span className="text-xs text-white/70 leading-relaxed font-light">
                     Ekipmanı <strong>yalnızca Kulüpler Vadisi, Davutpaşa Kampüsü</strong> noktasından öğrenci kimliğimle teslim alacağımı ve eksiksiz olarak <strong>yalnızca bu noktaya</strong> iade edeceğimi kabul ediyorum.
                   </span>
                 </label>
@@ -658,20 +679,20 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
           </div>
 
-          {/* Right Column: Airbnb Booking Summary Sidebar */}
-          <div className="lg:col-span-5 sticky top-20 space-y-4">
-            <div className="surface-card p-6 space-y-6 border border-white/[0.12]">
-              <h3 className="text-base font-semibold text-white font-club pb-3 border-b border-white/[0.08]">
+          {/* Right Column: Booking Summary Sidebar */}
+          <div className="lg:col-span-5 sticky top-24 space-y-4">
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-7 space-y-6">
+              <h3 className="text-lg font-bold text-white font-club pb-3 border-b border-white/[0.08] tracking-tight">
                 Rezervasyon Özeti
               </h3>
 
               {/* Selected Equipment */}
               <div className="space-y-2">
-                <label className="block text-xs font-medium text-[#8193b2]">Seçili Ekipman:</label>
+                <label className="block text-xs font-mono uppercase tracking-wider text-white/40">Seçili Ekipman:</label>
                 <select
                   value={selectedEquipmentId}
                   onChange={(e) => setSelectedEquipmentId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-[#140a12] border border-white/[0.08] text-white text-xs cursor-pointer focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-[#140911] border border-white/10 text-white text-xs font-mono cursor-pointer focus:border-white/40 transition-all"
                 >
                   {equipmentList.map((item) => (
                     <option key={item.id} value={item.id} disabled={item.status === 'maintenance'}>
@@ -682,36 +703,36 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
               </div>
 
               {selectedEquipment && (
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-[#140a12] border border-white/[0.06]">
+                <div className="flex items-center gap-3.5 p-3.5 rounded-2xl border border-white/[0.08] bg-white/[0.01]">
                   <img 
                     src={selectedEquipment.image_url} 
                     alt={selectedEquipment.name} 
-                    className="w-16 h-12 object-cover rounded border border-white/[0.06]"
+                    className="w-16 h-12 object-cover rounded-xl border border-white/[0.08]"
                   />
-                  <div className="text-xs space-y-0.5">
-                    <strong className="text-white block font-club">{selectedEquipment.name}</strong>
-                    <span className="text-[#8193b2] font-mono text-[11px] block">{selectedEquipment.serial_number}</span>
+                  <div className="text-xs space-y-0.5 min-w-0">
+                    <strong className="text-white block font-club truncate">{selectedEquipment.name}</strong>
+                    <span className="text-white/40 font-mono text-[11px] block">{selectedEquipment.serial_number}</span>
                   </div>
                 </div>
               )}
 
               {/* Booking Dates Breakdown */}
-              <div className="space-y-2 text-xs border-t border-white/[0.06] pt-4">
-                <div className="flex justify-between text-[#a9b9d3]">
+              <div className="space-y-2.5 text-xs border-t border-white/[0.08] pt-4 divide-y divide-white/[0.04]">
+                <div className="flex justify-between text-white/50 pt-1">
                   <span>Kullanım Türü:</span>
-                  <strong className="text-white">{usageType === 'trip' ? 'Kulüp Gezisi' : 'Bireysel Çekim'}</strong>
+                  <strong className="text-white font-medium">{usageType === 'trip' ? 'Kulüp Gezisi' : 'Bireysel Çekim'}</strong>
                 </div>
-                <div className="flex justify-between text-[#a9b9d3]">
+                <div className="flex justify-between text-white/50 pt-2">
                   <span>Teslim Alma:</span>
                   <strong className="text-white font-mono">{pickupDate}</strong>
                 </div>
-                <div className="flex justify-between text-[#a9b9d3]">
+                <div className="flex justify-between text-white/50 pt-2">
                   <span>İade Tarihi:</span>
                   <strong className="text-white font-mono">{returnDate}</strong>
                 </div>
-                <div className="flex justify-between text-[#a9b9d3]">
+                <div className="flex justify-between text-white/50 pt-2">
                   <span>Teslimat Yeri:</span>
-                  <strong className="text-white">Davutpaşa Kulüpler Vadisi</strong>
+                  <strong className="text-white font-medium">Davutpaşa Kulüpler Vadisi</strong>
                 </div>
               </div>
 
@@ -727,7 +748,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     (usageType === 'custom' && !hasActivePrivileges) ||
                     (!hasActivePrivileges && trips.length === 0)
                   }
-                  className="w-full py-3 rounded-lg bg-white hover:bg-[#dce4ef] text-[#12080f] font-semibold text-sm transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm active:scale-[0.98]"
+                  className="w-full py-3.5 rounded-xl bg-white text-black hover:bg-white/90 font-semibold text-xs uppercase tracking-wider transition-all cursor-pointer disabled:bg-white/10 disabled:text-white/20 disabled:cursor-not-allowed shadow-md active:scale-[0.98]"
                 >
                   {submitting
                     ? 'Talebiniz Gönderiliyor...'

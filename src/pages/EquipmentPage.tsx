@@ -120,7 +120,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
       </header>
 
       {/* Educational Guide Highlight (Apple Editorial Highlight) */}
-      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div className="rounded-2xl border border-white/10 bg-black/25 p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-sm">
         <div className="space-y-2 max-w-2xl">
           <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40">
             Fotoğrafçılık & Ekipman Rehberi
@@ -174,7 +174,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               placeholder="Model veya demirbaş no ile ara (örn: Canon 6D, 50mm, analog)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-white/25 text-xs font-mono focus:border-white/40 transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white placeholder:text-white/35 text-xs font-mono focus:border-white/40 transition-all"
             />
           </div>
 
@@ -183,7 +183,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               aria-label="Duruma göre filtrele"
-              className="w-full px-4 py-3 rounded-xl bg-[#140911] border border-white/10 text-white text-xs font-mono focus:border-white/40 transition-all cursor-pointer"
+              className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs font-mono focus:border-white/40 transition-all cursor-pointer"
             >
               <option value="all">Tüm Durumlar</option>
               <option value="available">Yalnızca Müsait Olanlar</option>
@@ -195,7 +195,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         </div>
 
         {/* Minimal Single Notice Banner */}
-        <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-white/50">
+        <div className="p-4 rounded-xl border border-white/10 bg-black/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-white/50">
           <div className="flex items-center gap-2">
             <MapPin className="w-3.5 h-3.5 text-white/40 shrink-0" />
             <span>
@@ -225,7 +225,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
           {filteredEquipment.map((item) => (
             <div
               key={item.id}
-              className="rounded-2xl border border-white/[0.08] hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.04] transition-all overflow-hidden flex flex-col group cursor-pointer"
+              className="rounded-2xl border border-white/10 hover:border-white/25 bg-black/25 hover:bg-black/35 transition-all overflow-hidden flex flex-col group cursor-pointer shadow-sm"
               onClick={() => setSelectedItemForModal(item)}
             >
               {/* Photo */}
@@ -294,7 +294,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-2xl w-full bg-[#140911] border border-white/15 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+            className="relative max-w-2xl w-full bg-[#2c0615] border border-white/15 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
           >
             {/* Modal Header */}
             <div className="p-6 border-b border-white/[0.08] flex items-start justify-between">
@@ -359,12 +359,12 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
                 {selectedItemForModal.category === 'camera' && (
                   selectedItemForModal.id === 'e-5d2' ? (
-                    <div className="p-4 rounded-xl border border-white/15 bg-white/[0.03] text-xs text-white/80 font-mono">
+                    <div className="p-4 rounded-xl border border-white/15 bg-black/35 text-xs text-white/80 font-mono">
                       <strong className="text-white block mb-0.5">Hafıza Kartı:</strong>
                       Bu gövde CompactFlash (CF) kart ile çalışmaktadır. 32GB CF kart ve USB okuyucu çanta içerisinde hazır teslim edilir.
                     </div>
                   ) : (
-                    <div className="p-4 rounded-xl border border-white/[0.08] bg-white/[0.02] text-xs text-white/60 font-mono">
+                    <div className="p-4 rounded-xl border border-white/10 bg-black/35 text-xs text-white/60 font-mono">
                       <strong className="text-white block mb-0.5">SD Kart Uyarısı:</strong>
                       Bu gövdeye SD kart dahil değildir. Çekime gelirken kendi SD kartınızı yanınızda getirmelisiniz.
                     </div>
@@ -378,7 +378,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
 
                 <div className="space-y-2">
                   <h4 className="text-[10px] font-mono uppercase tracking-wider text-white/40">Kutu İçeriği & Aksesuarlar</h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 rounded-xl border border-white/[0.08] bg-white/[0.01] text-xs">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 rounded-xl border border-white/10 bg-black/30 text-xs">
                     {selectedItemForModal.package_contents.map((pkgItem, index) => (
                       <li key={index} className="flex items-center gap-2 text-white/80 font-light">
                         <Check className="w-3.5 h-3.5 text-white/50 shrink-0" />
@@ -396,7 +396,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                       .filter(r => r.equipment_id === selectedItemForModal.id && r.status !== 'rejected')
                       .sort((a, b) => new Date(b.pickup_date).getTime() - new Date(a.pickup_date).getTime())
                       .map((res) => (
-                        <div key={res.id} className="p-4 rounded-xl border border-white/[0.08] bg-white/[0.02] space-y-1.5 text-xs">
+                        <div key={res.id} className="p-4 rounded-xl border border-white/10 bg-black/30 space-y-1.5 text-xs">
                           <div className="flex items-center justify-between">
                             <span className="font-mono text-white font-medium">{res.reservation_code}</span>
                             <span className="text-white/40 font-mono text-[11px]">{res.pickup_date} → {res.return_date}</span>

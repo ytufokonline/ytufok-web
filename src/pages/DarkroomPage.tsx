@@ -520,7 +520,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
       {/* Notice when no slots are open in the system */}
       {slots.length === 0 && (
-        <div className="p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] flex items-start gap-4">
+        <div className="p-5 rounded-2xl border border-white/10 bg-black/25 flex items-start gap-4 shadow-sm">
           <Clock className="w-5 h-5 text-white/40 shrink-0 mt-0.5" />
           <div className="space-y-1 text-xs">
             <h4 className="font-semibold text-white tracking-tight">Şu Anda Açık Randevu Seansı Bulunmuyor</h4>
@@ -535,7 +535,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column: Interactive Calendar (7 Cols on desktop) */}
-        <div className="lg:col-span-7 rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-7 space-y-6">
+        <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-black/25 p-6 sm:p-7 space-y-6 shadow-sm">
           
           {/* Calendar Controls */}
           <div className="flex items-center justify-between">
@@ -688,7 +688,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
         </div>
 
         {/* Right Column: Time Slot Picker on Selected Day (5 Cols on desktop) */}
-        <div className="lg:col-span-5 rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-7 space-y-5">
+        <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-black/25 p-6 sm:p-7 space-y-5 shadow-sm">
           <div>
             <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 block">
               2. Adım: Seans Saati
@@ -738,7 +738,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         ? 'bg-white text-black border-white shadow-lg'
                         : isBooked
                         ? 'border-white/[0.04] bg-white/[0.01] opacity-35 cursor-not-allowed'
-                        : 'border-white/[0.08] hover:border-white/30 bg-white/[0.02] hover:bg-white/[0.05] text-white'
+                        : 'border-white/10 hover:border-white/30 bg-black/30 hover:bg-black/40 text-white'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -800,7 +800,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           )}
 
           {selectedSlot && (
-            <div className="p-4 rounded-2xl border border-white/15 bg-white/[0.04] text-xs space-y-1">
+            <div className="p-4 rounded-2xl border border-white/15 bg-black/35 text-xs space-y-1">
               <div className="flex items-center gap-1.5 text-white font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                 <span>Seçilen Seans</span>
@@ -814,7 +814,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
       </div>
 
       {/* Step 3: Reservation Details Form */}
-      <section className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-10 space-y-8">
+      <section className="rounded-3xl border border-white/10 bg-black/25 p-6 sm:p-10 space-y-8 shadow-sm">
         <div>
           <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 block">
             3. Adım: Bilgiler & Deneyim Anketi
@@ -830,7 +830,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* Whitelist Verification Field */}
-          <div className="p-5 sm:p-6 rounded-2xl border border-white/[0.08] bg-white/[0.01] space-y-4">
+          <div className="p-5 sm:p-6 rounded-2xl border border-white/10 bg-black/30 space-y-4">
             <label className="text-xs font-mono uppercase tracking-wider text-white/70 block">
               Öğrenci Numarası (Üyelik Doğrulaması) *
             </label>
@@ -845,7 +845,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                   setVerifiedMember(null);
                   setVerificationError(null);
                 }}
-                className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs font-mono placeholder:text-white/25 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/40 transition-all"
+                className="flex-1 px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs font-mono placeholder:text-white/35 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/40 transition-all"
               />
 
               <button
@@ -867,7 +867,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             )}
 
             {verifiedMember && (
-              <div className="flex items-center justify-between p-4 rounded-xl border border-white/15 bg-white/[0.04] text-xs">
+              <div className="flex items-center justify-between p-4 rounded-xl border border-white/15 bg-black/35 text-xs">
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <div>
@@ -906,7 +906,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               placeholder="Örn: Fotoğraf ve Video, Mimarlık, Bilgisayar Mühendisliği, İletişim..."
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/40 transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs placeholder:text-white/35 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/40 transition-all"
             />
           </div>
 
@@ -923,7 +923,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
           {/* MODE 1: FILM YIKAMA & TARAMA SPECIFIC FIELDS */}
           {activeMode === 'wash' && (
-            <div className="p-5 sm:p-6 rounded-2xl border border-white/[0.08] bg-white/[0.01] space-y-5">
+            <div className="p-5 sm:p-6 rounded-2xl border border-white/10 bg-black/30 space-y-5">
               <div className="border-b border-white/[0.06] pb-3">
                 <span className="text-xs font-mono uppercase tracking-wider text-white/70 block">
                   İşlem Türü
@@ -941,7 +941,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                   className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                     processType === 'bw_film'
                       ? 'bg-white text-black border-white shadow-md'
-                      : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                      : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                   }`}
                 >
                   <div>
@@ -959,7 +959,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                   className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                     processType === 'film_scan'
                       ? 'bg-white text-black border-white shadow-md'
-                      : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                      : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                   }`}
                 >
                   <div>
@@ -988,7 +988,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                           hasWashedFilmBefore === true
                             ? 'bg-white text-black border-white shadow-md'
-                            : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                            : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                         }`}
                       >
                         Evet, daha önce film yıkadım
@@ -1002,7 +1002,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                           hasWashedFilmBefore === false
                             ? 'bg-white text-black border-white shadow-md'
-                            : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                            : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                         }`}
                       >
                         Hayır, ilk defa yıkayacağım
@@ -1022,7 +1022,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                           hasEnteredDarkroomBefore === true
                             ? 'bg-white text-black border-white shadow-md'
-                            : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                            : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                         }`}
                       >
                         Evet, daha önce girdim
@@ -1033,7 +1033,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                           hasEnteredDarkroomBefore === false
                             ? 'bg-white text-black border-white shadow-md'
-                            : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                            : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                         }`}
                       >
                         Hayır, ilk defa gireceğim
@@ -1053,7 +1053,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                           knowsDarkroomRules === true
                             ? 'bg-white text-black border-white shadow-md'
-                            : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                            : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                         }`}
                       >
                         Evet, kuralları biliyorum
@@ -1064,7 +1064,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                           knowsDarkroomRules === false
                             ? 'bg-white text-black border-white shadow-md'
-                            : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                            : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                         }`}
                       >
                         Hayır, bilmiyorum (Rehberlik talep ediyorum)
@@ -1080,7 +1080,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     <select
                       value={filmCount}
                       onChange={(e) => setFilmCount(Number(e.target.value))}
-                      className="w-full px-4 py-3 rounded-xl bg-[#140911] border border-white/10 text-white text-xs focus:outline-none focus:border-white/40 transition-all font-mono"
+                      className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs focus:outline-none focus:border-white/40 transition-all font-mono"
                     >
                       <option value={1}>1 Rulo Film (Önerilen — 1,5 saat için ideal)</option>
                       <option value={2}>2 Rulo Film</option>
@@ -1091,7 +1091,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
                   {/* Q5: Birden fazla ise film marka ve ASA değerleri */}
                   {filmCount > 1 && (
-                    <div className="p-5 rounded-2xl border border-white/[0.08] bg-white/[0.01] space-y-4">
+                    <div className="p-5 rounded-2xl border border-white/10 bg-black/30 space-y-4">
                       <div className="space-y-1">
                         <label className="text-xs font-mono uppercase tracking-wider text-white/70 block">
                           Birden fazla film için marka ve ASA (ISO) değerleri *
@@ -1106,7 +1106,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                         placeholder="Örn: 1. Film: Kodak Tri-X 400, 2. Film: Ilford HP5+ 400"
                         value={filmBrandsAndAsa}
                         onChange={(e) => setFilmBrandsAndAsa(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/40 transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs placeholder:text-white/35 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/40 transition-all"
                       />
 
                       {/* Önemli Uyarı: Farklı ASA */}
@@ -1142,7 +1142,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     <select
                       value={chemicalSource}
                       onChange={(e) => setChemicalSource(e.target.value as any)}
-                      className="w-full px-4 py-3 rounded-xl bg-[#140911] border border-white/10 text-white text-xs focus:outline-none focus:border-white/40 transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs focus:outline-none focus:border-white/40 transition-all"
                     >
                       <option value="club">Kulübün Hazır Kimyasalları (Geliştirici / Stop / Fiksaj)</option>
                       <option value="personal">Kendi Özel Kimyasallarımı Getireceğim</option>
@@ -1153,7 +1153,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
               {/* Scanning specific info */}
               {processType === 'film_scan' && (
-                <div className="p-5 rounded-xl border border-white/[0.08] bg-white/[0.02] text-xs space-y-2">
+                <div className="p-5 rounded-xl border border-white/10 bg-black/30 text-xs space-y-2">
                   <div className="flex items-center gap-2 text-white font-semibold">
                     <Scan className="w-4 h-4 text-white/70" />
                     <span>Negatif Film Tarama İstasyonu</span>
@@ -1168,7 +1168,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
 
           {/* MODE 2: KAĞIDA FOTOĞRAF BASKISI SPECIFIC FIELDS */}
           {activeMode === 'print' && (
-            <div className="p-5 sm:p-6 rounded-2xl border border-white/[0.08] bg-white/[0.01] space-y-5">
+            <div className="p-5 sm:p-6 rounded-2xl border border-white/10 bg-black/30 space-y-5">
               <div className="border-b border-white/[0.06] pb-3">
                 <span className="text-xs font-mono uppercase tracking-wider text-white/70 block">
                   Kağıda Fotoğraf Baskısı (Agrandisör Seansı)
@@ -1190,7 +1190,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                       hasEnteredDarkroomBefore === true
                         ? 'bg-white text-black border-white shadow-md'
-                        : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                        : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                     }`}
                   >
                     Evet, daha önce girdim
@@ -1201,7 +1201,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                       hasEnteredDarkroomBefore === false
                         ? 'bg-white text-black border-white shadow-md'
-                        : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                        : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                     }`}
                   >
                     Hayır, ilk defa gireceğim
@@ -1221,7 +1221,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                       hasPrintedBefore === true
                         ? 'bg-white text-black border-white shadow-md'
-                        : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                        : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                     }`}
                   >
                     Evet, daha önce baskı yaptım
@@ -1235,7 +1235,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                       hasPrintedBefore === false
                         ? 'bg-white text-black border-white shadow-md'
-                        : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                        : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                     }`}
                   >
                     Hayır, ilk defa yapacağım
@@ -1255,7 +1255,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                       knowsDarkroomRules === true
                         ? 'bg-white text-black border-white shadow-md'
-                        : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                        : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                     }`}
                   >
                     Evet, kuralları biliyorum
@@ -1266,7 +1266,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                       knowsDarkroomRules === false
                         ? 'bg-white text-black border-white shadow-md'
-                        : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                        : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                     }`}
                   >
                     Hayır, bilmiyorum (Rehberlik talep ediyorum)
@@ -1283,7 +1283,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                   <select
                     value={printCount}
                     onChange={(e) => setPrintCount(Number(e.target.value))}
-                    className="w-full px-4 py-3 rounded-xl bg-[#140911] border border-white/10 text-white text-xs focus:outline-none focus:border-white/40 transition-all font-mono"
+                    className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs focus:outline-none focus:border-white/40 transition-all font-mono"
                   >
                     <option value={2}>1 – 2 Adet Baskı</option>
                     <option value={3}>3 – 4 Adet Baskı (Önerilen)</option>
@@ -1299,7 +1299,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                   <select
                     value={paperSize}
                     onChange={(e) => setPaperSize(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-[#140911] border border-white/10 text-white text-xs focus:outline-none focus:border-white/40 transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs focus:outline-none focus:border-white/40 transition-all"
                   >
                     <option value="10x15 cm">10x15 cm (Küçük Kart)</option>
                     <option value="13x18 cm">13x18 cm</option>
@@ -1322,7 +1322,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                       negativesReady === true
                         ? 'bg-white text-black border-white shadow-md'
-                        : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                        : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                     }`}
                   >
                     Evet, negatiflerim kuru ve hazır
@@ -1333,7 +1333,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                     className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-center ${
                       negativesReady === false
                         ? 'bg-white text-black border-white shadow-md'
-                        : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25'
+                        : 'border-white/10 bg-black/30 hover:bg-black/40 text-white/60 hover:text-white hover:border-white/25'
                     }`}
                   >
                     Henüz kurumadı / hazır değil
@@ -1344,7 +1344,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           )}
 
           {/* Assistance Option */}
-          <div className="flex items-start gap-3 p-4 rounded-xl border border-white/[0.08] bg-white/[0.01]">
+          <div className="flex items-start gap-3 p-4 rounded-xl border border-white/10 bg-black/30">
             <input
               type="checkbox"
               id="needsAssistance"
@@ -1370,12 +1370,12 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
               placeholder="Örn: Push banyo yapılacak, kendi kağıdımı getireceğim..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-xs placeholder:text-white/25 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/40 transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs placeholder:text-white/35 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/40 transition-all"
             />
           </div>
 
           {/* Darkroom Rules & Guidelines */}
-          <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.02] space-y-4 text-xs">
+          <div className="p-6 rounded-2xl border border-white/10 bg-black/30 space-y-4 text-xs">
             <div className="flex items-center gap-2 font-semibold text-white tracking-tight">
               <Info className="w-4 h-4 text-white/50 shrink-0" />
               <span>YTÜFOK Karanlık Oda Kullanım Yönergesi & Kuralları</span>
@@ -1453,7 +1453,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
       {/* Success Modal */}
       {submittedReservation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
-          <div className="bg-[#140911] border border-white/15 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl space-y-6 p-6 sm:p-8">
+          <div className="bg-[#2c0615] border border-white/15 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl space-y-6 p-6 sm:p-8">
             <div className="text-center space-y-3">
               <div className="w-14 h-14 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-white mx-auto">
                 <Check className="w-7 h-7 stroke-[2.5]" />
@@ -1469,7 +1469,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Reservation Code Card */}
-            <div className="p-5 rounded-2xl border border-white/10 bg-white/[0.02] text-center space-y-2">
+            <div className="p-5 rounded-2xl border border-white/10 bg-black/35 text-center space-y-2">
               <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 block">
                 Randevu Takip Kodu
               </span>
@@ -1489,7 +1489,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Details Summary */}
-            <div className="p-5 rounded-2xl border border-white/10 bg-white/[0.02] text-xs divide-y divide-white/[0.06]">
+            <div className="p-5 rounded-2xl border border-white/10 bg-black/35 text-xs divide-y divide-white/[0.06]">
               <div className="flex justify-between py-2">
                 <span className="text-white/40">Tarih & Seans:</span>
                 <strong className="text-white font-mono">{submittedReservation.date} • {submittedReservation.slot_time} (90 dk)</strong>
@@ -1545,21 +1545,21 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
-          <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] space-y-2">
+          <div className="p-6 rounded-2xl border border-white/10 bg-black/25 space-y-2 shadow-sm">
             <strong className="text-white text-sm block font-medium tracking-tight">Film Yıkama Tankları</strong>
             <p className="text-white/50 font-light leading-relaxed">
               3 adet çiftli ve tekli spiral film tankı; 35mm spiraller ile tam donanımlı banyo istasyonu.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] space-y-2">
+          <div className="p-6 rounded-2xl border border-white/10 bg-black/25 space-y-2 shadow-sm">
             <strong className="text-white text-sm block font-medium tracking-tight">S/B Agrandisör</strong>
             <p className="text-white/50 font-light leading-relaxed">
               35mm kondansatörlü agrandisör, 50mm lens ve ayarlanabilir kadraj marjörü.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] space-y-2">
+          <div className="p-6 rounded-2xl border border-white/10 bg-black/25 space-y-2 shadow-sm">
             <strong className="text-white text-sm block font-medium tracking-tight">Negatif Film Tarayıcı</strong>
             <p className="text-white/50 font-light leading-relaxed">
               35mm negatif tutucular; yüksek optik çözünürlüklü dijital film tarama ve arşiv istasyonu.

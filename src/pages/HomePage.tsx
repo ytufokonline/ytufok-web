@@ -316,7 +316,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 }}
                 className="group cursor-pointer space-y-3"
               >
-                <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-white/[0.02] border border-white/10 group-hover:border-white/30 transition-all relative">
+                <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-black/25 border border-white/10 group-hover:border-white/30 transition-all relative">
                   <img
                     src={item.image_url}
                     alt={item.name}

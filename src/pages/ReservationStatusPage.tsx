@@ -93,7 +93,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
             placeholder="Takip Kodu (YTU-... / KO-...) veya Öğrenci Numarası..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-white/25 text-xs font-mono focus:border-white/40 transition-all"
+            className="flex-1 px-4 py-3.5 rounded-xl bg-black/35 border border-white/10 text-white placeholder:text-white/35 text-xs font-mono focus:border-white/40 transition-all"
           />
           <button
             type="submit"
@@ -139,7 +139,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                   {equipmentResults.map((res) => (
                     <div
                       key={res.id}
-                      className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 space-y-5"
+                      className="rounded-2xl border border-white/10 bg-black/25 p-6 space-y-5 shadow-sm"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/[0.06] gap-3">
                         <div className="flex items-center gap-3.5">
@@ -154,13 +154,13 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                        <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] space-y-1">
+                        <div className="p-4 rounded-xl border border-white/10 bg-black/30 space-y-1">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Ekipman</span>
                           <strong className="text-white block font-club text-sm">{res.equipment?.name}</strong>
                           <span className="text-white/40 font-mono text-[11px] block">Demirbaş: {res.equipment?.serial_number}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] space-y-1">
+                        <div className="p-4 rounded-xl border border-white/10 bg-black/30 space-y-1">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Tarih Bilgisi</span>
                           <div className="text-white/70">Teslim Alma: <strong className="text-white font-mono">{res.pickup_date}</strong></div>
                           <div className="text-white/70">İade Tarihi: <strong className="text-white font-mono">{res.return_date}</strong></div>
@@ -184,7 +184,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                       </div>
 
                       {res.purpose && (
-                        <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] text-xs text-white/80 space-y-0.5">
+                        <div className="p-4 rounded-xl border border-white/10 bg-black/30 text-xs text-white/80 space-y-0.5">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Kullanım Amacı</span>
                           <p className="font-light leading-relaxed">{res.purpose}</p>
                         </div>
@@ -209,7 +209,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                   {darkroomResults.map((ko) => (
                     <div
                       key={ko.id}
-                      className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 space-y-5"
+                      className="rounded-2xl border border-white/10 bg-black/25 p-6 space-y-5 shadow-sm"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/[0.06] gap-3">
                         <div className="flex items-center gap-3.5">
@@ -226,7 +226,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                        <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] space-y-1">
+                        <div className="p-4 rounded-xl border border-white/10 bg-black/30 space-y-1">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">İşlem</span>
                           <strong className="text-white block text-sm">
                             {ko.process_type === 'bw_film' && 'Siyah-Beyaz Film Yıkama'}
@@ -238,7 +238,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                           </span>
                         </div>
 
-                        <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] space-y-1">
+                        <div className="p-4 rounded-xl border border-white/10 bg-black/30 space-y-1">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Seans</span>
                           <strong className="text-white font-mono block text-sm">
                             {ko.date} • {ko.slot_time}

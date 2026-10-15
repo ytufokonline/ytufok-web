@@ -399,25 +399,25 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
 
       {/* Quick Photography Terms (Collapsible) */}
       {showDictionary && (
-        <div className="p-6 rounded-2xl border border-white/15 bg-white/[0.02] space-y-4 animate-in fade-in duration-150">
+        <div className="p-6 rounded-2xl border border-white/10 bg-black/25 space-y-4 animate-in fade-in duration-150 shadow-sm">
           <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-white/70">
             <Sparkles className="w-3.5 h-3.5 text-white/80" />
             <span>Temel Fotoğrafçılık İlkeleri</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-1.5">
+            <div className="p-4 rounded-xl border border-white/10 bg-black/35 space-y-1.5">
               <span className="font-semibold text-white text-xs block">1. Diyafram (f/ Değeri)</span>
               <p className="text-xs text-white/60 font-light leading-relaxed">
                 Küçük sayı (f/1.4, f/1.8) = Yüksek ışık alımı ve flur arka plan (bokeh). Portre ve düşük ışıkta küçük f tercih edilir.
               </p>
             </div>
-            <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-1.5">
+            <div className="p-4 rounded-xl border border-white/10 bg-black/35 space-y-1.5">
               <span className="font-semibold text-white text-xs block">2. Odak Uzaklığı (mm)</span>
               <p className="text-xs text-white/60 font-light leading-relaxed">
                 Küçük mm (17mm, 10mm) = Geniş Açı (bina, mimari, manzara). Büyük mm (85mm, 200mm) = Telefoto (uzak detay, portre).
               </p>
             </div>
-            <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-1.5">
+            <div className="p-4 rounded-xl border border-white/10 bg-black/35 space-y-1.5">
               <span className="font-semibold text-white text-xs block">3. Sensör: Full Frame vs Crop</span>
               <p className="text-xs text-white/60 font-light leading-relaxed">
                 Full Frame (5D2, 6D) = Yüksek dinamik aralık ve derinlik. Crop (1000D, Nikon) = Hafif, pratik ve telefotoda 1.6x ekstra menzil.
@@ -438,7 +438,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
               className={`px-4 py-2.5 rounded-xl text-xs font-mono whitespace-nowrap transition-all border flex items-center gap-2 cursor-pointer ${
                 isActive
                   ? 'bg-white text-black border-white shadow-md font-semibold'
-                  : 'border-white/10 text-white/60 hover:text-white hover:border-white/25 bg-white/[0.02]'
+                  : 'border-white/10 text-white/60 hover:text-white hover:border-white/25 bg-black/30'
               }`}
             >
               <span>{sc.title}</span>
@@ -451,7 +451,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
       <div className="space-y-6">
         
         {/* Scenario Header Info */}
-        <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-6 rounded-2xl border border-white/10 bg-black/25 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
           <div className="space-y-1.5">
             <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40">
               {activeScenario.tag}
@@ -482,7 +482,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
                 className={`px-3.5 py-2 rounded-xl text-xs font-mono whitespace-nowrap transition-all border cursor-pointer flex items-center gap-1.5 ${
                   isSelected
                     ? 'bg-white text-black border-white font-semibold shadow-sm'
-                    : 'border-white/10 text-white/50 hover:text-white hover:border-white/25 bg-white/[0.02]'
+                    : 'border-white/10 text-white/50 hover:text-white hover:border-white/25 bg-black/30'
                 }`}
               >
                 <span className={isSelected ? 'text-black/60 font-bold' : 'text-white/40 font-bold'}>{idx + 1}.</span>
@@ -493,7 +493,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
         </div>
 
         {/* SELECTED COMBO MAIN CARD */}
-        <div className="p-6 sm:p-8 rounded-3xl border border-white/[0.08] bg-white/[0.02] space-y-6">
+        <div className="p-6 sm:p-8 rounded-3xl border border-white/10 bg-black/25 space-y-6 shadow-sm">
           
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
             <div>
@@ -514,7 +514,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
               const body = getEq(activeCombo.bodyId);
               if (!body) return null;
               return (
-                <div className="md:col-span-5 p-5 rounded-2xl border border-white/10 bg-white/[0.02] flex flex-col justify-between space-y-4">
+                <div className="md:col-span-5 p-5 rounded-2xl border border-white/10 bg-black/35 flex flex-col justify-between space-y-4">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3">
                       <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border border-white/15 text-white/70">
@@ -570,7 +570,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
                 const lens = getEq(activeCombo.lensId);
                 if (!lens) return null;
                 return (
-                  <div className="md:col-span-5 p-5 rounded-2xl border border-white/10 bg-white/[0.02] flex flex-col justify-between space-y-4">
+                  <div className="md:col-span-5 p-5 rounded-2xl border border-white/10 bg-black/35 flex flex-col justify-between space-y-4">
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-3">
                         <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border border-white/15 text-white/70">
@@ -624,7 +624,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
             const acc = getEq(activeCombo.accessoryId);
             if (!acc) return null;
             return (
-              <div className="p-4 rounded-xl border border-white/10 bg-white/[0.01] flex items-center justify-between gap-3">
+              <div className="p-4 rounded-xl border border-white/10 bg-black/30 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-11 h-11 rounded-lg bg-black/60 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
                     {acc.image_url ? (
@@ -650,7 +650,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
           })()}
 
           {/* Short "Neden Bu Kombo?" info */}
-          <div className="p-4 rounded-xl border border-white/[0.08] bg-white/[0.01] flex items-start gap-3">
+          <div className="p-4 rounded-xl border border-white/10 bg-black/30 flex items-start gap-3">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             <div className="space-y-0.5 text-xs">
               <span className="font-semibold text-white">Neden Bu Kombo?: </span>
@@ -660,7 +660,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
 
           {/* Settings & Memory Card Strip */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] flex items-start gap-2.5 text-xs">
+            <div className="p-4 rounded-xl border border-white/10 bg-black/30 flex items-start gap-2.5 text-xs">
               <Sliders className="w-3.5 h-3.5 text-white/40 shrink-0 mt-0.5" />
               <div>
                 <span className="font-mono text-white/40 text-[10px] uppercase tracking-wider block">Önerilen Kamera Ayarı</span>
@@ -668,7 +668,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.01] flex items-start gap-2.5 text-xs">
+            <div className="p-4 rounded-xl border border-white/10 bg-black/30 flex items-start gap-2.5 text-xs">
               <AlertCircle className="w-3.5 h-3.5 text-white/40 shrink-0 mt-0.5" />
               <div>
                 <span className="font-mono text-white/40 text-[10px] uppercase tracking-wider block">Hafıza Kartı & Not</span>

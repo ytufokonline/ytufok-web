@@ -1,10 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
+const DEFAULT_BOOTSTRAP_PIN = 'YTUFOK19';
+
+function verifyPin(pin, hash, salt) {
+  if (!hash || !salt) return false;
+  try {
+    const computed = crypto.pbkdf2Sync(pin, salt, 10000, 32, 'sha256').toString('hex');
+    return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(hash));
+  } catch {
+    return false;
+  }
+}
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -26,72 +40,59 @@ export default async function handler(req, res) {
     }
 
     const cleanPin = String(pin).trim();
+    const ADMIN_ID_TO_STUDENT = {
+      'admin-baskan': '24084005',
+      'admin-by1': '21065054',
+      'admin-by2': '23084041',
+      'admin-sayman': '23084006',
+      'admin-sekreter': '23084023',
+      'admin-sosyal-medya': '24084024',
+      'admin-gezi': '24084602',
+      'admin-sponsorluk': '24084025'
+    };
+    const targetStudentNo = ADMIN_ID_TO_STUDENT[adminId] || adminId;
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Try Supabase RPC first
-    try {
-      const { data: rpcData, error: rpcError } = await supabase.rpc('verify_admin_pin', {
-        p_admin_id: adminId,
-        p_pin: cleanPin
-      });
-
-      if (!rpcError && rpcData) {
-        return res.status(200).json(rpcData);
-      }
-    } catch {
-      // Fallback to table check on server if RPC not defined yet
-    }
-
-    // 2. Server-side table check fallback
-    const { data, error } = await supabase
-      .from('admin_profiles')
-      .select('pin')
-      .eq('id', adminId)
+    // Canlı veritabanından üye kaydını çek
+    const { data: member, error } = await supabase
+      .from('members')
+      .select('notes')
+      .eq('student_number', targetStudentNo)
       .maybeSingle();
 
-    const isMasterPassword = cleanPin === 'YTUFOK19' || cleanPin.toUpperCase() === 'YTUFOK19';
-    if (isMasterPassword) {
-      return res.status(200).json({ success: true, message: 'Giriş başarılı.' });
-    }
-
-    let storedPin = String(data?.pin || '').trim();
-    if (!storedPin) {
-      const ADMIN_ID_TO_STUDENT = {
-        'admin-baskan': '24084005',
-        'admin-by1': '21065054',
-        'admin-by2': '23084041',
-        'admin-sayman': '23084006',
-        'admin-sekreter': '23084023',
-        'admin-sosyal-medya': '24084024',
-        'admin-gezi': '24084602',
-        'admin-sponsorluk': '24084025'
-      };
-      const targetStudentNo = ADMIN_ID_TO_STUDENT[adminId] || adminId;
+    let authData = null;
+    if (member?.notes) {
       try {
-        const { data: member } = await supabase
-          .from('members')
-          .select('notes')
-          .eq('student_number', targetStudentNo)
-          .maybeSingle();
-
-        if (member?.notes) {
-          try {
-            const parsed = JSON.parse(member.notes);
-            if (parsed.admin_pin) storedPin = String(parsed.admin_pin).trim();
-          } catch {
-            if (member.notes.startsWith('pin:')) storedPin = member.notes.replace('pin:', '').trim();
-          }
+        const parsed = JSON.parse(member.notes);
+        if (parsed.auth && parsed.auth.hash && parsed.auth.salt) {
+          authData = parsed.auth;
+        } else if (parsed.admin_pin) {
+          authData = { plain_pin: parsed.admin_pin };
         }
       } catch {
-        // ignore
+        if (member.notes.startsWith('pin:')) {
+          authData = { plain_pin: member.notes.replace('pin:', '').trim() };
+        }
       }
     }
 
-    if (storedPin && storedPin === cleanPin) {
-      return res.status(200).json({ success: true, message: 'Giriş başarılı.' });
+    let isValid = false;
+    if (authData && authData.hash && authData.salt) {
+      // Özel şifre varsa sadece güncel hash kabul edilir
+      isValid = verifyPin(cleanPin, authData.hash, authData.salt);
+    } else if (authData && authData.plain_pin) {
+      isValid = (cleanPin === authData.plain_pin);
+    } else {
+      // Özel şifre yoksa bootstrap şifre kabul edilir
+      isValid = (cleanPin === DEFAULT_BOOTSTRAP_PIN || cleanPin.toUpperCase() === DEFAULT_BOOTSTRAP_PIN);
     }
 
-    return res.status(200).json({ success: false, message: 'Hatalı PIN kodu.' });
+    if (isValid) {
+      return res.status(200).json({ success: true, message: 'Doğrulama başarılı.' });
+    }
+
+    return res.status(401).json({ success: false, message: 'Hatalı PIN kodu.' });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Sunucu doğrulama hatası.' });
   }

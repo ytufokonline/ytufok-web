@@ -1,10 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
-const DEFAULT_PIN = 'YTUFOK19';
+const DEFAULT_BOOTSTRAP_PIN = 'YTUFOK19';
 
-// Default initial admin accounts fallback
+function verifyPin(pin, hash, salt) {
+  if (!hash || !salt) return false;
+  try {
+    const computed = crypto.pbkdf2Sync(pin, salt, 10000, 32, 'sha256').toString('hex');
+    return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(hash));
+  } catch {
+    return false;
+  }
+}
+
 const FALLBACK_ADMINS = [
   { id: 'admin-baskan', role: 'president', title: 'Kulüp Başkanı', short_title: 'Başkan', full_name: 'Sıla Dönmez', student_number: '24084005', phone: '', avatar_color: 'from-[#4b253b] via-[#301322] to-[#657796]' },
   { id: 'admin-by1', role: 'vice_president_1', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Yavuz Selim Bahadır', student_number: '21065054', phone: '', avatar_color: 'from-[#657796] via-[#4e3b52] to-[#301322]' },
@@ -18,6 +28,8 @@ const FALLBACK_ADMINS = [
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -40,95 +52,88 @@ export default async function handler(req, res) {
 
     const cleanNo = String(studentNumber).trim().toLowerCase().replace(/\s+/g, '');
     const cleanPin = String(pin).trim();
-    const isMasterPassword = cleanPin === DEFAULT_PIN || cleanPin.toUpperCase() === DEFAULT_PIN;
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Try Supabase RPC first
-    try {
-      const { data: rpcData, error: rpcError } = await supabase.rpc('verify_admin_login', {
-        p_student_number: cleanNo,
-        p_pin: cleanPin
-      });
+    // 1. Canlı veritabanından üyeyi sorgula (Asla önbellekten okuma)
+    const { data: member, error } = await supabase
+      .from('members')
+      .select('id, student_number, full_name, department, role, member_type, status, notes')
+      .eq('student_number', cleanNo)
+      .maybeSingle();
 
-      if (!rpcError && rpcData && typeof rpcData === 'object' && rpcData.success) {
-        return res.status(200).json(rpcData);
-      }
-    } catch {
-      // Fallback if RPC not created yet
-    }
-
-    // 2. Server-side table check fallback
-    try {
-      const { data, error } = await supabase
-        .from('admin_profiles')
-        .select('*')
-        .ilike('student_number', cleanNo)
-        .maybeSingle();
-
-      if (!error && data) {
-        const storedPin = String(data.pin || DEFAULT_PIN).trim();
-        const isMatch = isMasterPassword || storedPin === cleanPin;
-
-        if (isMatch) {
-          // If stored pin differs from master password, update it in background
-          if (storedPin !== cleanPin && isMasterPassword) {
-            supabase.from('admin_profiles').update({ pin: DEFAULT_PIN }).eq('id', data.id).then(() => {});
-          }
-
-          const { pin: _p, ...safeProfile } = data;
-          return res.status(200).json({
-            success: true,
-            message: 'Giriş başarılı.',
-            admin: safeProfile
-          });
-        }
-        return res.status(200).json({ success: false, message: 'Öğrenci numarası veya şifre hatalı.' });
-      }
-    } catch {
-      // ignore
-    }
-
-    // 3. Fallback to initial admin accounts list (with default pin or custom pin in members.notes)
-    const match = FALLBACK_ADMINS.find(
+    // Yönetici kontrolü
+    const matchedProfile = FALLBACK_ADMINS.find(
       (a) => a.student_number.toLowerCase().replace(/\s+/g, '') === cleanNo
     );
 
-    if (match) {
-      let storedPin = DEFAULT_PIN;
-      try {
-        const { data: member } = await supabase
-          .from('members')
-          .select('notes')
-          .eq('student_number', match.student_number)
-          .maybeSingle();
+    const isAuthorizedAdmin = (
+      matchedProfile ||
+      (member && (member.role === 'board' || member.role === 'admin' || member.member_type === 'board'))
+    );
 
-        if (member?.notes) {
-          try {
-            const parsed = JSON.parse(member.notes);
-            if (parsed.admin_pin) storedPin = String(parsed.admin_pin).trim();
-          } catch {
-            if (member.notes.startsWith('pin:')) storedPin = member.notes.replace('pin:', '').trim();
-          }
-        }
-      } catch {
-        // ignore
-      }
-
-      if (isMasterPassword || cleanPin === storedPin) {
-        return res.status(200).json({
-          success: true,
-          message: 'Giriş başarılı.',
-          admin: match
-        });
-      }
-      return res.status(200).json({ success: false, message: 'Öğrenci numarası veya şifre hatalı.' });
+    if (!isAuthorizedAdmin) {
+      return res.status(401).json({
+        success: false,
+        message: 'Girdiğiniz öğrenci numarasına ait yönetici hesabı bulunamadı.'
+      });
     }
 
+    // 2. Veritabanındaki güncel şifre verisini kontrol et
+    let authData = null;
+    if (member?.notes) {
+      try {
+        const parsed = JSON.parse(member.notes);
+        if (parsed.auth && parsed.auth.hash && parsed.auth.salt) {
+          authData = parsed.auth;
+        } else if (parsed.admin_pin) {
+          authData = { plain_pin: parsed.admin_pin };
+        }
+      } catch {
+        if (member.notes.startsWith('pin:')) {
+          authData = { plain_pin: member.notes.replace('pin:', '').trim() };
+        }
+      }
+    }
+
+    let isPasswordValid = false;
+
+    if (authData && authData.hash && authData.salt) {
+      // KULLANICI ŞİFRESİNİ DEĞİŞTİRMİŞSE:
+      // Eski şifre veya YTUFOK19 ASLA kabul edilmez; sadece güncel hash geçerlidir!
+      isPasswordValid = verifyPin(cleanPin, authData.hash, authData.salt);
+    } else if (authData && authData.plain_pin) {
+      isPasswordValid = (cleanPin === authData.plain_pin);
+    } else {
+      // Kullanıcı henüz özel şifre belirlememiş; ilk giriş bootstrap şifresi geçerlidir
+      isPasswordValid = (cleanPin === DEFAULT_BOOTSTRAP_PIN || cleanPin.toUpperCase() === DEFAULT_BOOTSTRAP_PIN);
+    }
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Öğrenci numarası veya şifre hatalı.'
+      });
+    }
+
+    // 3. Giriş başarılı: Profil nesnesini oluştur ve döndür
+    const profileToReturn = matchedProfile || {
+      id: member.id,
+      role: member.role || 'board',
+      title: 'Yönetim Kurulu Üyesi',
+      short_title: 'Yönetim',
+      full_name: member.full_name,
+      student_number: member.student_number,
+      phone: '',
+      avatar_color: 'from-[#4e3b52] via-[#301322] to-[#8193b2]'
+    };
+
     return res.status(200).json({
-      success: false,
-      message: 'Girdiğiniz öğrenci numarasına ait yönetici hesabı bulunamadı.'
+      success: true,
+      message: 'Giriş başarılı.',
+      admin: profileToReturn
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: 'Sunucu doğrulama hatası.' });
+    return res.status(500).json({ success: false, message: 'Sunucu doğrulama hatası oluştu.' });
   }
 }

@@ -988,37 +988,20 @@ export const api = {
       return { success: false, message: 'Lütfen öğrenci numaranızı ve şifrenizi giriniz.' };
     }
 
-    // 1. Vercel Serverless Güvenli API Doğrulaması (YTUFOK19 ve sunucu kontrolü)
+    // 1. Canlı Veritabanı ve Kriptografik Doğrulama (Vercel Serverless - Asla Önbellek Tutmaz)
     try {
       const res = await fetch('/api/verify-admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ studentNumber: cleanNo, pin: cleanPin })
       });
       if (res.ok) {
         const json = await res.json();
-        if (json.success) {
-          return json;
-        }
+        return json;
       }
     } catch {
       // ignore
-    }
-
-    // 2. Supabase PostgreSQL RPC (Sunucu Tarafında Doğrulama)
-    if (isSupabaseConfigured()) {
-      try {
-        const { data, error } = await supabase.rpc('verify_admin_login', {
-          p_student_number: cleanNo,
-          p_pin: cleanPin
-        });
-
-        if (!error && data && typeof data === 'object' && (data as any).success) {
-          return data as { success: boolean; message: string; admin?: AdminProfile };
-        }
-      } catch {
-        // ignore
-      }
     }
 
     return {
@@ -1033,33 +1016,12 @@ export const api = {
       return { success: false, message: 'Lütfen PIN şifrenizi giriniz.' };
     }
 
-    // 1. Supabase PostgreSQL RPC (Sunucu Tarafında Doğrulama)
-    if (isSupabaseConfigured()) {
-      try {
-        const { data, error } = await supabase.rpc('verify_admin_pin', {
-          p_admin_id: adminId,
-          p_pin: cleanPin
-        });
-
-        if (!error && data && typeof data === 'object') {
-          const res = data as { success: boolean; message: string };
-          if (res.success) {
-            return res;
-          }
-          if (!res.message?.includes('bulunamadı')) {
-            return res;
-          }
-        }
-      } catch {
-        // RPC henüz veritabanında çalıştırılmadıysa API rotasına devam et
-      }
-    }
-
-    // 2. Vercel Serverless Güvenli API Doğrulaması
+    // Canlı Veritabanı Doğrulaması (Asla Önbellek Tutmaz)
     try {
       const res = await fetch('/api/verify-admin-pin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ adminId, pin: cleanPin })
       });
       if (res.ok) {
@@ -1161,36 +1123,12 @@ export const api = {
       return { success: false, message: 'Yeni PIN en az 4 karakter olmalıdır.' };
     }
 
-    // 1. Supabase PostgreSQL RPC (Sunucu Tarafında Güncelleme)
-    if (isSupabaseConfigured()) {
-      try {
-        const { data, error } = await supabase.rpc('update_admin_pin', {
-          p_admin_id: adminId,
-          p_current_pin: cleanCurrent,
-          p_new_pin: cleanNew
-        });
-
-        if (!error && data && typeof data === 'object') {
-          const res = data as { success: boolean; message: string };
-          if (res.success) {
-            const profiles = await this.getAdminProfiles();
-            const updated = profiles.find((p) => p.id === adminId);
-            return { success: true, message: res.message, updatedProfile: updated };
-          }
-          if (!res.message?.includes('bulunamadı')) {
-            return res;
-          }
-        }
-      } catch {
-        // fallback
-      }
-    }
-
-    // 2. Serverless API Doğrulaması ve Güncelleme
+    // Doğrudan Kriptografik Güvenli Sunucu Rotası (PBKDF2 Hash ve Canlı DB Güncelleme)
     try {
       const res = await fetch('/api/update-admin-pin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ adminId, currentPin: cleanCurrent, newPin: cleanNew })
       });
       if (res.ok) {
@@ -1200,42 +1138,10 @@ export const api = {
           const updated = profiles.find((p) => p.id === adminId);
           return { success: true, message: json.message, updatedProfile: updated };
         }
-        if (!json.message?.includes('bulunamadı')) {
-          return json;
-        }
+        return json;
       }
     } catch {
       // ignore
-    }
-
-    // 3. Supabase Members Tablosu Doğrudan Güncelleme (İstemci Yedek Çözümü)
-    if (isSupabaseConfigured()) {
-      try {
-        const ADMIN_ID_TO_STUDENT: Record<string, string> = {
-          'admin-baskan': '24084005',
-          'admin-by1': '21065054',
-          'admin-by2': '23084041',
-          'admin-sayman': '23084006',
-          'admin-sekreter': '23084023',
-          'admin-sosyal-medya': '24084024',
-          'admin-gezi': '24084602',
-          'admin-sponsorluk': '24084025'
-        };
-        const studentNo = ADMIN_ID_TO_STUDENT[adminId] || adminId;
-        const newNotes = JSON.stringify({ admin_pin: cleanNew, pin_updated_at: new Date().toISOString() });
-        const { error: memErr } = await supabase
-          .from('members')
-          .update({ notes: newNotes })
-          .eq('student_number', studentNo);
-
-        if (!memErr) {
-          const profiles = await this.getAdminProfiles();
-          const updated = profiles.find((p) => p.id === adminId);
-          return { success: true, message: 'Şifreniz başarıyla güncellendi!', updatedProfile: updated };
-        }
-      } catch {
-        // ignore
-      }
     }
 
     return {

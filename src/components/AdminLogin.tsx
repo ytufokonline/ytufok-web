@@ -91,7 +91,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             <div className="space-y-1.5">
               <label 
                 htmlFor="studentNumber" 
-                className="block text-xs font-medium text-[#dce4ef] pl-1 tracking-wide"
+                className="block text-xs font-medium text-[#eed1d1] pl-1 tracking-wide"
               >
                 Öğrenci Numarası
               </label>
@@ -117,7 +117,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             <div className="space-y-1.5">
               <label 
                 htmlFor="adminPassword" 
-                className="block text-xs font-medium text-[#dce4ef] pl-1 tracking-wide"
+                className="block text-xs font-medium text-[#eed1d1] pl-1 tracking-wide"
               >
                 Şifre
               </label>

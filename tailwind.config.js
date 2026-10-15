@@ -8,6 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        white: '#eed1d1',
         ytufok: {
           bg: '#500b27',           // En derin arka plan (mürdüm/bordo tonu)
           text: '#eed1d1',         // Ana açık metin tonu

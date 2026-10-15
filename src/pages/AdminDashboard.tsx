@@ -990,7 +990,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-[#657796]/20">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#301322] border border-[#657796]/40 text-[#dce4ef] text-xs font-semibold mb-2 uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#301322] border border-[#657796]/40 text-[#eed1d1] text-xs font-semibold mb-2 uppercase tracking-wider">
             <ShieldCheck className="w-3.5 h-3.5 text-[#8193b2]" />
             <span>Kulüp Yönetim Kurulu</span>
           </div>
@@ -1012,7 +1012,7 @@ export const AdminDashboard: React.FC = () => {
               <div>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-xs font-bold text-white">{activeAdmin.full_name}</span>
-                  <span className="text-[10px] font-bold text-[#dce4ef] bg-[#301322] px-2 py-0.5 rounded-full border border-[#657796]/40">
+                  <span className="text-[10px] font-bold text-[#eed1d1] bg-[#301322] px-2 py-0.5 rounded-full border border-[#657796]/40">
                     {activeAdmin.title}
                   </span>
                   <span className="text-[9px] font-bold text-[#8193b2] bg-[#657796]/15 px-1.5 py-0.5 rounded-full border border-[#657796]/30">
@@ -1025,7 +1025,7 @@ export const AdminDashboard: React.FC = () => {
               <div className="flex items-center gap-1.5 ml-2">
                 <button
                   onClick={() => setShowChangePasswordModal(true)}
-                  className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
+                  className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
                   title="Yönetici şifreni (PIN) değiştir"
                 >
                   <KeyRound className="w-3.5 h-3.5 text-[#8193b2]" />
@@ -1034,7 +1034,7 @@ export const AdminDashboard: React.FC = () => {
 
                 <button
                   onClick={() => setShowSwitchProfileModal(true)}
-                  className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
+                  className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
                   title="Başka bir yönetim kurulu üyesine geç"
                 >
                   <ArrowRightLeft className="w-3.5 h-3.5 text-[#8193b2]" />
@@ -1056,7 +1056,7 @@ export const AdminDashboard: React.FC = () => {
           <button
             onClick={loadAllData}
             disabled={loading}
-            className="px-3.5 py-2.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] hover:text-white text-xs font-semibold flex items-center gap-2 border border-[#657796]/30 transition-colors w-fit shadow-sm cursor-pointer"
+            className="px-3.5 py-2.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] hover:text-white text-xs font-semibold flex items-center gap-2 border border-[#657796]/30 transition-colors w-fit shadow-sm cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Yenile</span>
@@ -1226,7 +1226,7 @@ export const AdminDashboard: React.FC = () => {
                   key={f}
                   onClick={() => setReservationFilter(f)}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold ${
-                    reservationFilter === f ? 'bg-white text-[#301322] font-bold' : 'bg-[#301322] text-[#dce4ef] hover:text-white'
+                    reservationFilter === f ? 'bg-white text-[#301322] font-bold' : 'bg-[#301322] text-[#eed1d1] hover:text-white'
                   }`}
                 >
                   {f === 'all' ? 'Tümü' : f === 'pending' ? 'Onay Bekleyen' : f === 'approved' ? 'Onaylı' : f === 'in_use' ? 'Zimmette' : f === 'returned' ? 'İade' : 'Reddedilen'}
@@ -1237,7 +1237,7 @@ export const AdminDashboard: React.FC = () => {
 
           <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#dce4ef]">
+              <table className="w-full text-left text-xs text-[#eed1d1]">
                 <thead className="bg-[#500b27] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                   <tr>
                     <th className="p-3.5">Kod & Talep Zamanı</th>
@@ -1260,7 +1260,7 @@ export const AdminDashboard: React.FC = () => {
                           </div>
                         )}
                         {r.trip && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-sans font-bold text-[#dce4ef] bg-[#301322] px-2 py-0.5 rounded-full border border-[#657796]/40 mt-1">
+                          <span className="inline-flex items-center gap-1 text-[9px] font-sans font-bold text-[#eed1d1] bg-[#301322] px-2 py-0.5 rounded-full border border-[#657796]/40 mt-1">
                             <Compass className="w-3 h-3 text-[#8193b2]" />
                             <span>{r.trip.title}</span>
                           </span>
@@ -1292,13 +1292,13 @@ export const AdminDashboard: React.FC = () => {
                           </div>
                         )}
                         {r.additional_notes && (
-                          <div className="text-[10px] text-[#dce4ef] bg-[#301322] px-2 py-0.5 rounded-md border border-[#657796]/30 mt-1 inline-block" title={r.additional_notes}>
+                          <div className="text-[10px] text-[#eed1d1] bg-[#301322] px-2 py-0.5 rounded-md border border-[#657796]/30 mt-1 inline-block" title={r.additional_notes}>
                             💬 {r.additional_notes}
                           </div>
                         )}
                       </td>
                       <td className="p-3.5">
-                        <div className="text-xs text-[#dce4ef] font-mono">{r.pickup_date} → {r.return_date}</div>
+                        <div className="text-xs text-[#eed1d1] font-mono">{r.pickup_date} → {r.return_date}</div>
                         {r.status === 'rejected' ? (
                           <div className="mt-1 space-y-0.5">
                             <div className="text-[11px] text-rose-400 font-semibold">
@@ -1408,7 +1408,7 @@ export const AdminDashboard: React.FC = () => {
                       {res.member?.full_name} {!isBoardMemberObj(res.member) && `(${res.student_number})`}
                     </div>
                     <div className="text-[#a9b9d3]">Tel: {res.member?.phone}</div>
-                    <div className="text-[#dce4ef]">Teslim: <strong className="text-white">{res.pickup_date}</strong> → İade: <strong className="text-white">{res.return_date}</strong></div>
+                    <div className="text-[#eed1d1]">Teslim: <strong className="text-white">{res.pickup_date}</strong> → İade: <strong className="text-white">{res.return_date}</strong></div>
                     {res.approved_by && (
                       <div className="text-[11px] pt-1 border-t border-[#657796]/15">
                         <span className="text-emerald-400 font-semibold">Onay: </span>
@@ -1466,7 +1466,7 @@ export const AdminDashboard: React.FC = () => {
                   <div className="text-[11px] font-mono text-[#a9b9d3]">{item.serial_number}</div>
                   <div className="text-[11px] text-[#8193b2] mt-1 flex items-center justify-between">
                     <span>Kondisyon:</span>
-                    <span className="text-[#dce4ef] font-medium truncate max-w-[120px]">{item.current_condition || 'değerlendirilecek'}</span>
+                    <span className="text-[#eed1d1] font-medium truncate max-w-[120px]">{item.current_condition || 'değerlendirilecek'}</span>
                   </div>
                 </div>
                 <div className="pt-2 border-t border-[#657796]/20 flex justify-between items-center text-xs">
@@ -1491,7 +1491,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <button
                     onClick={() => handleOpenEditEquipment(item)}
-                    className="py-1.5 rounded-xl bg-[#500b27] hover:bg-[#301322] text-[11px] text-[#dce4ef] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="py-1.5 rounded-xl bg-[#500b27] hover:bg-[#301322] text-[11px] text-[#eed1d1] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Pencil className="w-3 h-3 text-[#8193b2]" />
                     <span>Düzenle</span>
@@ -1508,7 +1508,7 @@ export const AdminDashboard: React.FC = () => {
 
                 <button
                   onClick={() => setSelectedEquipmentForHistory(item)}
-                  className="w-full mt-1 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] text-[#dce4ef] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full mt-1 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] text-[#eed1d1] hover:text-white font-medium border border-[#657796]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <History className="w-3.5 h-3.5 text-[#8193b2]" />
                   <span>Kullanım Geçmişi ({reservations.filter(r => r.equipment_id === item.id && r.status !== 'rejected').length})</span>
@@ -1604,7 +1604,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
-            <table className="w-full text-left text-xs text-[#dce4ef]">
+            <table className="w-full text-left text-xs text-[#eed1d1]">
               <thead className="bg-[#500b27] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                 <tr>
                   <th className="p-3.5">Öğrenci No</th>
@@ -1633,7 +1633,7 @@ export const AdminDashboard: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <strong className="text-white font-bold">{m.full_name}</strong>
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-                            isBoard || isAudit ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/40' :
+                            isBoard || isAudit ? 'bg-[#657796]/20 text-[#eed1d1] border border-[#657796]/40' :
                             'text-[#8193b2]'
                           }`}>
                             {isBoard ? 'Yönetim Kurulu' : isAudit ? 'Denetim Kurulu' : 'Üye'}
@@ -1642,12 +1642,12 @@ export const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="p-3.5">
                         {isBoard ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40 flex items-center gap-1 w-fit">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#eed1d1] border border-[#657796]/40 flex items-center gap-1 w-fit">
                             <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
                             <span>Yönetim Kurulu Üyesi</span>
                           </span>
                         ) : isAudit ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40 flex items-center gap-1 w-fit">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#eed1d1] border border-[#657796]/40 flex items-center gap-1 w-fit">
                             <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
                             <span>Denetim Kurulu Üyesi</span>
                           </span>
@@ -1676,7 +1676,7 @@ export const AdminDashboard: React.FC = () => {
                       <td className="p-3.5">
                         <button
                           onClick={() => setSelectedMemberForHistory(m)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-xs font-medium text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-xs font-medium text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer"
                           title="Üyenin zimmet ve kullanım geçmişini aç"
                         >
                           <History className="w-3.5 h-3.5 text-[#8193b2]" />
@@ -1713,7 +1713,7 @@ export const AdminDashboard: React.FC = () => {
                         {!isBoard && !isAudit && (
                           <button
                             onClick={() => handleToggleMemberType(m)}
-                            className="px-2 py-1 rounded-lg bg-[#500b27] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-[#500b27] hover:bg-[#301322] text-[11px] font-semibold text-[#eed1d1] border border-[#657796]/30 transition-colors cursor-pointer"
                             title={
                               m.member_type === 'normal' ? 'Bu üyeyi Aktif Üye yap (5 gün önce rezervasyon & Bireysel Çekim)' :
                               m.member_type === 'active' ? 'Bu üyeyi Normal Üye yap (3 gün önce rezervasyon)' :
@@ -1732,7 +1732,7 @@ export const AdminDashboard: React.FC = () => {
                           className="px-2 py-1 rounded-lg bg-[#657796]/30 hover:bg-[#657796]/50 text-xs font-semibold text-white transition-colors cursor-pointer inline-flex items-center gap-1"
                           title="Zimmet Geçmişi"
                         >
-                          <History className="w-3 h-3 text-[#dce4ef]" />
+                          <History className="w-3 h-3 text-[#eed1d1]" />
                           <span>Geçmiş</span>
                         </button>
                         <button
@@ -1747,7 +1747,7 @@ export const AdminDashboard: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleOpenEditMember(m)}
-                          className="px-2 py-1 rounded-lg bg-[#500b27] hover:bg-[#301322] text-xs font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer inline-flex items-center gap-1"
+                          className="px-2 py-1 rounded-lg bg-[#500b27] hover:bg-[#301322] text-xs font-semibold text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors cursor-pointer inline-flex items-center gap-1"
                           title="Üye Bilgilerini Düzenle"
                         >
                           <Pencil className="w-3 h-3 text-[#8193b2]" />
@@ -1827,7 +1827,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
               <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Şu An Zimmette (Dışarıda)</span>
-              <div className="text-2xl font-bold text-[#dce4ef] font-club mt-1">
+              <div className="text-2xl font-bold text-[#eed1d1] font-club mt-1">
                 {reservations.filter(r => r.status === 'in_use').length}
               </div>
               <span className="text-[11px] text-[#a9b9d3]">Üyelerin elindeki ekipman</span>
@@ -1946,7 +1946,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
             {filteredHistoryReservations.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-[#dce4ef]">
+                <table className="w-full text-left text-xs text-[#eed1d1]">
                   <thead className="bg-[#500b27] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                     <tr>
                       <th className="p-3.5">Takip Kodu & Statü</th>
@@ -2008,7 +2008,7 @@ export const AdminDashboard: React.FC = () => {
                           </button>
                         </td>
                         <td className="p-3.5 whitespace-nowrap">
-                          <div className="text-xs font-mono text-[#dce4ef]">{res.pickup_date} → {res.return_date}</div>
+                          <div className="text-xs font-mono text-[#eed1d1]">{res.pickup_date} → {res.return_date}</div>
                           {res.returned_at && (
                             <span className="text-[10px] text-emerald-400 block mt-0.5">
                               İade Edildi: {new Date(res.returned_at).toLocaleDateString('tr-TR')}
@@ -2029,13 +2029,13 @@ export const AdminDashboard: React.FC = () => {
                               </div>
                             ) : null}
                             {res.checked_out_by && (
-                              <div className="flex items-center gap-1.5 text-[#dce4ef]">
+                              <div className="flex items-center gap-1.5 text-[#eed1d1]">
                                 <span className="text-[#8193b2] font-semibold text-[10px] w-12 shrink-0">Teslim:</span>
                                 <span className="text-cyan-400 font-medium truncate">{cleanAdminName(res.checked_out_by)}</span>
                               </div>
                             )}
                             {res.returned_to && (
-                              <div className="flex items-center gap-1.5 text-[#dce4ef]">
+                              <div className="flex items-center gap-1.5 text-[#eed1d1]">
                                 <span className="text-[#8193b2] font-semibold text-[10px] w-12 shrink-0">İade:</span>
                                 <span className="text-white/80 font-medium truncate">{cleanAdminName(res.returned_to)}</span>
                               </div>
@@ -2046,7 +2046,7 @@ export const AdminDashboard: React.FC = () => {
                           </div>
                         </td>
                         <td className="p-3.5 max-w-xs">
-                          <div className="text-xs text-[#dce4ef] line-clamp-2">{res.purpose}</div>
+                          <div className="text-xs text-[#eed1d1] line-clamp-2">{res.purpose}</div>
                         </td>
                         <td className="p-3.5 max-w-xs">
                           {res.return_condition_notes ? (
@@ -2078,7 +2078,7 @@ export const AdminDashboard: React.FC = () => {
                                 const found = members.find(m => m.id === res.member_id || m.student_number === res.student_number);
                                 if (found) setSelectedMemberForHistory(found);
                               }}
-                              className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#dce4ef] hover:text-white border border-[#657796]/30 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                              className="px-2.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[11px] font-semibold text-[#eed1d1] hover:text-white border border-[#657796]/30 transition-colors inline-flex items-center gap-1 cursor-pointer"
                             >
                               <User className="w-3 h-3 text-[#8193b2]" />
                               <span>Üye Geçmişi</span>
@@ -2186,7 +2186,7 @@ export const AdminDashboard: React.FC = () => {
 
             <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20">
               <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Onay Bekleyen</span>
-              <div className="text-2xl font-bold text-[#dce4ef] font-club mt-1">
+              <div className="text-2xl font-bold text-[#eed1d1] font-club mt-1">
                 {darkroomReservations.filter(r => r.status === 'pending').length}
               </div>
               <span className="text-[11px] text-[#a9b9d3]">Yönetim onayı gereken</span>
@@ -2239,7 +2239,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="rounded-2xl bg-[#1c0f18] border border-[#657796]/20 overflow-hidden shadow-xl">
             {filteredDarkroomReservations.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-[#dce4ef]">
+                <table className="w-full text-left text-xs text-[#eed1d1]">
                   <thead className="bg-[#500b27] text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                     <tr>
                       <th className="p-3.5">Takip Kodu & Statü</th>
@@ -2258,7 +2258,7 @@ export const AdminDashboard: React.FC = () => {
                           <div className="font-mono font-bold text-white text-xs">{res.reservation_code}</div>
                           <div className="mt-1">
                             {res.status === 'pending' && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#eed1d1] border border-[#657796]/40">
                                 Onay Bekliyor
                               </span>
                             )}
@@ -2294,7 +2294,7 @@ export const AdminDashboard: React.FC = () => {
                           </span>
                           <div className="flex flex-wrap gap-1 mt-1 text-[9px]">
                             {res.has_washed_film_before !== undefined && (
-                              <span className={`px-1.5 py-0.5 rounded border ${res.has_washed_film_before ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/30' : 'bg-[#301322] text-[#dce4ef] border-[#657796]/40'}`}>
+                              <span className={`px-1.5 py-0.5 rounded border ${res.has_washed_film_before ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/30' : 'bg-[#301322] text-[#eed1d1] border-[#657796]/40'}`}>
                                 {res.has_washed_film_before ? 'Film Yıkamış' : 'İlk Film Banyosu'}
                               </span>
                             )}
@@ -2321,7 +2321,7 @@ export const AdminDashboard: React.FC = () => {
                             {res.process_type === 'photo_print' ? `${res.film_count} Baskı Adedi` : `${res.film_count} Rulo Film`}
                           </span>
                           {res.film_brands_and_asa && (
-                            <div className="text-[10px] text-[#dce4ef] font-mono mt-0.5 bg-[#500b27] p-1 rounded border border-[#657796]/20">
+                            <div className="text-[10px] text-[#eed1d1] font-mono mt-0.5 bg-[#500b27] p-1 rounded border border-[#657796]/20">
                               Filmler: {res.film_brands_and_asa}
                             </div>
                           )}
@@ -2338,11 +2338,11 @@ export const AdminDashboard: React.FC = () => {
                         </td>
 
                         <td className="p-3.5">
-                          <span className="text-[11px] text-[#dce4ef] block">
+                          <span className="text-[11px] text-[#eed1d1] block">
                             {res.process_type === 'film_scan' ? '🖥️ Negatif Film Tarayıcı' : res.chemical_source === 'club' ? '🧪 Kulüp Kimyasalları' : '🧴 Kendi Kimyası'}
                           </span>
                           {res.needs_assistance ? (
-                            <span className="text-[10px] text-[#dce4ef] font-bold bg-[#301322] px-1.5 py-0.5 rounded border border-[#657796]/30 inline-block mt-1">
+                            <span className="text-[10px] text-[#eed1d1] font-bold bg-[#301322] px-1.5 py-0.5 rounded border border-[#657796]/30 inline-block mt-1">
                               Rehberlik İstiyor
                             </span>
                           ) : (
@@ -2555,7 +2555,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {darkroomSlots.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-[#dce4ef]">
+                    <table className="w-full text-left text-xs text-[#eed1d1]">
                       <thead className="bg-[#500b27]/70 text-[10px] uppercase text-[#8193b2] border-b border-[#657796]/20">
                         <tr>
                           <th className="p-3.5">Tarih</th>
@@ -2628,7 +2628,7 @@ export const AdminDashboard: React.FC = () => {
                                         <span className="w-2 h-2 rounded-full bg-[#8193b2]" />
                                         <span>Rezerve Edildi</span>
                                       </div>
-                                      <div className="text-[11px] text-[#dce4ef] mt-0.5">
+                                      <div className="text-[11px] text-[#eed1d1] mt-0.5">
                                         {bookedRes?.member?.full_name || bookedRes?.student_number} ({bookedRes?.reservation_code})
                                       </div>
                                       <div className="text-[10px] text-[#8193b2]">
@@ -2685,7 +2685,7 @@ export const AdminDashboard: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Compass className="w-5 h-5 text-[#8193b2]" />
                 <h2 className="text-xl font-bold text-white font-club">Kulüp Gezileri Yönetimi</h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#dce4ef] border border-[#657796]/40">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#301322] text-[#eed1d1] border border-[#657796]/40">
                   {trips.length} Gezi
                 </span>
               </div>
@@ -2719,7 +2719,7 @@ export const AdminDashboard: React.FC = () => {
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                   <span>1. Öncelikli Aktif Üyeler:</span>
                 </div>
-                <p className="text-[#dce4ef] text-[11px] leading-relaxed">
+                <p className="text-[#eed1d1] text-[11px] leading-relaxed">
                   Gezinin başlangıç tarihinden <strong>en erken 5 gün önce</strong> kamera rezervasyonu yapabilir. Erken rezervasyon hakkına sahiptirler.
                 </p>
               </div>
@@ -2729,7 +2729,7 @@ export const AdminDashboard: React.FC = () => {
                   <span className="w-2 h-2 rounded-full bg-blue-400"></span>
                   <span>Normal Kulüp Üyeleri:</span>
                 </div>
-                <p className="text-[#dce4ef] text-[11px] leading-relaxed">
+                <p className="text-[#eed1d1] text-[11px] leading-relaxed">
                   Gezinin başlangıç tarihinden <strong>en erken 3 gün önce</strong> rezervasyon yapabilir. Aktif üyelerden 2 gün sonra rezervasyon ekranı açılır.
                 </p>
               </div>
@@ -2836,7 +2836,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="p-3.5 rounded-xl bg-[#500b27] border border-[#657796]/20 space-y-2 text-xs">
                       <div className="text-[11px] font-bold text-[#8193b2] uppercase tracking-wider flex items-center justify-between">
                         <span>Rezervasyon Açılış Takvimi:</span>
-                        <span className="text-[#dce4ef] font-mono">Bugün: {formatDateTr(getLocalDateString())}</span>
+                        <span className="text-[#eed1d1] font-mono">Bugün: {formatDateTr(getLocalDateString())}</span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
@@ -3063,12 +3063,12 @@ export const AdminDashboard: React.FC = () => {
 
             {/* SQL Guide Note */}
             <div className="p-4 rounded-xl bg-[#500b27] border border-[#657796]/20 space-y-2 text-xs">
-              <div className="flex items-center gap-2 text-[#dce4ef] font-semibold">
+              <div className="flex items-center gap-2 text-[#eed1d1] font-semibold">
                 <Info className="w-4 h-4 text-[#8193b2]" />
                 <span>Supabase Tablo Şeması Kurulumu</span>
               </div>
               <p className="text-[#a9b9d3]">
-                Supabase projenizde tablolar henüz oluşturulmadıysa, proje kökündeki <code className="text-[#dce4ef] bg-[#1c0f18] px-1.5 py-0.5 rounded">supabase/schema.sql</code> dosyasının içeriğini kopyalayıp Supabase panelinizdeki <strong>SQL Editor</strong> bölümüne yapıştırarak <strong>Run</strong> butonuna tıklayınız. Tablolar otomatik olarak RLS izinleri ve tetikleyicileriyle hazır hale gelecektir.
+                Supabase projenizde tablolar henüz oluşturulmadıysa, proje kökündeki <code className="text-[#eed1d1] bg-[#1c0f18] px-1.5 py-0.5 rounded">supabase/schema.sql</code> dosyasının içeriğini kopyalayıp Supabase panelinizdeki <strong>SQL Editor</strong> bölümüne yapıştırarak <strong>Run</strong> butonuna tıklayınız. Tablolar otomatik olarak RLS izinleri ve tetikleyicileriyle hazır hale gelecektir.
               </p>
             </div>
           </div>
@@ -3109,7 +3109,7 @@ export const AdminDashboard: React.FC = () => {
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-[#301322] text-[#dce4ef] border border-[#657796]/30">
+                    <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-[#301322] text-[#eed1d1] border border-[#657796]/30">
                       {ann.category}
                     </span>
                     <div className="flex items-center gap-2">
@@ -3131,7 +3131,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#657796]/15">
                   <button
                     onClick={() => handleTogglePinAnnouncement(ann)}
-                    className="px-2.5 py-1.5 rounded-lg bg-[#500b27] hover:bg-[#301322] text-[11px] font-semibold text-[#dce4ef] border border-[#657796]/30 transition-colors cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg bg-[#500b27] hover:bg-[#301322] text-[11px] font-semibold text-[#eed1d1] border border-[#657796]/30 transition-colors cursor-pointer"
                   >
                     {ann.is_pinned ? 'Sabitlemeyi Kaldır' : '📌 Öne Çıkar'}
                   </button>
@@ -3206,7 +3206,7 @@ export const AdminDashboard: React.FC = () => {
                   onChange={(e) => setNewAnnIsPinned(e.target.checked)}
                   className="rounded border-[#657796]/40 bg-[#500b27] text-[#657796] focus:ring-0 cursor-pointer"
                 />
-                <label htmlFor="ann_is_pinned" className="text-xs text-[#dce4ef] cursor-pointer">
+                <label htmlFor="ann_is_pinned" className="text-xs text-[#eed1d1] cursor-pointer">
                   📌 En başta sabitle (Öne Çıkar)
                 </label>
               </div>
@@ -3236,7 +3236,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-[#500b27]/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1c0f18] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-4">
             <h3 className="text-sm font-bold text-white font-club">İade Kontrolü ve Onay</h3>
-            <p className="text-xs text-[#dce4ef]">{returnModalData.equipmentName} iade alındı. Hasar/eksik parça kontrol notu:</p>
+            <p className="text-xs text-[#eed1d1]">{returnModalData.equipmentName} iade alındı. Hasar/eksik parça kontrol notu:</p>
             <input
               type="text"
               value={returnConditionNote}
@@ -3264,7 +3264,7 @@ export const AdminDashboard: React.FC = () => {
               className="w-full p-2.5 rounded-xl bg-[#500b27] border border-[#657796]/30 text-xs text-white"
             />
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setRejectModalData(null)} className="px-4 py-2 rounded-xl bg-[#301322] text-xs text-[#dce4ef]">İptal</button>
+              <button onClick={() => setRejectModalData(null)} className="px-4 py-2 rounded-xl bg-[#301322] text-xs text-[#eed1d1]">İptal</button>
               <button onClick={handleConfirmReject} className="px-4 py-2 rounded-xl bg-rose-700 text-white font-bold text-xs">Reddet</button>
             </div>
           </div>
@@ -3808,7 +3808,7 @@ export const AdminDashboard: React.FC = () => {
                         className={`p-2 rounded-xl text-[11px] font-mono border transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-rose-500/20 border-rose-500 text-rose-300 font-bold'
-                            : 'bg-[#500b27] border-[#657796]/20 text-[#dce4ef] hover:border-[#657796]/50'
+                            : 'bg-[#500b27] border-[#657796]/20 text-[#eed1d1] hover:border-[#657796]/50'
                         }`}
                       >
                         {item.no}. Seans: {item.start}-{item.end}
@@ -3894,7 +3894,7 @@ export const AdminDashboard: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowAddSlotModal(false)}
-                    className="px-4 py-2 rounded-xl bg-[#301322] text-[#dce4ef] text-xs hover:text-white cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-[#301322] text-[#eed1d1] text-xs hover:text-white cursor-pointer"
                   >
                     İptal
                   </button>
@@ -3983,7 +3983,7 @@ export const AdminDashboard: React.FC = () => {
                       >
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-[#dce4ef] text-xs">
+                            <span className="font-mono font-bold text-[#eed1d1] text-xs">
                               {res.reservation_code}
                             </span>
                             <StatusBadge status={res.status} type="reservation" size="sm" />
@@ -4011,7 +4011,7 @@ export const AdminDashboard: React.FC = () => {
                           ) : null}
                         </div>
 
-                        <div className="text-xs text-[#dce4ef] bg-[#1c0f18] p-2.5 rounded-xl border border-[#657796]/20">
+                        <div className="text-xs text-[#eed1d1] bg-[#1c0f18] p-2.5 rounded-xl border border-[#657796]/20">
                           <span className="text-[10px] text-[#8193b2] block font-bold uppercase tracking-wider">
                             Proje / Kullanım Amacı:
                           </span>
@@ -4028,7 +4028,7 @@ export const AdminDashboard: React.FC = () => {
                         {res.return_condition_notes && (
                           <div className="text-[11px] text-[#8193b2] flex items-start gap-1.5 pt-1">
                             <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                            <span>İade Notu: <strong className="text-[#dce4ef]">{res.return_condition_notes}</strong></span>
+                            <span>İade Notu: <strong className="text-[#eed1d1]">{res.return_condition_notes}</strong></span>
                           </div>
                         )}
                       </div>
@@ -4046,7 +4046,7 @@ export const AdminDashboard: React.FC = () => {
             <div className="p-4 border-t border-[#657796]/20 bg-[#500b27] flex justify-end">
               <button
                 onClick={() => setSelectedEquipmentForHistory(null)}
-                className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] text-xs font-semibold cursor-pointer"
               >
                 Kapat
               </button>
@@ -4085,7 +4085,7 @@ export const AdminDashboard: React.FC = () => {
                       </h3>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         isBoardMemberObj(selectedMemberForHistory)
-                          ? 'bg-[#657796]/20 text-[#dce4ef] border border-[#657796]/40'
+                          ? 'bg-[#657796]/20 text-[#eed1d1] border border-[#657796]/40'
                           : 'bg-[#301322] text-[#8193b2] border border-[#657796]/20'
                       }`}>
                         {isBoardMemberObj(selectedMemberForHistory) ? 'Yönetim Kurulu Üyesi' : 'Kulüp Üyesi'}
@@ -4145,7 +4145,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Member Notes if any */}
                 {selectedMemberForHistory.notes && (
-                  <div className="p-3.5 rounded-2xl bg-[#500b27] border border-[#657796]/20 text-xs text-[#dce4ef] flex items-center justify-between">
+                  <div className="p-3.5 rounded-2xl bg-[#500b27] border border-[#657796]/20 text-xs text-[#eed1d1] flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-bold text-[#8193b2] uppercase tracking-wider block">Yönetim Notu</span>
                       <span>{selectedMemberForHistory.notes}</span>
@@ -4229,7 +4229,7 @@ export const AdminDashboard: React.FC = () => {
                             </div>
                           </div>
 
-                          <div className="text-xs text-[#dce4ef]">
+                          <div className="text-xs text-[#eed1d1]">
                             <span className="text-[10px] text-[#8193b2] block uppercase font-bold">Proje / Çekim Amacı:</span>
                             <p>{res.purpose}</p>
                           </div>
@@ -4243,7 +4243,7 @@ export const AdminDashboard: React.FC = () => {
                               )}
                               <div>
                                 <span className="text-[10px] uppercase font-bold text-[#8193b2] block">İade Kontrol & Zimmet Notu</span>
-                                <span className={res.return_condition_notes.includes('gecikmeli') ? 'text-rose-300 font-semibold' : 'text-[#dce4ef]'}>
+                                <span className={res.return_condition_notes.includes('gecikmeli') ? 'text-rose-300 font-semibold' : 'text-[#eed1d1]'}>
                                   {res.return_condition_notes}
                                 </span>
                               </div>
@@ -4287,7 +4287,7 @@ export const AdminDashboard: React.FC = () => {
 
                 <button
                   onClick={() => setSelectedMemberForHistory(null)}
-                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] text-xs font-semibold cursor-pointer"
                 >
                   Kapat
                 </button>
@@ -4315,7 +4315,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in">
             <div className="flex items-center justify-between border-b border-[#657796]/20 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-[#301322] text-[#dce4ef] border border-[#657796]/40">
+                <div className="p-2 rounded-xl bg-[#301322] text-[#eed1d1] border border-[#657796]/40">
                   <Compass className="w-5 h-5" />
                 </div>
                 <div>
@@ -4391,7 +4391,7 @@ export const AdminDashboard: React.FC = () => {
               {/* Dynamic Live Calculator Box inside modal */}
               {newTripStartDate && (
                 <div className="p-3.5 rounded-xl bg-[#500b27] border border-[#657796]/40 space-y-2 text-xs">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#dce4ef] block">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#eed1d1] block">
                     ⚡ Otomatik Rezervasyon Açılış Önizlemesi:
                   </span>
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
@@ -4430,7 +4430,7 @@ export const AdminDashboard: React.FC = () => {
                   onChange={(e) => setNewTripIsActive(e.target.checked)}
                   className="rounded bg-[#500b27] border-[#657796]/30 text-[#657796]"
                 />
-                <label htmlFor="tripIsActive" className="text-xs text-[#dce4ef] cursor-pointer">
+                <label htmlFor="tripIsActive" className="text-xs text-[#eed1d1] cursor-pointer">
                   Gezi hemen yayına alınsın ve rezervasyon formunda görünsün
                 </label>
               </div>
@@ -4442,7 +4442,7 @@ export const AdminDashboard: React.FC = () => {
                     setShowAddTripModal(false);
                     setEditingTrip(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] text-xs font-semibold cursor-pointer"
                 >
                   İptal
                 </button>

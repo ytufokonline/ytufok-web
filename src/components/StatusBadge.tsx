@@ -15,7 +15,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, type = 'equipm
     switch (status as EquipmentStatus) {
       case 'available':
         return (
-          <span className={`inline-flex items-center gap-1.5 rounded-md bg-[#657796]/15 text-[#dce4ef] border border-[#657796]/30 font-medium tracking-tight ${sizeClasses}`}>
+          <span className={`inline-flex items-center gap-1.5 rounded-md bg-[#657796]/15 text-[#eed1d1] border border-[#657796]/30 font-medium tracking-tight ${sizeClasses}`}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#8193b2]"></span>
             Müsait
           </span>
@@ -29,7 +29,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, type = 'equipm
         );
       case 'in_use':
         return (
-          <span className={`inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] text-[#dce4ef] border border-white/[0.1] font-medium ${sizeClasses}`}>
+          <span className={`inline-flex items-center gap-1.5 rounded-md bg-white/[0.06] text-[#eed1d1] border border-white/[0.1] font-medium ${sizeClasses}`}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#8193b2]"></span>
             Zimmette
           </span>
@@ -62,14 +62,14 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, type = 'equipm
       );
     case 'in_use':
       return (
-        <span className={`inline-flex items-center gap-1.5 rounded-md bg-[#657796]/15 text-[#dce4ef] border border-[#657796]/30 font-medium ${sizeClasses}`}>
+        <span className={`inline-flex items-center gap-1.5 rounded-md bg-[#657796]/15 text-[#eed1d1] border border-[#657796]/30 font-medium ${sizeClasses}`}>
           <span className="w-1.5 h-1.5 rounded-full bg-[#8193b2]"></span>
           Teslim Edildi
         </span>
       );
     case 'returned':
       return (
-        <span className={`inline-flex items-center gap-1.5 rounded-md bg-white/[0.05] text-[#dce4ef] border border-white/[0.08] font-medium ${sizeClasses}`}>
+        <span className={`inline-flex items-center gap-1.5 rounded-md bg-white/[0.05] text-[#eed1d1] border border-white/[0.08] font-medium ${sizeClasses}`}>
           <Check className="w-3 h-3 text-[#8193b2]" />
           İade Alındı
         </span>

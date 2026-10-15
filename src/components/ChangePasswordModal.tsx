@@ -121,7 +121,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-[#657796]/20 bg-[#500b27] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#301322] border border-[#657796]/40 flex items-center justify-center text-[#dce4ef] shadow-inner">
+            <div className="w-10 h-10 rounded-2xl bg-[#301322] border border-[#657796]/40 flex items-center justify-center text-[#eed1d1] shadow-inner">
               <KeyRound className="w-5 h-5 text-[#8193b2]" />
             </div>
             <div>
@@ -147,7 +147,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Manager Selector / Display */}
           <div>
-            <label className="block text-xs font-semibold text-[#dce4ef] mb-2 flex items-center gap-1.5">
+            <label className="block text-xs font-semibold text-[#eed1d1] mb-2 flex items-center gap-1.5">
               <User className="w-3.5 h-3.5 text-[#8193b2]" />
               <span>İşlem Yapılacak Yönetici</span>
             </label>
@@ -198,7 +198,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
           {/* Current PIN Field */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-[#dce4ef]">
+              <label className="text-xs font-semibold text-[#eed1d1]">
                 Mevcut Şifre
               </label>
             </div>
@@ -227,7 +227,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
           {/* New PIN Field */}
           <div>
-            <label className="block text-xs font-semibold text-[#dce4ef] mb-1.5">
+            <label className="block text-xs font-semibold text-[#eed1d1] mb-1.5">
               Yeni Şifre
             </label>
             <div className="relative">
@@ -254,7 +254,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
           {/* Confirm New PIN Field */}
           <div>
-            <label className="block text-xs font-semibold text-[#dce4ef] mb-1.5">
+            <label className="block text-xs font-semibold text-[#eed1d1] mb-1.5">
               Yeni Şifre (Tekrar)
             </label>
             <div className="relative">
@@ -293,7 +293,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#eed1d1] hover:text-white text-xs font-semibold transition-colors cursor-pointer"
             >
               Vazgeç
             </button>

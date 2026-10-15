@@ -63,13 +63,14 @@
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  /* Headings & Brand elements strictly use Satoshi (Bold) */
+  /* Headings & Brand elements strictly use Satoshi (Bold) & #eed1d1 */
   h1, h2, h3, h4, h5, h6,
   .font-club,
   .font-heading,
   .font-satoshi {
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     letter-spacing: -0.02em;
+    color: #eed1d1;
   }
 
   /* Monospace overrides */

@@ -155,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer ${
                           activeTab === 'admin'
                             ? 'bg-[#301322] text-white font-semibold'
-                            : 'text-[#dce4ef] hover:text-white hover:bg-[#301322]'
+                            : 'text-[#eed1d1] hover:text-white hover:bg-[#301322]'
                         }`}
                       >
                         <span className="flex items-center gap-2">
@@ -176,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             setProfileDropdownOpen(false);
                             onSwitchProfile();
                           }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#dce4ef] hover:text-white hover:bg-[#301322] transition-colors cursor-pointer"
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#eed1d1] hover:text-white hover:bg-[#301322] transition-colors cursor-pointer"
                         >
                           <ArrowRightLeft className="w-4 h-4 text-[#8193b2]" />
                           <span>Başka Profile Geçiş Yap</span>
@@ -295,7 +295,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={(e) => handleNavClick('admin', e)}
-                  className="px-2.5 py-1 rounded-lg bg-[#301322] text-[#dce4ef] text-[11px] font-semibold border border-[#657796]/30"
+                  className="px-2.5 py-1 rounded-lg bg-[#301322] text-[#eed1d1] text-[11px] font-semibold border border-[#657796]/30"
                 >
                   Panele Git
                 </button>
@@ -309,7 +309,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setMobileMenuOpen(false);
                       onSwitchProfile();
                     }}
-                    className="px-3 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-xs font-semibold text-[#dce4ef] border border-[#657796]/30 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="px-3 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-xs font-semibold text-[#eed1d1] border border-[#657796]/30 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <ArrowRightLeft className="w-3.5 h-3.5 text-[#8193b2]" />
                     <span>Profil Değiştir</span>

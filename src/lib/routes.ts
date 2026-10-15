@@ -1,9 +1,10 @@
-export type TabType = 'home' | 'equipment' | 'guide' | 'reserve' | 'darkroom' | 'status' | 'admin';
+export type TabType = 'home' | 'equipment' | 'guide' | 'tips' | 'reserve' | 'darkroom' | 'status' | 'admin';
 
 export const TAB_PATHS: Record<TabType, string> = {
   home: '/',
   equipment: '/ekipmanlar',
   guide: '/rehber',
+  tips: '/faydali-bilgiler',
   reserve: '/rezervasyon',
   darkroom: '/karanlik-oda',
   status: '/talep-sorgula',
@@ -14,6 +15,7 @@ export const TAB_TITLES: Record<TabType, string> = {
   home: 'YTÜFOK | Fotoğraf Kulübü Rezervasyon & Ekipman Sistemi',
   equipment: 'Kamera & Lens Havuzu | YTÜFOK',
   guide: 'Çekim & Ekipman Rehberi | YTÜFOK',
+  tips: 'Faydalı Bilgiler & Film Rehberi | YTÜFOK',
   reserve: 'Ekipman Rezervasyonu Yap | YTÜFOK',
   darkroom: 'Karanlık Oda Rezervasyonu | YTÜFOK',
   status: 'Talep & Rezervasyon Sorgulama | YTÜFOK',
@@ -33,6 +35,13 @@ export const PATH_TO_TAB: Record<string, TabType> = {
   '/cekim-rehberi': 'guide',
   '/ekipman-rehberi': 'guide',
   '/guide': 'guide',
+  '/faydali-bilgiler': 'tips',
+  '/faydalibilgiler': 'tips',
+  '/faydali-bilgi': 'tips',
+  '/bilgiler': 'tips',
+  '/film-rehberi': 'tips',
+  '/film-nedir': 'tips',
+  '/tips': 'tips',
   '/rezervasyon': 'reserve',
   '/rezervasyon-yap': 'reserve',
   '/reserve': 'reserve',

@@ -39,6 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'home' as const, label: 'Ana Sayfa', path: TAB_PATHS.home },
     { id: 'equipment' as const, label: 'Ekipmanlar', path: TAB_PATHS.equipment },
     { id: 'guide' as const, label: 'Çekim Rehberi', path: TAB_PATHS.guide },
+    { id: 'tips' as const, label: 'Faydalı Bilgiler', path: TAB_PATHS.tips },
     { id: 'reserve' as const, label: 'Rezervasyon', path: TAB_PATHS.reserve },
     { id: 'darkroom' as const, label: 'Karanlık Oda', path: TAB_PATHS.darkroom },
     { id: 'status' as const, label: 'Talep Takibi', path: TAB_PATHS.status },
@@ -78,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </a>
 
           {/* Desktop Nav - Minimalist text links */}
-          <nav className="hidden md:flex items-center gap-7">
+          <nav className="hidden md:flex items-center gap-5 lg:gap-7">
             {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (

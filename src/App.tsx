@@ -9,6 +9,7 @@ import { ReservationStatusPage } from './pages/ReservationStatusPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { SwitchProfileModal } from './components/SwitchProfileModal';
 import { EquipmentGuidePage } from './pages/EquipmentGuidePage';
+import { UsefulInfoPage } from './pages/UsefulInfoPage';
 import { AdminProfile } from './types';
 import { api } from './lib/api';
 import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
@@ -168,6 +169,12 @@ export function App() {
           <EquipmentGuidePage
             onNavigate={handleNavigate}
             onSelectEquipmentToReserve={handleSelectEquipmentToReserve}
+          />
+        )}
+
+        {activeTab === 'tips' && (
+          <UsefulInfoPage
+            onNavigate={handleNavigate}
           />
         )}
 

@@ -169,7 +169,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               </select>
             ) : selectedAdmin ? (
               <div className="p-3.5 rounded-2xl bg-[#12080f] border border-[#657796]/30 flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${selectedAdmin.avatar_color} flex items-center justify-center text-white text-xs font-bold font-club shadow-inner border border-white/10 shrink-0`}>
+                <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
                   {selectedAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
                 <div>
@@ -300,10 +300,10 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !currentPin || !newPin || !confirmPin}
-              className={`px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md ${
+              className={`px-6 py-2.5 rounded-xl text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
                 !isSubmitting && currentPin && newPin && confirmPin
-                  ? 'bg-gradient-to-r from-[#657796] via-[#4e3b52] to-[#301322] hover:from-[#8193b2] hover:to-[#421d31] text-white border border-[#8193b2]/30 shadow-lg'
-                  : 'bg-[#301322] text-[#8193b2] border border-[#657796]/30 cursor-not-allowed opacity-60'
+                  ? 'bg-[#1e0e1b] hover:bg-[#281324] text-white border border-white/20 hover:border-white/40 shadow-lg'
+                  : 'bg-white/5 text-white/30 border border-white/10 cursor-not-allowed opacity-60'
               }`}
             >
               {isSubmitting ? (

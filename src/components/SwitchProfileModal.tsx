@@ -126,7 +126,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                   className="p-3.5 flex items-center justify-between gap-3 cursor-pointer"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${profile.avatar_color} flex items-center justify-center text-white text-xs font-bold font-club shadow-md shrink-0 border border-white/10`}>
+                    <div className="w-10 h-10 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-md shrink-0 border border-white/15">
                       {profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
                     <div className="min-w-0">
@@ -214,7 +214,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                       <button
                         type="submit"
                         disabled={isSubmitting || !pinInput.trim()}
-                        className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 disabled:opacity-50 text-white font-bold text-xs transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+                        className="px-4 py-1.5 rounded-lg bg-[#1e0e1b] hover:bg-[#281324] disabled:opacity-50 text-white border border-white/20 hover:border-white/40 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
                       >
                         <span>Hesaba Geç</span>
                         <ArrowRight className="w-3.5 h-3.5" />

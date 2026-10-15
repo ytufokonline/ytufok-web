@@ -112,7 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'bg-[#1c0f18] hover:bg-[#251520] border-[#657796]/30 text-white'
                   }`}
                 >
-                  <div className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${activeAdmin.avatar_color} flex items-center justify-center text-white text-[11px] font-bold font-club shadow-inner border border-white/10 shrink-0`}>
+                  <div className="w-7 h-7 rounded-lg bg-[#241120] flex items-center justify-center text-white text-[11px] font-mono font-medium shadow-inner border border-white/15 shrink-0">
                     {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div className="text-left leading-tight hidden lg:block">
@@ -230,7 +230,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   activeTab === 'admin' ? 'bg-[#301322] border-[#657796]' : 'bg-[#1c0f18] border-[#657796]/30'
                 }`}
               >
-                <div className={`w-6 h-6 rounded-lg bg-gradient-to-tr ${activeAdmin.avatar_color} flex items-center justify-center text-white text-[10px] font-bold font-club`}>
+                <div className="w-6 h-6 rounded-lg bg-[#241120] flex items-center justify-center text-white text-[10px] font-mono font-medium border border-white/15">
                   {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
               </button>
@@ -283,7 +283,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="pt-3 border-t border-white/[0.08] space-y-2">
               <div className="p-3 rounded-2xl bg-[#1c0f18] border border-[#657796]/30 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${activeAdmin.avatar_color} flex items-center justify-center text-white text-xs font-bold font-club shadow-inner border border-white/10 shrink-0`}>
+                  <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
                     {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div className="min-w-0">

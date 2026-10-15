@@ -1005,7 +1005,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           {activeAdmin && (
             <div className="flex items-center gap-3 bg-[#1c0f18] border border-[#657796]/30 px-3.5 py-2 rounded-2xl shadow-md">
-              <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${activeAdmin.avatar_color} flex items-center justify-center text-white text-xs font-bold font-club shadow-inner border border-white/10 shrink-0`}>
+              <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
                 {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
               </div>
               <div>
@@ -1123,43 +1123,43 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[#657796]/20 pb-2">
+      <div className="flex flex-wrap items-center gap-2 border-b border-white/10 pb-3">
         <button
           onClick={() => setActiveTab('reservations')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'reservations' ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm' : 'text-[#a9b9d3] hover:text-white'
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+            activeTab === 'reservations' ? 'bg-white text-black font-semibold shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           Talepler {pendingCount > 0 && `(${pendingCount})`}
         </button>
         <button
           onClick={() => setActiveTab('tracking')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'tracking' ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm' : 'text-[#a9b9d3] hover:text-white'
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+            activeTab === 'tracking' ? 'bg-white text-black font-semibold shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          Zimmet Takibi (Kamera Kimde?)
+          Zimmet Takibi
         </button>
         <button
           onClick={() => setActiveTab('equipment')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'equipment' ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm' : 'text-[#a9b9d3] hover:text-white'
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+            activeTab === 'equipment' ? 'bg-white text-black font-semibold shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           Ekipman Envanteri
         </button>
         <button
           onClick={() => setActiveTab('members')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'members' ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm' : 'text-[#a9b9d3] hover:text-white'
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+            activeTab === 'members' ? 'bg-white text-black font-semibold shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           Üye Whitelist & Ceza
         </button>
         <button
           onClick={() => setActiveTab('history')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-            activeTab === 'history' ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm' : 'text-[#a9b9d3] hover:text-white'
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            activeTab === 'history' ? 'bg-white text-black font-semibold shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           <History className="w-3.5 h-3.5" />
@@ -1167,41 +1167,41 @@ export const AdminDashboard: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('darkroom')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'darkroom' 
-              ? 'bg-gradient-to-r from-rose-900 to-[#4e3b52] text-white shadow-sm border border-rose-500/40' 
-              : 'text-[#a9b9d3] hover:text-white'
+              ? 'bg-white text-black font-semibold shadow-sm' 
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <Droplets className="w-3.5 h-3.5 text-rose-400" />
+          <Droplets className="w-3.5 h-3.5" />
           <span>Karanlık Oda ({darkroomReservations.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('trips')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'trips'
-              ? 'bg-gradient-to-r from-[#4b253b] via-[#301322] to-[#657796] text-white shadow-sm border border-[#657796]/40'
-              : 'text-[#a9b9d3] hover:text-white'
+              ? 'bg-white text-black font-semibold shadow-sm'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <Compass className="w-3.5 h-3.5 text-[#8193b2]" />
+          <Compass className="w-3.5 h-3.5" />
           <span>Kulüp Gezileri ({trips.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('announcements')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'announcements'
-              ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm'
-              : 'text-[#a9b9d3] hover:text-white'
+              ? 'bg-white text-black font-semibold shadow-sm'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
-          <Bell className="w-3.5 h-3.5 text-[#8193b2]" />
+          <Bell className="w-3.5 h-3.5" />
           <span>Duyurular & Notlar ({announcements.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('supabase')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeTab === 'supabase' ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm' : 'text-[#a9b9d3] hover:text-white'
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+            activeTab === 'supabase' ? 'bg-white text-black font-semibold shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/5'
           }`}
         >
           Supabase SQL Kılavuzu
@@ -1333,13 +1333,13 @@ export const AdminDashboard: React.FC = () => {
                           <>
                             <button
                               onClick={() => handleApprove(r.id)}
-                              className="px-2.5 py-1 rounded bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold text-xs hover:from-[#7589aa] hover:to-[#5e4766]"
+                              className="px-2.5 py-1 rounded-lg bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                             >
                               Onayla
                             </button>
                             <button
                               onClick={() => setRejectModalData({ id: r.id, code: r.reservation_code })}
-                              className="px-2.5 py-1 rounded bg-[#301322] text-rose-300 text-xs hover:bg-[#421d31] border border-rose-500/30"
+                              className="px-2.5 py-1 rounded-lg bg-[#1c0d18] text-rose-300 text-xs hover:bg-rose-950/40 border border-rose-500/30 transition-colors cursor-pointer"
                             >
                               Reddet
                             </button>
@@ -1348,7 +1348,7 @@ export const AdminDashboard: React.FC = () => {
                         {r.status === 'approved' && (
                           <button
                             onClick={() => handleDeliver(r.id)}
-                            className="px-2.5 py-1 rounded bg-[#657796] text-white font-bold text-xs"
+                            className="px-2.5 py-1 rounded-lg bg-white text-black font-semibold text-xs transition-colors cursor-pointer"
                           >
                             Teslim Et
                           </button>
@@ -1356,7 +1356,7 @@ export const AdminDashboard: React.FC = () => {
                         {r.status === 'in_use' && (
                           <button
                             onClick={() => setReturnModalData({ id: r.id, equipmentName: r.equipment?.name || 'Ekipman' })}
-                            className="px-2.5 py-1 rounded bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold text-xs"
+                            className="px-2.5 py-1 rounded-lg bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                           >
                             İade Al
                           </button>
@@ -1422,7 +1422,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                   <button
                     onClick={() => setReturnModalData({ id: res.id, equipmentName: res.equipment?.name || 'Ekipman' })}
-                    className="w-full py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold text-xs hover:from-[#7589aa] hover:to-[#5e4766] shadow"
+                    className="w-full py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     İade Alındı Olarak İşaretle
                   </button>
@@ -1440,7 +1440,7 @@ export const AdminDashboard: React.FC = () => {
             <h3 className="text-sm font-bold text-white font-club">Kulüp Demirbaş Listesi</h3>
             <button
               onClick={() => setShowAddEquipmentModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold text-xs flex items-center gap-1.5 shadow"
+              className="px-3.5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Yeni Ekipman Ekle</span>
@@ -1528,7 +1528,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <button
               onClick={() => setShowAddMemberModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 text-white font-bold text-xs flex items-center gap-1.5 shadow cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>Üye Ekle</span>
@@ -1536,65 +1536,65 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Members Search & Filter Toolbar */}
-          <div className="p-3.5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="p-3.5 rounded-2xl bg-[#1c0f18] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="relative w-full sm:w-80">
-              <Search className="w-3.5 h-3.5 text-[#8193b2] absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="İsim, öğrenci no veya üniversite ara..."
                 value={memberSearchQuery}
                 onChange={(e) => setMemberSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#12080f] border border-white/10 text-white text-xs placeholder-white/30"
               />
             </div>
             <div className="flex flex-wrap items-center gap-1.5 text-xs w-full sm:w-auto justify-end">
-              <span className="text-[11px] text-[#8193b2] mr-1 hidden sm:inline">Filtre:</span>
+              <span className="text-[11px] text-white/40 mr-1 hidden sm:inline">Filtre:</span>
               <button
                 onClick={() => { setMemberStatusFilter('all'); setMemberTypeFilter('all'); }}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberStatusFilter === 'all' && memberTypeFilter === 'all'
-                    ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm'
-                    : 'bg-[#12080f] text-[#a9b9d3] hover:text-white border border-[#657796]/20'
+                    ? 'bg-white text-black font-semibold shadow-sm'
+                    : 'bg-[#12080f] text-white/60 hover:text-white border border-white/10'
                 }`}
               >
                 Tümü ({members.length})
               </button>
               <button
                 onClick={() => { setMemberStatusFilter('active'); setMemberTypeFilter('active'); }}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberTypeFilter === 'active'
-                    ? 'bg-gradient-to-r from-emerald-700 to-[#4e3b52] text-white shadow-sm'
-                    : 'bg-[#12080f] text-emerald-300 hover:text-white border border-emerald-500/20'
+                    ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/30'
+                    : 'bg-[#12080f] text-emerald-400/70 hover:text-emerald-300 border border-emerald-500/20'
                 }`}
               >
                 ★ Aktif Üyeler (5 Gün)
               </button>
               <button
                 onClick={() => { setMemberStatusFilter('all'); setMemberTypeFilter('normal'); }}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberTypeFilter === 'normal'
-                    ? 'bg-gradient-to-r from-blue-700 to-[#4e3b52] text-white shadow-sm'
-                    : 'bg-[#12080f] text-blue-300 hover:text-white border border-blue-500/20'
+                    ? 'bg-blue-950/80 text-blue-300 border border-blue-500/30'
+                    : 'bg-[#12080f] text-blue-400/70 hover:text-blue-300 border border-blue-500/20'
                 }`}
               >
                 Normal Üyeler (3 Gün)
               </button>
               <button
                 onClick={() => { setMemberStatusFilter('all'); setMemberTypeFilter('honorary'); }}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberTypeFilter === 'honorary'
-                    ? 'bg-gradient-to-r from-purple-700 to-[#4e3b52] text-white shadow-sm'
-                    : 'bg-[#12080f] text-purple-300 hover:text-white border border-purple-500/20'
+                    ? 'bg-white/20 text-white border border-white/30'
+                    : 'bg-[#12080f] text-white/60 hover:text-white border border-white/10'
                 }`}
               >
                 ★ Fahri Üyeler
               </button>
               <button
                 onClick={() => { setMemberStatusFilter('suspended'); setMemberTypeFilter('all'); }}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                   memberStatusFilter === 'suspended'
-                    ? 'bg-rose-700 text-white shadow-sm'
-                    : 'bg-[#12080f] text-rose-300 hover:text-white border border-rose-500/20'
+                    ? 'bg-rose-950/80 text-rose-300 border border-rose-500/30'
+                    : 'bg-[#12080f] text-rose-400/70 hover:text-rose-300 border border-rose-500/20'
                 }`}
               >
                 Askıda / Cezalı
@@ -1651,13 +1651,13 @@ export const AdminDashboard: React.FC = () => {
                             <span>Denetim Kurulu Üyesi</span>
                           </span>
                         ) : m.member_type === 'honorary_active' ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1 w-fit">
-                            <Award className="w-3 h-3 text-purple-400" />
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/10 text-white/80 border border-white/20 flex items-center gap-1 w-fit">
+                            <Award className="w-3 h-3 text-white/70" />
                             <span>★ Fahri Aktif (5 Gün)</span>
                           </span>
                         ) : m.member_type === 'honorary' ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1 w-fit">
-                            <Award className="w-3 h-3 text-purple-400" />
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/10 text-white/80 border border-white/20 flex items-center gap-1 w-fit">
+                            <Award className="w-3 h-3 text-white/70" />
                             <span>Fahri Üye (3 Gün)</span>
                           </span>
                         ) : m.member_type === 'normal' ? (
@@ -1802,7 +1802,7 @@ export const AdminDashboard: React.FC = () => {
               )}
               <button
                 onClick={handleExportHistoryCSV}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shrink-0 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <Download className="w-4 h-4" />
                 <span>CSV Olarak Dışa Aktar</span>
@@ -2036,7 +2036,7 @@ export const AdminDashboard: React.FC = () => {
                             {res.returned_to && (
                               <div className="flex items-center gap-1.5 text-[#dce4ef]">
                                 <span className="text-[#8193b2] font-semibold text-[10px] w-12 shrink-0">İade:</span>
-                                <span className="text-purple-400 font-medium truncate">{cleanAdminName(res.returned_to)}</span>
+                                <span className="text-white/80 font-medium truncate">{cleanAdminName(res.returned_to)}</span>
                               </div>
                             )}
                             {!res.approved_by && !res.checked_out_by && !res.returned_to && (
@@ -2126,7 +2126,7 @@ export const AdminDashboard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowAddSlotModal(true)}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 via-[#4e3b52] to-[#657796] hover:opacity-95 text-white text-xs font-bold shadow-lg shadow-rose-950/40 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Yeni Seans Aç</span>
@@ -2325,7 +2325,7 @@ export const AdminDashboard: React.FC = () => {
                             </div>
                           )}
                           {res.paper_size && (
-                            <div className="text-[10px] text-purple-300 font-mono mt-0.5">
+                            <div className="text-[10px] text-white/60 font-mono mt-0.5">
                               Kağıt: {res.paper_size}
                             </div>
                           )}
@@ -2482,12 +2482,12 @@ export const AdminDashboard: React.FC = () => {
                   <span className="text-[11px] text-[#a9b9d3]">Öğrencilerce ayırtılan seans</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 flex flex-col justify-between">
-                  <span className="text-[#8193b2] text-[10px] uppercase font-bold block">Hızlı Aksiyon</span>
+                <div className="p-4 rounded-2xl bg-[#1c0f18] border border-white/10 flex flex-col justify-between">
+                  <span className="text-white/40 text-[10px] uppercase font-mono block">Hızlı Aksiyon</span>
                   <button
                     type="button"
                     onClick={() => setShowAddSlotModal(true)}
-                    className="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-[#657796] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow hover:opacity-95 cursor-pointer"
+                    className="w-full mt-2 py-2 px-3 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Seans Tanımla</span>
@@ -2496,14 +2496,14 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {/* Hızlı Toplu Seans Açma Çubuğu */}
-              <div className="p-5 rounded-2xl bg-[#1c0f18] border border-[#657796]/25 space-y-3">
+              <div className="p-5 rounded-2xl bg-[#1c0f18] border border-white/10 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <h4 className="text-sm font-bold text-white font-club flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-rose-400" />
+                    <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-white/60" />
                       <span>Hızlı Toplu Seans Açıcı (Standart 6 Seans)</span>
                     </h4>
-                    <p className="text-xs text-[#a9b9d3] mt-0.5">
+                    <p className="text-xs text-white/50 mt-0.5">
                       Kulüp nöbetinizin olduğu güne 10:00 - 19:30 arasındaki tüm 1,5 saatlik seansları tek tıkla açın:
                     </p>
                   </div>
@@ -2517,7 +2517,7 @@ export const AdminDashboard: React.FC = () => {
                           handleCreateBulkStandardSlots(todayStr, 'all');
                         }
                       }}
-                      className="px-3.5 py-1.5 rounded-xl bg-[#301322] hover:bg-[#421d31] text-rose-300 border border-rose-500/30 text-xs font-semibold transition-all cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-rose-300 border border-rose-500/30 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer"
                     >
                       Bugün İçin Aç (6 Seans)
                     </button>
@@ -2530,7 +2530,7 @@ export const AdminDashboard: React.FC = () => {
                           handleCreateBulkStandardSlots(tomorrow, 'all');
                         }
                       }}
-                      className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#4e3b52] to-[#301322] hover:opacity-95 text-white border border-[#657796]/40 text-xs font-bold transition-all cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer"
                     >
                       Yarın İçin Aç (6 Seans)
                     </button>
@@ -2582,10 +2582,10 @@ export const AdminDashboard: React.FC = () => {
                               : 'Yalnızca Kağıda Fotoğraf Baskısı';
 
                             const badgeColor = slot.allowed_process === 'all'
-                              ? 'bg-purple-950/60 text-purple-300 border-purple-500/30'
+                              ? 'bg-white/10 text-white border-white/20'
                               : slot.allowed_process === 'film_wash'
                               ? 'bg-rose-950/60 text-rose-300 border-rose-500/30'
-                              : 'bg-indigo-950/60 text-indigo-300 border-indigo-500/30';
+                              : 'bg-white/10 text-white/80 border-white/20';
 
                             return (
                               <tr key={slot.id} className="hover:bg-[#301322]/30 transition-colors">
@@ -2699,7 +2699,7 @@ export const AdminDashboard: React.FC = () => {
                 resetTripForm();
                 setShowAddTripModal(true);
               }}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:from-[#7589aa] hover:to-[#5e4766] text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-[#301322]/50 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Yeni Gezi Tanımla</span>
@@ -2707,9 +2707,9 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Rules Summary Banner */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#1c0f18] to-[#12080f] border border-[#657796]/40 shadow-xl space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#dce4ef]">
-              <Sparkles className="w-4 h-4 text-[#8193b2]" />
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#140911] border border-white/10 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-semibold text-white/90">
+              <Sparkles className="w-4 h-4 text-white/60" />
               <span>Gezilerde Kamera Rezervasyon Kuralları (Otomatik Sistem Doğrulaması)</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -2736,28 +2736,28 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Search & Filter Toolbar */}
-          <div className="p-3.5 rounded-2xl bg-[#1c0f18] border border-[#657796]/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="p-3.5 rounded-2xl bg-[#1c0f18] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="relative w-full sm:w-80">
-              <Search className="w-3.5 h-3.5 text-[#8193b2] absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Gezi adı, konum veya rota ara..."
                 value={tripSearchQuery}
                 onChange={(e) => setTripSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white text-xs placeholder-[#8193b2]"
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#12080f] border border-white/10 text-white text-xs placeholder-white/30"
               />
             </div>
 
             <div className="flex items-center gap-1.5 text-xs w-full sm:w-auto justify-end">
-              <span className="text-[11px] text-[#8193b2] mr-1 hidden sm:inline">Durum:</span>
+              <span className="text-[11px] text-white/40 mr-1 hidden sm:inline">Durum:</span>
               {(['all', 'active', 'passive'] as const).map(filter => (
                 <button
                   key={filter}
                   onClick={() => setTripFilter(filter)}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                  className={`px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer ${
                     tripFilter === filter
-                      ? 'bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white shadow-sm'
-                      : 'bg-[#12080f] text-[#a9b9d3] hover:text-white border border-[#657796]/20'
+                      ? 'bg-white text-black font-semibold shadow-sm'
+                      : 'bg-[#12080f] text-white/60 hover:text-white border border-white/10'
                   }`}
                 >
                   {filter === 'all' ? `Tümü (${trips.length})` : filter === 'active' ? 'Aktif Geziler' : 'Pasif / Taslak'}
@@ -3033,7 +3033,7 @@ export const AdminDashboard: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isTestingSupabase}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 disabled:opacity-50 text-white font-bold transition-all shadow-md cursor-pointer flex items-center gap-2"
+                  className="px-4 py-2.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   {isTestingSupabase ? (
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -3047,7 +3047,7 @@ export const AdminDashboard: React.FC = () => {
                   type="button"
                   onClick={handleSyncEquipmentToSupabase}
                   disabled={isSyncingSupabase || !supabaseConfig.isConfigured}
-                  className="px-4 py-2.5 rounded-xl bg-[#301322] hover:bg-[#421d31] disabled:opacity-50 text-[#dce4ef] hover:text-white font-medium transition-colors border border-[#657796]/30 cursor-pointer flex items-center gap-2"
+                  className="px-4 py-2.5 rounded-xl bg-[#1c0d18] hover:bg-[#281323] disabled:opacity-50 text-white font-mono uppercase tracking-wider text-xs transition-colors border border-white/20 cursor-pointer flex items-center gap-2"
                   title="Mevcut envanteri Supabase 'equipment' tablosuna aktarır veya günceller."
                 >
                   {isSyncingSupabase ? (
@@ -3092,7 +3092,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <button
               onClick={() => setShowAddAnnouncementModal(true)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shrink-0 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Yeni Not / Duyuru Ekle</span>
@@ -3220,7 +3220,7 @@ export const AdminDashboard: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:opacity-95 shadow-md cursor-pointer"
+                  className="px-5 py-2 rounded-xl text-xs font-mono uppercase tracking-wider text-white bg-[#1c0d18] hover:bg-[#281323] border border-white/20 transition-colors cursor-pointer"
                 >
                   Yayınla
                 </button>
@@ -3233,18 +3233,18 @@ export const AdminDashboard: React.FC = () => {
       {/* Return Modal */}
       {returnModalData && (
         <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-[#1c0f18] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-4">
             <h3 className="text-sm font-bold text-white font-club">İade Kontrolü ve Onay</h3>
             <p className="text-xs text-[#dce4ef]">{returnModalData.equipmentName} iade alındı. Hasar/eksik parça kontrol notu:</p>
             <input
               type="text"
               value={returnConditionNote}
               onChange={(e) => setReturnConditionNote(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-xs text-white"
+              className="w-full p-2.5 rounded-xl bg-[#12080f] border border-white/10 text-xs text-white"
             />
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setReturnModalData(null)} className="px-4 py-2 rounded-xl bg-[#301322] text-xs text-[#dce4ef]">Vazgeç</button>
-              <button onClick={handleConfirmReturn} className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold text-xs">İadeyi Tamamla</button>
+              <button onClick={() => setReturnModalData(null)} className="px-4 py-2 rounded-xl bg-[#1c0d18] text-xs text-white/70 hover:text-white cursor-pointer">Vazgeç</button>
+              <button onClick={handleConfirmReturn} className="px-4 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">İadeyi Tamamla</button>
             </div>
           </div>
         </div>
@@ -3318,8 +3318,8 @@ export const AdminDashboard: React.FC = () => {
                 required
               />
               <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setShowAddEquipmentModal(false)} className="px-3 py-1.5 rounded-lg bg-[#301322] text-[#dce4ef]">İptal</button>
-                <button type="submit" className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold">Kaydet</button>
+                <button type="button" onClick={() => setShowAddEquipmentModal(false)} className="px-3 py-1.5 rounded-lg bg-[#1c0d18] text-white/70 hover:text-white cursor-pointer text-xs">İptal</button>
+                <button type="submit" className="px-4 py-1.5 rounded-lg bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">Kaydet</button>
               </div>
             </form>
           </div>
@@ -3478,14 +3478,14 @@ export const AdminDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setEditingEquipment(null)}
-                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#1c0d18] text-white/70 hover:text-white transition-colors cursor-pointer text-xs"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingEquipment}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 disabled:opacity-50 text-white font-bold transition-all shadow-md cursor-pointer flex items-center gap-2"
+                  className="px-5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-2"
                 >
                   {isSavingEquipment && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   {isSavingEquipment ? 'Veritabanına Kaydediliyor...' : 'Değişiklikleri Kaydet'}
@@ -3499,7 +3499,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Add Member Modal */}
       {showAddMemberModal && (
         <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-2xl max-w-md w-full p-6 space-y-3">
+          <div className="bg-[#1c0f18] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-3">
             <h3 className="text-sm font-bold text-white font-club">Whitelist'e Üye Ekle</h3>
             <form onSubmit={handleAddMember} className="space-y-3 text-xs">
               <input
@@ -3507,7 +3507,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Öğrenci Numarası (örn: 23015099)"
                 value={newMemberNo}
                 onChange={e => setNewMemberNo(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono"
+                className="w-full p-2 rounded-xl bg-[#12080f] border border-white/10 text-white font-mono"
                 required
               />
               <input
@@ -3515,7 +3515,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Ad Soyad"
                 value={newMemberName}
                 onChange={e => setNewMemberName(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white"
+                className="w-full p-2 rounded-xl bg-[#12080f] border border-white/10 text-white"
                 required
               />
               <input
@@ -3523,14 +3523,14 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Üniversite (varsayılan: Yıldız Teknik Üniversitesi)"
                 value={newMemberDept}
                 onChange={e => setNewMemberDept(e.target.value)}
-                className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white"
+                className="w-full p-2 rounded-xl bg-[#12080f] border border-white/10 text-white"
               />
               <div className="space-y-1">
-                <label className="text-[11px] text-[#a9b9d3] block">Üye Statüsü / Gezi Önceliği:</label>
+                <label className="text-[11px] text-white/50 block">Üye Statüsü / Gezi Önceliği:</label>
                 <select
                   value={newMemberType}
                   onChange={e => setNewMemberType(e.target.value as 'active' | 'normal' | 'honorary' | 'honorary_active')}
-                  className="w-full p-2 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white"
+                  className="w-full p-2 rounded-xl bg-[#12080f] border border-white/10 text-white"
                 >
                   <option value="active">★ Aktif Üye (Geziden 5 gün önce & Bireysel Çekim)</option>
                   <option value="normal">Normal Üye (Geziden 3 gün önce rezervasyon hakkı)</option>
@@ -3539,8 +3539,8 @@ export const AdminDashboard: React.FC = () => {
                 </select>
               </div>
               <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setShowAddMemberModal(false)} className="px-3 py-1.5 rounded-lg bg-[#301322] text-[#dce4ef]">İptal</button>
-                <button type="submit" className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#657796] to-[#4e3b52] text-white font-bold">Ekle</button>
+                <button type="button" onClick={() => setShowAddMemberModal(false)} className="px-3 py-1.5 rounded-lg bg-[#1c0d18] text-white/70 hover:text-white cursor-pointer text-xs">İptal</button>
+                <button type="submit" className="px-4 py-1.5 rounded-lg bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">Ekle</button>
               </div>
             </form>
           </div>
@@ -3678,17 +3678,17 @@ export const AdminDashboard: React.FC = () => {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#657796]/20">
+              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setEditingMember(null)}
-                  className="px-4 py-2 rounded-xl bg-[#301322] hover:bg-[#421d31] text-[#dce4ef] transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#1c0d18] text-white/70 hover:text-white transition-colors cursor-pointer text-xs"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:brightness-110 text-white font-bold transition-all shadow-md cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                 >
                   Değişiklikleri Kaydet
                 </button>
@@ -3699,21 +3699,21 @@ export const AdminDashboard: React.FC = () => {
       )}
       {showAddSlotModal && (
         <div className="fixed inset-0 z-50 bg-[#12080f]/90 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1c0f18] border border-[#657796]/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#657796]/20 pb-3">
+          <div className="bg-[#1c0f18] border border-white/10 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                <div className="p-2 rounded-xl bg-white/5 text-white border border-white/10">
                   <Clock className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white font-club">Yeni Randevu Seansı Aç</h3>
-                  <p className="text-[11px] text-[#8193b2]">Karanlık oda kullanım seansı tanımlayın.</p>
+                  <h3 className="text-sm font-semibold text-white">Yeni Randevu Seansı Aç</h3>
+                  <p className="text-[11px] text-white/50">Karanlık oda kullanım seansı tanımlayın.</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddSlotModal(false)}
-                className="p-1 rounded-lg text-[#8193b2] hover:text-white hover:bg-[#301322] cursor-pointer"
+                className="p-1 rounded-lg text-white/50 hover:text-white hover:bg-white/5 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -3722,21 +3722,21 @@ export const AdminDashboard: React.FC = () => {
             <form onSubmit={handleCreateSlot} className="space-y-4 text-xs">
               {/* Tarih Seçimi */}
               <div>
-                <label className="text-[11px] font-bold text-white block mb-1">
+                <label className="text-[11px] font-mono uppercase tracking-wider text-white/80 block mb-1">
                   Seans Tarihi *
                 </label>
                 <input
                   type="date"
                   value={newSlotDate}
                   onChange={e => setNewSlotDate(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-[#657796]/30 text-white font-mono"
+                  className="w-full p-2.5 rounded-xl bg-[#12080f] border border-white/10 text-white font-mono"
                   required
                 />
               </div>
 
               {/* İzin Verilen İşlem Türü */}
               <div>
-                <label className="text-[11px] font-bold text-white block mb-1.5">
+                <label className="text-[11px] font-mono uppercase tracking-wider text-white/80 block mb-1.5">
                   Bu Seansta Yapılabilecek İşlem Türü *
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -3745,12 +3745,12 @@ export const AdminDashboard: React.FC = () => {
                     onClick={() => setNewSlotProcess('all')}
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       newSlotProcess === 'all'
-                        ? 'bg-purple-950/80 border-purple-500 text-white font-bold ring-2 ring-purple-500/30'
-                        : 'bg-[#12080f] border-[#657796]/20 text-[#8193b2] hover:text-white'
+                        ? 'bg-white text-black font-semibold shadow-sm'
+                        : 'bg-[#12080f] border-white/10 text-white/60 hover:text-white'
                     }`}
                   >
                     <span className="text-[11px] block font-semibold">Her İkisi</span>
-                    <span className="text-[9px] text-[#8193b2] block mt-0.5">Yıkama / Baskı</span>
+                    <span className="text-[9px] opacity-70 block mt-0.5">Yıkama / Baskı</span>
                   </button>
 
                   <button
@@ -3899,7 +3899,7 @@ export const AdminDashboard: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-[#657796] text-white font-bold text-xs shadow-md hover:opacity-95 cursor-pointer"
+                    className="px-5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     Seansı Aç
                   </button>
@@ -4074,7 +4074,7 @@ export const AdminDashboard: React.FC = () => {
               {/* Modal Header */}
               <div className="p-6 border-b border-[#657796]/20 bg-[#12080f] flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#301322] to-[#657796] flex items-center justify-center text-white font-bold text-lg font-club border border-[#657796]/40 shadow-inner shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-[#140911] flex items-center justify-center text-white/90 font-medium text-lg border border-white/15 shadow-inner shrink-0">
                     {selectedMemberForHistory.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div>
@@ -4447,7 +4447,7 @@ export const AdminDashboard: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#657796] to-[#4e3b52] hover:from-[#7589aa] hover:to-[#5e4766] text-white font-bold text-xs shadow-md cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-[#1c0d18] hover:bg-[#281323] text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                 >
                   {editingTrip ? 'Geziyi Güncelle' : 'Geziyi Kaydet & Yayınla'}
                 </button>

@@ -138,7 +138,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${profile.avatar_color} flex items-center justify-center text-white text-sm font-bold font-club shadow-md shrink-0 border border-white/10`}>
+                    <div className="w-11 h-11 rounded-2xl bg-[#241120] flex items-center justify-center text-white text-sm font-mono font-medium shadow-md shrink-0 border border-white/15">
                       {profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
 
@@ -230,10 +230,10 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ adminProfiles, onLogin, 
               <button
                 type="submit"
                 disabled={isSubmitting || !pin.trim()}
-                className={`w-full py-4 px-6 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg ${
+                className={`w-full py-3.5 px-6 rounded-xl text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   pin.trim()
-                    ? 'bg-gradient-to-r from-[#657796] via-[#4e3b52] to-[#301322] hover:from-[#8193b2] hover:to-[#421d31] text-white font-extrabold shadow-xl shadow-[#301322]/80 border border-[#8193b2]/30'
-                    : 'bg-[#301322] text-[#8193b2] border border-[#657796]/30 cursor-not-allowed opacity-60'
+                    ? 'bg-[#1b0d18] hover:bg-[#271223] text-white border border-white/20 hover:border-white/40 shadow-xl shadow-black/60'
+                    : 'bg-white/5 text-white/30 border border-white/10 cursor-not-allowed opacity-60'
                 }`}
               >
                 {isSubmitting ? (

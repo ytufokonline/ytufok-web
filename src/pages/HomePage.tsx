@@ -101,7 +101,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             </div>
 
             <div className="space-y-1">
-              <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">İlk</span>
+              <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">Öncü</span>
               <span className="text-xs text-white/40 font-light block leading-snug">Üniversiteler Arası İlk Kulüp</span>
             </div>
 

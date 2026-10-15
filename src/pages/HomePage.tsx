@@ -190,33 +190,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
 
         </div>
 
-        {/* Hairline Milestone Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
-          <div className="p-6 rounded-2xl bg-[#140911] border border-white/10 space-y-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Tarihsel Öncelik</span>
-            <div className="text-lg font-semibold text-white font-club">İlk Üniversite Kulübü</div>
-            <p className="text-xs text-white/50 font-light leading-relaxed">
-              1994'te Türkiye'deki üniversiteler arası ilk fotoğraf kulübü olarak kuruldu.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-[#140911] border border-white/10 space-y-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Ulusal Boyut</span>
-            <div className="text-lg font-semibold text-white font-club">İlk Fotoğraf Festivali</div>
-            <p className="text-xs text-white/50 font-light leading-relaxed">
-              Türkiye çapında üniversite düzeyindeki ilk fotoğraf festivali hayata geçirildi.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-[#140911] border border-white/10 space-y-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Kurumsal Aidiyet</span>
-            <div className="text-lg font-semibold text-white font-club">YTÜ'nün 2. En Köklüsü</div>
-            <p className="text-xs text-white/50 font-light leading-relaxed">
-              Yıldız Teknik Üniversitesi tarihinin en köklü 2. öğrenci topluluğudur.
-            </p>
-          </div>
-        </div>
-
       </section>
 
       {/* 3. YAŞAYAN KAMPÜS VE AKTİF KÜLTÜR */}

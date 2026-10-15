@@ -83,7 +83,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-[#1c0f18] border border-[#657796]/30 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl space-y-0">
         {/* Header */}
-        <div className="p-5 border-b border-[#657796]/20 bg-[#500b27]/90 flex items-start justify-between">
+        <div className="p-5 border-b border-[#657796]/20 bg-[#41041d]/90 flex items-start justify-between">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#301322] border border-[#657796]/40 text-[#eed1d1] text-[10px] font-bold uppercase tracking-wider mb-1.5">
               <ShieldCheck className="w-3 h-3 text-[#8193b2]" />
@@ -116,7 +116,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                     ? 'bg-[#301322]/80 border-[#657796]/50'
                     : isSelected
                     ? 'bg-[#301322] border-[#657796] shadow-lg ring-1 ring-[#657796]/50'
-                    : 'bg-[#500b27] border-[#657796]/20 hover:border-[#657796]/50 hover:bg-[#1a0e17]'
+                    : 'bg-[#41041d] border-[#657796]/20 hover:border-[#657796]/50 hover:bg-[#1a0e17]'
                 }`}
               >
                 <div
@@ -179,7 +179,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                         }}
                         placeholder="Yönetici PIN Şifresi"
                         autoFocus
-                        className="w-full pl-9 pr-9 py-2 rounded-xl bg-[#500b27] border border-[#657796]/40 text-white text-xs focus:outline-none focus:border-[#657796] focus:ring-1 focus:ring-[#657796]"
+                        className="w-full pl-9 pr-9 py-2 rounded-xl bg-[#41041d] border border-[#657796]/40 text-white text-xs focus:outline-none focus:border-[#657796] focus:ring-1 focus:ring-[#657796]"
                       />
                       <button
                         type="button"
@@ -226,7 +226,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
         </div>
 
         {/* Footer with Global Sign Out Option */}
-        <div className="p-4 border-t border-[#657796]/20 bg-[#500b27] flex items-center justify-between gap-3 text-xs">
+        <div className="p-4 border-t border-[#657796]/20 bg-[#41041d] flex items-center justify-between gap-3 text-xs">
           <div className="text-[11px] text-[#8193b2]">
             {activeAdmin ? (
               <span>Aktif: <strong className="text-white">{activeAdmin.full_name}</strong></span>

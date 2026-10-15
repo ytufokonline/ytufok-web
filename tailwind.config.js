@@ -10,12 +10,12 @@ export default {
       colors: {
         white: '#eed1d1',
         ytufok: {
-          bg: '#500b27',           // En derin arka plan (mürdüm/bordo tonu)
+          bg: '#41041d',           // En derin arka plan (mürdüm/bordo tonu)
           text: '#eed1d1',         // Ana açık metin tonu
-          card: '#3b081d',         // Kart ve panel zemini
-          cardHover: '#440921',    // Kart hover
-          plum: '#500b27',         // Kulüp 1. Ana Rengi
-          plumHover: '#5f0f30',    // Açık ton
+          card: '#2f0315',         // Kart ve panel zemini
+          cardHover: '#380419',    // Kart hover
+          plum: '#41041d',         // Kulüp 1. Ana Rengi
+          plumHover: '#500824',    // Açık ton
           wine: '#6a1237',         // Şarap / erik tonu
           twilight: '#4e3b52',     // Ara geçiş tonu 1
           dusk: '#584964',         // Ara geçiş tonu 2

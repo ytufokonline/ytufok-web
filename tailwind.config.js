@@ -10,19 +10,22 @@ export default {
       colors: {
         white: '#eed1d1',
         ytufok: {
-          bg: '#41041d',           // En derin arka plan (mürdüm/bordo tonu)
+          bg: '#1f0814',           // En derin ana arka plan (koyu ton)
           text: '#eed1d1',         // Ana açık metin tonu
-          card: '#2f0315',         // Kart ve panel zemini
-          cardHover: '#380419',    // Kart hover
-          plum: '#41041d',         // Kulüp 1. Ana Rengi
-          plumHover: '#500824',    // Açık ton
-          wine: '#6a1237',         // Şarap / erik tonu
-          twilight: '#4e3b52',     // Ara geçiş tonu 1
-          dusk: '#584964',         // Ara geçiş tonu 2
-          steelMuted: '#5b657e',   // Dumanlı çelik tonu
-          steel: '#657796',        // Kulüp 2. Ana Rengi (Çelik Mavisi / Slate Blue)
-          steelLight: '#8193b2',   // Açık çelik vurgu
-          steelSoft: '#a9b9d3',    // Yumuşak lavanta çelik
+          card: '#16050e',         // Kart ve panel zemini
+          cardHover: '#220816',    // Kart hover
+          plum: '#1f0814',         // Kulüp 1. Ana Rengi
+          plumHover: '#2c0c1e',    // Açık ton
+          wine: '#44142d',         // Şarap / erik tonu
+          twilight: '#332135',     // Ara geçiş tonu 1
+          dusk: '#3d344d',         // Ara geçiş tonu 2
+          slate: '#568aa5',        // Kulüp 2. Ana Rengi (Mavi/Gri ton)
+          slateLight: '#6ea5c4',   // Açık parlayan mavi ton
+          slateGlow: '#8fc0da',    // Parlayan baloncuk tonu
+          steelMuted: '#476579',   // Dumanlı çelik tonu
+          steel: '#568aa5',        // Kulüp 2. Ana Rengi (Çelik Mavisi / Slate Blue)
+          steelLight: '#6ea5c4',   // Açık çelik vurgu
+          steelSoft: '#8fb1c7',    // Yumuşak lavanta çelik
           steelIce: '#eed1d1',     // Yumuşak pudra açık metin
         }
       },

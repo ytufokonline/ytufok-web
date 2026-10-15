@@ -50,7 +50,7 @@
   html,
   body {
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #41041d;
+    background-color: #1f0814;
     color: #eed1d1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -92,16 +92,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #41041d;
+  background: #1f0814;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #250210;
+  background: #341124;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #657796;
+  background: #568aa5;
 }
 
 /* Apple & Airbnb Minimalist Surface Utilities */
@@ -226,5 +226,236 @@ input[type="date"]::-webkit-date-and-time-value {
     transform: none !important;
     transition: none !important;
   }
+  .ambient-aurora-top,
+  .ambient-aurora-right,
+  .ambient-aurora-left,
+  .ambient-aurora-bottom,
+  .atmospheric-bubble-1,
+  .atmospheric-bubble-2,
+  .atmospheric-bubble-3,
+  .atmospheric-bubble-4,
+  .atmospheric-bubble-5,
+  .atmospheric-bubble-6 {
+    animation: none !important;
+  }
 }
+
+/* =========================================================================
+   Atmospheric Aurora & Floating Bubbles Physics (#1f0814 <-> #568aa5)
+   ========================================================================= */
+
+.bg-canvas-aurora {
+  background: 
+    radial-gradient(130% 90% at 50% -8%, rgba(86, 138, 165, 0.24) 0%, rgba(86, 138, 165, 0.07) 42%, transparent 75%),
+    radial-gradient(95% 70% at 92% 42%, rgba(110, 165, 196, 0.14) 0%, transparent 60%),
+    radial-gradient(85% 65% at 8% 72%, rgba(94, 28, 66, 0.28) 0%, transparent 65%),
+    linear-gradient(180deg, #1f0814 0%, #170610 32%, #130712 65%, #18121f 100%);
+}
+
+.bg-radial-vignette {
+  background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(15, 3, 10, 0.55) 100%);
+}
+
+/* Aurora Ambient Glow Drift */
+.ambient-aurora-top {
+  animation: aurora-drift-top 24s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes aurora-drift-top {
+  0% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate3d(-46%, 28px, 0) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-54%, -14px, 0) scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+.ambient-aurora-right {
+  animation: aurora-drift-right 28s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes aurora-drift-right {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate3d(-35px, 40px, 0) scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(20px, -25px, 0) scale(0.94);
+    opacity: 0.85;
+  }
+}
+
+.ambient-aurora-left {
+  animation: aurora-drift-left 26s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes aurora-drift-left {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate3d(30px, -30px, 0) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-20px, 25px, 0) scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+.ambient-aurora-bottom {
+  animation: aurora-drift-bottom 30s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes aurora-drift-bottom {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate3d(-40px, -25px, 0) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(30px, 20px, 0) scale(0.92);
+    opacity: 0.85;
+  }
+}
+
+/* Atmospheric Floating Bubbles Keyframes */
+.atmospheric-bubble-1 {
+  animation: float-bubble-1 26s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes float-bubble-1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate3d(28px, -45px, 0) scale(1.1);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(-20px, -80px, 0) scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+.atmospheric-bubble-2 {
+  animation: float-bubble-2 22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes float-bubble-2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate3d(-35px, -38px, 0) scale(1.14);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(25px, -70px, 0) scale(0.92);
+    opacity: 0.65;
+  }
+}
+
+.atmospheric-bubble-3 {
+  animation: float-bubble-3 32s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes float-bubble-3 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate3d(32px, 35px, 0) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-24px, 60px, 0) scale(0.95);
+    opacity: 0.75;
+  }
+}
+
+.atmospheric-bubble-4 {
+  animation: float-bubble-4 18s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes float-bubble-4 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate3d(-22px, -30px, 0) scale(1.18);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(18px, -55px, 0) scale(0.9);
+    opacity: 0.75;
+  }
+}
+
+.atmospheric-bubble-5 {
+  animation: float-bubble-5 28s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes float-bubble-5 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate3d(36px, -40px, 0) scale(1.12);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(-15px, -75px, 0) scale(0.94);
+    opacity: 0.7;
+  }
+}
+
+.atmospheric-bubble-6 {
+  animation: float-bubble-6 34s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes float-bubble-6 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate3d(-30px, -35px, 0) scale(1.09);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(25px, -65px, 0) scale(0.96);
+    opacity: 0.7;
+  }
+}
+
 

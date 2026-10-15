@@ -58,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#41041d]/90 backdrop-blur-md border-b border-white/[0.08] transition-all">
+    <header className="sticky top-0 z-40 bg-[#1f0814]/75 backdrop-blur-xl border-b border-white/[0.07] transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           
@@ -109,8 +109,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className={`flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl border transition-all cursor-pointer shadow-sm ${
                     activeTab === 'admin'
-                      ? 'bg-black/35 border-[#657796] ring-1 ring-[#657796]/40 text-white'
-                      : 'bg-[#2c0615] hover:bg-[#251520] border-[#657796]/30 text-white'
+                      ? 'bg-black/35 border-[#568aa5] ring-1 ring-[#568aa5]/40 text-white'
+                      : 'bg-[#1a0611] hover:bg-[#250d1b] border-[#568aa5]/30 text-white'
                   }`}
                 >
                   <div className="w-7 h-7 rounded-lg bg-[#241120] flex items-center justify-center text-white text-[11px] font-mono font-medium shadow-inner border border-white/15 shrink-0">
@@ -125,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
                   </div>
                   {pendingCount > 0 && (
-                    <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded text-[10px] font-bold bg-[#657796] text-white">
+                    <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded text-[10px] font-bold bg-[#568aa5] text-white">
                       {pendingCount}
                     </span>
                   )}
@@ -134,8 +134,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 {/* Dropdown Menu */}
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#2c0615] border border-white/20 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-4 py-2.5 border-b border-white/10 bg-[#41041d]/50">
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#1a0611] border border-white/20 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-4 py-2.5 border-b border-white/10 bg-[#1f0814]/70">
                       <div className="flex items-center gap-2">
                         <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
                         <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-400">Aktif Yönetici Oturumu</span>
@@ -163,7 +163,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           Yönetim Paneli
                         </span>
                         {pendingCount > 0 && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#657796] text-white">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#568aa5] text-white">
                             {pendingCount} Talep
                           </span>
                         )}
@@ -206,14 +206,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={(e) => handleNavClick('admin', e)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   activeTab === 'admin'
-                    ? 'bg-white text-[#41041d]'
+                    ? 'bg-white text-[#1f0814]'
                     : 'bg-white/[0.05] hover:bg-white/[0.1] text-white/90 hover:text-white border border-white/[0.1]'
                 }`}
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-white/60" />
                 <span>Yönetim</span>
                 {pendingCount > 0 && (
-                  <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded text-[10px] font-bold bg-[#657796] text-white">
+                  <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded text-[10px] font-bold bg-[#568aa5] text-white">
                     {pendingCount}
                   </span>
                 )}
@@ -228,7 +228,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 onClick={() => handleNavClick('admin')}
                 className={`p-1.5 rounded-xl border flex items-center gap-1.5 ${
-                  activeTab === 'admin' ? 'bg-black/35 border-[#657796]' : 'bg-[#2c0615] border-[#657796]/30'
+                  activeTab === 'admin' ? 'bg-black/35 border-[#568aa5]' : 'bg-[#1a0611] border-[#568aa5]/30'
                 }`}
               >
                 <div className="w-6 h-6 rounded-lg bg-[#241120] flex items-center justify-center text-white text-[10px] font-mono font-medium border border-white/15">
@@ -259,7 +259,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-white/[0.08] bg-[#160a13] px-4 py-4 space-y-1">
+        <div className="md:hidden border-b border-white/[0.08] bg-[#17050f]/95 backdrop-blur-2xl px-4 py-4 space-y-1">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (
@@ -282,7 +282,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Mobile Profile & Admin Block */}
           {activeAdmin ? (
             <div className="pt-3 border-t border-white/[0.08] space-y-2">
-              <div className="p-3 rounded-2xl bg-[#2c0615] border border-[#657796]/30 flex items-center justify-between gap-3">
+              <div className="p-3 rounded-2xl bg-[#1a0611] border border-[#568aa5]/30 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
                     {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -295,7 +295,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={(e) => handleNavClick('admin', e)}
-                  className="px-2.5 py-1 rounded-lg bg-black/35 text-white text-[11px] font-semibold border border-[#657796]/30"
+                  className="px-2.5 py-1 rounded-lg bg-black/35 text-white text-[11px] font-semibold border border-[#568aa5]/30"
                 >
                   Panele Git
                 </button>
@@ -309,7 +309,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setMobileMenuOpen(false);
                       onSwitchProfile();
                     }}
-                    className="px-3 py-2 rounded-xl bg-black/35 hover:bg-[#421d31] text-xs font-semibold text-white border border-[#657796]/30 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="px-3 py-2 rounded-xl bg-black/35 hover:bg-[#341124] text-xs font-semibold text-white border border-[#568aa5]/30 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <ArrowRightLeft className="w-3.5 h-3.5 text-white/60" />
                     <span>Profil Değiştir</span>
@@ -335,7 +335,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={(e) => handleNavClick('admin', e)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium border transition-all ${
                   activeTab === 'admin'
-                    ? 'bg-white text-[#41041d] border-white'
+                    ? 'bg-white text-[#1f0814] border-white'
                     : 'bg-white/[0.05] text-white/80 border-white/[0.08]'
                 }`}
               >
@@ -344,7 +344,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   Yönetici Portalı
                 </span>
                 {pendingCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#657796] text-white">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#568aa5] text-white">
                     {pendingCount} Talep
                   </span>
                 )}

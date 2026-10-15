@@ -15,6 +15,7 @@ import { api } from './lib/api';
 import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
 import { BookOpen } from 'lucide-react';
 import { initAppleScrollReveal } from './utils/scrollReveal';
+import { AtmosphericBackground } from './components/AtmosphericBackground';
 
 export function App() {
   const initialRoute = parseCurrentLocation();
@@ -144,7 +145,10 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#41041d] text-[#eed1d1] selection:bg-[#657796] selection:text-white font-sans">
+    <div className="min-h-screen flex flex-col bg-transparent text-[#eed1d1] selection:bg-[#568aa5]/40 selection:text-white font-sans relative">
+      {/* Apple-style atmospheric aurora & floating ambient bubbles */}
+      <AtmosphericBackground />
+
       {/* Main Navigation Bar with Active Profile & Sign Out */}
       <Navbar
         activeTab={activeTab}

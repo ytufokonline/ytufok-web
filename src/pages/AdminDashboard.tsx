@@ -1015,7 +1015,7 @@ export const AdminDashboard: React.FC = () => {
                   <span className="text-[10px] font-bold text-[#eed1d1] bg-black/35 px-2 py-0.5 rounded-full border border-white/15">
                     {activeAdmin.title}
                   </span>
-                  <span className="text-[9px] font-bold text-white/60 bg-[#657796]/15 px-1.5 py-0.5 rounded-full border border-white/10">
+                  <span className="text-[9px] font-bold text-white/60 bg-[#568aa5]/15 px-1.5 py-0.5 rounded-full border border-white/10">
                     Tam Yetkili
                   </span>
                 </div>
@@ -1633,7 +1633,7 @@ export const AdminDashboard: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <strong className="text-white font-bold">{m.full_name}</strong>
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-                            isBoard || isAudit ? 'bg-[#657796]/20 text-[#eed1d1] border border-white/15' :
+                            isBoard || isAudit ? 'bg-[#568aa5]/20 text-[#eed1d1] border border-white/15' :
                             'text-white/60'
                           }`}>
                             {isBoard ? 'Yönetim Kurulu' : isAudit ? 'Denetim Kurulu' : 'Üye'}
@@ -1682,7 +1682,7 @@ export const AdminDashboard: React.FC = () => {
                           <History className="w-3.5 h-3.5 text-white/60" />
                           <span>{mReservations.length} Zimmet</span>
                           {mInUse > 0 && (
-                            <span className="w-2 h-2 rounded-full bg-[#8193b2] animate-pulse" title="Şu an zimmette ekipmanı var"></span>
+                            <span className="w-2 h-2 rounded-full bg-[#6ea5c4] animate-pulse" title="Şu an zimmette ekipmanı var"></span>
                           )}
                         </button>
                       </td>
@@ -1718,7 +1718,7 @@ export const AdminDashboard: React.FC = () => {
                               m.member_type === 'normal' ? 'Bu üyeyi Aktif Üye yap (5 gün önce rezervasyon & Bireysel Çekim)' :
                               m.member_type === 'active' ? 'Bu üyeyi Normal Üye yap (3 gün önce rezervasyon)' :
                               m.member_type === 'honorary' ? 'Bu fahri üyeyi Fahri Aktif yap (5 gün önce & Bireysel Çekim)' :
-                              'Bu fahri üyeyi Normal Öncelikli yap (3 gün önce rezervasyon)'
+                              'Bu fahri üyeyi Normal Öncelik Yap (3 gün önce rezervasyon)'
                             }
                           >
                             {m.member_type === 'normal' ? '★ Aktif Yap' :
@@ -1729,7 +1729,7 @@ export const AdminDashboard: React.FC = () => {
                         )}
                         <button
                           onClick={() => setSelectedMemberForHistory(m)}
-                          className="px-2 py-1 rounded-lg bg-[#657796]/30 hover:bg-[#657796]/50 text-xs font-semibold text-white transition-colors cursor-pointer inline-flex items-center gap-1"
+                          className="px-2 py-1 rounded-lg bg-[#568aa5]/30 hover:bg-[#568aa5]/50 text-xs font-semibold text-white transition-colors cursor-pointer inline-flex items-center gap-1"
                           title="Zimmet Geçmişi"
                         >
                           <History className="w-3 h-3 text-[#eed1d1]" />
@@ -3114,7 +3114,7 @@ export const AdminDashboard: React.FC = () => {
                     </span>
                     <div className="flex items-center gap-2">
                       {ann.is_pinned && (
-                        <span className="text-[10px] font-bold text-white/60 bg-[#657796]/20 px-2 py-0.5 rounded-full border border-white/15">
+                        <span className="text-[10px] font-bold text-white/60 bg-[#568aa5]/20 px-2 py-0.5 rounded-full border border-white/15">
                           📌 Sabitlendi
                         </span>
                       )}
@@ -3204,7 +3204,7 @@ export const AdminDashboard: React.FC = () => {
                   id="ann_is_pinned"
                   checked={newAnnIsPinned}
                   onChange={(e) => setNewAnnIsPinned(e.target.checked)}
-                  className="rounded border-white/15 bg-black/35 text-[#657796] focus:ring-0 cursor-pointer"
+                  className="rounded border-white/15 bg-black/35 text-[#568aa5] focus:ring-0 cursor-pointer"
                 />
                 <label htmlFor="ann_is_pinned" className="text-xs text-[#eed1d1] cursor-pointer">
                   📌 En başta sabitle (Öne Çıkar)
@@ -4085,7 +4085,7 @@ export const AdminDashboard: React.FC = () => {
                       </h3>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         isBoardMemberObj(selectedMemberForHistory)
-                          ? 'bg-[#657796]/20 text-[#eed1d1] border border-white/15'
+                          ? 'bg-[#568aa5]/20 text-[#eed1d1] border border-white/15'
                           : 'bg-black/35 text-white/60 border border-white/10'
                       }`}>
                         {isBoardMemberObj(selectedMemberForHistory) ? 'Yönetim Kurulu Üyesi' : 'Kulüp Üyesi'}
@@ -4428,7 +4428,7 @@ export const AdminDashboard: React.FC = () => {
                   id="tripIsActive"
                   checked={newTripIsActive}
                   onChange={(e) => setNewTripIsActive(e.target.checked)}
-                  className="rounded bg-black/35 border-white/10 text-[#657796]"
+                  className="rounded bg-black/35 border-white/10 text-[#568aa5]"
                 />
                 <label htmlFor="tripIsActive" className="text-xs text-[#eed1d1] cursor-pointer">
                   Gezi hemen yayına alınsın ve rezervasyon formunda görünsün

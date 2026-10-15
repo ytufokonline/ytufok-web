@@ -179,7 +179,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                         }}
                         placeholder="Yönetici PIN Şifresi"
                         autoFocus
-                        className="w-full pl-9 pr-9 py-2 rounded-xl bg-black/35 border border-white/20 text-white text-xs focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-[#657796]"
+                        className="w-full pl-9 pr-9 py-2 rounded-xl bg-black/35 border border-white/20 text-white text-xs focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-[#568aa5]"
                       />
                       <button
                         type="button"

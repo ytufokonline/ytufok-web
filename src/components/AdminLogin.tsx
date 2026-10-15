@@ -179,7 +179,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         </div>
 
         {/* Minimal Footer Notice */}
-        <p className="text-center text-[11px] text-[#657796] leading-relaxed max-w-xs mx-auto">
+        <p className="text-center text-[11px] text-[#568aa5] leading-relaxed max-w-xs mx-auto">
           Yalnızca yetkili YTÜFOK Yönetim Kurulu erişimine açıktır. Güvenlik amacıyla tüm giriş denemeleri kayıt altındadır.
         </p>
       </div>

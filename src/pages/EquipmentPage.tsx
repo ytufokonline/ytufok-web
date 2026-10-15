@@ -297,7 +297,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-2xl w-full bg-[#2c0615] border border-white/15 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+            className="relative max-w-2xl w-full bg-[#180610] border border-white/15 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
           >
             {/* Modal Header */}
             <div className="p-6 border-b border-white/[0.08] flex items-start justify-between">

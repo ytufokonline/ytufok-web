@@ -1454,7 +1454,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
       {/* Success Modal */}
       {submittedReservation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
-          <div className="bg-[#2c0615] border border-white/15 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl space-y-6 p-6 sm:p-8">
+          <div className="bg-[#180610] border border-white/15 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl space-y-6 p-6 sm:p-8">
             <div className="text-center space-y-3">
               <div className="w-14 h-14 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-white mx-auto">
                 <Check className="w-7 h-7 stroke-[2.5]" />

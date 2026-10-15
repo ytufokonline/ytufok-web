@@ -49,8 +49,9 @@ export function resolveMemberTier(member?: Member | null): MemberType {
   if (member.role === 'audit' || member.member_type === 'audit') return 'audit';
   if (member.member_type === 'honorary_active') return 'honorary_active';
   if (member.member_type === 'honorary') return 'honorary';
+  if (member.member_type === 'active') return 'active';
   if (member.member_type === 'normal') return 'normal';
-  return 'active'; // Default for registered members
+  return 'normal'; // Varsayılan kulüp üyeliği normal üyeliktir
 }
 
 export interface TripBookingEligibility {

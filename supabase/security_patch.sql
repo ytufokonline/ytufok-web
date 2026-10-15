@@ -85,7 +85,7 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'message', 'Lütfen geçerli bir öğrenci numarası giriniz.');
     END IF;
 
-    SELECT id, student_number, full_name, department, status, role, penalty_count, penalty_reason
+    SELECT id, student_number, full_name, department, status, role, member_type, penalty_count, penalty_reason
     INTO v_member
     FROM public.members
     WHERE lower(replace(student_number, ' ', '')) = lower(replace(v_clean, ' ', ''))
@@ -107,7 +107,8 @@ BEGIN
                 'full_name', v_member.full_name,
                 'department', v_member.department,
                 'status', v_member.status,
-                'role', v_member.role
+                'role', v_member.role,
+                'member_type', v_member.member_type
             ),
             'message', 'Rezervasyon yapamazsınız: Üyeliğiniz kısıtlanmıştır/cezalıdır. Gerekçe: ' || coalesce(v_member.penalty_reason, 'İade gecikmesi veya hasar.')
         );
@@ -122,7 +123,8 @@ BEGIN
                 'full_name', v_member.full_name,
                 'department', v_member.department,
                 'status', v_member.status,
-                'role', v_member.role
+                'role', v_member.role,
+                'member_type', v_member.member_type
             ),
             'message', 'Üyeliğiniz pasif durumdadır. Yeniden aktif etmek için kulüp odamıza uğrayınız.'
         );
@@ -136,9 +138,10 @@ BEGIN
             'full_name', v_member.full_name,
             'department', v_member.department,
             'status', v_member.status,
-            'role', v_member.role
+            'role', v_member.role,
+            'member_type', v_member.member_type
         ),
-        'message', 'Hoş geldiniz, ' || v_member.full_name || ' (' || v_member.department || '). Üyeliğiniz aktif.'
+        'message', 'Hoş geldiniz, ' || v_member.full_name || ' (' || v_member.department || ').'
     );
 END;
 $$;

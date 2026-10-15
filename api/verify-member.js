@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     // 2. Safe single row lookup (select only safe public fields, never phone/email of all users)
     const { data, error } = await supabase
       .from('members')
-      .select('id, student_number, full_name, department, status, role, penalty_count, penalty_reason')
+      .select('id, student_number, full_name, department, status, role, member_type, penalty_count, penalty_reason')
       .eq('student_number', cleanNumber)
       .maybeSingle();
 
@@ -71,10 +71,18 @@ export default async function handler(req, res) {
       });
     }
 
+    const tierLabel = data.role === 'board' || data.role === 'admin' 
+      ? 'Yönetim Kurulu' 
+      : data.role === 'audit' 
+        ? 'Denetim Kurulu' 
+        : data.member_type === 'active' || data.member_type === 'honorary_active'
+          ? 'Aktif Üye' 
+          : 'Normal Üye';
+
     return res.status(200).json({
       success: true,
       member: data,
-      message: `Hoş geldiniz, ${data.full_name} (${data.department}). Üyeliğiniz aktif.`
+      message: `Hoş geldiniz, ${data.full_name} (${data.department}). ${tierLabel} olarak doğrulandınız.`
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Doğrulama sunucu hatası.' });

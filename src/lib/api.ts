@@ -467,7 +467,7 @@ export const api = {
       try {
         const { data, error } = await supabase
           .from('members')
-          .select('id, student_number, full_name, department, status, role, penalty_count, penalty_reason')
+          .select('id, student_number, full_name, department, status, role, member_type, penalty_count, penalty_reason')
           .eq('student_number', cleanNumber)
           .maybeSingle();
 

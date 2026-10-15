@@ -47,31 +47,24 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
       <section className="pt-20 sm:pt-32 lg:pt-40 pb-16 sm:pb-24 border-b border-white/[0.08]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-[11px] font-mono tracking-[0.25em] uppercase text-white/50">
-            <span className="w-1.5 h-1.5 rounded-full bg-white/70"></span>
-            <span>YTÜFOK • 1994'ten Bugüne</span>
-          </div>
-
           {/* YTÜFOK Official Logo */}
-          <div className="flex justify-center pt-2">
+          <div className="flex justify-center">
             <img
               src="/ytufok-hero-logo.png"
               alt="YTÜFOK - Yıldız Teknik Üniversitesi Fotoğraf Kulübü"
-              className="w-48 sm:w-64 md:w-72 lg:w-80 h-auto object-contain mix-blend-screen select-none drop-shadow-2xl"
+              className="w-56 sm:w-72 md:w-80 lg:w-[22rem] h-auto object-contain mix-blend-screen select-none drop-shadow-2xl"
             />
           </div>
 
-          {/* Hero Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-club leading-[1.1] max-w-4xl mx-auto">
-            32 yıllık köklü miras, sizlerle ilerliyor.
+          {/* Hero Headline (Natural, Confident Student-Driven) */}
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-white font-club leading-[1.2] max-w-3xl mx-auto">
+            1994'ten beri kampüsün en aktif topluluğu.
           </h1>
 
-          {/* Manifesto Paragraph */}
-          <p className="text-base sm:text-xl lg:text-2xl text-white/60 font-light max-w-3xl mx-auto leading-relaxed">
-            Işığın, vizörün ve gümüş halojenürün ardında geçen otuz yılı aşkın bir yolculuk. 
-            Yıldız Teknik Üniversitesi'nin kadim koridorlarından karanlık oda kırmızılarına; 
-            her karede bir miras, her deklanşörde ortak bir hafıza.
+          {/* Genuine Student-Crafted Intro Paragraph */}
+          <p className="text-base sm:text-lg lg:text-xl text-white/70 font-light max-w-2xl mx-auto leading-relaxed">
+            Yıldız Teknik Üniversitesi Fotoğraf Kulübü olarak analogdan dijitale üretmeye, 
+            hafta sonu gezilerine, karanlık oda banyolarına ve fotoğrafı paylaşmaya devam ediyoruz.
           </p>
 
           {/* Kritik Yönlendirme (Apple HIG Asil & Dikkat Çekmeyen Butonlar) */}
@@ -277,9 +270,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 Analog Kültür & Karanlık Oda
               </h3>
               <p className="text-sm text-white/60 font-light leading-relaxed">
-                Dijital çağın hızına inat; emülsiyonun, gümüşün ve sabrın büyüsünü yaşatıyoruz. 
-                Davutpaşa Kulüpler Vadisi'ndeki karanlık odamızda 35mm ve orta format filmler elle yıkanıyor, 
-                kırmızı ışık altında agrandisörle analog kart baskıları üretiliyor.
+                Davutpaşa Kulüpler Vadisi'ndeki karanlık odamızda 35mm ve orta format filmlerimizi kendimiz yıkıyor, 
+                agrandisör başında analog kart baskılarımızı alıyoruz. Hem analog disiplini koruyor hem de yeni başlayanlara karanlık oda eğitimi veriyoruz.
               </p>
             </div>
             <div className="pt-4 border-t border-white/[0.06] text-xs font-mono text-white/40">

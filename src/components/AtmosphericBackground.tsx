@@ -256,7 +256,7 @@ export const AtmosphericBackground: React.FC = () => {
     <>
       {/* 1. Base Background: Ultra-Smooth Mesh Gradient (Koyu Bordodan Bebe Mavisine) */}
       <div
-        className="fixed inset-0 pointer-events-none select-none -z-10 overflow-hidden"
+        className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden"
         style={{
           position: 'fixed',
           top: 0,
@@ -273,7 +273,7 @@ export const AtmosphericBackground: React.FC = () => {
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(145deg, #18020b 0%, #1c020d 28%, #250618 52%, #181926 78%, #111e2b 100%)',
+            background: 'linear-gradient(145deg, #18020b 0%, #1c020d 22%, #260517 45%, #182332 72%, #12283a 100%)',
           }}
         />
 
@@ -282,24 +282,24 @@ export const AtmosphericBackground: React.FC = () => {
           className="absolute inset-0"
           style={{
             backgroundImage: `
-              radial-gradient(130% 90% at 85% 12%, rgba(145, 205, 245, 0.20) 0%, rgba(95, 155, 195, 0.10) 32%, rgba(42, 6, 22, 0.04) 62%, transparent 80%),
-              radial-gradient(110% 80% at 15% 82%, rgba(125, 185, 230, 0.16) 0%, rgba(70, 125, 160, 0.08) 35%, transparent 68%),
-              radial-gradient(95% 65% at 50% -5%, rgba(175, 222, 255, 0.22) 0%, rgba(86, 138, 165, 0.10) 40%, transparent 72%),
-              radial-gradient(120% 95% at 50% 50%, rgba(140, 198, 238, 0.07) 0%, rgba(35, 4, 18, 0.35) 55%, transparent 85%)
+              radial-gradient(130% 95% at 85% 15%, rgba(155, 215, 250, 0.28) 0%, rgba(95, 160, 205, 0.14) 30%, rgba(42, 6, 22, 0.04) 62%, transparent 80%),
+              radial-gradient(115% 85% at 12% 80%, rgba(135, 195, 240, 0.24) 0%, rgba(75, 135, 175, 0.12) 32%, transparent 68%),
+              radial-gradient(100% 70% at 50% 0%, rgba(180, 228, 255, 0.26) 0%, rgba(86, 138, 165, 0.12) 40%, transparent 72%),
+              radial-gradient(120% 95% at 50% 50%, rgba(145, 205, 245, 0.10) 0%, rgba(35, 4, 18, 0.25) 55%, transparent 85%)
             `,
           }}
         />
 
         {/* C. Soft & Heavy Floating Ambient Aurora Clouds (Stüdyo atmosferi, yavaş süzülen bulutlar) */}
-        <div className="absolute -top-[25%] -right-[15%] w-[75vw] h-[75vw] rounded-full bg-gradient-to-br from-sky-300/18 via-[#568aa5]/12 to-transparent blur-[130px] pointer-events-none ambient-aurora-top" />
-        <div className="absolute -bottom-[20%] -left-[15%] w-[70vw] h-[70vw] rounded-full bg-gradient-to-tr from-sky-400/14 via-[#416982]/10 to-transparent blur-[140px] pointer-events-none ambient-aurora-bottom" />
-        <div className="absolute top-[30%] right-[20%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-l from-sky-200/10 via-[#2d071b]/20 to-transparent blur-[120px] pointer-events-none ambient-aurora-right" />
+        <div className="absolute -top-[15%] right-[5%] w-[70vw] h-[70vw] rounded-full bg-gradient-to-br from-sky-300/28 via-[#568aa5]/16 to-transparent blur-[120px] pointer-events-none ambient-aurora-top" />
+        <div className="absolute top-[35%] -left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-sky-400/22 via-[#416982]/14 to-transparent blur-[130px] pointer-events-none ambient-aurora-bottom" />
+        <div className="absolute bottom-[5%] right-[15%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-l from-sky-200/20 via-[#2d071b]/25 to-transparent blur-[110px] pointer-events-none ambient-aurora-right" />
 
         {/* D. Deep Corner Vignette to firmly anchor edges into noble #1c020d */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse 135% 105% at 50% 50%, transparent 42%, rgba(28, 2, 13, 0.65) 100%)',
+            background: 'radial-gradient(ellipse 140% 110% at 50% 50%, transparent 40%, rgba(28, 2, 13, 0.55) 100%)',
           }}
         />
       </div>

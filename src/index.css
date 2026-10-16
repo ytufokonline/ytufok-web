@@ -111,20 +111,20 @@
 }
 
 /* ==============================================================================
-   APPLE GLASSMORPHISM DESIGN SYSTEM (FROSTED GLASS, BABY-BLUE GRADIENT & BORDERS)
+   APPLE FROSTED GLASSMORPHISM DESIGN SYSTEM (DEEP FROSTED GLASS & BABY-BLUE TINT)
    ============================================================================== */
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-gradient: linear-gradient(135deg, rgba(165, 215, 235, 0.1) 0%, rgba(86, 138, 165, 0.05) 100%);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.15);
-  --glass-blur: blur(20px) saturate(180%);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  --glass-bg: rgba(255, 255, 255, 0.055);
+  --glass-gradient: linear-gradient(135deg, rgba(185, 230, 255, 0.16) 0%, rgba(130, 195, 235, 0.08) 45%, rgba(86, 138, 165, 0.04) 100%);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+  --glass-blur: blur(28px) saturate(210%);
+  --glass-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.35), inset 0 0 25px 0 rgba(165, 215, 245, 0.1);
   
-  --glass-hover-bg: rgba(255, 255, 255, 0.08);
-  --glass-hover-gradient: linear-gradient(135deg, rgba(165, 215, 235, 0.16) 0%, rgba(86, 138, 165, 0.08) 100%);
-  --glass-hover-border: 1px solid rgba(255, 255, 255, 0.28);
-  --glass-hover-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.28), 0 0 20px rgba(165, 215, 235, 0.12);
+  --glass-hover-bg: rgba(255, 255, 255, 0.09);
+  --glass-hover-gradient: linear-gradient(135deg, rgba(185, 230, 255, 0.24) 0%, rgba(130, 195, 235, 0.12) 45%, rgba(86, 138, 165, 0.06) 100%);
+  --glass-hover-border: 1px solid rgba(255, 255, 255, 0.35);
+  --glass-hover-shadow: 0 16px 50px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.5), 0 0 30px rgba(165, 215, 245, 0.22);
 }
 
 /* 1. Global Glassmorphism Containers & Cards */
@@ -133,73 +133,73 @@
 .surface-card,
 .surface-card-hover,
 .surface-subtle {
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.1) 0%, rgba(86, 138, 165, 0.05) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(28px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
+  background-color: rgba(255, 255, 255, 0.055) !important;
+  background-image: linear-gradient(135deg, rgba(185, 230, 255, 0.16) 0%, rgba(130, 195, 235, 0.08) 45%, rgba(86, 138, 165, 0.04) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.35), inset 0 0 25px 0 rgba(165, 215, 245, 0.1) !important;
 }
 
 .glass-card-hover:hover,
 .surface-card-hover:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.16) 0%, rgba(86, 138, 165, 0.08) 100%) !important;
-  border-color: rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.28), 0 0 20px rgba(165, 215, 235, 0.12) !important;
+  background-color: rgba(255, 255, 255, 0.09) !important;
+  background-image: linear-gradient(135deg, rgba(185, 230, 255, 0.24) 0%, rgba(130, 195, 235, 0.12) 45%, rgba(86, 138, 165, 0.06) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 16px 50px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.5), 0 0 30px rgba(165, 215, 245, 0.22) !important;
 }
 
 /* 2. Global Glass Buttons */
 .glass-button,
 .glass-btn {
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.12) 0%, rgba(86, 138, 165, 0.06) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  background-color: rgba(255, 255, 255, 0.07) !important;
+  background-image: linear-gradient(135deg, rgba(185, 230, 255, 0.16) 0%, rgba(130, 195, 235, 0.08) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.3) !important;
   color: #eed1d1;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-button:hover,
 .glass-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.2) 0%, rgba(86, 138, 165, 0.1) 100%) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 0 15px rgba(165, 215, 235, 0.15) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  background-image: linear-gradient(135deg, rgba(185, 230, 255, 0.26) 0%, rgba(130, 195, 235, 0.14) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.38) !important;
+  box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.4), 0 0 20px rgba(165, 215, 245, 0.22) !important;
   color: #ffffff;
 }
 
 /* Primary Glass Action Button ("EKİPMAN HAVUZUNU İNCELE" vb.) */
 .glass-button-primary {
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.25) 0%, rgba(86, 138, 165, 0.12) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4), 0 0 25px rgba(165, 215, 235, 0.15) !important;
+  backdrop-filter: blur(28px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
+  background-color: rgba(255, 255, 255, 0.14) !important;
+  background-image: linear-gradient(135deg, rgba(195, 235, 255, 0.32) 0%, rgba(130, 195, 235, 0.16) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.55), 0 0 30px rgba(185, 230, 255, 0.22) !important;
   color: #ffffff !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-button-primary:hover {
-  background-color: rgba(255, 255, 255, 0.2) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.35) 0%, rgba(86, 138, 165, 0.18) 100%) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 0 35px rgba(165, 215, 235, 0.28) !important;
+  background-color: rgba(255, 255, 255, 0.22) !important;
+  background-image: linear-gradient(135deg, rgba(195, 235, 255, 0.42) 0%, rgba(130, 195, 235, 0.22) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.75), 0 0 40px rgba(185, 230, 255, 0.35) !important;
 }
 
 /* 3. Global Form Inputs, Selects, and Textareas */
 input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]),
 select,
 textarea {
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.08) 0%, rgba(86, 138, 165, 0.04) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  background-color: rgba(255, 255, 255, 0.055) !important;
+  background-image: linear-gradient(135deg, rgba(185, 230, 255, 0.12) 0%, rgba(130, 195, 235, 0.06) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
   color: #eed1d1 !important;
   transition: all 0.2s ease !important;
 }
@@ -207,10 +207,10 @@ textarea {
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.16) 0%, rgba(86, 138, 165, 0.08) 100%) !important;
-  border-color: rgba(165, 215, 235, 0.45) !important;
-  box-shadow: 0 0 25px rgba(165, 215, 235, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.25) !important;
+  background-color: rgba(255, 255, 255, 0.09) !important;
+  background-image: linear-gradient(135deg, rgba(185, 230, 255, 0.20) 0%, rgba(130, 195, 235, 0.10) 100%) !important;
+  border-color: rgba(185, 230, 255, 0.55) !important;
+  box-shadow: 0 0 25px rgba(185, 230, 255, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.35) !important;
   outline: none !important;
 }
 
@@ -222,19 +222,19 @@ textarea:focus {
 [class*="bg-[#16050e]"],
 [class*="bg-[#1a0e17]"],
 [class*="bg-[#2c0615]"] {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  background-image: linear-gradient(135deg, rgba(165, 215, 235, 0.1) 0%, rgba(86, 138, 165, 0.05) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(28px) saturate(210%);
+  -webkit-backdrop-filter: blur(28px) saturate(210%);
+  background-color: rgba(255, 255, 255, 0.055) !important;
+  background-image: linear-gradient(135deg, rgba(185, 230, 255, 0.16) 0%, rgba(130, 195, 235, 0.08) 45%, rgba(86, 138, 165, 0.04) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.35), inset 0 0 25px 0 rgba(165, 215, 245, 0.1);
 }
 
 [class*="bg-black/2"]:hover:not(.aspect-\[4\/3\]):not(.aspect-\[16\/10\]):not(.fixed),
 [class*="bg-black/3"]:hover:not(.aspect-\[4\/3\]):not(.aspect-\[16\/10\]):not(.fixed),
 [class*="bg-[#180610]"]:hover {
-  border-color: rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.28), 0 0 20px rgba(165, 215, 235, 0.12);
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 16px 50px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.5), 0 0 30px rgba(165, 215, 245, 0.22);
 }
 
 /* Explicit Satoshi font utility overrides */

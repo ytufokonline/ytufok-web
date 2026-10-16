@@ -18,25 +18,28 @@ import React, { useEffect, useRef, useState } from 'react';
  *    - Noktalar, imlecin peşinden organik bir yaylanma ve momentumla (After Effects Easy Ease) akar.
  */
 
-// Koyu Bordo -> Şarap -> Lavanta/Mürdüm -> Sönük Mat Bebe Mavisi Renk Spektrumu
+// Koyu Bordo -> Şarap -> Lavanta/Mürdüm -> Parlak & Enerjik Bebe Mavisi Renk Spektrumu
 const HEAD_BABY_BLUE_COLORS = [
-  'rgba(168, 204, 230, ',  // Muted mat bebe mavisi (#a8cce6)
-  'rgba(145, 185, 215, ',  // Pastel gök tonu (#91b9d7)
-  'rgba(130, 168, 200, ',  // Toz mavi (#82a8c8)
-  'rgba(118, 155, 188, ',  // Derin pastel mavi (#769bbc)
+  'rgba(240, 249, 255, ',  // Prizmatik kristal buz parıltısı (#f0f9ff)
+  'rgba(195, 235, 255, ',  // Parlak elektrik bebe mavisi (#c3ebff)
+  'rgba(165, 218, 252, ',  // Luminous pastel gök mavisi (#a5dafc)
+  'rgba(138, 198, 248, ',  // Işıltılı canlı mavi (#8ac6f8)
+  'rgba(180, 210, 255, ',  // Parlak yumuşak mavi (#b4d2ff)
 ];
 
 const MID_TRANSITION_COLORS = [
-  'rgba(142, 148, 192, ',  // Sönük leylak (#8e94c0)
-  'rgba(125, 110, 160, ',  // Mat lavanta mürdüm (#7d6ea0)
-  'rgba(105, 80, 130, ',   // Koyu lavanta erik (#695082)
-  'rgba(90, 50, 95, ',     // Muted şarap mürdüm (#5a325f)
+  'rgba(175, 215, 250, ',  // Parlak bebe mavisi (#afd7fa)
+  'rgba(165, 175, 235, ',  // Canlı leylak periwinkle (#a5afeb)
+  'rgba(145, 125, 195, ',  // Parlak lavanta mürdüm (#917dc3)
+  'rgba(125, 75, 150, ',   // Lavanta erik (#7d4b96)
+  'rgba(145, 45, 105, ',   // Parlak fuşya bordo (#912d69)
 ];
 
 const TAIL_BORDO_COLORS = [
-  'rgba(82, 20, 52, ',     // Derin bordo (#521434)
-  'rgba(62, 10, 36, ',     // Koyu asil bordo (#3e0a24)
-  'rgba(44, 5, 24, ',      // Zeminle kaynaşan şarap (#2c0518)
+  'rgba(125, 75, 150, ',   // Lavanta erik (#7d4b96)
+  'rgba(110, 22, 68, ',    // Asil bordo (#6e1644)
+  'rgba(75, 12, 44, ',     // Derin şarap (#4b0c2c)
+  'rgba(45, 5, 26, ',      // Zeminle kaynaşan koyu bordo (#2d051a)
   'rgba(28, 2, 13, ',      // Saf zemin bordosu (#1c020d)
 ];
 
@@ -151,21 +154,21 @@ export const AtmosphericBackground: React.FC = () => {
       const trailDy = tailY - headY;
       const trailDist = Math.hypot(trailDx, trailDy);
 
-      // 3. Spawn Pure Dot Matrix particles (Bordodan Bebe Mavisine) ONLY when moving
+      // 3. Spawn Pure Dot Matrix particles (Bordodan Bebe Mavisine - Parlak ve Enerjik)
       if (isMoving && moveSpeed > 0.8 && trailDist > 4) {
-        const baseConeWidth = Math.min(Math.max(trailDist * 0.75 + 30, 40), 240);
+        const baseConeWidth = Math.min(Math.max(trailDist * 0.80 + 35, 45), 260);
 
         const dirX = trailDx / trailDist;
         const dirY = trailDy / trailDist;
         const perpX = -dirY;
         const perpY = dirX;
 
-        // Yoğunluk azaltıldı: gözü yormayan, zarif ve sönük dot-matrix dokusu
-        const dotCount = Math.min(Math.floor(moveSpeed * 0.75) + 3, 20);
+        // Yoğunluk ve enerji artırıldı: belirgin, canlı ve parlak dot-matrix glitch izi
+        const dotCount = Math.min(Math.floor(moveSpeed * 1.3) + 6, 36);
 
         for (let i = 0; i < dotCount; i++) {
           const t = Math.pow(Math.random(), 0.75);
-          const maxHalfW = t * (baseConeWidth * 0.5) + 6;
+          const maxHalfW = t * (baseConeWidth * 0.5) + 8;
           const lateralRatio = (Math.random() - 0.5) * 2;
           const lateralOffset = lateralRatio * maxHalfW;
 
@@ -178,13 +181,13 @@ export const AtmosphericBackground: React.FC = () => {
 
           const px = headX + dirX * (t * trailDist) + perpX * lateralOffset;
           const py = headY + dirY * (t * trailDist) + perpY * lateralOffset;
-          // Zarif ve net nokta boyutu (1.1px - 2.0px arası)
-          const radius = (Math.random() < 0.75 ? 1.2 : 1.9) * (0.7 + 0.45 * edgeFeather);
+          // Parlak ve net nokta boyutu
+          const radius = (Math.random() < 0.7 ? 1.4 : 2.4) * (0.7 + 0.5 * edgeFeather);
 
-          // Renk Spektrumu Seçimi (Sönük ve Asil Palet):
-          // t = 0 (Apex / Cursor): Mat Bebe Mavisi
-          // t = 0.5 (Mid): Leylak & Lavanta Mürdüm
-          // t = 1.0 (Tail): Koyu Şarap & Zemin Bordosu
+          // Renk Spektrumu Seçimi (Parlak ve Enerjik Bebe Mavisi -> Bordo):
+          // t = 0 (Apex / Cursor): Parlak Elektrik Bebe Mavisi & Buz Işıltısı
+          // t = 0.5 (Mid): Canlı Leylak, Lavanta & Mürdüm
+          // t = 1.0 (Tail): Koyu Asil Şarap & Zemin Bordosu
           let colorPrefix: string;
           if (t < 0.28) {
             colorPrefix = HEAD_BABY_BLUE_COLORS[Math.floor(Math.random() * HEAD_BABY_BLUE_COLORS.length)];
@@ -199,11 +202,11 @@ export const AtmosphericBackground: React.FC = () => {
             y: py,
             radius,
             colorPrefix,
-            // Işık şiddeti kısıldı: sönük, asil ve gözü yormayan yumuşak opaklık (maksimum ~0.35 - 0.40)
-            alpha: (0.18 + Math.random() * 0.22) * combinedFade,
-            decay: 0.042 + Math.random() * 0.048,
-            vx: (Math.random() - 0.5) * 0.6,
-            vy: (Math.random() - 0.5) * 0.6,
+            // Işık şiddeti artırıldı: belirgin, parlak ve enerjik opaklık (0.45 - 0.90)
+            alpha: (0.45 + Math.random() * 0.45) * combinedFade,
+            decay: 0.038 + Math.random() * 0.045,
+            vx: (Math.random() - 0.5) * 0.7,
+            vy: (Math.random() - 0.5) * 0.7,
           });
         }
       }

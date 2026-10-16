@@ -368,29 +368,32 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               <AppleReveal
                 key={trip.id}
                 delay={idx * 100}
-                className="border-b border-white/10 pb-6 space-y-3"
+                className="p-6 sm:p-7 rounded-3xl glass-card space-y-4 relative overflow-hidden group hover:scale-[1.01] transition-all duration-300"
               >
                 <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-emerald-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  {/* Subtle Mat Silver / Baby Blue Status Pill (Yeşil çizgi kaldırıldı) */}
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1 rounded-full border border-sky-300/30 bg-sky-400/10 text-sky-200 font-medium">
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-300 animate-pulse"></span>
                     Aktif Gezi
                   </span>
-                  <span className="text-xs font-mono text-white/40">
+                  <span className="text-xs font-mono text-white/50">
                     {formatDateRangeTr(trip.start_date, trip.end_date)}
                   </span>
                 </div>
 
-                <h3 className="text-base font-medium text-white tracking-tight">
-                  {trip.title}
-                </h3>
+                <div className="space-y-1">
+                  <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight font-club">
+                    {trip.title}
+                  </h3>
 
-                <div className="flex items-center gap-1.5 text-xs text-white/40 font-mono">
-                  <MapPin className="w-3.5 h-3.5 shrink-0" />
-                  <span>{trip.destination}</span>
+                  <div className="flex items-center gap-1.5 text-xs text-sky-200/70 font-mono">
+                    <MapPin className="w-3.5 h-3.5 shrink-0 text-sky-300" />
+                    <span>{trip.destination}</span>
+                  </div>
                 </div>
 
                 {trip.description && (
-                  <p className="text-xs text-white/50 font-light leading-relaxed">
+                  <p className="text-xs text-white/60 font-light leading-relaxed">
                     {trip.description}
                   </p>
                 )}
@@ -398,9 +401,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 <div className="pt-2">
                   <button
                     onClick={() => onNavigate('reserve')}
-                    className="text-xs font-mono text-white/70 hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl glass-button text-xs font-mono font-medium text-white/90 hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95"
                   >
-                    <Calendar className="w-3.5 h-3.5 text-white/50" />
+                    <Calendar className="w-3.5 h-3.5 text-sky-300" />
                     <span>Gezi İçin Ekipman Rezerve Et ›</span>
                   </button>
                 </div>
@@ -427,13 +430,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
               <AppleReveal
                 key={ann.id}
                 delay={idx * 80}
-                className="border-b border-white/10 pb-5 space-y-2"
+                className="p-6 rounded-2xl glass-card space-y-2.5 transition-all"
               >
-                <div className="flex items-center justify-between text-xs font-mono text-white/40">
-                  <span className="uppercase">{ann.category}</span>
+                <div className="flex items-center justify-between text-xs font-mono text-white/50">
+                  <span className="uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/15 bg-white/5 text-[10px] text-sky-200">
+                    {ann.category}
+                  </span>
                   <span>{new Date(ann.created_at).toLocaleDateString('tr-TR')}</span>
                 </div>
-                <p className="text-sm text-white/80 font-light leading-relaxed">
+                <p className="text-sm text-white/85 font-light leading-relaxed">
                   {ann.content || ann.title}
                 </p>
               </AppleReveal>

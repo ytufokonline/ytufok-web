@@ -150,45 +150,46 @@ export const AtmosphericBackground: React.FC = () => {
         if (poolAlpha < 0.001) poolAlpha = 0;
       }
 
-      // 3. Akışkan Sıvı Lekesi Oluşumu (Geniş, Organik Su Dağılımı - Nokta Yok!)
+      // 3. Akışkan Sıvı Lekesi Oluşumu (İnce Başlangıç & Pürüzsüz Dağılma)
       const spawnDx = head.x - lastSpawnX;
       const spawnDy = head.y - lastSpawnY;
       const spawnDist = Math.hypot(spawnDx, spawnDy);
 
-      if (isMoving && spawnDist > 26 && moveSpeed > 1.0) {
+      if (isMoving && spawnDist > 18 && moveSpeed > 0.8) {
         lastSpawnX = head.x;
         lastSpawnY = head.y;
 
         const angle = Math.atan2(head.vy, head.vx);
-        // Hıza göre esneme ve deformasyon (Squash & stretch su morfolojisi)
-        const stretch = Math.min(1.15 + moveSpeed * 0.045, 1.85);
+        // Hıza göre narin esneme (Squash & stretch su morfolojisi)
+        const stretch = Math.min(1.15 + moveSpeed * 0.04, 1.75);
 
-        // Başlangıç boyutu geniş (asla minik nokta değil, 40-70px sıvı lekesi)
-        const startRadius = 42 + Math.min(moveSpeed * 2.5, 30);
-        const maxRadius = startRadius * (1.8 + Math.min(moveSpeed * 0.08, 1.3));
-        const maxAlpha = Math.min(0.18, 0.07 + moveSpeed * 0.016);
+        // Başlangıç boyutu zarif ve ince (18px - 32px arası narin su lekesi)
+        const startRadius = 18 + Math.min(moveSpeed * 1.5, 14);
+        // Sonda genişleyerek yumuşakça yayılacağı maksimum yarıçap
+        const maxRadius = startRadius * (2.8 + Math.min(moveSpeed * 0.10, 1.8));
+        const maxAlpha = Math.min(0.18, 0.06 + moveSpeed * 0.015);
 
         blobs.push({
           x: head.x,
           y: head.y,
-          vx: head.vx * 0.12,
-          vy: head.vy * 0.12,
+          vx: head.vx * 0.10,
+          vy: head.vy * 0.10,
           radius: startRadius,
           maxRadius,
-          expandSpeed: 1.2 + Math.min(moveSpeed * 0.12, 2.4),
+          expandSpeed: 0.8 + Math.min(moveSpeed * 0.08, 1.6),
           alpha: maxAlpha,
           maxAlpha,
           angle,
           stretch,
           life: 0,
-          decay: 0.016 + Math.random() * 0.008,
+          decay: 0.010 + Math.random() * 0.005,
         });
       }
 
       // 4. Tuvali Temizle
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 5. Akışkan Sıvı Lekelerini Çiz (Yayılan, Genişledikçe Şeffaflaşan & Eriyen Formlar)
+      // 5. Akışkan Sıvı Lekelerini Çiz (Yayılan, Genişledikçe Ultra-Smooth Eriyen Formlar)
       for (let i = blobs.length - 1; i >= 0; i--) {
         const b = blobs[i];
 
@@ -199,15 +200,16 @@ export const AtmosphericBackground: React.FC = () => {
 
         // Dışa doğru akışkan yayılma
         b.radius += b.expandSpeed;
-        b.expandSpeed *= 0.92;
+        b.expandSpeed *= 0.94;
 
-        // Yaşam süresi ilerlemesi: Durulduğunda çözünme hızlanır
-        b.life += isMoving ? b.decay : b.decay * 3.8;
+        // Yaşam süresi ilerlemesi: Durulduğunda çözünme yumuşakça hızlanır
+        b.life += isMoving ? b.decay : b.decay * 2.5;
 
-        // Büyüdükçe şeffaflaşma (Fade & Scale): Kuadratik sönümlenme
-        const currentAlpha = b.maxAlpha * Math.pow(Math.max(0, 1 - b.life), 2.2);
+        // Sonda biraz daha smooth yok olsun: Güçlü sönümleme eğrisi (power 2.8)
+        const fadeFactor = Math.pow(Math.max(0, 1 - b.life), 2.8);
+        const currentAlpha = b.maxAlpha * fadeFactor;
 
-        if (b.life >= 1 || currentAlpha <= 0.002) {
+        if (b.life >= 1 || currentAlpha <= 0.001) {
           blobs.splice(i, 1);
           continue;
         }
@@ -217,15 +219,17 @@ export const AtmosphericBackground: React.FC = () => {
         ctx.rotate(b.angle);
         ctx.scale(b.stretch, 1 / Math.sqrt(b.stretch)); // Hacim koruyan su esnemesi
 
-        // Geniş, yumuşak geçişli organik sıvı gradyanı (Nokta yok, pürüzsüz su dağılımı)
+        // İnce başlayan ve kenarları arka plan bordosuyla kusursuz eriyen çok katmanlı gradyan
         const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, b.radius);
 
         // Merkez: Işıltılı narin bebe mavisi su yansıması
-        grad.addColorStop(0, `rgba(180, 225, 255, ${(currentAlpha * 0.60).toFixed(3)})`);
+        grad.addColorStop(0, `rgba(180, 225, 255, ${(currentAlpha * 0.52).toFixed(3)})`);
         // Çekirdek yayılma: Berrak su difüzyonu
-        grad.addColorStop(0.30, `rgba(130, 195, 235, ${(currentAlpha * 0.32).toFixed(3)})`);
+        grad.addColorStop(0.25, `rgba(135, 195, 235, ${(currentAlpha * 0.28).toFixed(3)})`);
         // Sıvı gövdesi: Asil koyu vişne su kütlesi
-        grad.addColorStop(0.65, `rgba(62, 7, 32, ${(currentAlpha * 0.16).toFixed(3)})`);
+        grad.addColorStop(0.55, `rgba(62, 7, 32, ${(currentAlpha * 0.14).toFixed(3)})`);
+        // Ultra-smooth kadife geçiş basamağı: Zemin bordosuna kademeli geçiş
+        grad.addColorStop(0.80, `rgba(35, 3, 18, ${(currentAlpha * 0.04).toFixed(3)})`);
         // Sınır: %100 şeffaf - Koyu bordo zeminle kusursuzca erir
         grad.addColorStop(1, 'rgba(28, 2, 13, 0)');
 
@@ -237,26 +241,27 @@ export const AtmosphericBackground: React.FC = () => {
         ctx.restore();
       }
 
-      // 6. Akışkan Sıvı İzi (İmleç Altındaki Sünek Sıvı Kütlesi)
+      // 6. Akışkan Sıvı İzi (İmleç Altında İnce & Zarif Başlayan Sıvı Çekirdeği)
       if (poolAlpha > 0.002) {
         for (let i = poolNodes.length - 1; i >= 0; i--) {
           const node = poolNodes[i];
           const nodeProgress = i / (CHAIN_LENGTH - 1);
-          // Geniş, birleşik su kütlesi (Geniş çap: 30px - 55px)
-          const nodeRadius = (45 - i * 5.5) * (0.8 + Math.min(moveSpeed * 0.04, 0.5));
+          // İnce ve narin başlangıç (18px - 26px arası zarif su ucu)
+          const nodeRadius = (20 - i * 2.8) * (0.85 + Math.min(moveSpeed * 0.03, 0.45));
           const nodeOpacity = poolAlpha * (1 - nodeProgress * 0.50);
 
-          if (nodeRadius <= 1 || nodeOpacity <= 0.002) continue;
+          if (nodeRadius <= 0.5 || nodeOpacity <= 0.002) continue;
 
           const poolGrad = ctx.createRadialGradient(
             node.x, node.y, 0,
             node.x, node.y, nodeRadius
           );
           // Sıvı parıltısı
-          poolGrad.addColorStop(0, `rgba(185, 230, 255, ${(nodeOpacity * 0.60).toFixed(3)})`);
+          poolGrad.addColorStop(0, `rgba(185, 230, 255, ${(nodeOpacity * 0.55).toFixed(3)})`);
           // Ara yumuşak su kütlesi
-          poolGrad.addColorStop(0.40, `rgba(75, 10, 36, ${(nodeOpacity * 0.28).toFixed(3)})`);
-          // Kenar erimesi
+          poolGrad.addColorStop(0.35, `rgba(130, 190, 230, ${(nodeOpacity * 0.26).toFixed(3)})`);
+          // Kenar erimesi (Vişne tonundan şeffafa)
+          poolGrad.addColorStop(0.70, `rgba(70, 9, 35, ${(nodeOpacity * 0.12).toFixed(3)})`);
           poolGrad.addColorStop(1, 'rgba(28, 2, 13, 0)');
 
           ctx.fillStyle = poolGrad;

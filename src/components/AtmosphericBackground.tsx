@@ -288,7 +288,7 @@ export const AtmosphericBackground: React.FC = () => {
 
   return (
     <>
-      {/* 1. Base Background: Dense Cyberpunk Digital Grain / Noise with Cold Spotlight & Powerful Vignette */}
+      {/* 1. Base Background: Deep Bordo Dominant with Symmetrical Subtle Dot-Matrix / Grain Gradient */}
       <div
         className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden"
         style={{
@@ -303,62 +303,60 @@ export const AtmosphericBackground: React.FC = () => {
         }}
         aria-hidden="true"
       >
-        {/* A. Deep noble burgundy base with soft central blue/violet spotlight */}
+        {/* A. Asil koyu bordo taban (Sıfır blok, homojen asil zemin) */}
         <div
           className="absolute inset-0"
           style={{
-            background: `
-              /* Merkezde yumuşak ve dağınık soğuk mavi/mor stüdyo parıltısı */
-              radial-gradient(ellipse 65% 55% at 50% 42%, rgba(145, 195, 255, 0.18) 0%, rgba(105, 120, 220, 0.10) 32%, rgba(55, 6, 32, 0.35) 60%, transparent 80%),
-              /* Simetrik sol ve sağ narin stüdyo yansımaları */
-              radial-gradient(ellipse 45% 40% at 20% 35%, rgba(130, 185, 245, 0.08) 0%, transparent 70%),
-              radial-gradient(ellipse 45% 40% at 80% 35%, rgba(130, 185, 245, 0.08) 0%, transparent 70%),
-              /* Tok koyu bordo dikey akış */
-              linear-gradient(180deg, #130108 0%, #1c020d 30%, #220313 50%, #1c020d 70%, #120108 100%)
-            `,
+            background: 'linear-gradient(180deg, #150109 0%, #1c020d 35%, #200311 50%, #1c020d 65%, #150109 100%)',
           }}
         />
 
-        {/* B. İnce Taneli Dijital Halftone / Mikro Parazit Izgarası */}
+        {/* B. Hassas Nokta Formunda Gradyan (Subtle Dot-Matrix Gradient) */}
+        {/* 1. Homojen temel mikro noktalar (Tüm ekrana eşit ve dengeli dağılmış, parlaklığı kısılmış mat mikro doku) */}
         <div
-          className="absolute inset-0 opacity-[0.22] pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(195, 230, 255, 0.45) 1px, transparent 0)',
-            backgroundSize: '12px 12px',
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(175, 218, 250, 0.065) 1px, transparent 0)',
+            backgroundSize: '24px 24px',
           }}
         />
 
-        {/* C1. Yoğun ve Belirgin Dijital Parazit (Screen Layer - İnce Taneli RGB Noise) */}
+        {/* 2. Merkez Odaklı Nokta Gradyanı (Yumuşak, mat ve tok bebe mavisi nokta ışıltısı - Parlaklığı kısılmış) */}
         <div
-          className="absolute inset-0 opacity-[0.16] mix-blend-screen pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='denseNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23denseNoise)'/%3E%3C/svg%3E")`,
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(180, 222, 252, 0.17) 1.1px, transparent 0)',
+            backgroundSize: '24px 24px',
+            WebkitMaskImage: 'radial-gradient(ellipse 95% 70% at 50% 28%, black 18%, rgba(0, 0, 0, 0.40) 55%, transparent 95%)',
+            maskImage: 'radial-gradient(ellipse 95% 70% at 50% 28%, black 18%, rgba(0, 0, 0, 0.40) 55%, transparent 95%)',
+          }}
+        />
+
+        {/* 3. Simetrik Sol ve Sağ Kanat Nokta Gradyanı (Ekrana dengeli ve pürüzsüzce yayılan stüdyo dokusu) */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(165, 215, 248, 0.12) 1px, transparent 0)',
+            backgroundSize: '24px 24px',
+            WebkitMaskImage: 'radial-gradient(ellipse 65% 55% at 15% 42%, black 12%, transparent 70%), radial-gradient(ellipse 65% 55% at 85% 42%, black 12%, transparent 70%)',
+            maskImage: 'radial-gradient(ellipse 65% 55% at 15% 42%, black 12%, transparent 70%), radial-gradient(ellipse 65% 55% at 85% 42%, black 12%, transparent 70%)',
+          }}
+        />
+
+        {/* C. Lüks Apple Stüdyo Film Greni (Mat, pürüzsüz ve kadifemsi mikro doku - Gözü yormaz) */}
+        <div
+          className="absolute inset-0 opacity-[0.028] mix-blend-overlay pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'repeat',
           }}
         />
 
-        {/* C2. Yoğun Dijital Film Grain (Overlay Layer - Dokusal Derinlik) */}
-        <div
-          className="absolute inset-0 opacity-[0.20] mix-blend-overlay pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grainNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.90' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grainNoise)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
-          }}
-        />
-
-        {/* D. Güçlü ve Dramatik Vignette Efekti (Köşelerden merkeze doğru derinleşen karanlık) */}
+        {/* D. Zarif ve Tok Kenar Vignette (Kenarları asil #1c020d bordo içinde eritir) */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'radial-gradient(ellipse 85% 75% at 50% 46%, transparent 22%, rgba(18, 1, 10, 0.60) 55%, rgba(10, 0, 5, 0.88) 82%, #060003 100%)',
-          }}
-        />
-
-        {/* E. Ekstra Köşe Çerçevesi (Derin sinematik kavis) */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse 115% 95% at 50% 50%, transparent 45%, rgba(6, 0, 3, 0.75) 80%, #050002 100%)',
+            background: 'radial-gradient(ellipse 120% 90% at 50% 50%, transparent 50%, rgba(28, 2, 13, 0.60) 80%, #1c020d 100%)',
           }}
         />
       </div>

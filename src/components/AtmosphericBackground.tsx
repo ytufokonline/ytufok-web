@@ -288,7 +288,7 @@ export const AtmosphericBackground: React.FC = () => {
 
   return (
     <>
-      {/* 1. Base Background: Deep Bordo Dominant with Perfectly Symmetric Ultra-Smooth Baby-Blue Studio Balance */}
+      {/* 1. Base Background: Deep Bordo Dominant with Symmetrical Subtle Dot-Matrix / Grain Gradient */}
       <div
         className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden"
         style={{
@@ -303,52 +303,60 @@ export const AtmosphericBackground: React.FC = () => {
         }}
         aria-hidden="true"
       >
-        {/* A. Deep foundational linear gradient (Kusursuz dikey simetri, saf koyu bordo) */}
+        {/* A. Deep noble burgundy base */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(180deg, #150109 0%, #1c020d 25%, #220313 50%, #1c020d 75%, #15010a 100%)',
+            background: 'linear-gradient(180deg, #150109 0%, #1c020d 35%, #200311 50%, #1c020d 65%, #150109 100%)',
           }}
         />
 
-        {/* B. Multi-layered ultra-smooth radial mesh (Sol ve sağ tarafa eşit dağılmış simetrik stüdyo ışıltısı) */}
+        {/* B. Symmetrical Ambient Studio Dot-Matrix Gradient (Hassas Bebe Mavisi Nokta Gradyanı) */}
+        {/* 1. Homojen temel mikro noktalar (Tüm ekrana eşit ve dengeli dağılmış hafif mikro doku) */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `
-              /* Sol stüdyo ambiyans lobu (X: 15%, Y: 22%) */
-              radial-gradient(95% 65% at 15% 22%, rgba(145, 205, 245, 0.08) 0%, rgba(86, 138, 165, 0.03) 40%, transparent 72%),
-              /* Sağ stüdyo ambiyans lobu (X: 85%, Y: 22% - Birebir Simetrik) */
-              radial-gradient(95% 65% at 85% 22%, rgba(145, 205, 245, 0.08) 0%, rgba(86, 138, 165, 0.03) 40%, transparent 72%),
-              /* Alt-Sol yansıma (X: 18%, Y: 78%) */
-              radial-gradient(90% 65% at 18% 78%, rgba(130, 190, 235, 0.06) 0%, rgba(70, 115, 145, 0.02) 35%, transparent 68%),
-              /* Alt-Sağ yansıma (X: 82%, Y: 78% - Birebir Simetrik) */
-              radial-gradient(90% 65% at 82% 78%, rgba(130, 190, 235, 0.06) 0%, rgba(70, 115, 145, 0.02) 35%, transparent 68%),
-              /* Tepe merkez taç ışığı (X: 50%, Y: 0%) */
-              radial-gradient(85% 50% at 50% 0%, rgba(165, 218, 252, 0.08) 0%, rgba(86, 138, 165, 0.03) 42%, transparent 70%),
-              /* Merkez vişneçürüğü derinlik çekirdeği */
-              radial-gradient(110% 90% at 50% 50%, rgba(36, 4, 18, 0.45) 0%, rgba(28, 2, 13, 0.85) 75%, transparent 100%)
-            `,
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(185, 225, 255, 0.08) 1px, transparent 0)',
+            backgroundSize: '24px 24px',
           }}
         />
 
-        {/* C. Soft & Delicate Symmetric Floating Ambient Clouds (Sol ve sağ dengeli) */}
-        {/* Üst-Sol Bulut */}
-        <div className="absolute -top-[15%] -left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-sky-300/[0.07] via-[#568aa5]/[0.03] to-transparent blur-[140px] pointer-events-none" />
-        {/* Üst-Sağ Bulut (Simetrik Karşılık) */}
-        <div className="absolute -top-[15%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-bl from-sky-300/[0.07] via-[#568aa5]/[0.03] to-transparent blur-[140px] pointer-events-none" />
-        {/* Alt-Sol Bulut */}
-        <div className="absolute top-[45%] -left-[10%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-tr from-sky-400/[0.05] via-[#416982]/[0.02] to-transparent blur-[150px] pointer-events-none" />
-        {/* Alt-Sağ Bulut (Simetrik Karşılık) */}
-        <div className="absolute top-[45%] -right-[10%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-tl from-sky-400/[0.05] via-[#416982]/[0.02] to-transparent blur-[150px] pointer-events-none" />
-        {/* Tepe Merkez Yumuşak Işıma */}
-        <div className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[60vw] h-[40vw] rounded-full bg-gradient-to-b from-sky-200/[0.06] via-[#2d071b]/[0.15] to-transparent blur-[120px] pointer-events-none" />
-
-        {/* D. Deep Corner Vignette to firmly anchor edges symmetrically into noble #1c020d */}
+        {/* 2. Symmetrical Studio Dot-Matrix Focal Gradient (Merkez ve üst-orta alanda süzülen nokta gradyanı) */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse 130% 100% at 50% 50%, transparent 35%, rgba(28, 2, 13, 0.75) 80%, #1c020d 100%)',
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(185, 230, 255, 0.26) 1.1px, transparent 0)',
+            backgroundSize: '24px 24px',
+            WebkitMaskImage: 'radial-gradient(ellipse 100% 75% at 50% 28%, black 20%, rgba(0, 0, 0, 0.45) 60%, transparent 100%)',
+            maskImage: 'radial-gradient(ellipse 100% 75% at 50% 28%, black 20%, rgba(0, 0, 0, 0.45) 60%, transparent 100%)',
+          }}
+        />
+
+        {/* 3. Symmetrical Left & Right Studio Flank Dot-Gradients (Sol ve sağ yanlara eşit dağılmış simetrik stüdyo ışıltısı) */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(170, 220, 252, 0.18) 1px, transparent 0)',
+            backgroundSize: '24px 24px',
+            WebkitMaskImage: 'radial-gradient(ellipse 65% 55% at 15% 45%, black 15%, transparent 75%), radial-gradient(ellipse 65% 55% at 85% 45%, black 15%, transparent 75%)',
+            maskImage: 'radial-gradient(ellipse 65% 55% at 15% 45%, black 15%, transparent 75%), radial-gradient(ellipse 65% 55% at 85% 45%, black 15%, transparent 75%)',
+          }}
+        />
+
+        {/* C. Ultra-fine Apple Studio Grain Texture (Mat, pürüzsüz ve lüks film grain dokusu) */}
+        <div
+          className="absolute inset-0 opacity-[0.032] mix-blend-overlay pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat',
+          }}
+        />
+
+        {/* D. Deep Subtle Edge Vignette (Kenarları asil #1c020d bordo ile çerçeveler) */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(28, 2, 13, 0.65) 85%, #1c020d 100%)',
           }}
         />
       </div>

@@ -145,8 +145,8 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent text-[#eed1d1] selection:bg-[#568aa5]/40 selection:text-white font-sans relative">
-      {/* Apple-style atmospheric aurora & floating ambient bubbles */}
+    <div className="min-h-screen flex flex-col bg-[#1f0814] text-[#eed1d1] selection:bg-[#568aa5]/40 selection:text-white font-sans relative">
+      {/* Apple-style atmospheric cursor spotlight background */}
       <AtmosphericBackground />
 
       {/* Main Navigation Bar with Active Profile & Sign Out */}
@@ -160,7 +160,7 @@ export function App() {
       />
 
       {/* Main Dynamic View */}
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         {activeTab === 'home' && (
           <HomePage
             onNavigate={handleNavigate}

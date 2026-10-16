@@ -6,22 +6,21 @@ import React, { useEffect, useRef, useState } from 'react';
  * 1. Masaüstü Odaklı (Desktop-Only):
  *    - Mobil ve dokunmatik cihazlarda (telefon/tablet) efekt tamamen devre dışı bırakılır.
  *    - Sıfır CPU/GPU tüketimi ile mobil performansı ve pürüzsüz kaydırma korunur.
- * 2. Cam Tanecikleri Dokusu (Glass Bead Dot Matrix):
- *    - Arkadaki içerikleri bulanıklaştıran "frosted glass" (cam arkası blur) tamamen kaldırılmıştır.
- *    - Noktaların KENDİSİ pırıl pırıl, yarı saydam ve ışığı yansıtan minik cam taneleri (glass beads)
- *      şeklinde render edilir: Yarı saydam gövde, optik çeper ve noktasal beyaz ışık parıltısı (specular glint).
- * 3. Renk Paleti (Koyu Bordodan Bebe Mavisine):
+ * 2. Saf Nokta Yapısı (Pure Crisp Dot-Matrix Grain):
+ *    - Cam, buzlu cam (frosted glass), arka plan bulanıklığı veya parıltı/halo efektleri tamamen kaldırılmıştır.
+ *    - İz parçacıkları %100 saf, net, keskin ve düz noktalardan (dot-matrix particles) oluşur.
+ * 3. Renk Skalası (Bordodan Bebe Mavisine):
  *    - Koyu bordo (#1c020d) zemin tonundan başlayıp leylak ve lavanta ara tonlarıyla
- *      yumuşak pastel bebe mavisine (#bae6fd / #e0f2fe) uzanan asil renk skalası.
+ *      imleç çevresinde yumuşak pastel bebe mavisine (#bae6fd / #e0f2fe) uzanan asil renk paleti.
  * 4. Harekete Duyarlılık (Statik Durumda Tamamen Gizli):
- *    - İmleç durduğunda parçacıklar derhal solarak tamamen kaybolur; zemin %100 saf #1c020d kalır.
+ *    - İmleç durduğu an noktalar hızla solarak tamamen kaybolur; zemin %100 saf ve lekesiz #1c020d kalır.
  * 5. Akışkan Hareket (Easy Ease):
- *    - İz, imlecin peşinden organik bir yaylanma ve momentumla (After Effects Easy Ease) akar.
+ *    - Noktalar, imlecin peşinden organik bir yaylanma ve momentumla (After Effects Easy Ease) akar.
  */
 
 // Koyu Bordo -> Şarap -> Lavanta/Mürdüm -> Toz Mavi -> Pastel Bebe Mavisi Renk Spektrumu
 const HEAD_BABY_BLUE_COLORS = [
-  'rgba(248, 250, 252, ',  // Prizmatik kristal beyaz / buz parıltısı (#f8fafc)
+  'rgba(240, 248, 255, ',  // Kristal buz mavisi (#f0f8ff)
   'rgba(224, 242, 254, ',  // Çok açık pastel bebe mavisi (#e0f2fe)
   'rgba(186, 230, 253, ',  // Klasik tatlı bebe mavisi (#bae6fd)
   'rgba(147, 197, 253, ',  // Yumuşak gök mavisi (#93c5fd)
@@ -40,10 +39,10 @@ const TAIL_BORDO_COLORS = [
   'rgba(115, 75, 130, ',   // Koyu lavanta erik (#734b82)
   'rgba(86, 13, 47, ',     // Asil bordo (#560d2f)
   'rgba(56, 5, 30, ',      // Koyu şarap (#38051e)
-  'rgba(28, 2, 13, ',      // Saf arka plan bordosu (#1c020d)
+  'rgba(28, 2, 13, ',      // Saf zemin bordosu (#1c020d)
 ];
 
-interface GlassParticle {
+interface DotParticle {
   x: number;
   y: number;
   radius: number;
@@ -98,8 +97,8 @@ export const AtmosphericBackground: React.FC = () => {
     let tailVelX = 0;
     let tailVelY = 0;
 
-    // Glass bead particles array
-    const particles: GlassParticle[] = [];
+    // Pure dot matrix particles array
+    const particles: DotParticle[] = [];
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -154,7 +153,7 @@ export const AtmosphericBackground: React.FC = () => {
       const trailDy = tailY - headY;
       const trailDist = Math.hypot(trailDx, trailDy);
 
-      // 3. Spawn Glass Bead particles (Bordodan Bebe Mavisine) ONLY when moving
+      // 3. Spawn Pure Dot Matrix particles (Bordodan Bebe Mavisine) ONLY when moving
       if (isMoving && moveSpeed > 0.8 && trailDist > 4) {
         const baseConeWidth = Math.min(Math.max(trailDist * 0.82 + 35, 45), 280);
 
@@ -180,11 +179,11 @@ export const AtmosphericBackground: React.FC = () => {
 
           const px = headX + dirX * (t * trailDist) + perpX * lateralOffset;
           const py = headY + dirY * (t * trailDist) + perpY * lateralOffset;
-          // Cam taneciği boyutu (1.2px - 3.2px arası organik tanecikler)
-          const radius = (Math.random() < 0.65 ? 1.5 : 2.7) * (0.65 + 0.55 * edgeFeather);
+          // Saf, net ve düz nokta boyutu (1.2px - 2.5px arası temiz dot-matrix tanecikleri)
+          const radius = (Math.random() < 0.7 ? 1.4 : 2.3) * (0.65 + 0.55 * edgeFeather);
 
           // Renk Spektrumu Seçimi:
-          // t = 0 (Apex / Cursor): Bebe Mavisi & Buz Işıltısı
+          // t = 0 (Apex / Cursor): Bebe Mavisi Tonları
           // t = 0.5 (Mid): Leylak & Lavanta Mürdüm
           // t = 1.0 (Tail): Koyu Şarap & Zemin Bordosu
           let colorPrefix: string;
@@ -209,7 +208,7 @@ export const AtmosphericBackground: React.FC = () => {
         }
       }
 
-      // 4. Render and Update Glass Bead Particles
+      // 4. Render and Update Pure Dot Matrix Particles (Cam efekti/blur/halo olmadan net ve düz)
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = particles.length - 1; i >= 0; i--) {
@@ -228,34 +227,11 @@ export const AtmosphericBackground: React.FC = () => {
 
         const effectiveAlpha = Math.max(0, p.alpha);
 
-        // a. Dış Işık Kırılması / Cam Halosu (Soft Refraction Glow)
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius * 1.8, 0, Math.PI * 2);
-        ctx.fillStyle = `${p.colorPrefix}${(effectiveAlpha * 0.18).toFixed(3)})`;
-        ctx.fill();
-
-        // b. Yarı Saydam Renkli Cam Gövde (Translucent Glass Core)
+        // Saf, net, düz nokta çizimi (Zero glass / blur / rim / glint)
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `${p.colorPrefix}${(effectiveAlpha * 0.65).toFixed(3)})`;
+        ctx.fillStyle = `${p.colorPrefix}${effectiveAlpha.toFixed(3)})`;
         ctx.fill();
-
-        // c. İnce Parlak Cam Çeperi (Fresnel Rim)
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `${p.colorPrefix}${(effectiveAlpha * 0.85).toFixed(3)})`;
-        ctx.lineWidth = 0.6;
-        ctx.stroke();
-
-        // d. Noktasal Işık Yansıması / Pırıltı (Specular Glint - "Pırıl Pırıl Minik Cam Taneleri")
-        if (p.radius >= 1.0) {
-          const glintDist = p.radius * 0.34;
-          const glintRadius = Math.max(0.4, p.radius * 0.32);
-          ctx.beginPath();
-          ctx.arc(p.x - glintDist, p.y - glintDist, glintRadius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, effectiveAlpha * 1.35).toFixed(3)})`;
-          ctx.fill();
-        }
       }
 
       animId = requestAnimationFrame(render);
@@ -291,7 +267,7 @@ export const AtmosphericBackground: React.FC = () => {
         aria-hidden="true"
       />
 
-      {/* 2. Desktop-Only Interactive Glass Bead / Dot-Matrix Canvas Layer */}
+      {/* 2. Desktop-Only Interactive Pure Dot-Matrix Canvas Layer */}
       {isDesktop && (
         <div
           className="fixed inset-0 pointer-events-none select-none z-20 overflow-hidden"
@@ -304,7 +280,7 @@ export const AtmosphericBackground: React.FC = () => {
           }}
           aria-hidden="true"
         >
-          {/* Halftone Glass Bead / Dot Matrix Canvas */}
+          {/* Pure Dot Matrix Canvas */}
           <canvas
             ref={canvasRef}
             className="absolute inset-0 pointer-events-none will-change-transform"

@@ -15,6 +15,7 @@ import { api } from './lib/api';
 import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
 import { BookOpen } from 'lucide-react';
 import { initAppleScrollReveal } from './utils/scrollReveal';
+import { initMediaProtection } from './utils/mediaProtection';
 import { AtmosphericBackground } from './components/AtmosphericBackground';
 
 export function App() {
@@ -32,6 +33,12 @@ export function App() {
   useEffect(() => {
     document.title = TAB_TITLES[activeTab] || 'YTÜFOK | Fotoğraf Kulübü Rezervasyon & Ekipman Sistemi';
   }, [activeTab]);
+
+  // Global Image Protection (Sağ Tık, Sürükleme ve Kaydetme Engeli)
+  useEffect(() => {
+    const cleanup = initMediaProtection();
+    return cleanup;
+  }, []);
 
   // Initialize Apple signature scroll-reveal
   useEffect(() => {

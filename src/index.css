@@ -91,6 +91,48 @@
   }
 }
 
+/* ==============================================================================
+   GLOBAL MEDIA & IMAGE PROTECTION (SAĞ TIK, SÜRÜKLEME VE KOPYALAMA ENGELİ)
+   ============================================================================== */
+
+img,
+picture,
+[data-protected-image],
+.protected-image {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+  -webkit-touch-callout: none !important;
+  pointer-events: none !important;
+}
+
+/* Görsel içeren kartlar ve kapsayıcılar */
+[class*="aspect-"],
+.aspect-square,
+.aspect-video,
+.aspect-\[4\/3\],
+.aspect-\[16\/10\] {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Tıklanabilir buton veya link içindeki görsellerde tıklamayı ebeveyn öğeye şeffafça ilet */
+a img,
+button img,
+[role="button"] img,
+.cursor-pointer img,
+.group img {
+  pointer-events: none !important;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

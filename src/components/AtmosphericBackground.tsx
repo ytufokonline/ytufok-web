@@ -6,42 +6,40 @@ import React, { useEffect, useRef, useState } from 'react';
  * Apple-inspired cursor-following spotlight effect over a solid #1f0814 bordo canvas:
  * 1. Sabit Arka Plan: Pure solid #1f0814 (flat burgundy canvas, no background gradients or static patterns).
  * 2. İmleç Odaklı Efekt: Circular, softly diffused glowing spotlight (#568aa5) following the user's cursor.
- * 3. Etkileşim: Buttery-smooth gliding physics via requestAnimationFrame + LERP (linear interpolation).
- *    When cursor stops, the spotlight gently glows and breathes in place.
- * 4. Metin Okunabilirliği: High-contrast ambient illumination (opacity 0.28 core, soft blur), completely
- *    non-blocking (pointer-events-none, z-0, hardware accelerated 60/120 FPS).
+ * 3. Birebir & Gecikmesiz Takip: 0ms lag-free, direct 1:1 cursor synchronization with exact center alignment.
+ * 4. Etkileşim: İmleç durduğunda ışık imlecin etrafında yumuşakça parlamaya/nefes almaya devam eder.
+ * 5. Metin Okunabilirliği: High-contrast ambient illumination (opacity ~0.30 core, soft blur), completely
+ *    non-blocking (pointer-events-none, z-0).
  */
 export const AtmosphericBackground: React.FC = () => {
   const spotlightRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    let animId: number;
-    // Current interpolated position
-    let currentX = window.innerWidth / 2;
-    let currentY = window.innerHeight / 2;
-    // Target pointer position
-    let targetX = window.innerWidth / 2;
-    let targetY = window.innerHeight / 2;
-    let hasMoved = false;
+    // Initial centering
+    const initX = window.innerWidth / 2;
+    const initY = window.innerHeight / 2;
+
+    const setPosition = (x: number, y: number) => {
+      if (spotlightRef.current) {
+        // Direct hardware-accelerated transform with exact -50% centering on cursor coordinates
+        spotlightRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+      }
+    };
+
+    // Set initial position
+    setPosition(initX, initY);
 
     const handleMouseMove = (e: MouseEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-      if (!hasMoved) {
-        hasMoved = true;
-        setIsVisible(true);
-      }
+      // 0ms lag-free, instantaneous direct 1:1 cursor tracking
+      setPosition(e.clientX, e.clientY);
+      setIsVisible(true);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        targetX = e.touches[0].clientX;
-        targetY = e.touches[0].clientY;
-        if (!hasMoved) {
-          hasMoved = true;
-          setIsVisible(true);
-        }
+        setPosition(e.touches[0].clientX, e.touches[0].clientY);
+        setIsVisible(true);
       }
     };
 
@@ -53,32 +51,16 @@ export const AtmosphericBackground: React.FC = () => {
       setIsVisible(true);
     };
 
-    // 60/120 FPS silky gliding physics using LERP
-    const updateMotion = () => {
-      // 0.085 interpolation factor gives that heavy-air, cushioned, elegant Apple gliding response
-      currentX += (targetX - currentX) * 0.085;
-      currentY += (targetY - currentY) * 0.085;
-
-      if (spotlightRef.current) {
-        spotlightRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-      }
-
-      animId = requestAnimationFrame(updateMotion);
-    };
-
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
-
-    animId = requestAnimationFrame(updateMotion);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
-      cancelAnimationFrame(animId);
     };
   }, []);
 
@@ -97,32 +79,32 @@ export const AtmosphericBackground: React.FC = () => {
       }}
       aria-hidden="true"
     >
-      {/* Cursor-Following Fluid Spotlight (#568aa5 slate/blue luminous aura) */}
+      {/* Cursor-Following Instant Spotlight (#568aa5 slate/blue luminous aura) */}
       <div
         ref={spotlightRef}
-        className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-transform"
+        className="absolute top-0 left-0 pointer-events-none will-change-transform"
         style={{
-          width: '720px',
-          height: '720px',
+          width: '680px',
+          height: '680px',
           opacity: isVisible ? 1 : 0,
-          transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: 'opacity 0.4s ease',
         }}
       >
         {/* Outer Broad Luminous Halo (#568aa5) */}
         <div
           className="w-full h-full rounded-full cursor-spotlight-pulse"
           style={{
-            background: 'radial-gradient(circle at center, rgba(86, 138, 165, 0.30) 0%, rgba(86, 138, 165, 0.16) 35%, rgba(86, 138, 165, 0.04) 62%, transparent 75%)',
-            filter: 'blur(55px)',
+            background: 'radial-gradient(circle at center, rgba(86, 138, 165, 0.32) 0%, rgba(86, 138, 165, 0.18) 32%, rgba(86, 138, 165, 0.05) 58%, transparent 75%)',
+            filter: 'blur(50px)',
           }}
         />
 
         {/* Inner Soft Accent Core for deep optical glow */}
         <div
-          className="absolute inset-[24%] rounded-full"
+          className="absolute inset-[25%] rounded-full"
           style={{
-            background: 'radial-gradient(circle at center, rgba(142, 195, 220, 0.24) 0%, rgba(86, 138, 165, 0.10) 45%, transparent 70%)',
-            filter: 'blur(35px)',
+            background: 'radial-gradient(circle at center, rgba(142, 195, 220, 0.28) 0%, rgba(86, 138, 165, 0.12) 42%, transparent 70%)',
+            filter: 'blur(30px)',
           }}
         />
       </div>

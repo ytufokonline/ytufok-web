@@ -68,13 +68,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             </p>
           </AppleReveal>
 
-          {/* Apple-Style Action Bar (Clean White Pill + Text Link) */}
+          {/* Apple-Style Action Bar (Glassmorphism Pill + Text Links) */}
           <AppleReveal delay={240} variant="subtle" className="flex flex-wrap items-center gap-6 pt-2">
             <button
               onClick={() => onNavigate('equipment')}
-              className="px-7 py-3 rounded-full bg-white text-black hover:bg-white/90 text-xs font-mono uppercase tracking-wider font-semibold shadow-xl transition-all duration-150 cursor-pointer active:scale-95"
+              className="px-7 py-3 rounded-full glass-button-primary text-xs font-mono uppercase tracking-wider font-semibold shadow-xl transition-all duration-150 cursor-pointer active:scale-95 flex items-center gap-2"
             >
-              Ekipman Havuzunu İncele
+              <span>Ekipman Havuzunu İncele</span>
             </button>
 
             <button
@@ -94,26 +94,26 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             </button>
           </AppleReveal>
 
-          {/* Apple Minimalist Metrics Strip (Left Aligned, Clean Hairline) */}
-          <div className="pt-10 sm:pt-14 grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 border-t border-white/[0.08]">
-            <AppleReveal delay={360} className="space-y-1">
+          {/* Apple Glassmorphism Metrics Strip */}
+          <div className="pt-10 sm:pt-14 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 border-t border-white/[0.08]">
+            <AppleReveal delay={360} className="p-5 sm:p-6 rounded-2xl glass-card space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">1994</span>
-              <span className="text-xs text-white/40 font-light block leading-snug">Kuruluş Yılı</span>
+              <span className="text-xs text-white/50 font-light block leading-snug">Kuruluş Yılı</span>
             </AppleReveal>
 
-            <AppleReveal delay={460} className="space-y-1">
+            <AppleReveal delay={460} className="p-5 sm:p-6 rounded-2xl glass-card space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">Öncü</span>
-              <span className="text-xs text-white/40 font-light block leading-snug">Üniversiteler Arası İlk Kulüp</span>
+              <span className="text-xs text-white/50 font-light block leading-snug">Üniversiteler Arası İlk Kulüp</span>
             </AppleReveal>
 
-            <AppleReveal delay={560} className="space-y-1">
+            <AppleReveal delay={560} className="p-5 sm:p-6 rounded-2xl glass-card space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">2.</span>
-              <span className="text-xs text-white/40 font-light block leading-snug">YTÜ'nün En Köklü Kulübü</span>
+              <span className="text-xs text-white/50 font-light block leading-snug">YTÜ'nün En Köklü Kulübü</span>
             </AppleReveal>
 
-            <AppleReveal delay={660} className="space-y-1">
+            <AppleReveal delay={660} className="p-5 sm:p-6 rounded-2xl glass-card space-y-1">
               <span className="text-3xl sm:text-4xl font-semibold text-white tracking-tight font-club block">30+</span>
-              <span className="text-xs text-white/40 font-light block leading-snug">Yıllık Kesintisiz Üretim</span>
+              <span className="text-xs text-white/50 font-light block leading-snug">Yıllık Kesintisiz Üretim</span>
             </AppleReveal>
           </div>
 
@@ -280,9 +280,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           <div className="flex flex-wrap items-center gap-6 pt-2">
             <button
               onClick={() => onNavigate('equipment')}
-              className="px-6 py-2.5 rounded-full bg-white text-black hover:bg-white/90 text-xs font-mono uppercase tracking-wider font-semibold transition-all duration-150 cursor-pointer active:scale-95 shadow-lg"
+              className="px-6 py-2.5 rounded-full glass-button-primary text-xs font-mono uppercase tracking-wider font-semibold transition-all duration-150 cursor-pointer active:scale-95 shadow-lg flex items-center gap-2"
             >
-              Tüm Ekipmanları Keşfet
+              <span>Tüm Ekipmanları Keşfet</span>
             </button>
             <button
               onClick={() => onNavigate('reserve')}

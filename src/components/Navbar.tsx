@@ -58,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#1c020d]/80 backdrop-blur-xl border-b border-white/[0.07] transition-all">
+    <header className="sticky top-0 z-40 backdrop-blur-[20px] backdrop-saturate-[180%] bg-[rgba(28,2,13,0.72)] bg-gradient-to-r from-[rgba(165,215,235,0.08)] via-[rgba(255,255,255,0.03)] to-[rgba(86,138,165,0.05)] border-b border-white/15 shadow-[0_4px_30px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           
@@ -134,8 +134,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 {/* Dropdown Menu */}
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#1a0611] border border-white/20 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-4 py-2.5 border-b border-white/10 bg-[#1c020d]/80">
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl glass-panel border border-white/20 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-4 py-2.5 border-b border-white/10 bg-white/5">
                       <div className="flex items-center gap-2">
                         <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
                         <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-400">Aktif Yönetici Oturumu</span>
@@ -259,7 +259,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-white/[0.08] bg-[#17050f]/95 backdrop-blur-2xl px-4 py-4 space-y-1">
+        <div className="md:hidden border-b border-white/15 glass-panel px-4 py-4 space-y-1 shadow-2xl">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (

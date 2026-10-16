@@ -50,7 +50,7 @@
   html,
   body {
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #360116 !important;
+    background-color: #23000e !important;
     color: #eed1d1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -59,7 +59,7 @@
 
   #root {
     min-height: 100vh;
-    background-color: #360116;
+    background-color: #23000e;
   }
 
   /* Body texts, inputs, buttons, paragraphs use Satoshi */
@@ -98,7 +98,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #360116;
+  background: #23000e;
 }
 
 ::-webkit-scrollbar-thumb {

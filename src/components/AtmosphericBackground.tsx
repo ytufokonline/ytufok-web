@@ -3,16 +3,16 @@ import React, { useEffect, useRef, useState } from 'react';
 /**
  * AtmosphericBackground
  * 
- * 1. Sabit Arka Plan: Doğrudan ve sabit #360116 (başka hiçbir bordo tonu olmadan, düz zemin).
+ * 1. Sabit Arka Plan: Doğrudan ve sabit #23000e (başka hiçbir bordo tonu olmadan, düz zemin).
  * 2. Glitch & Noise Efekti: İmleç hareket ettikçe imleç etrafında oluşan hafif, modern dijital
  *    parazit, kamera sensör ISO greni ve mikro kromatik glitch sızıntıları.
- * 3. Renk Skalası: #360116 ile #568aa5 arasındaki spektrum ara tonları (şarap/erik, alacakaranlık,
+ * 3. Renk Skalası: #23000e ile #568aa5 arasındaki spektrum ara tonları (şarap/erik, alacakaranlık,
  *    arduvaz mavisi, cyan ışıma).
  * 4. Apple Estetiği: Asil, kontrollü ve minimalist. İmleç durduğunda glitch kaybolur, ışık yumuşakça
  *    parlamaya devam eder.
  */
 
-// #360116 (Bordo) <-> #568aa5 (Mavi/Gri) geçiş spektrumundan renkler
+// #23000e (Koyu Bordo) <-> #568aa5 (Mavi/Gri) geçiş spektrumundan renkler
 const SPECTRUM_PALETTE = [
   'rgba(86, 138, 165, ',   // Slate Blue (#568aa5)
   'rgba(112, 157, 181, ',  // Luminous Slate Cyan (#709db5)
@@ -223,7 +223,7 @@ export const AtmosphericBackground: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 pointer-events-none overflow-hidden select-none z-0 bg-[#360116]"
+      className="fixed inset-0 pointer-events-none overflow-hidden select-none z-0 bg-[#23000e]"
       style={{
         position: 'fixed',
         top: 0,
@@ -232,7 +232,7 @@ export const AtmosphericBackground: React.FC = () => {
         bottom: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#360116',
+        backgroundColor: '#23000e',
       }}
       aria-hidden="true"
     >
@@ -251,7 +251,7 @@ export const AtmosphericBackground: React.FC = () => {
         <div
           className="w-full h-full rounded-full cursor-spotlight-pulse"
           style={{
-            background: 'radial-gradient(circle at center, rgba(86, 138, 165, 0.28) 0%, rgba(74, 104, 125, 0.16) 32%, rgba(54, 1, 22, 0.02) 60%, transparent 75%)',
+            background: 'radial-gradient(circle at center, rgba(86, 138, 165, 0.28) 0%, rgba(74, 104, 125, 0.16) 32%, rgba(35, 0, 14, 0.02) 60%, transparent 75%)',
             filter: 'blur(52px)',
           }}
         />

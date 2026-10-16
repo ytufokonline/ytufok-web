@@ -6,7 +6,9 @@ import React, { useEffect, useRef, useState } from 'react';
  * Apple-inspired cursor-following spotlight effect over a solid #1f0814 bordo canvas:
  * 1. Sabit Arka Plan: Pure solid #1f0814 (flat burgundy canvas, no background gradients or static patterns).
  * 2. İmleç Odaklı Efekt: Circular, softly diffused glowing spotlight (#568aa5) following the user's cursor.
- * 3. Birebir & Gecikmesiz Takip: 0ms lag-free, direct 1:1 cursor synchronization with exact center alignment.
+ * 3. Zarif Akışkanlık (Buttery-smooth Lerp Easing):
+ *    - Perfectly centered on the cursor: translate3d(x, y, 0) translate(-50%, -50%).
+ *    - Tuned interpolation factor (~0.15) for that signature Apple liquid momentum feel.
  * 4. Etkileşim: İmleç durduğunda ışık imlecin etrafında yumuşakça parlamaya/nefes almaya devam eder.
  * 5. Metin Okunabilirliği: High-contrast ambient illumination (opacity ~0.30 core, soft blur), completely
  *    non-blocking (pointer-events-none, z-0).
@@ -16,29 +18,50 @@ export const AtmosphericBackground: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Initial centering
-    const initX = window.innerWidth / 2;
-    const initY = window.innerHeight / 2;
+    let animId: number;
+    let hasInitialized = false;
 
-    const setPosition = (x: number, y: number) => {
+    // Coordinate trackers
+    let currentX = window.innerWidth / 2;
+    let currentY = window.innerHeight / 2;
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+
+    const setTransform = (x: number, y: number) => {
       if (spotlightRef.current) {
         // Direct hardware-accelerated transform with exact -50% centering on cursor coordinates
         spotlightRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
       }
     };
 
-    // Set initial position
-    setPosition(initX, initY);
+    // Initialize position at viewport center
+    setTransform(currentX, currentY);
 
     const handleMouseMove = (e: MouseEvent) => {
-      // 0ms lag-free, instantaneous direct 1:1 cursor tracking
-      setPosition(e.clientX, e.clientY);
+      targetX = e.clientX;
+      targetY = e.clientY;
+
+      // On first cursor appearance, snap current to target so it doesn't wildly slide from offscreen
+      if (!hasInitialized) {
+        currentX = targetX;
+        currentY = targetY;
+        hasInitialized = true;
+      }
+
       setIsVisible(true);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        setPosition(e.touches[0].clientX, e.touches[0].clientY);
+        targetX = e.touches[0].clientX;
+        targetY = e.touches[0].clientY;
+
+        if (!hasInitialized) {
+          currentX = targetX;
+          currentY = targetY;
+          hasInitialized = true;
+        }
+
         setIsVisible(true);
       }
     };
@@ -51,16 +74,34 @@ export const AtmosphericBackground: React.FC = () => {
       setIsVisible(true);
     };
 
+    // Smooth physics loop with tuned Apple easing/momentum
+    const updateMotion = () => {
+      // 0.15 lerp factor: provides the golden ratio between responsive tracking and silky liquid glide
+      const dx = targetX - currentX;
+      const dy = targetY - currentY;
+
+      if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
+        currentX += dx * 0.15;
+        currentY += dy * 0.15;
+        setTransform(currentX, currentY);
+      }
+
+      animId = requestAnimationFrame(updateMotion);
+    };
+
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
+
+    animId = requestAnimationFrame(updateMotion);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
+      cancelAnimationFrame(animId);
     };
   }, []);
 
@@ -79,7 +120,7 @@ export const AtmosphericBackground: React.FC = () => {
       }}
       aria-hidden="true"
     >
-      {/* Cursor-Following Instant Spotlight (#568aa5 slate/blue luminous aura) */}
+      {/* Cursor-Following Fluid Spotlight with Apple Momentum (#568aa5 slate/blue luminous aura) */}
       <div
         ref={spotlightRef}
         className="absolute top-0 left-0 pointer-events-none will-change-transform"
@@ -87,7 +128,7 @@ export const AtmosphericBackground: React.FC = () => {
           width: '680px',
           height: '680px',
           opacity: isVisible ? 1 : 0,
-          transition: 'opacity 0.4s ease',
+          transition: 'opacity 0.45s ease',
         }}
       >
         {/* Outer Broad Luminous Halo (#568aa5) */}

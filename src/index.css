@@ -376,10 +376,10 @@ input[type="date"]::-webkit-date-and-time-value {
 
 .bg-canvas-aurora {
   background: 
-    radial-gradient(130% 90% at 85% 12%, rgba(145, 205, 245, 0.20) 0%, rgba(95, 155, 195, 0.10) 32%, transparent 75%),
-    radial-gradient(110% 80% at 15% 82%, rgba(125, 185, 230, 0.16) 0%, rgba(70, 125, 160, 0.08) 35%, transparent 68%),
-    radial-gradient(95% 65% at 50% -5%, rgba(175, 222, 255, 0.22) 0%, rgba(86, 138, 165, 0.10) 40%, transparent 72%),
-    linear-gradient(145deg, #18020b 0%, #1c020d 28%, #250618 52%, #181926 78%, #111e2b 100%);
+    radial-gradient(120% 80% at 82% 16%, rgba(145, 205, 245, 0.08) 0%, rgba(86, 138, 165, 0.03) 38%, transparent 70%),
+    radial-gradient(100% 70% at 14% 78%, rgba(130, 190, 235, 0.06) 0%, rgba(70, 115, 145, 0.02) 35%, transparent 65%),
+    radial-gradient(85% 55% at 50% -2%, rgba(165, 218, 252, 0.09) 0%, rgba(86, 138, 165, 0.03) 40%, transparent 68%),
+    linear-gradient(150deg, #150109 0%, #1c020d 30%, #220312 60%, #1a020e 85%, #15010a 100%);
 }
 
 .bg-radial-vignette {

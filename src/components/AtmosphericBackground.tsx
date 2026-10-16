@@ -254,7 +254,7 @@ export const AtmosphericBackground: React.FC = () => {
 
   return (
     <>
-      {/* 1. Base Background: Deep Bordo Dominant with Delicate Ultra-Smooth Baby-Blue Ambient Breath */}
+      {/* 1. Base Background: Deep Bordo Dominant with Perfectly Symmetric Ultra-Smooth Baby-Blue Studio Balance */}
       <div
         className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden"
         style={{
@@ -269,37 +269,52 @@ export const AtmosphericBackground: React.FC = () => {
         }}
         aria-hidden="true"
       >
-        {/* A. Deep foundational linear gradient (Tamamen asil ve derin koyu bordo baz) */}
+        {/* A. Deep foundational linear gradient (Kusursuz dikey simetri, saf koyu bordo) */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(150deg, #150109 0%, #1c020d 30%, #220312 60%, #1a020e 85%, #15010a 100%)',
+            background: 'linear-gradient(180deg, #150109 0%, #1c020d 25%, #220313 50%, #1c020d 75%, #15010a 100%)',
           }}
         />
 
-        {/* B. Multi-layered ultra-smooth radial mesh (Çok hafif, zarif ve pürüzsüz bebe mavisi stüdyo ışıltısı) */}
+        {/* B. Multi-layered ultra-smooth radial mesh (Sol ve sağ tarafa eşit dağılmış simetrik stüdyo ışıltısı) */}
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: `
-              radial-gradient(120% 80% at 82% 16%, rgba(145, 205, 245, 0.08) 0%, rgba(86, 138, 165, 0.03) 38%, transparent 70%),
-              radial-gradient(100% 70% at 14% 78%, rgba(130, 190, 235, 0.06) 0%, rgba(70, 115, 145, 0.02) 35%, transparent 65%),
-              radial-gradient(85% 55% at 50% -2%, rgba(165, 218, 252, 0.09) 0%, rgba(86, 138, 165, 0.03) 40%, transparent 68%),
-              radial-gradient(110% 90% at 50% 50%, rgba(42, 5, 22, 0.45) 0%, rgba(28, 2, 13, 0.85) 75%, transparent 100%)
+              /* Sol stüdyo ambiyans lobu (X: 15%, Y: 22%) */
+              radial-gradient(95% 65% at 15% 22%, rgba(145, 205, 245, 0.08) 0%, rgba(86, 138, 165, 0.03) 40%, transparent 72%),
+              /* Sağ stüdyo ambiyans lobu (X: 85%, Y: 22% - Birebir Simetrik) */
+              radial-gradient(95% 65% at 85% 22%, rgba(145, 205, 245, 0.08) 0%, rgba(86, 138, 165, 0.03) 40%, transparent 72%),
+              /* Alt-Sol yansıma (X: 18%, Y: 78%) */
+              radial-gradient(90% 65% at 18% 78%, rgba(130, 190, 235, 0.06) 0%, rgba(70, 115, 145, 0.02) 35%, transparent 68%),
+              /* Alt-Sağ yansıma (X: 82%, Y: 78% - Birebir Simetrik) */
+              radial-gradient(90% 65% at 82% 78%, rgba(130, 190, 235, 0.06) 0%, rgba(70, 115, 145, 0.02) 35%, transparent 68%),
+              /* Tepe merkez taç ışığı (X: 50%, Y: 0%) */
+              radial-gradient(85% 50% at 50% 0%, rgba(165, 218, 252, 0.08) 0%, rgba(86, 138, 165, 0.03) 42%, transparent 70%),
+              /* Merkez vişneçürüğü derinlik çekirdeği */
+              radial-gradient(110% 90% at 50% 50%, rgba(36, 4, 18, 0.45) 0%, rgba(28, 2, 13, 0.85) 75%, transparent 100%)
             `,
           }}
         />
 
-        {/* C. Soft & Delicate Floating Ambient Studio Luminescence (Çok hafif, zarif süzülen bulutlar) */}
-        <div className="absolute -top-[15%] right-[5%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-br from-sky-300/[0.08] via-[#568aa5]/[0.04] to-transparent blur-[140px] pointer-events-none ambient-aurora-top" />
-        <div className="absolute top-[35%] -left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-sky-400/[0.06] via-[#416982]/[0.03] to-transparent blur-[150px] pointer-events-none ambient-aurora-bottom" />
-        <div className="absolute bottom-[5%] right-[15%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-l from-sky-200/[0.05] via-[#2d071b]/[0.20] to-transparent blur-[130px] pointer-events-none ambient-aurora-right" />
+        {/* C. Soft & Delicate Symmetric Floating Ambient Clouds (Sol ve sağ dengeli) */}
+        {/* Üst-Sol Bulut */}
+        <div className="absolute -top-[15%] -left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-sky-300/[0.07] via-[#568aa5]/[0.03] to-transparent blur-[140px] pointer-events-none" />
+        {/* Üst-Sağ Bulut (Simetrik Karşılık) */}
+        <div className="absolute -top-[15%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-bl from-sky-300/[0.07] via-[#568aa5]/[0.03] to-transparent blur-[140px] pointer-events-none" />
+        {/* Alt-Sol Bulut */}
+        <div className="absolute top-[45%] -left-[10%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-tr from-sky-400/[0.05] via-[#416982]/[0.02] to-transparent blur-[150px] pointer-events-none" />
+        {/* Alt-Sağ Bulut (Simetrik Karşılık) */}
+        <div className="absolute top-[45%] -right-[10%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-tl from-sky-400/[0.05] via-[#416982]/[0.02] to-transparent blur-[150px] pointer-events-none" />
+        {/* Tepe Merkez Yumuşak Işıma */}
+        <div className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[60vw] h-[40vw] rounded-full bg-gradient-to-b from-sky-200/[0.06] via-[#2d071b]/[0.15] to-transparent blur-[120px] pointer-events-none" />
 
-        {/* D. Deep Corner Vignette to firmly anchor edges into noble #1c020d */}
+        {/* D. Deep Corner Vignette to firmly anchor edges symmetrically into noble #1c020d */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse 135% 105% at 50% 50%, transparent 35%, rgba(28, 2, 13, 0.75) 80%, #1c020d 100%)',
+            background: 'radial-gradient(ellipse 130% 100% at 50% 50%, transparent 35%, rgba(28, 2, 13, 0.75) 80%, #1c020d 100%)',
           }}
         />
       </div>

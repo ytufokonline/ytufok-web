@@ -18,26 +18,6 @@ import React, { useEffect, useRef, useState } from 'react';
  *    - Mobil cihazlarda sıfır CPU/GPU tüketimi için tamamen devre dışıdır.
  */
 
-interface LiquidNode {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-}
-
-interface LiquidHalo {
-  x: number;
-  y: number;
-  radius: number;
-  maxRadius: number;
-  speed: number;
-  alpha: number;
-  maxAlpha: number;
-  decay: number;
-  aspectRatio: number;
-  angle: number;
-}
-
 export const AtmosphericBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -72,20 +52,34 @@ export const AtmosphericBackground: React.FC = () => {
     let targetY = initialY;
     let lastMoveTime = 0;
 
-    // Apple Liquid Spring Chain (Elastic Fluid Nodes)
+    // 1. Easy Ease Viscous Fluid Follower (Sıvı Çekirdeği)
     const CHAIN_LENGTH = 5;
-    const nodes: LiquidNode[] = Array.from({ length: CHAIN_LENGTH }, () => ({
+    const trailNodes = Array.from({ length: CHAIN_LENGTH }, () => ({
       x: initialX,
       y: initialY,
       vx: 0,
       vy: 0,
     }));
 
-    // Liquid Halos (Expanding, Feathered Fade & Scale Halos)
-    const halos: LiquidHalo[] = [];
+    // 2. Doğal Organik Sıvı Damlacıkları (Organic Fluid Droplets)
+    interface OrganicDroplet {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      maxRadius: number;
+      expandSpeed: number;
+      alpha: number;
+      maxAlpha: number;
+      life: number; // 0 (yeni doğan) -> 1 (yok olan)
+      decay: number;
+    }
+
+    const droplets: OrganicDroplet[] = [];
     let lastSpawnX = initialX;
     let lastSpawnY = initialY;
-    let blobAlpha = 0;
+    let trailAlpha = 0;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -109,138 +103,161 @@ export const AtmosphericBackground: React.FC = () => {
       lastMoveTime = 0;
     };
 
-    // Main 60/120 FPS Apple Liquid Motion Loop
+    // Doğal Sıvı Hareketi & Damlacık Döngüsü (60 / 120 FPS)
     const render = () => {
       const now = performance.now();
-      const isMoving = now - lastMoveTime < 130;
+      const isMoving = now - lastMoveTime < 90;
 
-      // 1. Easy Ease Liquid Chain Physics (Elastic Viscous Spring Simulation)
-      // Node 0: Apex follows mouse with smooth Easy Ease damping
-      const head = nodes[0];
-      const headDx = targetX - head.x;
-      const headDy = targetY - head.y;
-      const headDist = Math.hypot(headDx, headDy);
+      // 1. Easy Ease İvmelenmesi & Momentum (Yaylanma ve Süzülme)
+      const head = trailNodes[0];
+      const dx = targetX - head.x;
+      const dy = targetY - head.y;
 
-      const headSpring = isMoving ? Math.min(0.22, 0.08 + Math.pow(headDist / 200, 1.2) * 0.12) : 0.26;
-      const headDamp = isMoving ? 0.78 : 0.65;
+      const easeFactor = isMoving ? 0.24 : 0.28;
+      const dampingFactor = isMoving ? 0.74 : 0.64;
 
-      head.vx = (head.vx + headDx * headSpring) * headDamp;
-      head.vy = (head.vy + headDy * headSpring) * headDamp;
+      head.vx = (head.vx + dx * easeFactor) * dampingFactor;
+      head.vy = (head.vy + dy * easeFactor) * dampingFactor;
       head.x += head.vx;
       head.y += head.vy;
 
-      // Trailing nodes follow with cascading delay (Morphing Liquid Tail)
+      // Takip eden akışkan düğümler (Organik gecikme ile uzayan sıvı kuyruğu)
       for (let i = 1; i < CHAIN_LENGTH; i++) {
-        const prev = nodes[i - 1];
-        const curr = nodes[i];
-        const spring = 0.28 - i * 0.035;
-        const damping = 0.66;
+        const prev = trailNodes[i - 1];
+        const curr = trailNodes[i];
+        const linkEase = 0.32 - i * 0.04;
+        const linkDamping = 0.68;
 
-        curr.vx = (curr.vx + (prev.x - curr.x) * spring) * damping;
-        curr.vy = (curr.vy + (prev.y - curr.y) * spring) * damping;
+        curr.vx = (curr.vx + (prev.x - curr.x) * linkEase) * linkDamping;
+        curr.vy = (curr.vy + (prev.y - curr.y) * linkEase) * linkDamping;
         curr.x += curr.vx;
         curr.y += curr.vy;
       }
 
       const moveSpeed = Math.hypot(head.vx, head.vy);
 
-      // 2. Liquid Blob Alpha Envelope
-      if (isMoving && moveSpeed > 0.5) {
-        const targetAlpha = Math.min(0.22, 0.06 + moveSpeed * 0.024);
-        blobAlpha += (targetAlpha - blobAlpha) * 0.25;
+      // 2. Takip Eden Akışkan Gövde Opasitesi (Hareket ettikçe belirir, durunca hızla kaybolur)
+      if (isMoving && moveSpeed > 0.6) {
+        const targetTrailAlpha = Math.min(0.18, 0.05 + moveSpeed * 0.015);
+        trailAlpha += (targetTrailAlpha - trailAlpha) * 0.22;
       } else {
-        blobAlpha *= 0.82; // Rapid smooth collapse when stopped
-        if (blobAlpha < 0.002) blobAlpha = 0;
+        // Durulduğunda akışkan gövde anında solar
+        trailAlpha *= 0.76;
+        if (trailAlpha < 0.001) trailAlpha = 0;
       }
 
-      // 3. Spawn Feathered Fade & Scale Halos (Yumuşak Sıvı Daireler)
+      // 3. Doğal Sıvı Damlacıkları Üretimi (Hıza ve Mesafeye Duyarlı Organik Saçılma)
       const spawnDx = head.x - lastSpawnX;
       const spawnDy = head.y - lastSpawnY;
       const spawnDist = Math.hypot(spawnDx, spawnDy);
 
-      if (isMoving && spawnDist > 22 && moveSpeed > 0.8) {
+      if (isMoving && spawnDist > 14 && moveSpeed > 0.8) {
         lastSpawnX = head.x;
         lastSpawnY = head.y;
 
-        const angle = Math.atan2(head.vy, head.vx);
-        // Boyut ve şeffaflık orantısı: Hıza göre zarif ölçek, asla kaba değil
-        const maxRadius = Math.min(45 + moveSpeed * 4.2, 125);
-        const maxAlpha = Math.min(0.18, 0.06 + moveSpeed * 0.018);
+        // Hareket yönü birim vektörü
+        const dirX = head.vx / (moveSpeed || 1);
+        const dirY = head.vy / (moveSpeed || 1);
 
-        halos.push({
-          x: head.x,
-          y: head.y,
-          radius: 8,
-          maxRadius,
-          speed: 1.4 + Math.min(moveSpeed * 0.10, 2.2),
-          alpha: maxAlpha,
-          maxAlpha,
-          decay: 0.012 + Math.random() * 0.005,
-          aspectRatio: Math.min(1.0 + moveSpeed * 0.02, 1.35),
-          angle,
-        });
+        // Su yüzeyinde yanal dalgacık ve damla saçılma vektörü (Perpendicular dispersion)
+        const count = moveSpeed > 8 ? 2 : 1;
+        for (let c = 0; c < count; c++) {
+          const side = (Math.random() - 0.5) * 2;
+          const perpX = -dirY * side * (4 + Math.random() * 8);
+          const perpY = dirX * side * (4 + Math.random() * 8);
+
+          // Damlacık hızı: Hem imleç momentumundan hafifçe taşır hem de yana doğru süzülür
+          const dropVx = head.vx * 0.12 + perpX * 0.08;
+          const dropVy = head.vy * 0.12 + perpY * 0.08;
+
+          const startRadius = 3.5 + Math.random() * 3.5;
+          const maxRadius = startRadius * (2.2 + Math.min(moveSpeed * 0.08, 2.0));
+          const maxAlpha = Math.min(0.20, 0.07 + moveSpeed * 0.016);
+
+          droplets.push({
+            x: head.x + perpX * 0.5,
+            y: head.y + perpY * 0.5,
+            vx: dropVx,
+            vy: dropVy,
+            radius: startRadius,
+            maxRadius,
+            expandSpeed: 0.6 + Math.min(moveSpeed * 0.06, 1.2),
+            alpha: maxAlpha,
+            maxAlpha,
+            life: 0,
+            decay: 0.018 + Math.random() * 0.010,
+          });
+        }
       }
 
-      // 4. Clear Canvas
+      // 4. Tuvali Temizle
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 5. Render Expanding Fade & Scale Liquid Halos (Asla sert çizgi yok, tamamen eriyen gradyanlar)
-      for (let i = halos.length - 1; i >= 0; i--) {
-        const h = halos[i];
-        h.radius += h.speed;
-        h.speed *= 0.985; // Sıvı direnci
+      // 5. Doğal Organik Damlacıkları Çiz (Büyüdükçe Şeffaflaşan & Sönen Dolu Gradyanlar)
+      for (let i = droplets.length - 1; i >= 0; i--) {
+        const d = droplets[i];
 
-        const progress = h.radius / h.maxRadius;
-        // Kuadratik sönümlenme: Büyüdükçe hızla şeffaflaşır ve kenarları bordo içinde erir
-        const currentOpacity = h.maxAlpha * Math.pow(Math.max(0, 1 - progress), 2.2);
+        // Konum ve momentum sönümlenmesi (Sıvı sürtünmesi)
+        d.x += d.vx;
+        d.y += d.vy;
+        d.vx *= 0.94;
+        d.vy *= 0.94;
 
-        if (progress >= 1 || currentOpacity <= 0.002) {
-          halos.splice(i, 1);
+        // Boyut kademeli olarak yumuşakça büyür
+        d.radius += d.expandSpeed;
+        d.expandSpeed *= 0.92;
+
+        // Yaşam süresi ilerlemesi: Durulduğunda kaybolma kat kat hızlanır
+        d.life += isMoving ? d.decay : d.decay * 3.5;
+
+        // Büyüdükçe şeffaflaşma (Fade & Scale): Kuadratik sönümlenme
+        const currentAlpha = d.maxAlpha * Math.pow(Math.max(0, 1 - d.life), 2.0);
+
+        if (d.life >= 1 || currentAlpha <= 0.002) {
+          droplets.splice(i, 1);
           continue;
         }
 
-        ctx.save();
-        ctx.translate(h.x, h.y);
-        ctx.rotate(h.angle);
-        ctx.scale(h.aspectRatio, 1);
+        // Dolu ve ultra-yumuşak organik su damlası (Halka değil, narin ışık saçan damlacık)
+        const grad = ctx.createRadialGradient(
+          d.x, d.y, 0,
+          d.x, d.y, d.radius
+        );
 
-        // Tamamen yumuşatılmış, kenarları eriyen radial gradyan (0 Hard Borders)
-        const grad = ctx.createRadialGradient(0, 0, h.radius * 0.35, 0, 0, h.radius);
-        grad.addColorStop(0, 'rgba(28, 2, 13, 0)');
-        // Dış sıvı ışıltısı (Bebe mavisi stüdyo yansıması)
-        grad.addColorStop(0.55, `rgba(175, 225, 255, ${(currentOpacity * 0.45).toFixed(3)})`);
-        // Derin vişneçürüğü sıvı gövdesi
-        grad.addColorStop(0.80, `rgba(55, 6, 28, ${(currentOpacity * 0.22).toFixed(3)})`);
-        // Sınır %100 şeffaf - Zeminle kusursuzca erir
+        // Merkez: Işıltılı narin bebe mavisi su yansıması
+        grad.addColorStop(0, `rgba(185, 230, 255, ${(currentAlpha * 0.70).toFixed(3)})`);
+        // Ara katman: Su berraklığı ve difüzyon
+        grad.addColorStop(0.35, `rgba(135, 195, 235, ${(currentAlpha * 0.35).toFixed(3)})`);
+        // Dış katman: Asil koyu vişne sıvı gövdesi
+        grad.addColorStop(0.68, `rgba(65, 8, 35, ${(currentAlpha * 0.16).toFixed(3)})`);
+        // Sınır: %100 şeffaf - Koyu bordo zeminle kusursuzca erir
         grad.addColorStop(1, 'rgba(28, 2, 13, 0)');
 
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(0, 0, h.radius, 0, Math.PI * 2);
+        ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
         ctx.fill();
-
-        ctx.restore();
       }
 
-      // 6. Render Apple Liquid Morphing Trail (Akışkan Sıvı Gövdesi)
-      if (blobAlpha > 0.003) {
-        for (let i = nodes.length - 1; i >= 0; i--) {
-          const node = nodes[i];
+      // 6. Akışkan Sıvı İzi (Sünek Su Gövdesi)
+      if (trailAlpha > 0.002) {
+        for (let i = trailNodes.length - 1; i >= 0; i--) {
+          const node = trailNodes[i];
           const nodeProgress = i / (CHAIN_LENGTH - 1);
-          const nodeRadius = (20 - i * 2.8) * (0.8 + Math.min(moveSpeed * 0.05, 0.6));
-          const nodeOpacity = blobAlpha * (1 - nodeProgress * 0.45);
+          const nodeRadius = (15 - i * 2.2) * (0.8 + Math.min(moveSpeed * 0.04, 0.5));
+          const nodeOpacity = trailAlpha * (1 - nodeProgress * 0.55);
 
-          if (nodeRadius <= 1 || nodeOpacity <= 0.002) continue;
+          if (nodeRadius <= 0.5 || nodeOpacity <= 0.002) continue;
 
           const blobGrad = ctx.createRadialGradient(
             node.x, node.y, 0,
             node.x, node.y, nodeRadius
           );
-          // Sıvı kristal çekirdek (Bebe mavisi parıltı)
-          blobGrad.addColorStop(0, `rgba(195, 235, 255, ${(nodeOpacity * 0.60).toFixed(3)})`);
-          // Ara yumuşak gövde (Asil vişne tonu)
-          blobGrad.addColorStop(0.45, `rgba(75, 12, 38, ${(nodeOpacity * 0.30).toFixed(3)})`);
-          // Kenar erimesi (Saf arka plan bordosu)
+          // Çekirdek ışığı
+          blobGrad.addColorStop(0, `rgba(195, 235, 255, ${(nodeOpacity * 0.65).toFixed(3)})`);
+          // Ara yumuşak su gövdesi
+          blobGrad.addColorStop(0.40, `rgba(75, 12, 38, ${(nodeOpacity * 0.28).toFixed(3)})`);
+          // Kenar erimesi
           blobGrad.addColorStop(1, 'rgba(28, 2, 13, 0)');
 
           ctx.fillStyle = blobGrad;

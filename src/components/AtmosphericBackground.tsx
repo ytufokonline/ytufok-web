@@ -3,30 +3,37 @@ import React, { useEffect, useRef, useState } from 'react';
 /**
  * AtmosphericBackground
  * 
- * 1. Su Yüzeyi Efekti (Water Ripple / Fluid Simulation):
- *    - İmleç hareket ettiğinde koyu bordo su yüzeyinde organik dalgalanmalar (water ripples)
- *      ve sıvı kırılmaları (fluid caustics) oluşturur.
- *    - Dalgalar dışa doğru genişlerken bebe mavisi ışıltılı tepe çizgisi (crest) ve
- *      derin vişneçürüğü dalga çukuru (trough) ile sıvı hacmi kazanır.
- * 2. Easy Ease İvmelenmesi (After Effects S-Curve):
- *    - Sıvı takibi ve dalga oluşumu yumuşak yaylanma ve momentumla (S-Curve) akar;
- *      hareketin başlangıcı ve sonu organik olarak süzülür.
- * 3. Statik Durumda Tamamen Gizli (100% Hidden When Stationary):
- *    - İmleç durduğu an mevcut dalgalar hızla sönümlenerek kaybolur; zemin %100 saf ve lekesiz koyu bordo kalır.
- * 4. Sadece Masaüstü (Desktop-Only):
- *    - Mobil ve dokunmatik cihazlarda efekt ve olay dinleyicileri tamamen devre dışıdır.
+ * 1. Apple Liquid Motion (Sıvı & Morphing Akışkan Fizik):
+ *    - İmleç arkasında yapay çizgiler veya sert halkalar yerine, Apple'ın akışkan
+ *      sıvı (liquid blob / morphing fluid) motoru gibi uzayan ve süzülen narin bir sıvı izi akar.
+ * 2. Boyut ve Şeffaflık Orantısı (Fade & Scale):
+ *    - Sıvı halkalar dışa doğru genişledikçe hızla şeffaflaşır (kuadratik sönümlenme)
+ *      ve sınırları bordo zeminle tamamen eriyerek yok olur; asla sert, opak leke kalmaz.
+ * 3. Easy Ease İvme Eğrisi (Smooth Viscous Damping):
+ *    - Akışkan damlalar imleci After Effects Easy Ease yaylanmasıyla takip eder;
+ *      hızlandıkça elastik bir sıvı gibi uzar, dururken yumuşakça toplanır.
+ * 4. Statik Durumda Tamamen Gizli:
+ *    - İmleç durduğu an tüm sıvı izleri hızla solarak kaybolur; zemin %100 saf ve lekesiz kalır.
+ * 5. Sadece Masaüstü (Desktop-Only):
+ *    - Mobil cihazlarda sıfır CPU/GPU tüketimi için tamamen devre dışıdır.
  */
 
-interface WaterRipple {
+interface LiquidNode {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+}
+
+interface LiquidHalo {
   x: number;
   y: number;
   radius: number;
   maxRadius: number;
   speed: number;
-  strength: number;
-  currentStrength: number;
+  alpha: number;
+  maxAlpha: number;
   decay: number;
-  thickness: number;
   aspectRatio: number;
   angle: number;
 }
@@ -58,22 +65,27 @@ export const AtmosphericBackground: React.FC = () => {
 
     let animId: number;
 
-    // Easy Ease Smooth Position & Physics
-    let smoothX = window.innerWidth / 2;
-    let smoothY = window.innerHeight / 2;
-    let smoothVelX = 0;
-    let smoothVelY = 0;
+    const initialX = window.innerWidth / 2;
+    const initialY = window.innerHeight / 2;
 
-    let targetX = smoothX;
-    let targetY = smoothY;
-
-    // Spawn distance tracking
-    let lastSpawnX = smoothX;
-    let lastSpawnY = smoothY;
+    let targetX = initialX;
+    let targetY = initialY;
     let lastMoveTime = 0;
 
-    // Water ripples collection
-    const ripples: WaterRipple[] = [];
+    // Apple Liquid Spring Chain (Elastic Fluid Nodes)
+    const CHAIN_LENGTH = 5;
+    const nodes: LiquidNode[] = Array.from({ length: CHAIN_LENGTH }, () => ({
+      x: initialX,
+      y: initialY,
+      vx: 0,
+      vy: 0,
+    }));
+
+    // Liquid Halos (Expanding, Feathered Fade & Scale Halos)
+    const halos: LiquidHalo[] = [];
+    let lastSpawnX = initialX;
+    let lastSpawnY = initialY;
+    let blobAlpha = 0;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -97,130 +109,144 @@ export const AtmosphericBackground: React.FC = () => {
       lastMoveTime = 0;
     };
 
-    // Main 60/120 FPS Fluid Simulation Loop
+    // Main 60/120 FPS Apple Liquid Motion Loop
     const render = () => {
       const now = performance.now();
-      const isMoving = now - lastMoveTime < 140;
+      const isMoving = now - lastMoveTime < 130;
 
-      // 1. Easy Ease (After Effects S-Curve) spring & damping physics
-      const targetDx = targetX - smoothX;
-      const targetDy = targetY - smoothY;
-      const dist = Math.hypot(targetDx, targetDy);
+      // 1. Easy Ease Liquid Chain Physics (Elastic Viscous Spring Simulation)
+      // Node 0: Apex follows mouse with smooth Easy Ease damping
+      const head = nodes[0];
+      const headDx = targetX - head.x;
+      const headDy = targetY - head.y;
+      const headDist = Math.hypot(headDx, headDy);
 
-      // Adaptive spring factor for S-Curve acceleration
-      const springK = isMoving ? Math.min(0.20, 0.08 + Math.pow(dist / 220, 1.2) * 0.12) : 0.25;
-      const damping = isMoving ? 0.80 : 0.68;
+      const headSpring = isMoving ? Math.min(0.22, 0.08 + Math.pow(headDist / 200, 1.2) * 0.12) : 0.26;
+      const headDamp = isMoving ? 0.78 : 0.65;
 
-      smoothVelX = (smoothVelX + targetDx * springK) * damping;
-      smoothVelY = (smoothVelY + targetDy * springK) * damping;
+      head.vx = (head.vx + headDx * headSpring) * headDamp;
+      head.vy = (head.vy + headDy * headSpring) * headDamp;
+      head.x += head.vx;
+      head.y += head.vy;
 
-      smoothX += smoothVelX;
-      smoothY += smoothVelY;
+      // Trailing nodes follow with cascading delay (Morphing Liquid Tail)
+      for (let i = 1; i < CHAIN_LENGTH; i++) {
+        const prev = nodes[i - 1];
+        const curr = nodes[i];
+        const spring = 0.28 - i * 0.035;
+        const damping = 0.66;
 
-      const moveSpeed = Math.hypot(smoothVelX, smoothVelY);
+        curr.vx = (curr.vx + (prev.x - curr.x) * spring) * damping;
+        curr.vy = (curr.vy + (prev.y - curr.y) * spring) * damping;
+        curr.x += curr.vx;
+        curr.y += curr.vy;
+      }
 
-      // 2. Spawn Organic Water Ripples on movement
-      const spawnDx = smoothX - lastSpawnX;
-      const spawnDy = smoothY - lastSpawnY;
+      const moveSpeed = Math.hypot(head.vx, head.vy);
+
+      // 2. Liquid Blob Alpha Envelope
+      if (isMoving && moveSpeed > 0.5) {
+        const targetAlpha = Math.min(0.22, 0.06 + moveSpeed * 0.024);
+        blobAlpha += (targetAlpha - blobAlpha) * 0.25;
+      } else {
+        blobAlpha *= 0.82; // Rapid smooth collapse when stopped
+        if (blobAlpha < 0.002) blobAlpha = 0;
+      }
+
+      // 3. Spawn Feathered Fade & Scale Halos (Yumuşak Sıvı Daireler)
+      const spawnDx = head.x - lastSpawnX;
+      const spawnDy = head.y - lastSpawnY;
       const spawnDist = Math.hypot(spawnDx, spawnDy);
 
-      if (isMoving && spawnDist > 14 && moveSpeed > 0.6) {
-        lastSpawnX = smoothX;
-        lastSpawnY = smoothY;
+      if (isMoving && spawnDist > 22 && moveSpeed > 0.8) {
+        lastSpawnX = head.x;
+        lastSpawnY = head.y;
 
-        const angle = Math.atan2(smoothVelY, smoothVelX);
-        const maxRadius = Math.min(75 + moveSpeed * 5.2, 230);
-        const initialSpeed = 1.6 + Math.min(moveSpeed * 0.12, 3.0);
-        const strength = Math.min(0.35 + moveSpeed * 0.05, 0.90);
-        const aspectRatio = Math.min(1.0 + moveSpeed * 0.025, 1.40);
-        const thickness = 1.4 + Math.min(moveSpeed * 0.12, 3.0);
+        const angle = Math.atan2(head.vy, head.vx);
+        // Boyut ve şeffaflık orantısı: Hıza göre zarif ölçek, asla kaba değil
+        const maxRadius = Math.min(45 + moveSpeed * 4.2, 125);
+        const maxAlpha = Math.min(0.18, 0.06 + moveSpeed * 0.018);
 
-        ripples.push({
-          x: smoothX,
-          y: smoothY,
-          radius: 4,
+        halos.push({
+          x: head.x,
+          y: head.y,
+          radius: 8,
           maxRadius,
-          speed: initialSpeed,
-          strength,
-          currentStrength: strength,
-          decay: 0.015 + Math.random() * 0.006,
-          thickness,
-          aspectRatio,
+          speed: 1.4 + Math.min(moveSpeed * 0.10, 2.2),
+          alpha: maxAlpha,
+          maxAlpha,
+          decay: 0.012 + Math.random() * 0.005,
+          aspectRatio: Math.min(1.0 + moveSpeed * 0.02, 1.35),
           angle,
         });
       }
 
-      // 3. Clear Canvas
+      // 4. Clear Canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 4. Render Fluid Wake Caustics at Cursor Apex during motion
-      if (isMoving && moveSpeed > 0.6) {
-        const wakeRadius = Math.min(22 + moveSpeed * 2.8, 70);
-        const wakeAlpha = Math.min(0.22, moveSpeed * 0.028);
-        const grad = ctx.createRadialGradient(smoothX, smoothY, 0, smoothX, smoothY, wakeRadius);
-        grad.addColorStop(0, `rgba(185, 230, 255, ${wakeAlpha.toFixed(3)})`);
-        grad.addColorStop(0.35, `rgba(86, 138, 165, ${(wakeAlpha * 0.45).toFixed(3)})`);
-        grad.addColorStop(0.7, `rgba(45, 6, 25, ${(wakeAlpha * 0.3).toFixed(3)})`);
+      // 5. Render Expanding Fade & Scale Liquid Halos (Asla sert çizgi yok, tamamen eriyen gradyanlar)
+      for (let i = halos.length - 1; i >= 0; i--) {
+        const h = halos[i];
+        h.radius += h.speed;
+        h.speed *= 0.985; // Sıvı direnci
+
+        const progress = h.radius / h.maxRadius;
+        // Kuadratik sönümlenme: Büyüdükçe hızla şeffaflaşır ve kenarları bordo içinde erir
+        const currentOpacity = h.maxAlpha * Math.pow(Math.max(0, 1 - progress), 2.2);
+
+        if (progress >= 1 || currentOpacity <= 0.002) {
+          halos.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.translate(h.x, h.y);
+        ctx.rotate(h.angle);
+        ctx.scale(h.aspectRatio, 1);
+
+        // Tamamen yumuşatılmış, kenarları eriyen radial gradyan (0 Hard Borders)
+        const grad = ctx.createRadialGradient(0, 0, h.radius * 0.35, 0, 0, h.radius);
+        grad.addColorStop(0, 'rgba(28, 2, 13, 0)');
+        // Dış sıvı ışıltısı (Bebe mavisi stüdyo yansıması)
+        grad.addColorStop(0.55, `rgba(175, 225, 255, ${(currentOpacity * 0.45).toFixed(3)})`);
+        // Derin vişneçürüğü sıvı gövdesi
+        grad.addColorStop(0.80, `rgba(55, 6, 28, ${(currentOpacity * 0.22).toFixed(3)})`);
+        // Sınır %100 şeffaf - Zeminle kusursuzca erir
         grad.addColorStop(1, 'rgba(28, 2, 13, 0)');
 
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(smoothX, smoothY, wakeRadius, 0, Math.PI * 2);
+        ctx.arc(0, 0, h.radius, 0, Math.PI * 2);
         ctx.fill();
+
+        ctx.restore();
       }
 
-      // 5. Propagate & Render Water Ripples
-      for (let i = ripples.length - 1; i >= 0; i--) {
-        const r = ripples[i];
-        r.radius += r.speed;
-        r.speed *= 0.985; // Viscous water drag
-        r.currentStrength -= isMoving ? r.decay : r.decay * 2.2;
+      // 6. Render Apple Liquid Morphing Trail (Akışkan Sıvı Gövdesi)
+      if (blobAlpha > 0.003) {
+        for (let i = nodes.length - 1; i >= 0; i--) {
+          const node = nodes[i];
+          const nodeProgress = i / (CHAIN_LENGTH - 1);
+          const nodeRadius = (20 - i * 2.8) * (0.8 + Math.min(moveSpeed * 0.05, 0.6));
+          const nodeOpacity = blobAlpha * (1 - nodeProgress * 0.45);
 
-        if (r.currentStrength <= 0 || r.radius >= r.maxRadius) {
-          ripples.splice(i, 1);
-          continue;
-        }
+          if (nodeRadius <= 1 || nodeOpacity <= 0.002) continue;
 
-        const progress = r.radius / r.maxRadius;
-        // Sinusoidal crest/trough wave profile
-        const waveAlpha = Math.max(0, r.currentStrength * Math.sin((1 - progress) * Math.PI));
+          const blobGrad = ctx.createRadialGradient(
+            node.x, node.y, 0,
+            node.x, node.y, nodeRadius
+          );
+          // Sıvı kristal çekirdek (Bebe mavisi parıltı)
+          blobGrad.addColorStop(0, `rgba(195, 235, 255, ${(nodeOpacity * 0.60).toFixed(3)})`);
+          // Ara yumuşak gövde (Asil vişne tonu)
+          blobGrad.addColorStop(0.45, `rgba(75, 12, 38, ${(nodeOpacity * 0.30).toFixed(3)})`);
+          // Kenar erimesi (Saf arka plan bordosu)
+          blobGrad.addColorStop(1, 'rgba(28, 2, 13, 0)');
 
-        if (waveAlpha > 0.003) {
-          const rx = r.radius * r.aspectRatio;
-          const ry = r.radius;
-
-          ctx.save();
-          ctx.translate(r.x, r.y);
-          ctx.rotate(r.angle);
-
-          // A. Water Wave Trough (İç derinlik vişneçürüğü gölgesi)
+          ctx.fillStyle = blobGrad;
           ctx.beginPath();
-          ctx.ellipse(0, 0, Math.max(1, rx - r.thickness), Math.max(1, ry - r.thickness), 0, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(38, 4, 19, ${(waveAlpha * 0.55).toFixed(3)})`;
-          ctx.lineWidth = r.thickness * 1.3;
-          ctx.stroke();
-
-          // B. Primary Water Wave Crest (Dış su yüzeyi ışıltısı - Bebe mavisi yansıma)
-          ctx.beginPath();
-          ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(180, 228, 255, ${(waveAlpha * 0.75).toFixed(3)})`;
-          ctx.lineWidth = r.thickness;
-          ctx.stroke();
-
-          // C. Secondary micro-ring for realistic water wave interference
-          if (r.radius > 22 && progress < 0.75) {
-            const innerProgress = (r.radius - 16) / r.maxRadius;
-            const innerAlpha = waveAlpha * 0.45 * Math.sin((1 - innerProgress) * Math.PI);
-            if (innerAlpha > 0.003) {
-              ctx.beginPath();
-              ctx.ellipse(0, 0, Math.max(1, rx - 16), Math.max(1, ry - 16), 0, 0, Math.PI * 2);
-              ctx.strokeStyle = `rgba(145, 205, 245, ${innerAlpha.toFixed(3)})`;
-              ctx.lineWidth = r.thickness * 0.75;
-              ctx.stroke();
-            }
-          }
-
-          ctx.restore();
+          ctx.arc(node.x, node.y, nodeRadius, 0, Math.PI * 2);
+          ctx.fill();
         }
       }
 

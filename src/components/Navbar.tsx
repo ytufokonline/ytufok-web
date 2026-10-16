@@ -58,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#1f0814]/75 backdrop-blur-xl border-b border-white/[0.07] transition-all">
+    <header className="sticky top-0 z-40 bg-[#360116]/80 backdrop-blur-xl border-b border-white/[0.07] transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           
@@ -135,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {/* Dropdown Menu */}
                 {profileDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#1a0611] border border-white/20 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-4 py-2.5 border-b border-white/10 bg-[#1f0814]/70">
+                    <div className="px-4 py-2.5 border-b border-white/10 bg-[#360116]/80">
                       <div className="flex items-center gap-2">
                         <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
                         <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-400">Aktif Yönetici Oturumu</span>
@@ -206,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={(e) => handleNavClick('admin', e)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   activeTab === 'admin'
-                    ? 'bg-white text-[#1f0814]'
+                    ? 'bg-white text-[#360116]'
                     : 'bg-white/[0.05] hover:bg-white/[0.1] text-white/90 hover:text-white border border-white/[0.1]'
                 }`}
               >
@@ -335,7 +335,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={(e) => handleNavClick('admin', e)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium border transition-all ${
                   activeTab === 'admin'
-                    ? 'bg-white text-[#1f0814] border-white'
+                    ? 'bg-white text-[#360116] border-white'
                     : 'bg-white/[0.05] text-white/80 border-white/[0.08]'
                 }`}
               >

@@ -23,6 +23,37 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const linkRefs = useRef<{ [key: string]: HTMLAnchorElement | null }>({});
+  const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number; opacity: number }>({ left: 0, width: 0, opacity: 0 });
+
+  // Update sliding indicator position on activeTab change and resize
+  useEffect(() => {
+    const updateIndicator = () => {
+      const activeEl = linkRefs.current[activeTab];
+      const navEl = navRef.current;
+      if (activeEl && navEl) {
+        const navRect = navEl.getBoundingClientRect();
+        const activeRect = activeEl.getBoundingClientRect();
+        setIndicatorStyle({
+          left: activeRect.left - navRect.left,
+          width: activeRect.width,
+          opacity: 1,
+        });
+      } else {
+        setIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
+      }
+    };
+
+    updateIndicator();
+    // Allow slight delay for font rendering if needed
+    const timer = setTimeout(updateIndicator, 50);
+    window.addEventListener('resize', updateIndicator);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateIndicator);
+    };
+  }, [activeTab]);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -58,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-[24px] backdrop-saturate-[115%] bg-[rgba(28,2,13,0.82)] bg-gradient-to-r from-[rgba(145,205,240,0.08)] via-[rgba(38,6,22,0.40)] to-[rgba(86,138,165,0.05)] border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all">
+    <header className="fixed top-0 left-0 right-0 w-full z-50 backdrop-blur-[24px] backdrop-saturate-[115%] bg-[rgba(28,2,13,0.82)] bg-gradient-to-r from-[rgba(145,205,240,0.08)] via-[rgba(38,6,22,0.40)] to-[rgba(86,138,165,0.05)] border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           
@@ -78,18 +109,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               />
             </a>
 
-            {/* Desktop Nav - Minimalist text links */}
-            <nav className="hidden md:flex items-center gap-5 lg:gap-7">
+            {/* Desktop Nav - Minimalist text links with sliding underline */}
+            <nav ref={navRef} className="hidden md:flex items-center gap-5 lg:gap-7 relative py-1">
               {navItems.map((item) => {
                 const isActive = activeTab === item.id;
                 return (
                   <a
                     key={item.id}
+                    ref={(el) => { linkRefs.current[item.id] = el; }}
                     href={item.path}
                     onClick={(e) => handleNavClick(item.id, e)}
                     className={`text-[13px] tracking-tight transition-colors duration-150 relative py-1 ${
                       isActive
-                        ? 'text-white font-medium after:absolute after:bottom-0 after:inset-x-0 after:h-[1.5px] after:bg-white'
+                        ? 'text-white font-medium'
                         : 'text-white/60 hover:text-white'
                     }`}
                   >
@@ -97,6 +129,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </a>
                 );
               })}
+
+              {/* Dynamic Sliding Underline Indicator */}
+              <span
+                className="absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-sky-200 to-white rounded-full pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                style={{
+                  transform: `translateX(${indicatorStyle.left}px)`,
+                  width: `${indicatorStyle.width}px`,
+                  opacity: indicatorStyle.opacity,
+                }}
+                aria-hidden="true"
+              />
             </nav>
           </div>
 

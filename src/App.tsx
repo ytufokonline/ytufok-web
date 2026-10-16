@@ -145,7 +145,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1c020d] text-[#eed1d1] selection:bg-[#568aa5]/40 selection:text-white font-sans relative">
+    <div className="min-h-screen flex flex-col bg-[#1c020d] text-[#f1f5f9] selection:bg-[#568aa5]/40 selection:text-white font-sans relative">
       {/* Apple-style atmospheric cursor spotlight background */}
       <AtmosphericBackground />
 
@@ -159,8 +159,8 @@ export function App() {
         onSwitchProfile={() => setShowSwitchProfileModal(true)}
       />
 
-      {/* Main Dynamic View */}
-      <main className="flex-1 relative z-10">
+      {/* Main Dynamic View (pt-14 sm:pt-16 ensures content starts under fixed navbar) */}
+      <main className="flex-1 relative z-10 pt-14 sm:pt-16">
         {activeTab === 'home' && (
           <HomePage
             onNavigate={handleNavigate}

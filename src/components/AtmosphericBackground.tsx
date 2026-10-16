@@ -3,19 +3,21 @@ import React, { useEffect, useRef, useState } from 'react';
 /**
  * AtmosphericBackground
  * 
- * 1. Apple Liquid Motion (Sıvı & Morphing Akışkan Fizik):
- *    - İmleç arkasında yapay çizgiler veya sert halkalar yerine, Apple'ın akışkan
- *      sıvı (liquid blob / morphing fluid) motoru gibi uzayan ve süzülen narin bir sıvı izi akar.
- * 2. Boyut ve Şeffaflık Orantısı (Fade & Scale):
- *    - Sıvı halkalar dışa doğru genişledikçe hızla şeffaflaşır (kuadratik sönümlenme)
- *      ve sınırları bordo zeminle tamamen eriyerek yok olur; asla sert, opak leke kalmaz.
- * 3. Easy Ease İvme Eğrisi (Smooth Viscous Damping):
- *    - Akışkan damlalar imleci After Effects Easy Ease yaylanmasıyla takip eder;
- *      hızlandıkça elastik bir sıvı gibi uzar, dururken yumuşakça toplanır.
- * 4. Statik Durumda Tamamen Gizli:
- *    - İmleç durduğu an tüm sıvı izleri hızla solarak kaybolur; zemin %100 saf ve lekesiz kalır.
+ * 1. Gerçek Akışkan Sıvı / Su Dağılımı (Fluid Blob & Ripple Surface):
+ *    - Noktalar, partiküller ve halkalar tamamen kaldırılmıştır.
+ *    - İmleç suyun yüzeyinde gezinirken yumuşak geçişli, kenarları bordo zeminle
+ *      kusursuzca bütünleşen organik sıvı lekeleri (fluid blobs) oluşturur.
+ * 2. Esneme ve Yanal Dağılma (Squash & Stretch Morfolojisi):
+ *    - Sıvı lekeleri imlecin hareket vektörüne göre elastik bir su kütlesi gibi uzar
+ *      ve dışa doğru dalgalanarak genişler.
+ * 3. Fade & Scale (Genişledikçe Erime):
+ *    - Sıvı kütlesi genişledikçe opasitesi kuadratik olarak sönümlenir ve %100 şeffaflıkla
+ *      koyu bordo (#1c020d) zemin içinde iz bırakmadan kaybolur.
+ * 4. Easy Ease & Statik Kuralı:
+ *    - Hareket yumuşak bir Easy Ease yaylanmasıyla süzülür; imleç durduğu an
+ *      tüm sıvı izleri anında çözünerek ekranı tertemiz saf bordo bırakır.
  * 5. Sadece Masaüstü (Desktop-Only):
- *    - Mobil cihazlarda sıfır CPU/GPU tüketimi için tamamen devre dışıdır.
+ *    - Dokunmatik ve mobil cihazlarda tamamen devre dışıdır.
  */
 
 export const AtmosphericBackground: React.FC = () => {
@@ -52,17 +54,17 @@ export const AtmosphericBackground: React.FC = () => {
     let targetY = initialY;
     let lastMoveTime = 0;
 
-    // 1. Easy Ease Viscous Fluid Follower (Sıvı Çekirdeği)
+    // 1. Easy Ease Sıvı Çekirdeği (Viscous Lead Fluid Pool)
     const CHAIN_LENGTH = 5;
-    const trailNodes = Array.from({ length: CHAIN_LENGTH }, () => ({
+    const poolNodes = Array.from({ length: CHAIN_LENGTH }, () => ({
       x: initialX,
       y: initialY,
       vx: 0,
       vy: 0,
     }));
 
-    // 2. Doğal Organik Sıvı Damlacıkları (Organic Fluid Droplets)
-    interface OrganicDroplet {
+    // 2. Akışkan Sıvı Lekeleri (Organic Fluid Blobs / Water Dispersion)
+    interface FluidBlob {
       x: number;
       y: number;
       vx: number;
@@ -72,14 +74,16 @@ export const AtmosphericBackground: React.FC = () => {
       expandSpeed: number;
       alpha: number;
       maxAlpha: number;
-      life: number; // 0 (yeni doğan) -> 1 (yok olan)
+      angle: number;
+      stretch: number;
+      life: number;
       decay: number;
     }
 
-    const droplets: OrganicDroplet[] = [];
+    const blobs: FluidBlob[] = [];
     let lastSpawnX = initialX;
     let lastSpawnY = initialY;
-    let trailAlpha = 0;
+    let poolAlpha = 0;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -103,17 +107,17 @@ export const AtmosphericBackground: React.FC = () => {
       lastMoveTime = 0;
     };
 
-    // Doğal Sıvı Hareketi & Damlacık Döngüsü (60 / 120 FPS)
+    // Gerçek Su / Sıvı Dağılımı Döngüsü (60 / 120 FPS)
     const render = () => {
       const now = performance.now();
       const isMoving = now - lastMoveTime < 90;
 
-      // 1. Easy Ease İvmelenmesi & Momentum (Yaylanma ve Süzülme)
-      const head = trailNodes[0];
+      // 1. Easy Ease Yaylanması & Momentum
+      const head = poolNodes[0];
       const dx = targetX - head.x;
       const dy = targetY - head.y;
 
-      const easeFactor = isMoving ? 0.24 : 0.28;
+      const easeFactor = isMoving ? 0.22 : 0.28;
       const dampingFactor = isMoving ? 0.74 : 0.64;
 
       head.vx = (head.vx + dx * easeFactor) * dampingFactor;
@@ -121,11 +125,11 @@ export const AtmosphericBackground: React.FC = () => {
       head.x += head.vx;
       head.y += head.vy;
 
-      // Takip eden akışkan düğümler (Organik gecikme ile uzayan sıvı kuyruğu)
+      // Takip eden akışkan düğümler (Organik gecikmeyle uzayan su gövdesi)
       for (let i = 1; i < CHAIN_LENGTH; i++) {
-        const prev = trailNodes[i - 1];
-        const curr = trailNodes[i];
-        const linkEase = 0.32 - i * 0.04;
+        const prev = poolNodes[i - 1];
+        const curr = poolNodes[i];
+        const linkEase = 0.32 - i * 0.045;
         const linkDamping = 0.68;
 
         curr.vx = (curr.vx + (prev.x - curr.x) * linkEase) * linkDamping;
@@ -136,131 +140,126 @@ export const AtmosphericBackground: React.FC = () => {
 
       const moveSpeed = Math.hypot(head.vx, head.vy);
 
-      // 2. Takip Eden Akışkan Gövde Opasitesi (Hareket ettikçe belirir, durunca hızla kaybolur)
-      if (isMoving && moveSpeed > 0.6) {
-        const targetTrailAlpha = Math.min(0.18, 0.05 + moveSpeed * 0.015);
-        trailAlpha += (targetTrailAlpha - trailAlpha) * 0.22;
+      // 2. Akışkan Sıvı Çekirdeği Opasitesi (Hareket ettikçe belirir, durulduğunda anında erir)
+      if (isMoving && moveSpeed > 0.8) {
+        const targetPoolAlpha = Math.min(0.20, 0.06 + moveSpeed * 0.018);
+        poolAlpha += (targetPoolAlpha - poolAlpha) * 0.24;
       } else {
         // Durulduğunda akışkan gövde anında solar
-        trailAlpha *= 0.76;
-        if (trailAlpha < 0.001) trailAlpha = 0;
+        poolAlpha *= 0.74;
+        if (poolAlpha < 0.001) poolAlpha = 0;
       }
 
-      // 3. Doğal Sıvı Damlacıkları Üretimi (Hıza ve Mesafeye Duyarlı Organik Saçılma)
+      // 3. Akışkan Sıvı Lekesi Oluşumu (Geniş, Organik Su Dağılımı - Nokta Yok!)
       const spawnDx = head.x - lastSpawnX;
       const spawnDy = head.y - lastSpawnY;
       const spawnDist = Math.hypot(spawnDx, spawnDy);
 
-      if (isMoving && spawnDist > 14 && moveSpeed > 0.8) {
+      if (isMoving && spawnDist > 26 && moveSpeed > 1.0) {
         lastSpawnX = head.x;
         lastSpawnY = head.y;
 
-        // Hareket yönü birim vektörü
-        const dirX = head.vx / (moveSpeed || 1);
-        const dirY = head.vy / (moveSpeed || 1);
+        const angle = Math.atan2(head.vy, head.vx);
+        // Hıza göre esneme ve deformasyon (Squash & stretch su morfolojisi)
+        const stretch = Math.min(1.15 + moveSpeed * 0.045, 1.85);
 
-        // Su yüzeyinde yanal dalgacık ve damla saçılma vektörü (Perpendicular dispersion)
-        const count = moveSpeed > 8 ? 2 : 1;
-        for (let c = 0; c < count; c++) {
-          const side = (Math.random() - 0.5) * 2;
-          const perpX = -dirY * side * (4 + Math.random() * 8);
-          const perpY = dirX * side * (4 + Math.random() * 8);
+        // Başlangıç boyutu geniş (asla minik nokta değil, 40-70px sıvı lekesi)
+        const startRadius = 42 + Math.min(moveSpeed * 2.5, 30);
+        const maxRadius = startRadius * (1.8 + Math.min(moveSpeed * 0.08, 1.3));
+        const maxAlpha = Math.min(0.18, 0.07 + moveSpeed * 0.016);
 
-          // Damlacık hızı: Hem imleç momentumundan hafifçe taşır hem de yana doğru süzülür
-          const dropVx = head.vx * 0.12 + perpX * 0.08;
-          const dropVy = head.vy * 0.12 + perpY * 0.08;
-
-          const startRadius = 3.5 + Math.random() * 3.5;
-          const maxRadius = startRadius * (2.2 + Math.min(moveSpeed * 0.08, 2.0));
-          const maxAlpha = Math.min(0.20, 0.07 + moveSpeed * 0.016);
-
-          droplets.push({
-            x: head.x + perpX * 0.5,
-            y: head.y + perpY * 0.5,
-            vx: dropVx,
-            vy: dropVy,
-            radius: startRadius,
-            maxRadius,
-            expandSpeed: 0.6 + Math.min(moveSpeed * 0.06, 1.2),
-            alpha: maxAlpha,
-            maxAlpha,
-            life: 0,
-            decay: 0.018 + Math.random() * 0.010,
-          });
-        }
+        blobs.push({
+          x: head.x,
+          y: head.y,
+          vx: head.vx * 0.12,
+          vy: head.vy * 0.12,
+          radius: startRadius,
+          maxRadius,
+          expandSpeed: 1.2 + Math.min(moveSpeed * 0.12, 2.4),
+          alpha: maxAlpha,
+          maxAlpha,
+          angle,
+          stretch,
+          life: 0,
+          decay: 0.016 + Math.random() * 0.008,
+        });
       }
 
       // 4. Tuvali Temizle
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 5. Doğal Organik Damlacıkları Çiz (Büyüdükçe Şeffaflaşan & Sönen Dolu Gradyanlar)
-      for (let i = droplets.length - 1; i >= 0; i--) {
-        const d = droplets[i];
+      // 5. Akışkan Sıvı Lekelerini Çiz (Yayılan, Genişledikçe Şeffaflaşan & Eriyen Formlar)
+      for (let i = blobs.length - 1; i >= 0; i--) {
+        const b = blobs[i];
 
-        // Konum ve momentum sönümlenmesi (Sıvı sürtünmesi)
-        d.x += d.vx;
-        d.y += d.vy;
-        d.vx *= 0.94;
-        d.vy *= 0.94;
+        b.x += b.vx;
+        b.y += b.vy;
+        b.vx *= 0.94;
+        b.vy *= 0.94;
 
-        // Boyut kademeli olarak yumuşakça büyür
-        d.radius += d.expandSpeed;
-        d.expandSpeed *= 0.92;
+        // Dışa doğru akışkan yayılma
+        b.radius += b.expandSpeed;
+        b.expandSpeed *= 0.92;
 
-        // Yaşam süresi ilerlemesi: Durulduğunda kaybolma kat kat hızlanır
-        d.life += isMoving ? d.decay : d.decay * 3.5;
+        // Yaşam süresi ilerlemesi: Durulduğunda çözünme hızlanır
+        b.life += isMoving ? b.decay : b.decay * 3.8;
 
         // Büyüdükçe şeffaflaşma (Fade & Scale): Kuadratik sönümlenme
-        const currentAlpha = d.maxAlpha * Math.pow(Math.max(0, 1 - d.life), 2.0);
+        const currentAlpha = b.maxAlpha * Math.pow(Math.max(0, 1 - b.life), 2.2);
 
-        if (d.life >= 1 || currentAlpha <= 0.002) {
-          droplets.splice(i, 1);
+        if (b.life >= 1 || currentAlpha <= 0.002) {
+          blobs.splice(i, 1);
           continue;
         }
 
-        // Dolu ve ultra-yumuşak organik su damlası (Halka değil, narin ışık saçan damlacık)
-        const grad = ctx.createRadialGradient(
-          d.x, d.y, 0,
-          d.x, d.y, d.radius
-        );
+        ctx.save();
+        ctx.translate(b.x, b.y);
+        ctx.rotate(b.angle);
+        ctx.scale(b.stretch, 1 / Math.sqrt(b.stretch)); // Hacim koruyan su esnemesi
+
+        // Geniş, yumuşak geçişli organik sıvı gradyanı (Nokta yok, pürüzsüz su dağılımı)
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, b.radius);
 
         // Merkez: Işıltılı narin bebe mavisi su yansıması
-        grad.addColorStop(0, `rgba(185, 230, 255, ${(currentAlpha * 0.70).toFixed(3)})`);
-        // Ara katman: Su berraklığı ve difüzyon
-        grad.addColorStop(0.35, `rgba(135, 195, 235, ${(currentAlpha * 0.35).toFixed(3)})`);
-        // Dış katman: Asil koyu vişne sıvı gövdesi
-        grad.addColorStop(0.68, `rgba(65, 8, 35, ${(currentAlpha * 0.16).toFixed(3)})`);
+        grad.addColorStop(0, `rgba(180, 225, 255, ${(currentAlpha * 0.60).toFixed(3)})`);
+        // Çekirdek yayılma: Berrak su difüzyonu
+        grad.addColorStop(0.30, `rgba(130, 195, 235, ${(currentAlpha * 0.32).toFixed(3)})`);
+        // Sıvı gövdesi: Asil koyu vişne su kütlesi
+        grad.addColorStop(0.65, `rgba(62, 7, 32, ${(currentAlpha * 0.16).toFixed(3)})`);
         // Sınır: %100 şeffaf - Koyu bordo zeminle kusursuzca erir
         grad.addColorStop(1, 'rgba(28, 2, 13, 0)');
 
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+        ctx.arc(0, 0, b.radius, 0, Math.PI * 2);
         ctx.fill();
+
+        ctx.restore();
       }
 
-      // 6. Akışkan Sıvı İzi (Sünek Su Gövdesi)
-      if (trailAlpha > 0.002) {
-        for (let i = trailNodes.length - 1; i >= 0; i--) {
-          const node = trailNodes[i];
+      // 6. Akışkan Sıvı İzi (İmleç Altındaki Sünek Sıvı Kütlesi)
+      if (poolAlpha > 0.002) {
+        for (let i = poolNodes.length - 1; i >= 0; i--) {
+          const node = poolNodes[i];
           const nodeProgress = i / (CHAIN_LENGTH - 1);
-          const nodeRadius = (15 - i * 2.2) * (0.8 + Math.min(moveSpeed * 0.04, 0.5));
-          const nodeOpacity = trailAlpha * (1 - nodeProgress * 0.55);
+          // Geniş, birleşik su kütlesi (Geniş çap: 30px - 55px)
+          const nodeRadius = (45 - i * 5.5) * (0.8 + Math.min(moveSpeed * 0.04, 0.5));
+          const nodeOpacity = poolAlpha * (1 - nodeProgress * 0.50);
 
-          if (nodeRadius <= 0.5 || nodeOpacity <= 0.002) continue;
+          if (nodeRadius <= 1 || nodeOpacity <= 0.002) continue;
 
-          const blobGrad = ctx.createRadialGradient(
+          const poolGrad = ctx.createRadialGradient(
             node.x, node.y, 0,
             node.x, node.y, nodeRadius
           );
-          // Çekirdek ışığı
-          blobGrad.addColorStop(0, `rgba(195, 235, 255, ${(nodeOpacity * 0.65).toFixed(3)})`);
-          // Ara yumuşak su gövdesi
-          blobGrad.addColorStop(0.40, `rgba(75, 12, 38, ${(nodeOpacity * 0.28).toFixed(3)})`);
+          // Sıvı parıltısı
+          poolGrad.addColorStop(0, `rgba(185, 230, 255, ${(nodeOpacity * 0.60).toFixed(3)})`);
+          // Ara yumuşak su kütlesi
+          poolGrad.addColorStop(0.40, `rgba(75, 10, 36, ${(nodeOpacity * 0.28).toFixed(3)})`);
           // Kenar erimesi
-          blobGrad.addColorStop(1, 'rgba(28, 2, 13, 0)');
+          poolGrad.addColorStop(1, 'rgba(28, 2, 13, 0)');
 
-          ctx.fillStyle = blobGrad;
+          ctx.fillStyle = poolGrad;
           ctx.beginPath();
           ctx.arc(node.x, node.y, nodeRadius, 0, Math.PI * 2);
           ctx.fill();
@@ -349,7 +348,7 @@ export const AtmosphericBackground: React.FC = () => {
         />
       </div>
 
-      {/* 2. Desktop-Only Interactive Pure Dot-Matrix Canvas Layer */}
+      {/* 2. Desktop-Only Interactive Liquid Water Blobs & Ripple Surface */}
       {isDesktop && (
         <div
           className="fixed inset-0 pointer-events-none select-none z-20 overflow-hidden"
@@ -362,13 +361,15 @@ export const AtmosphericBackground: React.FC = () => {
           }}
           aria-hidden="true"
         >
-          {/* Pure Dot Matrix Canvas */}
+          {/* Akışkan Sıvı Yüzeyi - Doğal Su Dağılımı (Sıfır Nokta, Saf Sıvı Morfolojisi) */}
           <canvas
             ref={canvasRef}
             className="absolute inset-0 pointer-events-none will-change-transform"
             style={{
               width: '100vw',
               height: '100vh',
+              filter: 'blur(14px)',
+              WebkitFilter: 'blur(14px)',
             }}
           />
         </div>

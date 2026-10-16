@@ -42,7 +42,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
   }, []);
 
   return (
-    <div className="text-[#eed1d1] selection:bg-white/20 selection:text-white pb-28">
+    <div className="text-[#f1f5f9] selection:bg-white/20 selection:text-white pb-28">
       
       {/* 1. HERO ALANI (Apple Left-Aligned Editorial) */}
       <section className="pt-8 sm:pt-14 lg:pt-16 border-b border-white/[0.08] pb-12 sm:pb-16 overflow-hidden">
@@ -371,8 +371,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 className="p-6 sm:p-7 rounded-3xl glass-card space-y-4 relative overflow-hidden group hover:scale-[1.01] transition-all duration-300"
               >
                 <div className="flex items-center justify-between">
-                  {/* Subtle Mat Silver / Baby Blue Status Pill (Yeşil çizgi kaldırıldı) */}
-                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1 rounded-full border border-sky-300/30 bg-sky-400/10 text-sky-200 font-medium">
+                  {/* Subtle Mat Silver / Baby Blue Status Pill (Tok ve asil cam baloncuğu) */}
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1 rounded-full border border-sky-400/25 bg-[rgba(28,2,13,0.7)] text-sky-200 font-medium shadow-sm backdrop-blur-md">
                     <span className="w-1.5 h-1.5 rounded-full bg-sky-300 animate-pulse"></span>
                     Aktif Gezi
                   </span>
@@ -433,7 +433,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
                 className="p-6 rounded-2xl glass-card space-y-2.5 transition-all"
               >
                 <div className="flex items-center justify-between text-xs font-mono text-white/50">
-                  <span className="uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/15 bg-white/5 text-[10px] text-sky-200">
+                  <span className="uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/10 bg-[rgba(28,2,13,0.7)] text-[10px] text-sky-200/90 shadow-sm backdrop-blur-md">
                     {ann.category}
                   </span>
                   <span>{new Date(ann.created_at).toLocaleDateString('tr-TR')}</span>

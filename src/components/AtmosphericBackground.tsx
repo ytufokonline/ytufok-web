@@ -18,7 +18,7 @@ import React, { useEffect, useRef, useState } from 'react';
  *    - Noktalar, imlecin peşinden organik bir yaylanma ve momentumla (After Effects Easy Ease) akar.
  */
 
-// Koyu Bordo -> Şarap -> Lavanta/Mürdüm -> Parlak & Enerjik Bebe Mavisi Renk Spektrumu
+// Koyu Bordo -> Derin Vişneçürüğü -> Slate Mavi -> Parlak & Enerjik Bebe Mavisi Renk Spektrumu
 const HEAD_BABY_BLUE_COLORS = [
   'rgba(240, 249, 255, ',  // Prizmatik kristal buz parıltısı (#f0f9ff)
   'rgba(195, 235, 255, ',  // Parlak elektrik bebe mavisi (#c3ebff)
@@ -29,17 +29,17 @@ const HEAD_BABY_BLUE_COLORS = [
 
 const MID_TRANSITION_COLORS = [
   'rgba(175, 215, 250, ',  // Parlak bebe mavisi (#afd7fa)
-  'rgba(165, 175, 235, ',  // Canlı leylak periwinkle (#a5afeb)
-  'rgba(145, 125, 195, ',  // Parlak lavanta mürdüm (#917dc3)
-  'rgba(125, 75, 150, ',   // Lavanta erik (#7d4b96)
-  'rgba(145, 45, 105, ',   // Parlak fuşya bordo (#912d69)
+  'rgba(130, 180, 220, ',  // Yumuşak çelik mavisi (#82b4dc)
+  'rgba(86, 138, 165, ',   // Slate blue / kulüp çeliği (#568aa5)
+  'rgba(65, 95, 125, ',    // Koyu dumanlı çelik (#415f7d)
+  'rgba(72, 12, 34, ',     // Koyu asil vişneçürüğü geçiş (#480c22)
 ];
 
 const TAIL_BORDO_COLORS = [
-  'rgba(125, 75, 150, ',   // Lavanta erik (#7d4b96)
-  'rgba(110, 22, 68, ',    // Asil bordo (#6e1644)
-  'rgba(75, 12, 44, ',     // Derin şarap (#4b0c2c)
-  'rgba(45, 5, 26, ',      // Zeminle kaynaşan koyu bordo (#2d051a)
+  'rgba(72, 12, 34, ',     // Koyu asil vişneçürüğü (#480c22)
+  'rgba(58, 8, 28, ',      // Derin vişne tonu (#3a081c)
+  'rgba(45, 5, 22, ',      // Zeminle kaynaşan koyu bordo (#2d0516)
+  'rgba(35, 3, 17, ',      // Derin zemin bordosu (#230311)
   'rgba(28, 2, 13, ',      // Saf zemin bordosu (#1c020d)
 ];
 

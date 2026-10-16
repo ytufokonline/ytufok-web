@@ -58,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-[20px] backdrop-saturate-[180%] bg-[rgba(28,2,13,0.72)] bg-gradient-to-r from-[rgba(165,215,235,0.08)] via-[rgba(255,255,255,0.03)] to-[rgba(86,138,165,0.05)] border-b border-white/15 shadow-[0_4px_30px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all">
+    <header className="sticky top-0 z-40 backdrop-blur-[24px] backdrop-saturate-[115%] bg-[rgba(28,2,13,0.82)] bg-gradient-to-r from-[rgba(145,205,240,0.08)] via-[rgba(38,6,22,0.40)] to-[rgba(86,138,165,0.05)] border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           

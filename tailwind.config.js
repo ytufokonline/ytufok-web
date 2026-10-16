@@ -8,10 +8,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        white: '#eed1d1',
         ytufok: {
           bg: '#1c020d',           // En derin ana arka plan (koyu ton)
-          text: '#eed1d1',         // Ana açık metin tonu
+          text: '#f1f5f9',         // Ana açık metin tonu (nötr mat beyaz)
           card: '#16050e',         // Kart ve panel zemini
           cardHover: '#220816',    // Kart hover
           plum: '#1c020d',         // Kulüp 1. Ana Rengi
@@ -26,7 +25,7 @@ export default {
           steel: '#568aa5',        // Kulüp 2. Ana Rengi (Çelik Mavisi / Slate Blue)
           steelLight: '#6ea5c4',   // Açık çelik vurgu
           steelSoft: '#8fb1c7',    // Yumuşak lavanta çelik
-          steelIce: '#eed1d1',     // Yumuşak pudra açık metin
+          steelIce: '#f1f5f9',     // Asil açık metin
         }
       },
       fontFamily: {

@@ -10,11 +10,11 @@ export default {
       colors: {
         white: '#eed1d1',
         ytufok: {
-          bg: '#23000e',           // En derin ana arka plan (koyu ton)
+          bg: '#1c020d',           // En derin ana arka plan (koyu ton)
           text: '#eed1d1',         // Ana açık metin tonu
           card: '#16050e',         // Kart ve panel zemini
           cardHover: '#220816',    // Kart hover
-          plum: '#23000e',         // Kulüp 1. Ana Rengi
+          plum: '#1c020d',         // Kulüp 1. Ana Rengi
           plumHover: '#2c0c1e',    // Açık ton
           wine: '#44142d',         // Şarap / erik tonu
           twilight: '#332135',     // Ara geçiş tonu 1

@@ -145,7 +145,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#23000e] text-[#eed1d1] selection:bg-[#568aa5]/40 selection:text-white font-sans relative">
+    <div className="min-h-screen flex flex-col bg-[#1c020d] text-[#eed1d1] selection:bg-[#568aa5]/40 selection:text-white font-sans relative">
       {/* Apple-style atmospheric cursor spotlight background */}
       <AtmosphericBackground />
 

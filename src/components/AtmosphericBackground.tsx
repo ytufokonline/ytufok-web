@@ -18,27 +18,25 @@ import React, { useEffect, useRef, useState } from 'react';
  *    - Noktalar, imlecin peşinden organik bir yaylanma ve momentumla (After Effects Easy Ease) akar.
  */
 
-// Koyu Bordo -> Şarap -> Lavanta/Mürdüm -> Toz Mavi -> Pastel Bebe Mavisi Renk Spektrumu
+// Koyu Bordo -> Şarap -> Lavanta/Mürdüm -> Sönük Mat Bebe Mavisi Renk Spektrumu
 const HEAD_BABY_BLUE_COLORS = [
-  'rgba(240, 248, 255, ',  // Kristal buz mavisi (#f0f8ff)
-  'rgba(224, 242, 254, ',  // Çok açık pastel bebe mavisi (#e0f2fe)
-  'rgba(186, 230, 253, ',  // Klasik tatlı bebe mavisi (#bae6fd)
-  'rgba(147, 197, 253, ',  // Yumuşak gök mavisi (#93c5fd)
-  'rgba(165, 203, 235, ',  // Toz mavi (#a5cbeb)
+  'rgba(168, 204, 230, ',  // Muted mat bebe mavisi (#a8cce6)
+  'rgba(145, 185, 215, ',  // Pastel gök tonu (#91b9d7)
+  'rgba(130, 168, 200, ',  // Toz mavi (#82a8c8)
+  'rgba(118, 155, 188, ',  // Derin pastel mavi (#769bbc)
 ];
 
 const MID_TRANSITION_COLORS = [
-  'rgba(186, 230, 253, ',  // Pastel bebe mavisi (#bae6fd)
-  'rgba(165, 203, 235, ',  // Toz mavi (#a5cbeb)
-  'rgba(162, 155, 212, ',  // Pastel leylak (#a29bd4)
-  'rgba(135, 115, 175, ',  // Yumuşak mürdüm moru (#8773af)
-  'rgba(115, 75, 130, ',   // Koyu lavanta erik (#734b82)
+  'rgba(142, 148, 192, ',  // Sönük leylak (#8e94c0)
+  'rgba(125, 110, 160, ',  // Mat lavanta mürdüm (#7d6ea0)
+  'rgba(105, 80, 130, ',   // Koyu lavanta erik (#695082)
+  'rgba(90, 50, 95, ',     // Muted şarap mürdüm (#5a325f)
 ];
 
 const TAIL_BORDO_COLORS = [
-  'rgba(115, 75, 130, ',   // Koyu lavanta erik (#734b82)
-  'rgba(86, 13, 47, ',     // Asil bordo (#560d2f)
-  'rgba(56, 5, 30, ',      // Koyu şarap (#38051e)
+  'rgba(82, 20, 52, ',     // Derin bordo (#521434)
+  'rgba(62, 10, 36, ',     // Koyu asil bordo (#3e0a24)
+  'rgba(44, 5, 24, ',      // Zeminle kaynaşan şarap (#2c0518)
   'rgba(28, 2, 13, ',      // Saf zemin bordosu (#1c020d)
 ];
 
@@ -80,7 +78,7 @@ export const AtmosphericBackground: React.FC = () => {
 
     let animId: number;
 
-    // Head (Cursor Apex)
+    // Head (Cursor Apex) - Birebir imlece kilitli
     let headX = window.innerWidth / 2;
     let headY = window.innerHeight / 2;
     let targetX = headX;
@@ -127,9 +125,9 @@ export const AtmosphericBackground: React.FC = () => {
       const now = performance.now();
       const isMoving = now - lastMoveTime < 140; // Active movement window
 
-      // 1. Head follows target smoothly
-      headX += (targetX - headX) * 0.24;
-      headY += (targetY - headY) * 0.24;
+      // 1. Head follows target directly (Birebir & Gecikmesiz imleç takibi)
+      headX = targetX;
+      headY = targetY;
 
       // Calculate instantaneous movement vector
       const moveDx = targetX - prevTargetX;
@@ -139,8 +137,8 @@ export const AtmosphericBackground: React.FC = () => {
       prevTargetY = targetY;
 
       // 2. Tail follows with organic Easy Ease spring physics
-      const springK = isMoving ? 0.085 : 0.26;
-      const damping = isMoving ? 0.72 : 0.60;
+      const springK = isMoving ? 0.14 : 0.30;
+      const damping = isMoving ? 0.76 : 0.62;
 
       tailVelX = (tailVelX + (headX - tailX) * springK) * damping;
       tailVelY = (tailVelY + (headY - tailY) * springK) * damping;
@@ -155,18 +153,19 @@ export const AtmosphericBackground: React.FC = () => {
 
       // 3. Spawn Pure Dot Matrix particles (Bordodan Bebe Mavisine) ONLY when moving
       if (isMoving && moveSpeed > 0.8 && trailDist > 4) {
-        const baseConeWidth = Math.min(Math.max(trailDist * 0.82 + 35, 45), 280);
+        const baseConeWidth = Math.min(Math.max(trailDist * 0.75 + 30, 40), 240);
 
         const dirX = trailDx / trailDist;
         const dirY = trailDy / trailDist;
         const perpX = -dirY;
         const perpY = dirX;
 
-        const dotCount = Math.min(Math.floor(moveSpeed * 1.4) + 8, 45);
+        // Yoğunluk azaltıldı: gözü yormayan, zarif ve sönük dot-matrix dokusu
+        const dotCount = Math.min(Math.floor(moveSpeed * 0.75) + 3, 20);
 
         for (let i = 0; i < dotCount; i++) {
           const t = Math.pow(Math.random(), 0.75);
-          const maxHalfW = t * (baseConeWidth * 0.5) + 8;
+          const maxHalfW = t * (baseConeWidth * 0.5) + 6;
           const lateralRatio = (Math.random() - 0.5) * 2;
           const lateralOffset = lateralRatio * maxHalfW;
 
@@ -179,11 +178,11 @@ export const AtmosphericBackground: React.FC = () => {
 
           const px = headX + dirX * (t * trailDist) + perpX * lateralOffset;
           const py = headY + dirY * (t * trailDist) + perpY * lateralOffset;
-          // Saf, net ve düz nokta boyutu (1.2px - 2.5px arası temiz dot-matrix tanecikleri)
-          const radius = (Math.random() < 0.7 ? 1.4 : 2.3) * (0.65 + 0.55 * edgeFeather);
+          // Zarif ve net nokta boyutu (1.1px - 2.0px arası)
+          const radius = (Math.random() < 0.75 ? 1.2 : 1.9) * (0.7 + 0.45 * edgeFeather);
 
-          // Renk Spektrumu Seçimi:
-          // t = 0 (Apex / Cursor): Bebe Mavisi Tonları
+          // Renk Spektrumu Seçimi (Sönük ve Asil Palet):
+          // t = 0 (Apex / Cursor): Mat Bebe Mavisi
           // t = 0.5 (Mid): Leylak & Lavanta Mürdüm
           // t = 1.0 (Tail): Koyu Şarap & Zemin Bordosu
           let colorPrefix: string;
@@ -200,15 +199,16 @@ export const AtmosphericBackground: React.FC = () => {
             y: py,
             radius,
             colorPrefix,
-            alpha: (0.45 + Math.random() * 0.45) * combinedFade,
-            decay: 0.038 + Math.random() * 0.048,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: (Math.random() - 0.5) * 0.8,
+            // Işık şiddeti kısıldı: sönük, asil ve gözü yormayan yumuşak opaklık (maksimum ~0.35 - 0.40)
+            alpha: (0.18 + Math.random() * 0.22) * combinedFade,
+            decay: 0.042 + Math.random() * 0.048,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
           });
         }
       }
 
-      // 4. Render and Update Pure Dot Matrix Particles (Cam efekti/blur/halo olmadan net ve düz)
+      // 4. Render and Update Pure Dot Matrix Particles
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = particles.length - 1; i >= 0; i--) {
@@ -218,7 +218,7 @@ export const AtmosphericBackground: React.FC = () => {
         p.y += p.vy;
 
         // Fast clean fade out when stopping
-        p.alpha -= isMoving ? p.decay : p.decay * 3.0;
+        p.alpha -= isMoving ? p.decay : p.decay * 3.5;
 
         if (p.alpha <= 0) {
           particles.splice(i, 1);
@@ -227,7 +227,7 @@ export const AtmosphericBackground: React.FC = () => {
 
         const effectiveAlpha = Math.max(0, p.alpha);
 
-        // Saf, net, düz nokta çizimi (Zero glass / blur / rim / glint)
+        // Saf, net, düz nokta çizimi
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `${p.colorPrefix}${effectiveAlpha.toFixed(3)})`;

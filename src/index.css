@@ -668,3 +668,24 @@ th, td, li, dt, dd {
 [class*="text-[#eed1d1]"] {
   color: #ded0d9 !important;
 }
+
+/* ==============================================================================
+   NAVIGATION & MOBILE INTERACTION UTILITIES
+   ============================================================================== */
+
+header,
+nav,
+.no-tap-highlight {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Hide scrollbar for clean horizontal nav strips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}

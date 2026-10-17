@@ -20,11 +20,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSignOut,
   onSwitchProfile
 }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [mobileProfileDropdownOpen, setMobileProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobileDropdownRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const linkRefs = useRef<{ [key: string]: HTMLAnchorElement | null }>({});
+  const mobileNavRef = useRef<HTMLElement>(null);
+  const mobileLinkRefs = useRef<{ [key: string]: HTMLAnchorElement | null }>({});
   const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number; opacity: number }>({ left: 0, width: 0, opacity: 0 });
 
   // Update sliding indicator position on activeTab change and resize
@@ -55,15 +58,34 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
   }, [activeTab]);
 
+  // Center active tab in mobile horizontal scroll view
+  useEffect(() => {
+    const activeMobileEl = mobileLinkRefs.current[activeTab];
+    if (activeMobileEl && mobileNavRef.current) {
+      activeMobileEl.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
+  }, [activeTab]);
+
   // Close profile dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setProfileDropdownOpen(false);
       }
+      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target as Node)) {
+        setMobileProfileDropdownOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   const navItems = [
@@ -84,17 +106,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       e.preventDefault();
     }
     setActiveTab(tab);
-    setMobileMenuOpen(false);
     setProfileDropdownOpen(false);
+    setMobileProfileDropdownOpen(false);
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full z-50 backdrop-blur-[24px] backdrop-saturate-[115%] bg-[rgba(28,2,13,0.82)] bg-gradient-to-r from-[rgba(145,205,240,0.08)] via-[rgba(38,6,22,0.40)] to-[rgba(86,138,165,0.05)] border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all">
+    <header className="fixed top-0 left-0 right-0 w-full z-50 backdrop-blur-[24px] backdrop-saturate-[115%] bg-[rgba(28,2,13,0.82)] bg-gradient-to-r from-[rgba(145,205,240,0.08)] via-[rgba(38,6,22,0.40)] to-[rgba(86,138,165,0.05)] border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all select-none">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           
           {/* Brand & Desktop Nav Group */}
-          <div className="flex items-center gap-6 lg:gap-8">
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
             {/* Brand - Apple style minimal brand mark */}
             <a 
               href={TAB_PATHS.home}
@@ -264,174 +286,150 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* Mobile Navigation Trigger & Actions */}
-          <div className="flex md:hidden items-center gap-2">
-            {/* Apple Liquid Glass Menu Trigger Capsule */}
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] font-medium transition-all duration-200 select-none cursor-pointer border ${
-                mobileMenuOpen
-                  ? 'bg-white/[0.14] border-white/30 text-[#ded0d9] shadow-[0_2px_12px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.25)] ring-1 ring-white/15'
-                  : 'bg-white/[0.06] hover:bg-white/[0.10] border-white/15 text-[#ded0d9] shadow-[0_2px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.15)] active:scale-95'
-              }`}
-              aria-label="Menüyü Aç/Kapat"
-              aria-expanded={mobileMenuOpen}
+          {/* Mobile Header: All tabs placed horizontally, fixed & sticky at top */}
+          <div className="flex md:hidden items-center justify-between h-14 gap-2 w-full select-none no-tap-highlight">
+            {/* Mobile Logo */}
+            <a 
+              href={TAB_PATHS.home}
+              onClick={(e) => handleNavClick('home', e)}
+              className="shrink-0 flex items-center select-none py-1 cursor-pointer active:opacity-75 transition-opacity"
+              aria-label="YTÜFOK Ana Sayfa"
+              draggable={false}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#82b4cc] shadow-[0_0_8px_rgba(130,180,204,0.9)] transition-transform duration-200 group-hover:scale-125" />
-              <span className="tracking-tight max-w-[110px] truncate">
-                {navItems.find((i) => i.id === activeTab)?.label || 'Menü'}
-              </span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 text-[#ded0d9]/70 transition-transform duration-300 ease-out ${
-                  mobileMenuOpen ? 'rotate-180 text-[#ded0d9]' : 'group-hover:translate-y-0.5'
-                }`}
+              <img 
+                src="/logo.png" 
+                alt="YTÜFOK" 
+                draggable={false}
+                className="h-7 w-auto object-contain opacity-95 select-none pointer-events-none"
               />
-            </button>
+            </a>
 
-            {/* Mobile Admin Shortcut */}
-            {activeAdmin ? (
-              <button
-                type="button"
-                onClick={() => handleNavClick('admin')}
-                className={`p-1.5 rounded-full border transition-all flex items-center justify-center cursor-pointer ${
-                  activeTab === 'admin'
-                    ? 'bg-black/40 border-[#568aa5] ring-1 ring-[#568aa5]/50'
-                    : 'bg-white/[0.06] hover:bg-white/[0.10] border-white/15'
-                }`}
-                title={activeAdmin.full_name}
-                aria-label="Yönetim Paneli"
-              >
-                <div className="w-6 h-6 rounded-full bg-[#241120] flex items-center justify-center text-[#ded0d9] text-[10px] font-mono font-medium border border-white/15">
-                  {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </div>
-              </button>
-            ) : (
-              <a
-                href={TAB_PATHS.admin}
-                onClick={(e) => handleNavClick('admin', e)}
-                className={`p-1.5 rounded-full border transition-all flex items-center justify-center cursor-pointer ${
-                  activeTab === 'admin'
-                    ? 'bg-white/[0.15] border-white/30 text-[#ded0d9]'
-                    : 'bg-white/[0.06] hover:bg-white/[0.10] border-white/15 text-[#ded0d9]/80 hover:text-[#ded0d9]'
-                }`}
-                aria-label="Admin Paneli"
-              >
-                <ShieldCheck className="w-4 h-4 text-[#ded0d9]/70" />
-              </a>
-            )}
+            {/* Mobile Horizontal Navigation Strip (All tabs horizontally in top bar) */}
+            <nav 
+              ref={mobileNavRef}
+              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1 min-w-0 flex-1 select-none overscroll-x-contain"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {navItems.map((item) => {
+                const isActive = activeTab === item.id;
+                return (
+                  <a
+                    key={item.id}
+                    ref={(el) => { mobileLinkRefs.current[item.id] = el; }}
+                    href={item.path}
+                    onClick={(e) => handleNavClick(item.id, e)}
+                    draggable={false}
+                    className={`shrink-0 px-2.5 py-1 rounded-full text-[12px] font-medium tracking-tight transition-all duration-150 select-none whitespace-nowrap cursor-pointer ${
+                      isActive
+                        ? 'bg-white/[0.14] text-[#ded0d9] border border-white/25 shadow-[0_1px_6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]'
+                        : 'text-[#ded0d9]/65 hover:text-[#ded0d9] active:text-[#ded0d9] border border-transparent'
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
+            </nav>
+
+            {/* Mobile Admin Profile / Quick Action */}
+            <div className="shrink-0 relative" ref={mobileDropdownRef}>
+              {activeAdmin ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setMobileProfileDropdownOpen(!mobileProfileDropdownOpen)}
+                    className="p-1 rounded-full border border-[#568aa5]/40 bg-[#1c020d]/80 cursor-pointer select-none active:scale-95 transition-transform"
+                    title={activeAdmin.full_name}
+                    aria-label="Yönetici Menüsü"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[#241120] flex items-center justify-center text-[#ded0d9] text-[10px] font-mono font-medium border border-white/15">
+                      {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                    </div>
+                  </button>
+
+                  {mobileProfileDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 rounded-2xl glass-panel border border-white/20 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3.5 py-2 border-b border-white/10 bg-white/5">
+                        <div className="text-xs font-bold text-[#ded0d9] truncate">
+                          {activeAdmin.full_name}
+                        </div>
+                        <div className="text-[10px] text-[#ded0d9]/60">
+                          {activeAdmin.title}
+                        </div>
+                      </div>
+                      <div className="p-1.5 space-y-0.5">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            setMobileProfileDropdownOpen(false);
+                            handleNavClick('admin', e);
+                          }}
+                          className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-[#ded0d9] hover:bg-white/10 transition-colors cursor-pointer"
+                        >
+                          <span className="flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-[#ded0d9]/70" />
+                            Yönetim Paneli
+                          </span>
+                          {pendingCount > 0 && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#568aa5] text-white">
+                              {pendingCount}
+                            </span>
+                          )}
+                        </button>
+                        {onSwitchProfile && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMobileProfileDropdownOpen(false);
+                              onSwitchProfile();
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#ded0d9] hover:bg-white/10 transition-colors cursor-pointer"
+                          >
+                            <ArrowRightLeft className="w-4 h-4 text-[#ded0d9]/70" />
+                            <span>Profil Değiştir</span>
+                          </button>
+                        )}
+                        <div className="pt-1 mt-1 border-t border-white/10">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMobileProfileDropdownOpen(false);
+                              if (onSignOut) onSignOut();
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-300 hover:text-rose-100 hover:bg-rose-950/50 transition-colors cursor-pointer"
+                          >
+                            <LogOut className="w-4 h-4 text-rose-400" />
+                            <span>Çıkış Yap</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <a
+                  href={TAB_PATHS.admin}
+                  onClick={(e) => handleNavClick('admin', e)}
+                  className={`relative p-1.5 rounded-full border transition-all flex items-center justify-center cursor-pointer select-none active:scale-95 ${
+                    activeTab === 'admin'
+                      ? 'bg-white/[0.15] border-white/30 text-[#ded0d9]'
+                      : 'bg-white/[0.06] hover:bg-white/[0.10] border-white/15 text-[#ded0d9]/80 hover:text-[#ded0d9]'
+                  }`}
+                  aria-label="Admin Paneli"
+                  draggable={false}
+                >
+                  <ShieldCheck className="w-4 h-4 text-[#ded0d9]/70" />
+                  {pendingCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#568aa5] text-white text-[9px] font-bold flex items-center justify-center">
+                      {pendingCount}
+                    </span>
+                  )}
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-b border-white/15 bg-[rgba(28,2,13,0.94)] backdrop-blur-[32px] px-4 py-4 space-y-1.5 shadow-[0_20px_40px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.1)] animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="text-[10px] uppercase tracking-wider text-[#ded0d9]/50 font-mono px-3 pt-1 pb-1">
-            Gezinme
-          </div>
-          {navItems.map((item) => {
-            const isActive = activeTab === item.id;
-            return (
-              <a
-                key={item.id}
-                href={item.path}
-                onClick={(e) => handleNavClick(item.id, e)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                  isActive
-                    ? 'bg-white/[0.12] text-[#ded0d9] border border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)]'
-                    : 'text-[#ded0d9]/70 hover:bg-white/[0.05] hover:text-[#ded0d9] border border-transparent'
-                }`}
-              >
-                <span className="flex items-center gap-2.5">
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      isActive
-                        ? 'bg-[#82b4cc] shadow-[0_0_8px_rgba(130,180,204,0.9)]'
-                        : 'bg-white/20'
-                    }`}
-                  />
-                  <span>{item.label}</span>
-                </span>
-                <ChevronRight className={`w-3.5 h-3.5 ${isActive ? 'text-[#ded0d9]' : 'text-[#ded0d9]/30'}`} />
-              </a>
-            );
-          })}
-
-          {/* Mobile Profile & Admin Block */}
-          {activeAdmin ? (
-            <div className="pt-3 border-t border-white/[0.08] space-y-2">
-              <div className="p-3 rounded-2xl bg-[#1c020d]/80 border border-[#568aa5]/30 flex items-center justify-between gap-3 shadow-inner">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-[#ded0d9] text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
-                    {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-xs font-bold text-[#ded0d9] truncate">{activeAdmin.full_name}</div>
-                    <div className="text-[10px] text-[#ded0d9]/60">{activeAdmin.title}</div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={(e) => handleNavClick('admin', e)}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-[#ded0d9] text-[11px] font-semibold border border-[#568aa5]/40 transition-colors"
-                >
-                  Panele Git
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                {onSwitchProfile && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      onSwitchProfile();
-                    }}
-                    className="px-3 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold text-[#ded0d9] border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
-                  >
-                    <ArrowRightLeft className="w-3.5 h-3.5 text-[#ded0d9]/60" />
-                    <span>Profil Değiştir</span>
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    if (onSignOut) onSignOut();
-                  }}
-                  className="px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Çıkış Yap</span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="pt-2 border-t border-white/[0.06]">
-              <a
-                href={TAB_PATHS.admin}
-                onClick={(e) => handleNavClick('admin', e)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium border transition-all ${
-                  activeTab === 'admin'
-                    ? 'bg-white/[0.14] text-[#ded0d9] border-white/30 shadow-sm'
-                    : 'bg-white/[0.05] text-[#ded0d9]/80 border-white/[0.08] hover:text-[#ded0d9]'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#ded0d9]/70" />
-                  Yönetici Portalı
-                </span>
-                {pendingCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#568aa5] text-white">
-                    {pendingCount} Talep
-                  </span>
-                )}
-              </a>
-            </div>
-          )}
-        </div>
-      )}
     </header>
   );
 };

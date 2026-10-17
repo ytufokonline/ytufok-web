@@ -51,7 +51,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           {/* YTÜFOK Official Logo (Left-Aligned, Crisp Scale with Apple reveal) */}
           <AppleReveal delay={0} variant="scale" className="w-56 sm:w-72 md:w-80 lg:w-96">
             <img
-              src="/ytufok-hero-logo.png?v=2"
+              src="/ytufok-hero-logo.png?v=3"
               alt="YTÜFOK - Yıldız Teknik Üniversitesi Fotoğraf Kulübü"
               className="w-full h-auto object-contain mix-blend-screen select-none"
             />

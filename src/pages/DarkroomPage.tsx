@@ -470,22 +470,24 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           }}
           className={`flex-1 p-4 rounded-xl text-left transition-all flex items-start gap-3.5 cursor-pointer ${
             activeMode === 'wash'
-              ? 'bg-white text-black shadow-lg'
-              : 'text-white/60 hover:text-white hover:bg-white/[0.03]'
+              ? 'bg-white shadow-lg'
+              : 'text-[#ded0d9]/60 hover:text-white hover:bg-white/[0.03]'
           }`}
         >
-          <Droplets className={`w-5 h-5 shrink-0 mt-0.5 ${activeMode === 'wash' ? 'text-black' : 'text-white/40'}`} />
+          <Droplets className={`w-5 h-5 shrink-0 mt-0.5 ${activeMode === 'wash' ? '!text-[#1c020d]' : 'text-[#ded0d9]/40'}`} />
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold tracking-tight">Film Yıkama & Tarama</span>
+              <span className={`text-sm font-semibold tracking-tight ${activeMode === 'wash' ? '!text-[#1c020d]' : 'text-[#ded0d9]'}`}>
+                Film Yıkama & Tarama
+              </span>
               {activeMode === 'wash' && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 shadow-md backdrop-blur-md">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black border border-white/25 shadow-md backdrop-blur-md">
                   <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.9)] shrink-0" />
                   <span style={{ color: '#ffffff' }} className="!text-white font-bold">SEÇİLİ</span>
                 </span>
               )}
             </div>
-            <p className={`text-xs mt-1 leading-normal ${activeMode === 'wash' ? 'text-black/70' : 'text-white/40'}`}>
+            <p className={`text-xs mt-1 leading-normal ${activeMode === 'wash' ? '!text-[#1c020d]/75' : 'text-[#ded0d9]/60'}`}>
               Film tankı ile S/B film banyosu veya negatif film tarayıcı seansı
             </p>
           </div>
@@ -499,22 +501,24 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
           }}
           className={`flex-1 p-4 rounded-xl text-left transition-all flex items-start gap-3.5 cursor-pointer ${
             activeMode === 'print'
-              ? 'bg-white text-black shadow-lg'
-              : 'text-white/60 hover:text-white hover:bg-white/[0.03]'
+              ? 'bg-white shadow-lg'
+              : 'text-[#ded0d9]/60 hover:text-white hover:bg-white/[0.03]'
           }`}
         >
-          <ImageIcon className={`w-5 h-5 shrink-0 mt-0.5 ${activeMode === 'print' ? 'text-black' : 'text-white/40'}`} />
+          <ImageIcon className={`w-5 h-5 shrink-0 mt-0.5 ${activeMode === 'print' ? '!text-[#1c020d]' : 'text-[#ded0d9]/40'}`} />
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold tracking-tight">Kağıda Fotoğraf Baskısı</span>
+              <span className={`text-sm font-semibold tracking-tight ${activeMode === 'print' ? '!text-[#1c020d]' : 'text-[#ded0d9]'}`}>
+                Kağıda Fotoğraf Baskısı
+              </span>
               {activeMode === 'print' && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 shadow-md backdrop-blur-md">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black border border-white/25 shadow-md backdrop-blur-md">
                   <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.9)] shrink-0" />
                   <span style={{ color: '#ffffff' }} className="!text-white font-bold">SEÇİLİ</span>
                 </span>
               )}
             </div>
-            <p className={`text-xs mt-1 leading-normal ${activeMode === 'print' ? 'text-black/70' : 'text-white/40'}`}>
+            <p className={`text-xs mt-1 leading-normal ${activeMode === 'print' ? '!text-[#1c020d]/75' : 'text-[#ded0d9]/60'}`}>
               Agrandisör ile karanlık oda kağıdına projeksiyon ve kart banyosu
             </p>
           </div>

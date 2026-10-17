@@ -68,28 +68,28 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             </p>
           </AppleReveal>
 
-          {/* Apple-Style Action Bar (Glassmorphism Pill + Text Links) */}
+          {/* Apple-Style Action Bar (Primary Glassmorphism Pill + Secondary Links) */}
           <AppleReveal delay={240} variant="subtle" className="flex flex-wrap items-center gap-6 pt-2">
             <button
-              onClick={() => onNavigate('equipment')}
-              className="px-7 py-3 rounded-full glass-button-primary text-xs font-mono uppercase tracking-wider font-semibold shadow-xl transition-all duration-150 cursor-pointer active:scale-95 flex items-center gap-2"
-            >
-              <span>Ekipman Havuzunu İncele</span>
-            </button>
-
-            <button
               onClick={() => onNavigate('reserve')}
-              className="text-white/80 hover:text-white text-xs font-mono uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors cursor-pointer group py-2"
+              className="px-7 py-3 rounded-full glass-button-primary text-xs font-mono uppercase tracking-wider font-semibold shadow-xl transition-all duration-150 cursor-pointer active:scale-95 inline-flex items-center gap-2 group"
             >
               <span>Rezervasyon Yap</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </button>
 
             <button
-              onClick={() => onNavigate('darkroom')}
-              className="text-white/50 hover:text-white text-xs font-mono uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors cursor-pointer group py-2"
+              onClick={() => onNavigate('equipment')}
+              className="text-[#ded0d9]/80 hover:text-white text-xs font-mono uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors cursor-pointer group py-2"
             >
-              <Droplets className="w-3.5 h-3.5 text-white/50 group-hover:text-white transition-colors" />
+              <span>Ekipman Havuzunu İncele</span>
+            </button>
+
+            <button
+              onClick={() => onNavigate('darkroom')}
+              className="text-[#ded0d9]/50 hover:text-white text-xs font-mono uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors cursor-pointer group py-2"
+            >
+              <Droplets className="w-3.5 h-3.5 text-[#ded0d9]/50 group-hover:text-white transition-colors" />
               <span>Karanlık Oda Randevusu</span>
             </button>
           </AppleReveal>

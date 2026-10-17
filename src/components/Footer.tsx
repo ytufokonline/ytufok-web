@@ -16,7 +16,7 @@ export const Footer: React.FC = () => {
                 draggable={false} 
               />
               <span className="text-sm font-semibold text-[#ded0d9] font-satoshi tracking-tight">
-                YTÜFOK <span className="text-[#ded0d9]/60 font-normal">Ekipman Havuzu</span>
+                YTÜFOK <span className="text-[#ded0d9]/60 font-normal">Resmi Web Sitesi</span>
               </span>
             </div>
 

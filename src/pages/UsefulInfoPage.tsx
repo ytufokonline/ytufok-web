@@ -6,6 +6,7 @@ import {
   Minus
 } from 'lucide-react';
 import { TabType } from '../lib/routes';
+import { AppleReveal } from '../components/AppleReveal';
 
 interface UsefulInfoPageProps {
   onNavigate: (tab: TabType, extraParam?: string) => void;
@@ -30,7 +31,7 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
     <div className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-16 sm:py-24 space-y-16">
       
       {/* 1. Page Header (Editorial & Clean Whitespace) */}
-      <header className="space-y-4 max-w-3xl">
+      <AppleReveal delay={0} className="space-y-4 max-w-3xl">
         <div className="text-[11px] font-mono font-medium tracking-[0.2em] uppercase text-white/40">
           Akademi & Arşiv
         </div>
@@ -40,7 +41,7 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
         <p className="text-base sm:text-lg text-white/60 font-normal leading-relaxed pt-1">
           Analog fotoğrafçılık disiplini, film kimyası, karanlık oda teknikleri ve optik standartlara dair teknik referans rehberleri.
         </p>
-      </header>
+      </AppleReveal>
 
       {/* 2. Editorial Accordion Stack */}
       <div className="border-t border-white/[0.08] divide-y divide-white/[0.08]">
@@ -48,7 +49,7 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
         {/* ================================================================= */}
         {/* ACCORDION 01: FİLM NEDİR? (ANA REHBER) */}
         {/* ================================================================= */}
-        <section className="py-2">
+        <AppleReveal delay={100} as="section" className="py-2">
           
           {/* Header Row Button */}
           <button
@@ -86,16 +87,16 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
             <div className="pb-16 pt-2 space-y-20 animate-in fade-in duration-200">
               
               {/* Introduction Note */}
-              <div className="border-l-2 border-white/20 pl-6 max-w-3xl">
+              <AppleReveal delay={40} variant="subtle" className="border-l-2 border-white/20 pl-6 max-w-3xl">
                 <p className="text-sm sm:text-base text-white/70 font-normal leading-relaxed">
                   Film; şeffaf ve esnek bir taban üzerine kaplanmış, ışığa duyarlı gümüş halojenür kristallerinden oluşan fiziksel bir kayıt ortamıdır. Doğru filmin seçimi; ışık koşullarına, perde hızına ve fotoğrafta hedeflenen gren dokusu ile baskı keskinliğine doğrudan yön verir.
                 </p>
-              </div>
+              </AppleReveal>
 
               {/* ---------------------------------------------------- */}
               {/* BÖLÜM 1: BOYUTLARINA GÖRE FİLMLER */}
               {/* ---------------------------------------------------- */}
-              <div className="space-y-8">
+              <AppleReveal delay={80} className="space-y-8">
                 <div className="space-y-2 max-w-2xl">
                   <div className="text-[11px] font-mono tracking-[0.16em] uppercase text-white/40">
                     Bölüm 01
@@ -112,7 +113,7 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pt-2">
                   
                   {/* Büyük Format */}
-                  <div className="border-t border-white/[0.08] pt-4 space-y-2.5">
+                  <AppleReveal delay={120} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2.5">
                     <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">
                       Ölçü: 10×12,5 cm+
                     </div>
@@ -122,10 +123,10 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                     <p className="text-xs text-white/60 leading-relaxed">
                       10 × 12,5 cm, 20 × 25 cm ve daha büyük ölçüdeki tekli tabaka (sheet) filmlerdir. Mimari ve stüdyo reprodüksiyonlarında mikroskobik detay sunar.
                     </p>
-                  </div>
+                  </AppleReveal>
 
                   {/* Orta Format */}
-                  <div className="border-t border-white/[0.08] pt-4 space-y-2.5">
+                  <AppleReveal delay={160} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2.5">
                     <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">
                       Ölçü: 6 cm Roll
                     </div>
@@ -135,10 +136,10 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                     <p className="text-xs text-white/60 leading-relaxed">
                       Rulo halinde, genellikle 4,5 cm veya 6 cm genişliğinde ve 80 cm uzunluğundaki şerit filmlerdir (6×4.5, 6×6, 6×7 kadraj standartları).
                     </p>
-                  </div>
+                  </AppleReveal>
 
                   {/* Küçük Format (35mm) */}
-                  <div className="border-t border-white/20 pt-4 space-y-2.5">
+                  <AppleReveal delay={200} variant="subtle" className="border-t border-white/20 pt-4 space-y-2.5">
                     <div className="text-[10px] font-mono uppercase tracking-widest text-white/80">
                       Ölçü: 24×36 mm (135)
                     </div>
@@ -148,10 +149,10 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                     <p className="text-xs text-white/70 leading-relaxed">
                       18 × 24 mm veya 24 × 36 mm boyutlarındaki en yaygın film standardıdır. Kulübümüzün analog gövdeleri bu formatla çalışır.
                     </p>
-                  </div>
+                  </AppleReveal>
 
                   {/* Minyatür */}
-                  <div className="border-t border-white/[0.08] pt-4 space-y-2.5">
+                  <AppleReveal delay={240} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2.5">
                     <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">
                       Ölçü: 110 Kaset
                     </div>
@@ -161,15 +162,15 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                     <p className="text-xs text-white/60 leading-relaxed">
                       C110 gibi özel ve kompakt kaset formatları bu sınıfa dahildir. Ultra kompakt cep makinelerinde kullanılır.
                     </p>
-                  </div>
+                  </AppleReveal>
 
                 </div>
-              </div>
+              </AppleReveal>
 
               {/* ---------------------------------------------------- */}
               {/* BÖLÜM 2: HIZLARINA GÖRE FİLMLER (ISO/ASA ve DIN) */}
               {/* ---------------------------------------------------- */}
-              <div className="space-y-10">
+              <AppleReveal delay={100} className="space-y-10">
                 <div className="space-y-2 max-w-2xl">
                   <div className="text-[11px] font-mono tracking-[0.16em] uppercase text-white/40">
                     Bölüm 02
@@ -186,7 +187,7 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
                   
                   {/* Yavaş Filmler */}
-                  <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                  <AppleReveal delay={140} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                     <div className="flex items-baseline justify-between">
                       <h4 className="text-base font-semibold text-white tracking-tight">
                         Yavaş Filmler
@@ -196,10 +197,10 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                     <p className="text-xs text-white/60 leading-relaxed">
                       Poz süresi uzundur. Grenler mikroskobik boyutta olduğu için baskılarda yüksek keskinlik sağlarlar. Işık sorununun olmadığı ortamlarda veya durağan çekimlerde tercih edilir.
                     </p>
-                  </div>
+                  </AppleReveal>
 
                   {/* Orta Hızlı Filmler */}
-                  <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                  <AppleReveal delay={180} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                     <div className="flex items-baseline justify-between">
                       <h4 className="text-base font-semibold text-white tracking-tight">
                         Orta Hızlı Filmler
@@ -209,10 +210,10 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                     <p className="text-xs text-white/60 leading-relaxed">
                       En yaygın kullanılan film hızlarındandır. Dengeli bir görüntü ve keskinlik sunar; dış mekan çekimleri ile durağan veya az hareketli konular için idealdir.
                     </p>
-                  </div>
+                  </AppleReveal>
 
                   {/* Hızlı Filmler */}
-                  <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                  <AppleReveal delay={220} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                     <div className="flex items-baseline justify-between">
                       <h4 className="text-base font-semibold text-white tracking-tight">
                         Hızlı Filmler
@@ -222,10 +223,10 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                     <p className="text-xs text-white/60 leading-relaxed">
                       Hareketli sahnelerde veya yetersiz ışık koşullarında kullanılır. İri grenli yapıları nedeniyle keskinlik bir miktar düşer.
                     </p>
-                  </div>
+                  </AppleReveal>
 
                   {/* Çok Hızlı Filmler */}
-                  <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                  <AppleReveal delay={260} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                     <div className="flex items-baseline justify-between">
                       <h4 className="text-base font-semibold text-white tracking-tight">
                         Çok Hızlı Filmler
@@ -235,12 +236,12 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                     <p className="text-xs text-white/60 leading-relaxed">
                       Gece çekimleri ve yüksek hızlı hareketler için tasarlanmıştır. Grenler çok iridir; kapalı mekanlar ve yetersiz aydınlatma koşullarında kullanılır.
                     </p>
-                  </div>
+                  </AppleReveal>
 
                 </div>
 
                 {/* Film Speed Standards & Apple Tech Specs Table */}
-                <div className="pt-4 space-y-6">
+                <AppleReveal delay={180} variant="subtle" className="pt-4 space-y-6">
                   <div className="space-y-1">
                     <h4 className="text-sm font-semibold text-white tracking-tight">
                       Film Hız Standartları: ASA vs DIN
@@ -290,14 +291,14 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </AppleReveal>
 
-              </div>
+              </AppleReveal>
 
               {/* ---------------------------------------------------- */}
               {/* BÖLÜM 3: FİLM TÜRLERİ VE YAPILARI */}
               {/* ---------------------------------------------------- */}
-              <div className="space-y-8">
+              <AppleReveal delay={120} className="space-y-8">
                 <div className="space-y-2 max-w-2xl">
                   <div className="text-[11px] font-mono tracking-[0.16em] uppercase text-white/40">
                     Bölüm 03
@@ -376,10 +377,10 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                   </div>
 
                 </div>
-              </div>
+              </AppleReveal>
 
               {/* Minimalist Footnote: Darkroom Callout */}
-              <div className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
+              <AppleReveal delay={160} variant="subtle" className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
                 <p className="text-xs text-white/50 max-w-xl leading-relaxed">
                   YTÜFOK Karanlık Oda Atölyeleri — Kulüpler Vadisi'ndeki karanlık odamızda siyah-beyaz film banyosu yapabilir ve agrandisörle kart baskısı alabilirsiniz.
                 </p>
@@ -391,16 +392,16 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
                   <span>Karanlık Oda Rezervasyonu</span>
                   <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
-              </div>
+              </AppleReveal>
 
             </div>
           )}
-        </section>
+        </AppleReveal>
 
         {/* ================================================================= */}
         {/* ACCORDION 02: POZLAMA ÜÇGENİ */}
         {/* ================================================================= */}
-        <section className="py-2">
+        <AppleReveal delay={180} as="section" className="py-2">
           <button
             type="button"
             onClick={() => toggleSection('pozlama-ucgeni')}
@@ -433,43 +434,45 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
 
           {openSections['pozlama-ucgeni'] && (
             <div className="pb-16 pt-2 space-y-10 animate-in fade-in duration-200">
-              <p className="text-sm text-white/70 font-normal leading-relaxed max-w-3xl border-l-2 border-white/20 pl-6">
-                Pozlama üçgeni; sensör veya filme ulaşan ışık miktarını kontrol eden üç ayağın (Diyafram, Perde Süresi ve Hassasiyet) birbirine olan geometrik bağımlılığıdır. Herhangi bir parametredeki 1 duraklık değişim, poz dengesini korumak için diğer parametrelerden biriyle dengelenmelidir.
-              </p>
+              <AppleReveal delay={40} variant="subtle">
+                <p className="text-sm text-white/70 font-normal leading-relaxed max-w-3xl border-l-2 border-white/20 pl-6">
+                  Pozlama üçgeni; sensör veya filme ulaşan ışık miktarını kontrol eden üç ayağın (Diyafram, Perde Süresi ve Hassasiyet) birbirine olan geometrik bağımlılığıdır. Herhangi bir parametredeki 1 duraklık değişim, poz dengesini korumak için diğer parametrelerden biriyle dengelenmelidir.
+                </p>
+              </AppleReveal>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
-                <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                <AppleReveal delay={80} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">01 / Işık & Alan Derinliği</div>
                   <h4 className="text-base font-semibold text-white tracking-tight">Diyafram (f/)</h4>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Lense giren ışık debisini ve alan derinliğini yönetir. f/1.4 gibi küçük değerler arka planı bulanıklaştırırken (bokeh), f/8 ve f/11 gibi değerler tüm kadrajı netleştirir.
                   </p>
-                </div>
+                </AppleReveal>
 
-                <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                <AppleReveal delay={120} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">02 / Süre & Hareket</div>
                   <h4 className="text-base font-semibold text-white tracking-tight">Enstantane (Shutter)</h4>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Sensörün ışığa maruz kaldığı süredir. 1/1000s hareketi dondururken, 1/2s veya daha uzun pozlamalar su ve ışık akışlarında pürüzsüz hareket izi oluşturur.
                   </p>
-                </div>
+                </AppleReveal>
 
-                <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                <AppleReveal delay={160} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">03 / Duyarlılık & Gren</div>
                   <h4 className="text-base font-semibold text-white tracking-tight">ISO / Hassasiyet</h4>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Filmin veya sensörün ışığa karşı duyarlılık katsayısıdır. Düşük ISO (100) en keskin ve temiz sonucu sunarken, yüksek ISO (3200+) karanlıkta çekim sağlar fakat gren üretir.
                   </p>
-                </div>
+                </AppleReveal>
               </div>
             </div>
           )}
-        </section>
+        </AppleReveal>
 
         {/* ================================================================= */}
         {/* ACCORDION 03: KARANLIK ODA BANYO AŞAMALARI */}
         {/* ================================================================= */}
-        <section className="py-2">
+        <AppleReveal delay={260} as="section" className="py-2">
           <button
             type="button"
             onClick={() => toggleSection('karanlik-oda')}
@@ -502,38 +505,40 @@ export const UsefulInfoPage: React.FC<UsefulInfoPageProps> = ({ onNavigate }) =>
 
           {openSections['karanlik-oda'] && (
             <div className="pb-16 pt-2 space-y-10 animate-in fade-in duration-200">
-              <p className="text-sm text-white/70 font-normal leading-relaxed max-w-3xl border-l-2 border-white/20 pl-6">
-                Film banyosu, mutlak karanlıkta filmin spirale sarılıp tanka kilitlenmesiyle başlar. Tank kapağı kapandıktan sonra süreç ışıklı ortamda kimyasal banyo adımlarıyla tamamlanır.
-              </p>
+              <AppleReveal delay={40} variant="subtle">
+                <p className="text-sm text-white/70 font-normal leading-relaxed max-w-3xl border-l-2 border-white/20 pl-6">
+                  Film banyosu, mutlak karanlıkta filmin spirale sarılıp tanka kilitlenmesiyle başlar. Tank kapağı kapandıktan sonra süreç ışıklı ortamda kimyasal banyo adımlarıyla tamamlanır.
+                </p>
+              </AppleReveal>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
-                <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                <AppleReveal delay={80} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Adım 01 / 20°C</div>
                   <h4 className="text-base font-semibold text-white tracking-tight">Geliştirici (Developer)</h4>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Işığa maruz kalmış gümüş halojenürleri metalik gümüşe dönüştürür. Süre ve ısı (standart 20°C) filmin kontrastını ve gren yapısını belirler.
                   </p>
-                </div>
+                </AppleReveal>
 
-                <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                <AppleReveal delay={120} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Adım 02 / ~1 Dakika</div>
                   <h4 className="text-base font-semibold text-white tracking-tight">Durdurucu (Stop Bath)</h4>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Hafif asidik solüsyon, alkali geliştiricinin etkisini derhal keser. Gelişmeyi saniyesinde dondurarak sabitleyicinin kimyasal ömrünü korur.
                   </p>
-                </div>
+                </AppleReveal>
 
-                <div className="border-t border-white/[0.08] pt-4 space-y-2">
+                <AppleReveal delay={160} variant="subtle" className="border-t border-white/[0.08] pt-4 space-y-2">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Adım 03 / ~5 Dakika</div>
                   <h4 className="text-base font-semibold text-white tracking-tight">Sabitleyici (Fixer)</h4>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Işık görmemiş duyarlı gümüş tuzlarını filmden tamamen temizler. Bu adımdan sonra film ışığa karşı kararlı hale gelir ve tank açılabilir.
                   </p>
-                </div>
+                </AppleReveal>
               </div>
             </div>
           )}
-        </section>
+        </AppleReveal>
 
       </div>
 

@@ -479,8 +479,9 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold tracking-tight">Film Yıkama & Tarama</span>
               {activeMode === 'wash' && (
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-black text-white">
-                  Seçili
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 !text-sky-300 shadow-md backdrop-blur-md">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.9)] shrink-0" />
+                  <span>SEÇİLİ</span>
                 </span>
               )}
             </div>
@@ -507,8 +508,9 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold tracking-tight">Kağıda Fotoğraf Baskısı</span>
               {activeMode === 'print' && (
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-black text-white">
-                  Seçili
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 !text-sky-300 shadow-md backdrop-blur-md">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.9)] shrink-0" />
+                  <span>SEÇİLİ</span>
                 </span>
               )}
             </div>
@@ -784,8 +786,8 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                           Rezerve
                         </span>
                       ) : isSelected ? (
-                        <span className="px-2.5 py-1 rounded-full text-white text-[10px] font-mono bg-black font-semibold flex items-center gap-1">
-                          <Check className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 !text-sky-300 shadow-md backdrop-blur-md">
+                          <Check className="w-3 h-3 text-sky-400 stroke-[2.5]" />
                           <span>Seçildi</span>
                         </span>
                       ) : (

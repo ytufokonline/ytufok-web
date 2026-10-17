@@ -135,11 +135,11 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
         </div>
         <button
           onClick={() => onNavigate('guide')}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-semibold uppercase tracking-wider transition-all shadow-md shrink-0 cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white !text-[#1c020d] hover:bg-white/90 text-xs font-bold uppercase tracking-wider transition-all shadow-md shrink-0 cursor-pointer"
         >
-          <BookOpen className="w-3.5 h-3.5" />
-          <span>Rehberi Aç</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <BookOpen className="w-3.5 h-3.5 !text-[#1c020d]" />
+          <span className="!text-[#1c020d] font-bold">Rehberi Aç</span>
+          <ArrowRight className="w-3.5 h-3.5 !text-[#1c020d]" />
         </button>
       </AppleReveal>
 

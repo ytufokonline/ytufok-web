@@ -669,6 +669,16 @@ th, td, li, dt, dd {
   color: #ded0d9 !important;
 }
 
+/* Ensure solid white elements (buttons, badges) have sharp bordo (#1c020d) text */
+.bg-white,
+.bg-white *,
+button.bg-white,
+button.bg-white *,
+a.bg-white,
+a.bg-white * {
+  color: #1c020d !important;
+}
+
 /* ==============================================================================
    NAVIGATION & MOBILE INTERACTION UTILITIES
    ============================================================================== */

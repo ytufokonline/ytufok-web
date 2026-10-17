@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ShieldCheck, Menu, X, ChevronRight, ChevronDown, LogOut, ArrowRightLeft, UserCheck, BookOpen } from 'lucide-react';
+import { ShieldCheck, X, ChevronRight, ChevronDown, LogOut, ArrowRightLeft, UserCheck, BookOpen } from 'lucide-react';
 import { TabType, TAB_PATHS } from '../lib/routes';
 import { AdminProfile } from '../types';
 
@@ -264,17 +264,45 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* Mobile Menu Actions */}
+          {/* Mobile Navigation Trigger & Actions */}
           <div className="flex md:hidden items-center gap-2">
+            {/* Apple Liquid Glass Menu Trigger Capsule */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] font-medium transition-all duration-200 select-none cursor-pointer border ${
+                mobileMenuOpen
+                  ? 'bg-white/[0.14] border-white/30 text-[#ded0d9] shadow-[0_2px_12px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.25)] ring-1 ring-white/15'
+                  : 'bg-white/[0.06] hover:bg-white/[0.10] border-white/15 text-[#ded0d9] shadow-[0_2px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.15)] active:scale-95'
+              }`}
+              aria-label="Menüyü Aç/Kapat"
+              aria-expanded={mobileMenuOpen}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#82b4cc] shadow-[0_0_8px_rgba(130,180,204,0.9)] transition-transform duration-200 group-hover:scale-125" />
+              <span className="tracking-tight max-w-[110px] truncate">
+                {navItems.find((i) => i.id === activeTab)?.label || 'Menü'}
+              </span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-[#ded0d9]/70 transition-transform duration-300 ease-out ${
+                  mobileMenuOpen ? 'rotate-180 text-[#ded0d9]' : 'group-hover:translate-y-0.5'
+                }`}
+              />
+            </button>
+
+            {/* Mobile Admin Shortcut */}
             {activeAdmin ? (
               <button
                 type="button"
                 onClick={() => handleNavClick('admin')}
-                className={`p-1.5 rounded-xl border flex items-center gap-1.5 ${
-                  activeTab === 'admin' ? 'bg-black/35 border-[#568aa5]' : 'bg-[#1a0611] border-[#568aa5]/30'
+                className={`p-1.5 rounded-full border transition-all flex items-center justify-center cursor-pointer ${
+                  activeTab === 'admin'
+                    ? 'bg-black/40 border-[#568aa5] ring-1 ring-[#568aa5]/50'
+                    : 'bg-white/[0.06] hover:bg-white/[0.10] border-white/15'
                 }`}
+                title={activeAdmin.full_name}
+                aria-label="Yönetim Paneli"
               >
-                <div className="w-6 h-6 rounded-lg bg-[#241120] flex items-center justify-center text-white text-[10px] font-mono font-medium border border-white/15">
+                <div className="w-6 h-6 rounded-full bg-[#241120] flex items-center justify-center text-[#ded0d9] text-[10px] font-mono font-medium border border-white/15">
                   {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
               </button>
@@ -282,27 +310,26 @@ export const Navbar: React.FC<NavbarProps> = ({
               <a
                 href={TAB_PATHS.admin}
                 onClick={(e) => handleNavClick('admin', e)}
-                className="p-2 rounded-lg bg-white/[0.05] text-white/80 border border-white/[0.08]"
+                className={`p-1.5 rounded-full border transition-all flex items-center justify-center cursor-pointer ${
+                  activeTab === 'admin'
+                    ? 'bg-white/[0.15] border-white/30 text-[#ded0d9]'
+                    : 'bg-white/[0.06] hover:bg-white/[0.10] border-white/15 text-[#ded0d9]/80 hover:text-[#ded0d9]'
+                }`}
                 aria-label="Admin Paneli"
               >
-                <ShieldCheck className="w-4 h-4 text-white/60" />
+                <ShieldCheck className="w-4 h-4 text-[#ded0d9]/70" />
               </a>
             )}
-
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-white/70 hover:text-white focus:outline-none"
-              aria-label="Menüyü Aç/Kapat"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-white/15 glass-panel px-4 py-4 space-y-1 shadow-2xl">
+        <div className="md:hidden border-b border-white/15 bg-[rgba(28,2,13,0.94)] backdrop-blur-[32px] px-4 py-4 space-y-1.5 shadow-[0_20px_40px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.1)] animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="text-[10px] uppercase tracking-wider text-[#ded0d9]/50 font-mono px-3 pt-1 pb-1">
+            Gezinme
+          </div>
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (
@@ -310,14 +337,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                 key={item.id}
                 href={item.path}
                 onClick={(e) => handleNavClick(item.id, e)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-white/[0.08] text-white'
-                    : 'text-white/70 hover:bg-white/[0.04] hover:text-white'
+                    ? 'bg-white/[0.12] text-[#ded0d9] border border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)]'
+                    : 'text-[#ded0d9]/70 hover:bg-white/[0.05] hover:text-[#ded0d9] border border-transparent'
                 }`}
               >
-                <span>{item.label}</span>
-                <ChevronRight className="w-4 h-4 text-white/30" />
+                <span className="flex items-center gap-2.5">
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      isActive
+                        ? 'bg-[#82b4cc] shadow-[0_0_8px_rgba(130,180,204,0.9)]'
+                        : 'bg-white/20'
+                    }`}
+                  />
+                  <span>{item.label}</span>
+                </span>
+                <ChevronRight className={`w-3.5 h-3.5 ${isActive ? 'text-[#ded0d9]' : 'text-[#ded0d9]/30'}`} />
               </a>
             );
           })}
@@ -325,20 +361,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Mobile Profile & Admin Block */}
           {activeAdmin ? (
             <div className="pt-3 border-t border-white/[0.08] space-y-2">
-              <div className="p-3 rounded-2xl bg-[#1a0611] border border-[#568aa5]/30 flex items-center justify-between gap-3">
+              <div className="p-3 rounded-2xl bg-[#1c020d]/80 border border-[#568aa5]/30 flex items-center justify-between gap-3 shadow-inner">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-white text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-[#241120] flex items-center justify-center text-[#ded0d9] text-xs font-mono font-medium shadow-inner border border-white/15 shrink-0">
                     {activeAdmin.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xs font-bold text-white truncate">{activeAdmin.full_name}</div>
-                    <div className="text-[10px] text-white/60">{activeAdmin.title}</div>
+                    <div className="text-xs font-bold text-[#ded0d9] truncate">{activeAdmin.full_name}</div>
+                    <div className="text-[10px] text-[#ded0d9]/60">{activeAdmin.title}</div>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={(e) => handleNavClick('admin', e)}
-                  className="px-2.5 py-1 rounded-lg bg-black/35 text-white text-[11px] font-semibold border border-[#568aa5]/30"
+                  className="px-2.5 py-1 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-[#ded0d9] text-[11px] font-semibold border border-[#568aa5]/40 transition-colors"
                 >
                   Panele Git
                 </button>
@@ -352,9 +388,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setMobileMenuOpen(false);
                       onSwitchProfile();
                     }}
-                    className="px-3 py-2 rounded-xl bg-black/35 hover:bg-[#341124] text-xs font-semibold text-white border border-[#568aa5]/30 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="px-3 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold text-[#ded0d9] border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
                   >
-                    <ArrowRightLeft className="w-3.5 h-3.5 text-white/60" />
+                    <ArrowRightLeft className="w-3.5 h-3.5 text-[#ded0d9]/60" />
                     <span>Profil Değiştir</span>
                   </button>
                 )}
@@ -364,7 +400,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     setMobileMenuOpen(false);
                     if (onSignOut) onSignOut();
                   }}
-                  className="px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Çıkış Yap</span>
@@ -376,14 +412,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <a
                 href={TAB_PATHS.admin}
                 onClick={(e) => handleNavClick('admin', e)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium border transition-all ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium border transition-all ${
                   activeTab === 'admin'
-                    ? 'bg-white text-[#1c020d] border-white'
-                    : 'bg-white/[0.05] text-white/80 border-white/[0.08]'
+                    ? 'bg-white/[0.14] text-[#ded0d9] border-white/30 shadow-sm'
+                    : 'bg-white/[0.05] text-[#ded0d9]/80 border-white/[0.08] hover:text-[#ded0d9]'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-white/60" />
+                  <ShieldCheck className="w-4 h-4 text-[#ded0d9]/70" />
                   Yönetici Portalı
                 </span>
                 {pendingCount > 0 && (

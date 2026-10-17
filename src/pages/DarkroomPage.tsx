@@ -479,9 +479,9 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold tracking-tight">Film Yıkama & Tarama</span>
               {activeMode === 'wash' && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 !text-white shadow-md backdrop-blur-md">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 shadow-md backdrop-blur-md">
                   <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.9)] shrink-0" />
-                  <span>SEÇİLİ</span>
+                  <span style={{ color: '#ffffff' }} className="!text-white font-bold">SEÇİLİ</span>
                 </span>
               )}
             </div>
@@ -508,9 +508,9 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold tracking-tight">Kağıda Fotoğraf Baskısı</span>
               {activeMode === 'print' && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 !text-white shadow-md backdrop-blur-md">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 shadow-md backdrop-blur-md">
                   <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.9)] shrink-0" />
-                  <span>SEÇİLİ</span>
+                  <span style={{ color: '#ffffff' }} className="!text-white font-bold">SEÇİLİ</span>
                 </span>
               )}
             </div>
@@ -786,9 +786,9 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
                           Rezerve
                         </span>
                       ) : isSelected ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 !text-white shadow-md backdrop-blur-md">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/90 border border-white/25 shadow-md backdrop-blur-md">
                           <Check className="w-3 h-3 text-sky-400 stroke-[2.5]" />
-                          <span>Seçildi</span>
+                          <span style={{ color: '#ffffff' }} className="!text-white font-bold">Seçildi</span>
                         </span>
                       ) : (
                         <span className="px-2.5 py-1 rounded-full border border-emerald-500/30 text-emerald-400 text-[10px] font-mono">

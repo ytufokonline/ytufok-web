@@ -669,14 +669,25 @@ th, td, li, dt, dd {
   color: #ded0d9 !important;
 }
 
-/* Ensure solid white elements (buttons, badges) have sharp bordo (#1c020d) text */
-.bg-white,
-.bg-white *,
-button.bg-white,
-button.bg-white *,
-a.bg-white,
-a.bg-white * {
-  color: #1c020d !important;
+/* Ensure solid white buttons have sharp bordo (#1c020d) text by default,
+   without overriding nested dark badges/containers (e.g. .bg-black) */
+button.bg-white:not([class*="bg-black"]),
+a.bg-white:not([class*="bg-black"]) {
+  color: #1c020d;
+}
+
+/* Explicit text color utilities take absolute priority */
+.text-white,
+[class*="text-white"],
+[class*="!text-white"] {
+  color: #ffffff !important;
+}
+
+/* Badges inside dark containers must always remain light/white */
+[class*="bg-black"] span,
+[class*="bg-black"] p,
+[class*="bg-black"] strong {
+  color: #ffffff !important;
 }
 
 /* ==============================================================================

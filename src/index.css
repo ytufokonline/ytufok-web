@@ -51,7 +51,7 @@
   body {
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: #1c020d !important;
-    color: #f1f5f9;
+    color: #ded0d9 !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
@@ -60,6 +60,7 @@
   #root {
     min-height: 100vh;
     background-color: transparent;
+    color: #ded0d9;
   }
 
   /* Body texts, inputs, buttons, paragraphs use Satoshi */
@@ -69,14 +70,14 @@
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  /* Headings & Brand elements strictly use Satoshi (Bold) & #f1f5f9 */
+  /* Headings & Brand elements strictly use Satoshi (Bold) & #ded0d9 */
   h1, h2, h3, h4, h5, h6,
   .font-club,
   .font-heading,
   .font-satoshi {
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     letter-spacing: -0.02em;
-    color: #f1f5f9;
+    color: #ded0d9 !important;
   }
 
   /* Monospace overrides */
@@ -203,7 +204,7 @@ button img,
   background-image: linear-gradient(135deg, rgba(165, 218, 252, 0.14) 0%, rgba(86, 138, 165, 0.06) 35%, rgba(28, 2, 13, 0.78) 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
   box-shadow: 0 6px 20px -2px rgba(0, 0, 0, 0.50), inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.25), inset 0 -0.5px 0.5px 0 rgba(145, 205, 245, 0.08) !important;
-  color: #f1f5f9;
+  color: #ded0d9 !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
@@ -214,7 +215,7 @@ button img,
   background-image: linear-gradient(135deg, rgba(175, 225, 255, 0.22) 0%, rgba(86, 138, 165, 0.09) 35%, rgba(34, 6, 22, 0.82) 100%) !important;
   border-color: rgba(255, 255, 255, 0.30) !important;
   box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.60), inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), 0 0 20px rgba(145, 205, 240, 0.15) !important;
-  color: #ffffff;
+  color: #ded0d9 !important;
 }
 
 .glass-button:active,
@@ -230,7 +231,7 @@ button img,
   background-image: linear-gradient(135deg, rgba(165, 218, 252, 0.24) 0%, rgba(86, 138, 165, 0.14) 40%, rgba(45, 7, 26, 0.82) 100%) !important;
   border: 1px solid rgba(165, 218, 252, 0.35) !important;
   box-shadow: 0 8px 28px -4px rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.40), inset 0 -1px 0.5px 0 rgba(165, 218, 252, 0.15), 0 0 24px rgba(145, 205, 240, 0.12) !important;
-  color: #ffffff !important;
+  color: #ded0d9 !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
@@ -240,6 +241,7 @@ button img,
   background-image: linear-gradient(135deg, rgba(185, 230, 255, 0.32) 0%, rgba(86, 138, 165, 0.18) 40%, rgba(55, 8, 32, 0.88) 100%) !important;
   border-color: rgba(185, 230, 255, 0.50) !important;
   box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.65), inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.55), 0 0 32px rgba(165, 218, 252, 0.22) !important;
+  color: #ded0d9 !important;
 }
 
 .glass-button-primary:active {
@@ -256,7 +258,7 @@ textarea {
   background-image: linear-gradient(135deg, rgba(165, 218, 252, 0.08) 0%, rgba(86, 138, 165, 0.04) 40%, rgba(26, 2, 12, 0.68) 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.15) !important;
-  color: #f1f5f9 !important;
+  color: #ded0d9 !important;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
@@ -646,6 +648,23 @@ input[type="date"]::-webkit-date-and-time-value {
     transform: translate3d(25px, -65px, 0) scale(0.96);
     opacity: 0.7;
   }
+}/* ==============================================================================
+   UNIVERSAL TYPOGRAPHY COLOR: #ded0d9
+   ============================================================================== */
+
+body, #root,
+p, span, a, label,
+h1, h2, h3, h4, h5, h6,
+button, input, select, textarea,
+th, td, li, dt, dd {
+  color: #ded0d9;
 }
 
+.text-white {
+  color: #ded0d9 !important;
+}
 
+[class*="text-[#f1f5f9]"],
+[class*="text-[#eed1d1]"] {
+  color: #ded0d9 !important;
+}

@@ -351,7 +351,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-14 text-[#eed1d1]">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-14 text-[#ded0d9]">
       
       {/* Page Header */}
       <AppleReveal delay={0}>

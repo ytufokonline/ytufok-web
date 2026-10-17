@@ -85,7 +85,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
         {/* Header */}
         <div className="p-5 border-b border-white/10 bg-black/25 flex items-start justify-between">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/35 border border-white/20 text-[#eed1d1] text-[10px] font-bold uppercase tracking-wider mb-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/35 border border-white/20 text-[#ded0d9] text-[10px] font-bold uppercase tracking-wider mb-1.5">
               <ShieldCheck className="w-3 h-3 text-white/60" />
               <span>Yönetim Kurulu</span>
             </div>
@@ -145,7 +145,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                       </span>
                     ) : (
                       <span className={`text-[11px] font-medium transition-colors ${
-                        isSelected ? 'text-[#eed1d1] font-bold' : 'text-white/60'
+                        isSelected ? 'text-[#ded0d9] font-bold' : 'text-white/60'
                       }`}>
                         {isSelected ? 'Şifre Girin ↓' : 'Seç →'}
                       </span>
@@ -162,7 +162,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
                     }}
                     className="px-3.5 pb-3.5 pt-1 border-t border-white/10 space-y-2 animate-in fade-in duration-150"
                   >
-                    <div className="text-[11px] text-[#eed1d1]">
+                    <div className="text-[11px] text-[#ded0d9]">
                       <strong>{profile.full_name}</strong> hesabına geçmek için şifrenizi giriniz:
                     </div>
 
@@ -248,7 +248,7 @@ export const SwitchProfileModal: React.FC<SwitchProfileModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-xl bg-black/35 hover:bg-[#421d31] text-[#eed1d1] text-[11px] font-medium cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-black/35 hover:bg-[#421d31] text-[#ded0d9] text-[11px] font-medium cursor-pointer"
             >
               Kapat
             </button>

@@ -423,7 +423,7 @@ export const DarkroomPage: React.FC<DarkroomPageProps> = ({ onNavigate }) => {
   }, [selectedDate]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-16 text-[#eed1d1]">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-16 text-[#ded0d9]">
       
       {/* Header & Editorial Spec Strip */}
       <AppleReveal className="space-y-6">

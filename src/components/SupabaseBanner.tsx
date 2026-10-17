@@ -16,11 +16,11 @@ export const SupabaseBanner: React.FC<SupabaseBannerProps> = ({ onOpenGuide }) =
           <Database className="w-3.5 h-3.5 text-[#6ea5c4]" />
           <span className="text-[#a9b9d3]">Veritabanı:</span>
           {isConfigured ? (
-            <span className="inline-flex items-center gap-1 text-[#eed1d1] font-medium">
+            <span className="inline-flex items-center gap-1 text-[#ded0d9] font-medium">
               <CheckCircle className="w-3 h-3 text-[#6ea5c4]" /> Supabase Bulut Veritabanı
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 text-[#eed1d1] font-medium">
+            <span className="inline-flex items-center gap-1 text-[#ded0d9] font-medium">
               <Info className="w-3 h-3 text-[#6ea5c4]" /> Supabase Uyumlu (Yerel Mod)
             </span>
           )}

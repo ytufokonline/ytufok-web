@@ -28,24 +28,11 @@ export default async function handler(req, res) {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Try Supabase RPC first
-    try {
-      const { data: rpcData, error: rpcError } = await supabase.rpc('verify_student_member', {
-        p_student_number: cleanNumber
-      });
-
-      if (!rpcError && rpcData) {
-        return res.status(200).json(rpcData);
-      }
-    } catch {
-      // Fallback
-    }
-
-    // 2. Safe single row lookup (select only safe public fields, never phone/email of all users)
+    // Safe single row lookup (pulls member_type, status, role, etc. without exposure of sensitive bulk lists)
     const { data, error } = await supabase
       .from('members')
       .select('id, student_number, full_name, department, status, role, member_type, penalty_count, penalty_reason')
-      .eq('student_number', cleanNumber)
+      .ilike('student_number', cleanNumber)
       .maybeSingle();
 
     if (error || !data) {

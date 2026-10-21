@@ -294,7 +294,7 @@ export const api = {
         try {
           const memRes = await supabase.from('members').select('*');
           if (memRes.data && Array.isArray(memRes.data)) {
-            members = memRes.data as Member[];
+            members = (memRes.data as Member[]).map(normalizeMemberRecord);
           }
         } catch (e) {
           console.warn('Üye listesi çekilemedi:', e);
@@ -432,43 +432,13 @@ export const api = {
       return { success: false, message: 'Lütfen öğrenci numaranızı giriniz.' };
     }
 
-    // 1. Supabase Güvenli RPC Fonksiyonunu Dene (Server-side)
-    if (isSupabaseConfigured()) {
-      try {
-        const { data: rpcData, error: rpcError } = await supabase.rpc('verify_student_member', {
-          p_student_number: cleanNumber
-        });
-
-        if (!rpcError && rpcData && typeof rpcData === 'object') {
-          return rpcData as { success: boolean; member?: Member; message: string };
-        }
-      } catch (err) {
-        // RPC henüz çalıştırılmadıysa fallback akışına devam et
-      }
-    }
-
-    // 2. Serverless API Endpoint'ini Dene
-    try {
-      const res = await fetch('/api/verify-member', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentNumber: cleanNumber })
-      });
-      if (res.ok) {
-        const json = await res.json();
-        return json;
-      }
-    } catch {
-      // ignore
-    }
-
-    // 3. Güvenli Tekil Satır Sorgusu (Yalnızca aranan tek öğrenciyi çeker, tüm tabloyu asla istemciye indirmez)
+    // 1. Doğrudan Güvenli Tekil Satır Sorgusu (member_type, role, status dahil tam üye verisi)
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase
           .from('members')
           .select('id, student_number, full_name, department, status, role, member_type, penalty_count, penalty_reason')
-          .eq('student_number', cleanNumber)
+          .ilike('student_number', cleanNumber)
           .maybeSingle();
 
         if (!error && data) {
@@ -487,15 +457,42 @@ export const api = {
               message: 'Üyeliğiniz pasif durumdadır. Yeniden aktif etmek için kulüp odamıza uğrayınız.'
             };
           }
+
+          const tierLabel = member.role === 'board' || member.role === 'admin' || member.member_type === 'board'
+            ? 'Yönetim Kurulu'
+            : member.role === 'audit' || member.member_type === 'audit'
+            ? 'Denetim Kurulu'
+            : member.member_type === 'active' || member.member_type === 'honorary_active'
+            ? 'Aktif Üye'
+            : 'Normal Üye';
+
           return {
             success: true,
             member,
-            message: `Hoş geldiniz, ${member.full_name} (${member.department}). Üyeliğiniz aktif.`
+            message: `Hoş geldiniz, ${member.full_name} (${member.department}). ${tierLabel} olarak doğrulandınız.`
           };
         }
       } catch (err) {
         console.warn('Supabase verification error:', err);
       }
+    }
+
+    // 2. Serverless API Endpoint'ini Fallback Olarak Dene
+    try {
+      const res = await fetch('/api/verify-member', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentNumber: cleanNumber })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.member) {
+          json.member = normalizeMemberRecord(json.member);
+        }
+        return json;
+      }
+    } catch {
+      // ignore
     }
 
     return {

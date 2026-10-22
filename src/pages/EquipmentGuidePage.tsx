@@ -553,10 +553,23 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
 
                   <button
                     onClick={() => handleReserve(body.id)}
-                    className="w-full py-2.5 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-mono font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                    disabled={body.status !== 'available'}
+                    className={`w-full py-2.5 rounded-xl text-xs font-mono font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm ${
+                      body.status === 'available'
+                        ? 'bg-white text-black hover:bg-white/90 cursor-pointer'
+                        : 'border border-white/10 text-white/30 bg-white/5 cursor-not-allowed'
+                    }`}
                   >
-                    <span>1. Adım: Gövdeyi Rezerve Et</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>
+                      {body.status === 'available'
+                        ? '1. Adım: Gövdeyi Rezerve Et'
+                        : body.status === 'reserved'
+                        ? 'Gövde Rezerve Edildi'
+                        : body.status === 'in_use'
+                        ? 'Gövde Kullanımda'
+                        : 'Gövde Bakımda'}
+                    </span>
+                    {body.status === 'available' && <ArrowRight className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               );
@@ -609,10 +622,23 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
 
                     <button
                       onClick={() => handleReserve(lens.id)}
-                      className="w-full py-2.5 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-mono font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                      disabled={lens.status !== 'available'}
+                      className={`w-full py-2.5 rounded-xl text-xs font-mono font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm ${
+                        lens.status === 'available'
+                          ? 'bg-white text-black hover:bg-white/90 cursor-pointer'
+                          : 'border border-white/10 text-white/30 bg-white/5 cursor-not-allowed'
+                      }`}
                     >
-                      <span>2. Adım: Lensi Rezerve Et</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <span>
+                        {lens.status === 'available'
+                          ? '2. Adım: Lensi Rezerve Et'
+                          : lens.status === 'reserved'
+                          ? 'Lens Rezerve Edildi'
+                          : lens.status === 'in_use'
+                          ? 'Lens Kullanımda'
+                          : 'Lens Bakımda'}
+                      </span>
+                      {lens.status === 'available' && <ArrowRight className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 );

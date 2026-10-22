@@ -741,6 +741,36 @@ export const api = {
       };
     }
 
+    if (equipment.status === 'in_use') {
+      return {
+        success: false,
+        message: 'Bu ekipman şu anda kullanımda/çekimde olduğu için rezerve edilemez.'
+      };
+    }
+
+    if (equipment.status === 'reserved') {
+      return {
+        success: false,
+        message: 'Bu ekipman için onaylanmış bir rezervasyon bulunmaktadır ve şu anda rezerve edilemez.'
+      };
+    }
+
+    // Ekipmanın onaylı veya kullanımda aktif rezervasyonu olup olmadığını veritabanından doğrudan doğrula
+    if (isSupabaseConfigured()) {
+      const { data: activeRes } = await supabase
+        .from('reservations')
+        .select('id, reservation_code, pickup_date, return_date, status')
+        .eq('equipment_id', payload.equipment_id)
+        .in('status', ['approved', 'in_use']);
+
+      if (activeRes && activeRes.length > 0) {
+        return {
+          success: false,
+          message: 'Bu ekipman için onaylanmış aktif bir rezervasyon bulunmaktadır. Lütfen listeden başka bir ekipman seçiniz.'
+        };
+      }
+    }
+
     let trip: Trip | null = null;
     const memberTier = resolveMemberTier(member);
 
@@ -909,30 +939,49 @@ export const api = {
       }
       const resItem = list[idx];
       if (resItem?.equipment_id) {
+        const remaining = list.filter(r => r.equipment_id === resItem.equipment_id);
         let nextEqStatus: EquipmentStatus = 'available';
-        if (status === 'approved') nextEqStatus = 'reserved';
-        else if (status === 'in_use') nextEqStatus = 'in_use';
-        else if (status === 'returned' || status === 'rejected' || status === 'cancelled') nextEqStatus = 'available';
+        if (remaining.some(r => r.status === 'in_use')) {
+          nextEqStatus = 'in_use';
+        } else if (remaining.some(r => r.status === 'approved')) {
+          nextEqStatus = 'reserved';
+        }
         await this.updateEquipmentStatus(resItem.equipment_id, nextEqStatus);
       }
       return true;
     }
+
+    // Hedef rezervasyonun ekipman id'sini al
+    const { data: targetRes } = await supabase
+      .from('reservations')
+      .select('equipment_id')
+      .eq('id', id)
+      .maybeSingle();
 
     const { error } = await supabase.from('reservations').update(updates).eq('id', id);
     if (error) {
       throw new Error(`Supabase rezervasyon güncelleme hatası: ${error.message}`);
     }
 
-    // İlgili ekipmanın durumunu güncelle
-    const resList = await this.getReservations();
-    const resItem = resList.find((r) => r.id === id);
-    if (resItem?.equipment_id) {
-      let nextEqStatus: EquipmentStatus = 'available';
-      if (status === 'approved') nextEqStatus = 'reserved';
-      else if (status === 'in_use') nextEqStatus = 'in_use';
-      else if (status === 'returned' || status === 'rejected' || status === 'cancelled') nextEqStatus = 'available';
+    // İlgili ekipmanın durumunu, o ekipmana ait TÜM rezervasyonları inceleyerek güncelle
+    const eqId = targetRes?.equipment_id;
+    if (eqId) {
+      const currentEq = await this.getEquipmentById(eqId);
+      if (currentEq && currentEq.status !== 'maintenance') {
+        const { data: allEqRes } = await supabase
+          .from('reservations')
+          .select('id, status')
+          .eq('equipment_id', eqId);
 
-      await this.updateEquipmentStatus(resItem.equipment_id, nextEqStatus);
+        let nextEqStatus: EquipmentStatus = 'available';
+        if (allEqRes?.some(r => r.status === 'in_use')) {
+          nextEqStatus = 'in_use';
+        } else if (allEqRes?.some(r => r.status === 'approved')) {
+          nextEqStatus = 'reserved';
+        }
+
+        await this.updateEquipmentStatus(eqId, nextEqStatus);
+      }
     }
     return true;
   },
@@ -940,12 +989,45 @@ export const api = {
   async deleteReservation(id: string): Promise<boolean> {
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
-      setLocalData('ytufok_local_reservations', list.filter(r => r.id !== id));
+      const target = list.find(r => r.id === id);
+      const filtered = list.filter(r => r.id !== id);
+      setLocalData('ytufok_local_reservations', filtered);
+      if (target?.equipment_id) {
+        const remaining = filtered.filter(r => r.equipment_id === target.equipment_id);
+        let nextEqStatus: EquipmentStatus = 'available';
+        if (remaining.some(r => r.status === 'in_use')) nextEqStatus = 'in_use';
+        else if (remaining.some(r => r.status === 'approved')) nextEqStatus = 'reserved';
+        await this.updateEquipmentStatus(target.equipment_id, nextEqStatus);
+      }
       return true;
     }
 
+    const { data: targetRes } = await supabase
+      .from('reservations')
+      .select('equipment_id')
+      .eq('id', id)
+      .maybeSingle();
+
     const { error } = await supabase.from('reservations').delete().eq('id', id);
     if (error) throw new Error(`Supabase rezervasyon silme hatası: ${error.message}`);
+
+    if (targetRes?.equipment_id) {
+      const currentEq = await this.getEquipmentById(targetRes.equipment_id);
+      if (currentEq && currentEq.status !== 'maintenance') {
+        const { data: allEqRes } = await supabase
+          .from('reservations')
+          .select('id, status')
+          .eq('equipment_id', targetRes.equipment_id);
+
+        let nextEqStatus: EquipmentStatus = 'available';
+        if (allEqRes?.some(r => r.status === 'in_use')) {
+          nextEqStatus = 'in_use';
+        } else if (allEqRes?.some(r => r.status === 'approved')) {
+          nextEqStatus = 'reserved';
+        }
+        await this.updateEquipmentStatus(targetRes.equipment_id, nextEqStatus);
+      }
+    }
     return true;
   },
 

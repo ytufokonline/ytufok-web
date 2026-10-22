@@ -273,14 +273,20 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                       onSelectEquipmentToReserve(item.id);
                       onNavigate('reserve');
                     }}
-                    disabled={item.status === 'maintenance'}
+                    disabled={item.status !== 'available'}
                     className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all ${
-                      item.status === 'maintenance'
-                        ? 'border border-white/5 text-white/20 cursor-not-allowed'
-                        : 'bg-white text-black hover:bg-white/90 cursor-pointer shadow-sm active:scale-[0.98]'
+                      item.status === 'available'
+                        ? 'bg-white text-black hover:bg-white/90 cursor-pointer shadow-sm active:scale-[0.98]'
+                        : 'border border-white/10 text-white/40 bg-white/5 cursor-not-allowed'
                     }`}
                   >
-                    Rezerve Et
+                    {item.status === 'available'
+                      ? 'Rezerve Et'
+                      : item.status === 'reserved'
+                      ? 'Rezerve Edildi'
+                      : item.status === 'in_use'
+                      ? 'Kullanımda'
+                      : 'Bakımda'}
                   </button>
                 </div>
               </div>
@@ -435,10 +441,20 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({ onSelectEquipmentT
                   setSelectedItemForModal(null);
                   onNavigate('reserve');
                 }}
-                disabled={selectedItemForModal.status === 'maintenance'}
-                className="px-6 py-2.5 rounded-xl bg-white text-black hover:bg-white/90 text-xs font-mono font-semibold cursor-pointer transition-all active:scale-[0.98] disabled:bg-white/10 disabled:text-white/20"
+                disabled={selectedItemForModal.status !== 'available'}
+                className={`px-6 py-2.5 rounded-xl text-xs font-mono font-semibold transition-all ${
+                  selectedItemForModal.status === 'available'
+                    ? 'bg-white text-black hover:bg-white/90 cursor-pointer active:scale-[0.98]'
+                    : 'border border-white/10 text-white/40 bg-white/5 cursor-not-allowed'
+                }`}
               >
-                Hemen Rezerve Et
+                {selectedItemForModal.status === 'available'
+                  ? 'Hemen Rezerve Et'
+                  : selectedItemForModal.status === 'reserved'
+                  ? 'Rezerve Edildi'
+                  : selectedItemForModal.status === 'in_use'
+                  ? 'Kullanımda'
+                  : 'Bakımda'}
               </button>
             </div>
           </div>

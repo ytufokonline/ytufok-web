@@ -65,7 +65,8 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
         setEquipmentList(bundle.equipmentList);
         setTrips(bundle.activeTrips);
         if (!selectedEquipmentId && bundle.equipmentList.length > 0) {
-          setSelectedEquipmentId(preselectedEquipmentId || bundle.equipmentList[0].id);
+          const firstAvailable = bundle.equipmentList.find(e => e.status === 'available');
+          setSelectedEquipmentId(preselectedEquipmentId || firstAvailable?.id || bundle.equipmentList[0].id);
         }
         if (bundle.activeTrips.length > 0) {
           const isCurrentActive = bundle.activeTrips.some(t => t.id === selectedTripId);
@@ -621,11 +622,26 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                   onChange={(e) => setSelectedEquipmentId(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/10 text-white text-xs font-mono cursor-pointer focus:border-white/40 transition-all"
                 >
-                  {equipmentList.map((item) => (
-                    <option key={item.id} value={item.id} disabled={item.status === 'maintenance'}>
-                      {item.name} ({item.brand}) - [{item.serial_number}]
-                    </option>
-                  ))}
+                  {equipmentList.map((item) => {
+                    const isAvailable = item.status === 'available';
+                    const tag = item.status === 'reserved'
+                      ? ' - [REZERVELİ]'
+                      : item.status === 'in_use'
+                      ? ' - [KULLANIMDA]'
+                      : item.status === 'maintenance'
+                      ? ' - [BAKIMDA]'
+                      : '';
+                    return (
+                      <option 
+                        key={item.id} 
+                        value={item.id} 
+                        disabled={!isAvailable}
+                        className={!isAvailable ? 'text-white/30 bg-[#14020a]' : 'text-white bg-[#1c020d]'}
+                      >
+                        {item.name} ({item.brand}) - [{item.serial_number}]{tag}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -636,9 +652,40 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     alt={selectedEquipment.name} 
                     className="w-16 h-12 object-cover rounded-xl border border-white/[0.08]"
                   />
-                  <div className="text-xs space-y-0.5 min-w-0">
+                  <div className="text-xs space-y-0.5 min-w-0 flex-1">
                     <strong className="text-white block font-club truncate">{selectedEquipment.name}</strong>
-                    <span className="text-white/40 font-mono text-[11px] block">{selectedEquipment.serial_number}</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-white/40 font-mono text-[11px]">{selectedEquipment.serial_number}</span>
+                      {selectedEquipment.status !== 'available' && (
+                        <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border uppercase ${
+                          selectedEquipment.status === 'reserved'
+                            ? 'text-amber-300 border-amber-500/30 bg-amber-500/10'
+                            : selectedEquipment.status === 'in_use'
+                            ? 'text-blue-300 border-blue-500/30 bg-blue-500/10'
+                            : 'text-rose-300 border-rose-500/30 bg-rose-500/10'
+                        }`}>
+                          {selectedEquipment.status === 'reserved' ? 'Rezerveli' : selectedEquipment.status === 'in_use' ? 'Kullanımda' : 'Bakımda'}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Status Warning if not available */}
+              {selectedEquipment && selectedEquipment.status !== 'available' && (
+                <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200 text-xs flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
+                  <div>
+                    <strong className="block font-medium">Bu ekipman şu anda talep edilemez:</strong>
+                    <span className="text-amber-200/80 text-[11px] block mt-0.5 leading-relaxed">
+                      {selectedEquipment.status === 'reserved'
+                        ? 'Bu ekipmanın onaylanmış bir rezervasyonu bulunmaktadır.'
+                        : selectedEquipment.status === 'in_use'
+                        ? 'Bu ekipman şu anda bir kulüp üyemizde / çekimdedir.'
+                        : 'Bu ekipman şu anda bakım ve onarımdadır.'}
+                      {' '}Lütfen listeden müsait bir ekipman seçiniz.
+                    </span>
                   </div>
                 </div>
               )}
@@ -671,6 +718,8 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     submitting ||
                     !verifiedMember ||
                     !rulesAccepted ||
+                    !selectedEquipment ||
+                    selectedEquipment.status !== 'available' ||
                     (usageType === 'trip' && (trips.length === 0 || !selectedTrip || !selectedTrip.is_active || (tripEligibility ? !tripEligibility.isOpen : false))) ||
                     (usageType === 'custom' && !hasActivePrivileges) ||
                     (!hasActivePrivileges && trips.length === 0)
@@ -679,6 +728,12 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                 >
                   {submitting
                     ? 'Talebiniz Gönderiliyor...'
+                    : selectedEquipment && selectedEquipment.status === 'reserved'
+                    ? 'Ekipman Rezerveli (Talep Edilemez)'
+                    : selectedEquipment && selectedEquipment.status === 'in_use'
+                    ? 'Ekipman Kullanımda (Talep Edilemez)'
+                    : selectedEquipment && selectedEquipment.status === 'maintenance'
+                    ? 'Ekipman Bakımda (Talep Edilemez)'
                     : !hasActivePrivileges && trips.length === 0
                     ? 'Aktif Gezi Yok (Rezervasyon Kapalı)'
                     : usageType === 'trip' && trips.length === 0

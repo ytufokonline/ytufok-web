@@ -58,7 +58,7 @@ export default async function handler(req, res) {
       'admin-by1': '21065054',
       'admin-by2': '23084041',
       'admin-sayman': '23084006',
-      'admin-sekreter': '23084023',
+      'admin-sekreter': '24084023',
       'admin-sosyal-medya': '24084024',
       'admin-gezi': '24084602',
       'admin-sponsorluk': '24084025'
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
       { id: 'admin-by1', full_name: 'Yavuz Selim Bahadır', student_number: '21065054' },
       { id: 'admin-by2', full_name: 'Alara Tezelli', student_number: '23084041' },
       { id: 'admin-sayman', full_name: 'Duru Anlar', student_number: '23084006' },
-      { id: 'admin-sekreter', full_name: 'Yağmur Dursun', student_number: '23084023' },
+      { id: 'admin-sekreter', full_name: 'Yağmur Dursun', student_number: '24084023' },
       { id: 'admin-sosyal-medya', full_name: 'Sümeyra Sever', student_number: '24084024' },
       { id: 'admin-gezi', full_name: 'İlayda Sudem Güneş', student_number: '24084602' },
       { id: 'admin-sponsorluk', full_name: 'Öykü Aydın', student_number: '24084025' }

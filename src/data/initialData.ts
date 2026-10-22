@@ -47,7 +47,7 @@ export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
     title: 'Genel Sekreter & Arşiv',
     short_title: 'Genel Sekreter',
     full_name: 'Yağmur Dursun',
-    student_number: '23084023',
+    student_number: '24084023',
     phone: '',
     avatar_color: 'from-[#421d31] via-[#584964] to-[#657796]'
   },

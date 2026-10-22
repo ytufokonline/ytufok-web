@@ -20,7 +20,7 @@ const FALLBACK_ADMINS = [
   { id: 'admin-by1', role: 'vice_president_1', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Yavuz Selim Bahadır', student_number: '21065054', phone: '', avatar_color: 'from-[#657796] via-[#4e3b52] to-[#301322]' },
   { id: 'admin-by2', role: 'vice_president_2', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Alara Tezelli', student_number: '23084041', phone: '', avatar_color: 'from-[#584964] via-[#4b253b] to-[#8193b2]' },
   { id: 'admin-sayman', role: 'treasurer', title: 'Mali İşler Sorumlusu (Sayman)', short_title: 'Sayman', full_name: 'Duru Anlar', student_number: '23084006', phone: '', avatar_color: 'from-[#301322] via-[#421d31] to-[#5b657e]' },
-  { id: 'admin-sekreter', role: 'secretary', title: 'Genel Sekreter & Arşiv', short_title: 'Genel Sekreter', full_name: 'Yağmur Dursun', student_number: '23084023', phone: '', avatar_color: 'from-[#421d31] via-[#584964] to-[#657796]' },
+  { id: 'admin-sekreter', role: 'secretary', title: 'Genel Sekreter & Arşiv', short_title: 'Genel Sekreter', full_name: 'Yağmur Dursun', student_number: '24084023', phone: '', avatar_color: 'from-[#421d31] via-[#584964] to-[#657796]' },
   { id: 'admin-sosyal-medya', role: 'social_media', title: 'Sosyal Medya Koordinatörü', short_title: 'Sosyal Medya Koord.', full_name: 'Sümeyra Sever', student_number: '24084024', phone: '', avatar_color: 'from-[#6e2a4f] via-[#541e3d] to-[#7d8fa9]' },
   { id: 'admin-gezi', role: 'trip_coordinator', title: 'Gezi Koordinatörü', short_title: 'Gezi Koord.', full_name: 'İlayda Sudem Güneş', student_number: '24084602', phone: '', avatar_color: 'from-[#38263a] via-[#4b253b] to-[#657796]' },
   { id: 'admin-sponsorluk', role: 'sponsorship', title: 'Sponsorluk Koordinatörü', short_title: 'Sponsorluk Koord.', full_name: 'Öykü Aydın', student_number: '24084025', phone: '', avatar_color: 'from-[#4e3b52] via-[#301322] to-[#8193b2]' }
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
 
     const isAuthorizedAdmin = (
       matchedProfile ||
-      (member && (member.role === 'board' || member.role === 'admin' || member.member_type === 'board'))
+      (member && (member.role === 'board' || member.role === 'admin' || member.role === 'audit' || member.member_type === 'board' || member.member_type === 'audit'))
     );
 
     if (!isAuthorizedAdmin) {

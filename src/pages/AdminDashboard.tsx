@@ -1236,8 +1236,167 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#ded0d9]">
+            {/* Mobile Cards View (md:hidden) */}
+            <div className="md:hidden divide-y divide-white/10">
+              {filteredReservations.length === 0 ? (
+                <div className="p-8 text-center text-xs font-mono text-white/40">
+                  Bu filtreye uygun rezervasyon kaydı bulunamadı.
+                </div>
+              ) : (
+                filteredReservations.map(r => (
+                  <div key={r.id} className="p-4 space-y-3">
+                    {/* Header: Code & Status */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-white text-sm">{r.reservation_code}</span>
+                          {r.trip && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                              <Compass className="w-3 h-3 text-emerald-400 shrink-0" />
+                              <span className="truncate max-w-[140px]">{r.trip.title}</span>
+                            </span>
+                          )}
+                        </div>
+                        {r.created_at && (
+                          <div className="text-[11px] text-white/50 flex items-center gap-1 font-mono">
+                            <Clock className="w-3 h-3 text-white/40 shrink-0" />
+                            <span>{new Date(r.created_at).toLocaleDateString('tr-TR')} {new Date(r.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
+                        )}
+                      </div>
+                      <StatusBadge status={r.status} type="reservation" size="sm" />
+                    </div>
+
+                    {/* Ekipman Detayı */}
+                    <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 space-y-1">
+                      <div className="text-[10px] font-mono uppercase tracking-wider text-white/40">Ekipman</div>
+                      <strong className="text-white text-xs block leading-snug">{r.equipment?.name || 'Ekipman'}</strong>
+                      <span className="text-white/50 font-mono text-[11px] block">Demirbaş: {r.equipment?.serial_number || '-'}</span>
+                      {r.purpose && (
+                        <div className="text-[11px] text-white/70 pt-1.5 border-t border-white/[0.06] mt-1 leading-relaxed">
+                          <span className="text-white/40">Amaç:</span> {r.purpose}
+                        </div>
+                      )}
+                      {r.additional_notes && (
+                        <div className="text-[11px] text-amber-200 bg-amber-500/15 px-2.5 py-1 rounded-lg border border-amber-500/25 mt-1.5 inline-block">
+                          💬 {r.additional_notes}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Öğrenci Bilgisi */}
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.04] border border-white/10">
+                      <div>
+                        <div className="text-[10px] font-mono uppercase tracking-wider text-white/40">Öğrenci</div>
+                        <strong className="text-white text-xs block mt-0.5">{r.member?.full_name || r.student_number}</strong>
+                        {!isBoardMemberObj(r.member) && (
+                          <span className="text-white/60 font-mono text-[11px] block">{r.student_number}</span>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-white/15 text-white/80 bg-black/40">
+                        {isBoardMemberObj(r.member)
+                          ? 'Yönetim'
+                          : r.member?.member_type === 'active'
+                          ? 'Aktif Üye'
+                          : r.member?.member_type === 'honorary_active'
+                          ? 'Fahri Aktif'
+                          : r.member?.member_type === 'honorary'
+                          ? 'Fahri Üye'
+                          : 'Normal Üye'}
+                      </span>
+                    </div>
+
+                    {/* Tarihler & Yetkili Durumu */}
+                    <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-white/40">Kullanım Tarihleri:</span>
+                        <strong className="text-white font-mono text-xs">{r.pickup_date} → {r.return_date}</strong>
+                      </div>
+
+                      {r.status === 'rejected' ? (
+                        <div className="pt-1.5 border-t border-white/[0.06] text-rose-300 text-[11px]">
+                          <div>Ret: <strong>{cleanAdminName(r.approved_by) || 'Yönetim Kurulu'}</strong></div>
+                          {r.rejection_reason && (
+                            <div className="text-rose-400 italic text-[10px] mt-0.5">Gerekçe: {r.rejection_reason}</div>
+                          )}
+                        </div>
+                      ) : r.approved_by ? (
+                        <div className="pt-1.5 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-emerald-400">
+                          <span className="text-white/40">Onaylayan:</span>
+                          <strong>{cleanAdminName(r.approved_by)}</strong>
+                        </div>
+                      ) : null}
+
+                      {r.checked_out_by && (
+                        <div className="flex items-center justify-between text-[11px] text-blue-300">
+                          <span className="text-white/40">Teslim Eden:</span>
+                          <strong>{cleanAdminName(r.checked_out_by)}</strong>
+                        </div>
+                      )}
+
+                      {r.returned_to && (
+                        <div className="flex items-center justify-between text-[11px] text-emerald-400">
+                          <span className="text-white/40">İade Alan:</span>
+                          <strong>{cleanAdminName(r.returned_to)}</strong>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Aksiyon Butonları */}
+                    <div className="pt-1 flex items-center gap-2">
+                      {r.status === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(r.id)}
+                            className="flex-1 py-2.5 rounded-xl bg-white text-black font-semibold text-xs tracking-wider uppercase transition-all active:scale-[0.98] cursor-pointer text-center shadow-sm"
+                          >
+                            Onayla
+                          </button>
+                          <button
+                            onClick={() => setRejectModalData({ id: r.id, code: r.reservation_code })}
+                            className="flex-1 py-2.5 rounded-xl bg-rose-950/40 text-rose-300 border border-rose-500/30 text-xs tracking-wider uppercase transition-all active:scale-[0.98] cursor-pointer text-center"
+                          >
+                            Reddet
+                          </button>
+                        </>
+                      )}
+                      {r.status === 'approved' && (
+                        <button
+                          onClick={() => handleDeliver(r.id)}
+                          className="w-full py-2.5 rounded-xl bg-white text-black font-semibold text-xs tracking-wider uppercase transition-all active:scale-[0.98] cursor-pointer shadow-sm text-center"
+                        >
+                          Teslim Et
+                        </button>
+                      )}
+                      {r.status === 'in_use' && (
+                        <button
+                          onClick={() => setReturnModalData({ id: r.id, equipmentName: r.equipment?.name || 'Ekipman' })}
+                          className="w-full py-2.5 rounded-xl bg-white text-black font-semibold text-xs tracking-wider uppercase transition-all active:scale-[0.98] cursor-pointer shadow-sm text-center"
+                        >
+                          İade Al
+                        </button>
+                      )}
+                      {['returned', 'rejected', 'cancelled'].includes(r.status) && (
+                        <div className="w-full flex items-center justify-between py-1">
+                          <span className="text-white/50 text-xs">Kayıt Sonlandı</span>
+                          <button
+                            onClick={() => handleDeleteReservation(r)}
+                            className="px-3 py-1.5 rounded-lg bg-black/40 text-rose-300 border border-rose-500/20 text-xs flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Kaydı Sil</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop Table View (hidden md:block) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full min-w-[760px] text-left text-xs text-[#ded0d9]">
                 <thead className="bg-black/35 text-[10px] uppercase text-white/60 border-b border-white/10">
                   <tr>
                     <th className="p-3.5">Kod & Talep Zamanı</th>
@@ -1604,7 +1763,8 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
-            <table className="w-full text-left text-xs text-[#ded0d9]">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[800px] text-left text-xs text-[#ded0d9]">
               <thead className="bg-black/35 text-[10px] uppercase text-white/60 border-b border-white/10">
                 <tr>
                   <th className="p-3.5">Öğrenci No</th>
@@ -1771,6 +1931,7 @@ export const AdminDashboard: React.FC = () => {
             </table>
           </div>
         </div>
+      </div>
       )}
 
       {/* TAB 5: ALL MEMBERS USAGE HISTORY & AUDIT LOG */}
@@ -1946,7 +2107,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
             {filteredHistoryReservations.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-[#ded0d9]">
+                <table className="w-full min-w-[700px] text-left text-xs text-[#ded0d9]">
                   <thead className="bg-black/35 text-[10px] uppercase text-white/60 border-b border-white/10">
                     <tr>
                       <th className="p-3.5">Takip Kodu & Statü</th>
@@ -2239,7 +2400,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="rounded-2xl bg-black/25 border border-white/10 overflow-hidden shadow-xl">
             {filteredDarkroomReservations.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-[#ded0d9]">
+                <table className="w-full min-w-[850px] text-left text-xs text-[#ded0d9]">
                   <thead className="bg-black/35 text-[10px] uppercase text-white/60 border-b border-white/10">
                     <tr>
                       <th className="p-3.5">Takip Kodu & Statü</th>
@@ -2555,7 +2716,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {darkroomSlots.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-[#ded0d9]">
+                    <table className="w-full min-w-[700px] text-left text-xs text-[#ded0d9]">
                       <thead className="bg-black/35/70 text-[10px] uppercase text-white/60 border-b border-white/10">
                         <tr>
                           <th className="p-3.5">Tarih</th>

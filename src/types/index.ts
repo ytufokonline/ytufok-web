@@ -90,6 +90,7 @@ export interface Reservation {
   equipment_id: string;
   member_id: string;
   student_number: string;
+  phone?: string;
   pickup_date: string;
   return_date: string;
   purpose: string;

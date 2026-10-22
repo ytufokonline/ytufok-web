@@ -111,7 +111,7 @@ function sanitizeEquipmentItem(item: Equipment): Equipment {
 
 // Rezervasyon ilişkisel nesnelerini Supabase tablosuna yazmadan önce temizleme
 const stripReservationRelations = (r: Reservation): Record<string, any> => {
-  const { equipment, member, trip, ...clean } = r;
+  const { equipment, member, trip, phone, ...clean } = r as any;
   return clean;
 };
 
@@ -720,6 +720,7 @@ export const api = {
     pickup_date: string;
     return_date: string;
     purpose: string;
+    phone?: string;
     trip_id?: string;
     additional_notes?: string;
   }): Promise<{ success: boolean; reservation?: Reservation; message: string }> {
@@ -823,10 +824,21 @@ export const api = {
       }
     }
 
+    // Üyenin telefon numarasını veritabanında güncelle
+    if (payload.phone && member?.id && isSupabaseConfigured()) {
+      const cleanPhone = payload.phone.trim();
+      await supabase.from('members').update({ phone: cleanPhone }).eq('id', member.id);
+      member.phone = cleanPhone;
+    }
+
     const effectivePickupDate = payload.trip_id && trip ? trip.start_date : payload.pickup_date;
     const effectiveReturnDate = payload.trip_id && trip
       ? getNextBusinessDay(trip.end_date || trip.start_date)
       : payload.return_date;
+
+    const formattedNotes = payload.phone
+      ? (payload.additional_notes ? `Tel: ${payload.phone.trim()} | ${payload.additional_notes.trim()}` : `Tel: ${payload.phone.trim()}`)
+      : payload.additional_notes;
 
     const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
     const reservation_code = `YTU-${new Date().getFullYear()}-${randomSuffix}`;
@@ -836,11 +848,12 @@ export const api = {
       equipment_id: equipment.id,
       member_id: member.id,
       student_number: payload.student_number.trim(),
+      phone: payload.phone?.trim(),
       pickup_date: effectivePickupDate,
       return_date: effectiveReturnDate,
       purpose: payload.purpose,
       trip_id: payload.trip_id,
-      additional_notes: payload.additional_notes,
+      additional_notes: formattedNotes,
       status: 'pending',
       created_at: new Date().toISOString(),
       equipment,
@@ -889,12 +902,21 @@ export const api = {
           const memberMap = new Map(bundle.members.map((m) => [m.id, m]));
           const tripMap = new Map(bundle.trips.map((t) => [t.id, t]));
 
-          return (data as any[]).map((r) => ({
-            ...r,
-            equipment: equipMap.get(r.equipment_id),
-            member: memberMap.get(r.member_id) || bundle.members.find((m) => m.student_number === r.student_number),
-            trip: r.trip_id ? tripMap.get(r.trip_id) || null : null
-          }));
+          return (data as any[]).map((r) => {
+            const mem = memberMap.get(r.member_id) || bundle.members.find((m) => m.student_number === r.student_number);
+            let phone = (mem?.phone && !mem.phone.includes('XX')) ? mem.phone : undefined;
+            if (!phone && r.additional_notes && r.additional_notes.includes('Tel:')) {
+              const match = r.additional_notes.match(/Tel:\s*([^|]+)/);
+              if (match) phone = match[1].trim();
+            }
+            return {
+              ...r,
+              phone,
+              equipment: equipMap.get(r.equipment_id),
+              member: mem,
+              trip: r.trip_id ? tripMap.get(r.trip_id) || null : null
+            };
+          });
         }
       } catch (err) {
         console.warn('Supabase getReservations error:', err);

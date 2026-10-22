@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, AlertCircle, UserPlus, Info, Sparkles, Lock, ChevronRight } from 'lucide-react';
+import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, AlertCircle, UserPlus, Info, Sparkles, Lock, ChevronRight, Phone } from 'lucide-react';
 import { Equipment, Member, Reservation, Trip } from '../types';
 import { api } from '../lib/api';
 import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference, getNextBusinessDay, getWeekdayTr } from '../utils/tripUtils';
@@ -19,9 +19,19 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   
   // Whitelist & Member state
   const [studentNumber, setStudentNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [verifiedMember, setVerifiedMember] = useState<Member | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
+
+  const formatPhoneNumberInput = (val: string) => {
+    const digits = val.replace(/\D/g, '');
+    if (!digits) return '';
+    if (digits.length <= 4) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
+    if (digits.length <= 9) return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+    return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 9)} ${digits.slice(9, 11)}`;
+  };
 
   // Trips state
   const [trips, setTrips] = useState<Trip[]>(initialSync.activeTrips);
@@ -133,6 +143,9 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
       if (result.success && result.member) {
         setVerifiedMember(result.member);
         setVerificationError(null);
+        if (result.member.phone && !result.member.phone.includes('XX')) {
+          setPhoneNumber(formatPhoneNumberInput(result.member.phone));
+        }
       } else {
         setVerifiedMember(null);
         setVerificationError(result.message || 'Girdiğiniz öğrenci numarası kulüp üye listesinde bulunamadı.');
@@ -182,6 +195,12 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
       }
     }
 
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length < 10) {
+      alert('Lütfen geçerli bir cep telefonu numarası giriniz (örn: 05XX XXX XX XX).');
+      return;
+    }
+
     if (!rulesAccepted) {
       alert('Lütfen kuralları kabul ediniz.');
       return;
@@ -197,6 +216,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
       const response = await api.createReservation({
         equipment_id: selectedEquipmentId,
         student_number: verifiedMember.student_number,
+        phone: phoneNumber.trim(),
         pickup_date: pickupDate,
         return_date: returnDate,
         purpose: finalPurpose,
@@ -359,20 +379,43 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                 </button>
               </div>
 
-              {/* Verified Member Badge */}
+              {/* Verified Member Badge & Phone Field */}
               {verifiedMember && (
-                <div className="p-4 rounded-xl border border-white/15 bg-black/35 text-xs space-y-2">
-                  <div className="flex items-center justify-between">
-                    <strong className="text-white text-sm">
-                      {verifiedMember.full_name} ({verifiedMember.student_number})
-                    </strong>
-                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-emerald-400/30 text-emerald-400">
-                      {memberTier === 'board' ? 'Yönetim Kurulu' : memberTier === 'audit' ? 'Denetim Kurulu' : memberTier === 'active' || memberTier === 'honorary_active' ? 'Aktif Üye' : 'Normal Üye'}
+                <div className="space-y-4 pt-1">
+                  <div className="p-4 rounded-xl border border-white/15 bg-black/35 text-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <strong className="text-white text-sm">
+                        {verifiedMember.full_name} ({verifiedMember.student_number})
+                      </strong>
+                      <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-emerald-400/30 text-emerald-400">
+                        {memberTier === 'board' ? 'Yönetim Kurulu' : memberTier === 'audit' ? 'Denetim Kurulu' : memberTier === 'active' || memberTier === 'honorary_active' ? 'Aktif Üye' : 'Normal Üye'}
+                      </span>
+                    </div>
+                    <p className="text-white/60 text-xs font-light leading-relaxed">
+                      {verifiedMember.department} • {hasActivePrivileges ? 'Gezilerden 5 gün önce erken rezervasyon ve bireysel çekim hakkınız tanımlıdır.' : 'Kulüp gezilerinden 3 gün önce rezervasyon yapabilirsiniz.'}
+                    </p>
+                  </div>
+
+                  {/* Telefon Numarası Alanı */}
+                  <div className="p-4 rounded-2xl border border-white/15 bg-black/35 space-y-2">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-white">
+                      İletişim / WhatsApp Numarası: <span className="text-rose-400 font-bold">*</span>
+                    </label>
+                    <div className="relative">
+                      <Phone className="w-4 h-4 text-white/50 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="tel"
+                        placeholder="05XX XXX XX XX"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(formatPhoneNumberInput(e.target.value))}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/50 border border-white/15 text-white text-sm font-mono placeholder:text-white/30 focus:border-white/50 focus:outline-none transition-all"
+                        required
+                      />
+                    </div>
+                    <span className="text-[11px] text-white/50 font-light block leading-relaxed">
+                      Ekipman teslim saati koordinasyonu ve zimmet takibi için gereklidir.
                     </span>
                   </div>
-                  <p className="text-white/60 text-xs font-light leading-relaxed">
-                    {verifiedMember.department} • {hasActivePrivileges ? 'Gezilerden 5 gün önce erken rezervasyon ve bireysel çekim hakkınız tanımlıdır.' : 'Kulüp gezilerinden 3 gün önce rezervasyon yapabilirsiniz.'}
-                  </p>
                 </div>
               )}
 
@@ -723,6 +766,12 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                   <span>Teslimat Yeri:</span>
                   <strong className="text-white font-medium">Davutpaşa Kulüpler Vadisi</strong>
                 </div>
+                {phoneNumber && (
+                  <div className="flex justify-between text-white/50 pt-2">
+                    <span>İletişim Tel:</span>
+                    <strong className="text-white font-mono text-xs">{phoneNumber}</strong>
+                  </div>
+                )}
               </div>
 
               {/* Submit CTA */}
@@ -733,6 +782,8 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     submitting ||
                     !verifiedMember ||
                     !rulesAccepted ||
+                    !phoneNumber ||
+                    phoneNumber.replace(/\D/g, '').length < 10 ||
                     !selectedEquipment ||
                     selectedEquipment.status !== 'available' ||
                     (usageType === 'trip' && (trips.length === 0 || !selectedTrip || !selectedTrip.is_active || (tripEligibility ? !tripEligibility.isOpen : false))) ||
@@ -749,6 +800,8 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     ? 'Ekipman Kullanımda (Talep Edilemez)'
                     : selectedEquipment && selectedEquipment.status === 'maintenance'
                     ? 'Ekipman Bakımda (Talep Edilemez)'
+                    : verifiedMember && (!phoneNumber || phoneNumber.replace(/\D/g, '').length < 10)
+                    ? 'Telefon Numarası Giriniz'
                     : !hasActivePrivileges && trips.length === 0
                     ? 'Aktif Gezi Yok (Rezervasyon Kapalı)'
                     : usageType === 'trip' && trips.length === 0

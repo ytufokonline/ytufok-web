@@ -6,7 +6,7 @@ import {
   User, FileText, CheckCircle2, ChevronRight,
   ArrowRightLeft, LogOut, Award, Sparkles, Droplets,
   Trash2, Calendar, CalendarPlus, Info, Compass, MapPin,
-  KeyRound, Bell, Pencil
+  KeyRound, Bell, Pencil, Phone
 } from 'lucide-react';
 import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement } from '../types';
 import { api } from '../lib/api';
@@ -1286,14 +1286,26 @@ export const AdminDashboard: React.FC = () => {
 
                     {/* Öğrenci Bilgisi */}
                     <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.04] border border-white/10">
-                      <div>
+                      <div className="space-y-0.5">
                         <div className="text-[10px] font-mono uppercase tracking-wider text-white/40">Öğrenci</div>
-                        <strong className="text-white text-xs block mt-0.5">{r.member?.full_name || r.student_number}</strong>
-                        {!isBoardMemberObj(r.member) && (
-                          <span className="text-white/60 font-mono text-[11px] block">{r.student_number}</span>
-                        )}
+                        <strong className="text-white text-xs block">{r.member?.full_name || r.student_number}</strong>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {!isBoardMemberObj(r.member) && (
+                            <span className="text-white/60 font-mono text-[11px] block">{r.student_number}</span>
+                          )}
+                          {((r.phone) || (r.member?.phone && !r.member.phone.includes('XX'))) && (
+                            <a
+                              href={`tel:${r.phone || r.member?.phone}`}
+                              className="text-emerald-400 hover:text-emerald-300 font-mono text-[11px] inline-flex items-center gap-1 underline"
+                              title="Telefonu Ara"
+                            >
+                              <Phone className="w-3 h-3" />
+                              <span>{r.phone || r.member?.phone}</span>
+                            </a>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-white/15 text-white/80 bg-black/40">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-white/15 text-white/80 bg-black/40 self-start">
                         {isBoardMemberObj(r.member)
                           ? 'Yönetim'
                           : r.member?.member_type === 'active'
@@ -1427,9 +1439,21 @@ export const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="p-3.5">
                         <strong className="text-white block">{r.member?.full_name}</strong>
-                        {!isBoardMemberObj(r.member) && (
-                          <span className="text-white/70 font-mono text-[11px]">{r.student_number}</span>
-                        )}
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                          {!isBoardMemberObj(r.member) && (
+                            <span className="text-white/70 font-mono text-[11px]">{r.student_number}</span>
+                          )}
+                          {((r.phone) || (r.member?.phone && !r.member.phone.includes('XX'))) && (
+                            <a
+                              href={`tel:${r.phone || r.member?.phone}`}
+                              className="text-emerald-400 hover:text-emerald-300 font-mono text-[11px] inline-flex items-center gap-1 underline"
+                              title="Telefonu Ara"
+                            >
+                              <Phone className="w-2.5 h-2.5" />
+                              <span>{r.phone || r.member?.phone}</span>
+                            </a>
+                          )}
+                        </div>
                         <span className="text-[9px] text-white/60 block mt-0.5">
                           {isBoardMemberObj(r.member)
                             ? 'Yönetim Kurulu Üyesi'

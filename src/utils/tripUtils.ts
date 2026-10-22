@@ -142,3 +142,36 @@ export function formatDateRangeTr(startDateStr: string, endDateStr: string): str
 
   return `${formatDateTr(startDateStr)} - ${formatDateTr(endDateStr)}`;
 }
+
+const WEEKDAY_NAMES_TR = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+
+/**
+ * Returns Turkish day name for a given YYYY-MM-DD date string (örn: "Pazartesi")
+ */
+export function getWeekdayTr(dateStr: string): string {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
+  return WEEKDAY_NAMES_TR[date.getDay()] || '';
+}
+
+/**
+ * Returns the first business day (Monday - Friday) strictly after the given date string.
+ * - If date is Friday, Saturday, or Sunday -> returns the following Monday.
+ * - If date is Monday - Thursday -> returns the very next day (Tuesday - Friday).
+ */
+export function getNextBusinessDay(dateStr: string): string {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
+
+  // Gezinin bittiği tarihten bir sonraki güne geç
+  date.setDate(date.getDate() + 1);
+
+  // Hafta sonuna denk gelirse Pazartesi'ye ilerlet (0: Pazar, 6: Cumartesi)
+  while (date.getDay() === 0 || date.getDay() === 6) {
+    date.setDate(date.getDate() + 1);
+  }
+
+  return getLocalDateString(date);
+}

@@ -25,7 +25,7 @@ import {
   INITIAL_DARKROOM_RESERVATIONS,
   INITIAL_TRIPS
 } from '../data/initialData';
-import { checkTripBookingEligibility, resolveMemberTier } from '../utils/tripUtils';
+import { checkTripBookingEligibility, resolveMemberTier, getNextBusinessDay } from '../utils/tripUtils';
 
 // Aktif yönetici oturumu
 let activeSessionAdminId: string | null = null;
@@ -823,6 +823,11 @@ export const api = {
       }
     }
 
+    const effectivePickupDate = payload.trip_id && trip ? trip.start_date : payload.pickup_date;
+    const effectiveReturnDate = payload.trip_id && trip
+      ? getNextBusinessDay(trip.end_date || trip.start_date)
+      : payload.return_date;
+
     const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
     const reservation_code = `YTU-${new Date().getFullYear()}-${randomSuffix}`;
     const newReservation: Reservation = {
@@ -831,8 +836,8 @@ export const api = {
       equipment_id: equipment.id,
       member_id: member.id,
       student_number: payload.student_number.trim(),
-      pickup_date: payload.pickup_date,
-      return_date: payload.return_date,
+      pickup_date: effectivePickupDate,
+      return_date: effectiveReturnDate,
       purpose: payload.purpose,
       trip_id: payload.trip_id,
       additional_notes: payload.additional_notes,

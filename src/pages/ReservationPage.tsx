@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, AlertCircle, UserPlus, Info, Sparkles, Lock, ChevronRight } from 'lucide-react';
 import { Equipment, Member, Reservation, Trip } from '../types';
 import { api } from '../lib/api';
-import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference } from '../utils/tripUtils';
+import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference, getNextBusinessDay, getWeekdayTr } from '../utils/tripUtils';
 import { AppleReveal } from '../components/AppleReveal';
 
 interface ReservationPageProps {
@@ -41,7 +41,9 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
     initialSync.activeTrips[0]?.start_date || todayStr
   );
   const [returnDate, setReturnDate] = useState(
-    initialSync.activeTrips[0]?.end_date || defaultReturnDate
+    initialSync.activeTrips[0]
+      ? getNextBusinessDay(initialSync.activeTrips[0].end_date || initialSync.activeTrips[0].start_date)
+      : defaultReturnDate
   );
   const [purpose, setPurpose] = useState(
     initialSync.activeTrips[0]
@@ -103,10 +105,11 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const hasActivePrivileges = memberTier === 'board' || memberTier === 'audit' || memberTier === 'active' || memberTier === 'honorary_active';
   const tripEligibility = selectedTrip ? checkTripBookingEligibility(selectedTrip.start_date, memberTier) : null;
 
-  // Apply trip dates & default purpose
+  // Apply trip dates & default purpose (Return date automatically set to first business day after trip)
   const applyTripDetails = (trip: Trip) => {
     setPickupDate(trip.start_date);
-    setReturnDate(trip.end_date);
+    const firstBusinessDay = getNextBusinessDay(trip.end_date || trip.start_date);
+    setReturnDate(firstBusinessDay);
     setPurpose(`Kulüp Gezisi: ${trip.title} (${trip.destination})`);
   };
 
@@ -483,7 +486,12 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                               <strong className={`text-xs ${isSelected ? 'text-black font-semibold' : 'text-white'}`}>{trip.title}</strong>
                               <span className={`text-xs font-mono ${isSelected ? 'text-black/60' : 'text-white/40'}`}>{formatDateRangeTr(trip.start_date, trip.end_date)}</span>
                             </div>
-                            <span className={`text-[11px] block mt-0.5 ${isSelected ? 'text-black/70' : 'text-white/50'}`}>{trip.destination}</span>
+                            <div className="flex items-center justify-between text-[11px] mt-1.5 pt-1.5 border-t border-current/10">
+                              <span className={isSelected ? 'text-black/70' : 'text-white/50'}>{trip.destination}</span>
+                              <span className={`font-mono text-[11px] ${isSelected ? 'text-black/80 font-medium' : 'text-emerald-400'}`}>
+                                İade: {formatDateTr(getNextBusinessDay(trip.end_date || trip.start_date))} ({getWeekdayTr(getNextBusinessDay(trip.end_date || trip.start_date))})
+                              </span>
+                            </div>
                           </div>
                         );
                       })}
@@ -700,9 +708,16 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                   <span>Teslim Alma:</span>
                   <strong className="text-white font-mono">{pickupDate}</strong>
                 </div>
-                <div className="flex justify-between text-white/50 pt-2">
+                <div className="flex justify-between items-start text-white/50 pt-2">
                   <span>İade Tarihi:</span>
-                  <strong className="text-white font-mono">{returnDate}</strong>
+                  <div className="text-right">
+                    <strong className="text-white font-mono block">{returnDate}</strong>
+                    {usageType === 'trip' && (
+                      <span className="text-[10px] text-emerald-400 font-mono block mt-0.5">
+                        Geziden sonraki ilk iş günü ({getWeekdayTr(returnDate)})
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between text-white/50 pt-2">
                   <span>Teslimat Yeri:</span>

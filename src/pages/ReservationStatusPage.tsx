@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, AlertCircle, Droplets, Camera, Clock, MapPin } from 'lucide-react';
+import { Search, AlertCircle, Droplets, Camera, Clock, MapPin, XCircle } from 'lucide-react';
 import { Reservation, DarkroomReservation } from '../types';
 import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
@@ -15,6 +15,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
   const [equipmentResults, setEquipmentResults] = useState<Reservation[]>([]);
   const [darkroomResults, setDarkroomResults] = useState<DarkroomReservation[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   const executeSearch = React.useCallback(async (cleanQuery: string) => {
     if (!cleanQuery) return;
@@ -66,6 +67,56 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
 
     window.history.replaceState(null, '', `/talep-sorgula?kod=${encodeURIComponent(cleanQuery)}`);
     executeSearch(cleanQuery);
+  };
+
+  const handleCancelEquipment = async (res: Reservation) => {
+    const confirmed = window.confirm(
+      `${res.reservation_code} kodlu ekipman rezervasyonunuzu iptal etmek istediğinize emin misiniz?\n\nEkipman: ${res.equipment?.name || 'Ekipman'}\nTarih: ${res.pickup_date} - ${res.return_date}\n\nBu işlem geri alınamaz.`
+    );
+    if (!confirmed) return;
+
+    setCancellingId(res.id);
+    try {
+      await api.updateReservationStatus(res.id, 'cancelled', {
+        rejection_reason: 'Üye tarafından takip ekranından iptal edildi',
+        approved_by: 'İptal (Üye Talebi)'
+      });
+      alert('Rezervasyonunuz başarıyla iptal edildi.');
+      const currentQuery = query.trim().toUpperCase();
+      if (currentQuery) {
+        await executeSearch(currentQuery);
+      }
+    } catch (err: any) {
+      console.error('İptal hatası:', err);
+      alert(err?.message || 'Rezervasyon iptal edilirken bir hata oluştu.');
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
+  const handleCancelDarkroom = async (ko: DarkroomReservation) => {
+    const confirmed = window.confirm(
+      `${ko.reservation_code} kodlu karanlık oda randevunuzu iptal etmek istediğinize emin misiniz?\n\nTarih & Seans: ${ko.date} (${ko.slot_time})\n\nBu işlem geri alınamaz.`
+    );
+    if (!confirmed) return;
+
+    setCancellingId(ko.id);
+    try {
+      await api.updateDarkroomReservationStatus(ko.id, 'cancelled', {
+        rejection_reason: 'Üye tarafından takip ekranından iptal edildi',
+        approved_by: 'İptal (Üye Talebi)'
+      });
+      alert('Karanlık oda randevunuz başarıyla iptal edildi.');
+      const currentQuery = query.trim().toUpperCase();
+      if (currentQuery) {
+        await executeSearch(currentQuery);
+      }
+    } catch (err: any) {
+      console.error('İptal hatası:', err);
+      alert(err?.message || 'Randevu iptal edilirken bir hata oluştu.');
+    } finally {
+      setCancellingId(null);
+    }
   };
 
   const totalFound = equipmentResults.length + darkroomResults.length;
@@ -180,6 +231,18 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                                 </div>
                               )}
                             </div>
+                          ) : res.status === 'cancelled' ? (
+                            <div className="pt-2 space-y-0.5 border-t border-white/10 mt-1.5">
+                              <div className="text-white/60 text-xs font-mono">
+                                Durum: <span className="text-white/80 font-semibold">İptal Edildi</span>
+                                {res.approved_by && <span className="text-white/40 ml-1">({res.approved_by})</span>}
+                              </div>
+                              {res.rejection_reason && (
+                                <div className="text-white/50 text-xs font-light">
+                                  Not: {res.rejection_reason}
+                                </div>
+                              )}
+                            </div>
                           ) : res.approved_by ? (
                             <div className="text-emerald-400 pt-1 text-xs font-mono">
                               Onaylayan: <span className="text-emerald-300">{res.approved_by.replace(/\s*\([Rr]ed\)/gi, '')}</span>
@@ -195,9 +258,23 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                         </div>
                       )}
 
-                      <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-white/40">
-                        <span>Teslimat: Kulüpler Vadisi, Davutpaşa</span>
-                        <span>Öğrenci Kimliği Zorunludur</span>
+                      <div className="pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+                        <div className="text-white/40 flex items-center gap-2">
+                          <span>Teslimat: Kulüpler Vadisi, Davutpaşa</span>
+                          <span>•</span>
+                          <span>Öğrenci Kimliği Zorunludur</span>
+                        </div>
+                        {(res.status === 'pending' || res.status === 'approved') && (
+                          <button
+                            type="button"
+                            onClick={() => handleCancelEquipment(res)}
+                            disabled={cancellingId === res.id}
+                            className="px-3.5 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-500/30 font-semibold text-xs transition-all cursor-pointer inline-flex items-center justify-center gap-1.5 shrink-0 self-start sm:self-auto disabled:opacity-50"
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                            <span>{cancellingId === res.id ? 'İptal Ediliyor...' : 'Rezervasyonu İptal Et'}</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -222,7 +299,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                             {ko.reservation_code}
                           </span>
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono border border-white/10 text-white/80">
-                            {ko.status === 'pending' ? 'Onay Bekliyor' : ko.status === 'approved' ? 'Onaylandı' : ko.status === 'completed' ? 'Tamamlandı' : 'Reddedildi'}
+                            {ko.status === 'pending' ? 'Onay Bekliyor' : ko.status === 'approved' ? 'Onaylandı' : ko.status === 'completed' ? 'Tamamlandı' : ko.status === 'cancelled' ? 'İptal Edildi' : 'Reddedildi'}
                           </span>
                         </div>
                         <span className="text-xs font-mono text-white/50">
@@ -260,6 +337,17 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                                 </div>
                               )}
                             </div>
+                          ) : ko.status === 'cancelled' ? (
+                            <div className="pt-2 space-y-0.5 border-t border-white/10 mt-1.5">
+                              <div className="text-white/60 text-xs font-mono">
+                                Durum: <span className="text-white/80 font-semibold">İptal Edildi</span>
+                              </div>
+                              {ko.rejection_reason && (
+                                <div className="text-white/50 text-xs font-light">
+                                  Not: {ko.rejection_reason}
+                                </div>
+                              )}
+                            </div>
                           ) : ko.approved_by ? (
                             <div className="text-emerald-400 pt-1 text-xs font-mono">
                               Onaylayan: <span className="text-emerald-300">{ko.approved_by.replace(/\s*\([Rr]ed\)/gi, '')}</span>
@@ -268,6 +356,20 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
                           ) : null}
                         </div>
                       </div>
+
+                      {(ko.status === 'pending' || ko.status === 'approved') && (
+                        <div className="pt-3 border-t border-white/[0.06] flex items-center justify-end">
+                          <button
+                            type="button"
+                            onClick={() => handleCancelDarkroom(ko)}
+                            disabled={cancellingId === ko.id}
+                            className="px-3.5 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-500/30 font-semibold text-xs transition-all cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-50"
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                            <span>{cancellingId === ko.id ? 'İptal Ediliyor...' : 'Randevuyu İptal Et'}</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

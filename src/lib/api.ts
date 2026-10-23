@@ -955,6 +955,9 @@ export const api = {
     } else if (status === 'rejected') {
       if (options?.rejection_reason) updates.rejection_reason = options.rejection_reason;
       if (options?.approved_by) updates.approved_by = options.approved_by;
+    } else if (status === 'cancelled') {
+      if (options?.rejection_reason) updates.rejection_reason = options.rejection_reason;
+      if (options?.approved_by) updates.approved_by = options.approved_by;
     }
 
     if (!isSupabaseConfigured()) {
@@ -1675,6 +1678,9 @@ export const api = {
       updates.approved_at = now;
       if (options?.approved_by) updates.approved_by = options.approved_by;
     } else if (status === 'rejected') {
+      if (options?.rejection_reason) updates.rejection_reason = options.rejection_reason;
+      if (options?.approved_by) updates.approved_by = options.approved_by;
+    } else if (status === 'cancelled') {
       if (options?.rejection_reason) updates.rejection_reason = options.rejection_reason;
       if (options?.approved_by) updates.approved_by = options.approved_by;
     }

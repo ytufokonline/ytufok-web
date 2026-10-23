@@ -399,6 +399,21 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleCancelReservation = async (reservationId: string) => {
+    const reason = window.prompt('Rezervasyonu iptal etmek istediğinize emin misiniz? Varsa iptal gerekçesini yazabilirsiniz (İsteğe bağlı):', '');
+    if (reason === null) return;
+    try {
+      await api.updateReservationStatus(reservationId, 'cancelled', {
+        approved_by: `İptal: ${getAdminStamp()}`,
+        rejection_reason: reason.trim() || 'Yönetim Kurulu tarafından iptal edildi'
+      });
+      await loadAllData();
+    } catch (err: any) {
+      console.error('Rezervasyon iptal hatası:', err);
+      alert(err?.message || 'Rezervasyon iptal edilirken bir hata meydana geldi.');
+    }
+  };
+
   const handleConfirmReturn = async () => {
     if (!returnModalData) return;
     try {
@@ -1221,7 +1236,7 @@ export const AdminDashboard: React.FC = () => {
               className="w-full sm:w-72 px-3 py-1.5 rounded-xl bg-black/35 border border-white/10 text-white text-xs"
             />
             <div className="flex flex-wrap gap-1 text-xs">
-              {['all', 'pending', 'approved', 'in_use', 'returned', 'rejected'].map(f => (
+              {['all', 'pending', 'approved', 'in_use', 'returned', 'rejected', 'cancelled'].map(f => (
                 <button
                   key={f}
                   onClick={() => setReservationFilter(f)}
@@ -1229,7 +1244,7 @@ export const AdminDashboard: React.FC = () => {
                     reservationFilter === f ? 'bg-white text-black font-bold' : 'bg-black/35 text-[#ded0d9] hover:text-white'
                   }`}
                 >
-                  {f === 'all' ? 'Tümü' : f === 'pending' ? 'Onay Bekleyen' : f === 'approved' ? 'Onaylı' : f === 'in_use' ? 'Zimmette' : f === 'returned' ? 'İade' : 'Reddedilen'}
+                  {f === 'all' ? 'Tümü' : f === 'pending' ? 'Onay Bekleyen' : f === 'approved' ? 'Onaylı' : f === 'in_use' ? 'Zimmette' : f === 'returned' ? 'İade' : f === 'rejected' ? 'Reddedilen' : 'İptal'}
                 </button>
               ))}
             </div>
@@ -1332,6 +1347,13 @@ export const AdminDashboard: React.FC = () => {
                             <div className="text-rose-400 italic text-[10px] mt-0.5">Gerekçe: {r.rejection_reason}</div>
                           )}
                         </div>
+                      ) : r.status === 'cancelled' ? (
+                        <div className="pt-1.5 border-t border-white/[0.06] text-white/70 text-[11px]">
+                          <div>İptal: <strong className="text-white/90">{cleanAdminName(r.approved_by) || 'Bilinmiyor'}</strong></div>
+                          {r.rejection_reason && (
+                            <div className="text-white/50 italic text-[10px] mt-0.5">Not: {r.rejection_reason}</div>
+                          )}
+                        </div>
                       ) : r.approved_by ? (
                         <div className="pt-1.5 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-emerald-400">
                           <span className="text-white/40">Onaylayan:</span>
@@ -1373,12 +1395,20 @@ export const AdminDashboard: React.FC = () => {
                         </>
                       )}
                       {r.status === 'approved' && (
-                        <button
-                          onClick={() => handleDeliver(r.id)}
-                          className="w-full py-2.5 rounded-xl bg-white text-black font-semibold text-xs tracking-wider uppercase transition-all active:scale-[0.98] cursor-pointer shadow-sm text-center"
-                        >
-                          Teslim Et
-                        </button>
+                        <div className="flex items-center gap-2 w-full">
+                          <button
+                            onClick={() => handleDeliver(r.id)}
+                            className="flex-1 py-2.5 rounded-xl bg-white text-black font-semibold text-xs tracking-wider uppercase transition-all active:scale-[0.98] cursor-pointer shadow-sm text-center"
+                          >
+                            Teslim Et
+                          </button>
+                          <button
+                            onClick={() => handleCancelReservation(r.id)}
+                            className="py-2.5 px-4 rounded-xl bg-rose-950/40 text-rose-300 border border-rose-500/30 text-xs tracking-wider uppercase transition-all active:scale-[0.98] cursor-pointer text-center hover:bg-rose-900/50"
+                          >
+                            İptal Et
+                          </button>
+                        </div>
                       )}
                       {r.status === 'in_use' && (
                         <button
@@ -1493,6 +1523,17 @@ export const AdminDashboard: React.FC = () => {
                               </div>
                             )}
                           </div>
+                        ) : r.status === 'cancelled' ? (
+                          <div className="mt-1 space-y-0.5">
+                            <div className="text-[11px] text-white/60 font-semibold">
+                              İptal: <strong className="text-white/80 font-semibold">{cleanAdminName(r.approved_by) || 'Bilinmiyor'}</strong>
+                            </div>
+                            {r.rejection_reason && (
+                              <div className="text-[10px] text-white/50 italic">
+                                Not: {r.rejection_reason}
+                              </div>
+                            )}
+                          </div>
                         ) : r.approved_by ? (
                           <div className="text-[11px] text-emerald-400 font-semibold mt-0.5">
                             Onay: <strong className="text-emerald-300 font-semibold">{cleanAdminName(r.approved_by)}</strong>
@@ -1530,12 +1571,20 @@ export const AdminDashboard: React.FC = () => {
                           </>
                         )}
                         {r.status === 'approved' && (
-                          <button
-                            onClick={() => handleDeliver(r.id)}
-                            className="px-2.5 py-1 rounded-lg bg-white text-black font-semibold text-xs transition-colors cursor-pointer"
-                          >
-                            Teslim Et
-                          </button>
+                          <div className="inline-flex items-center gap-1.5">
+                            <button
+                              onClick={() => handleDeliver(r.id)}
+                              className="px-2.5 py-1 rounded-lg bg-white text-black font-semibold text-xs transition-colors cursor-pointer"
+                            >
+                              Teslim Et
+                            </button>
+                            <button
+                              onClick={() => handleCancelReservation(r.id)}
+                              className="px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/50 text-rose-300 border border-rose-500/30 text-xs transition-colors cursor-pointer"
+                            >
+                              İptal Et
+                            </button>
+                          </div>
                         )}
                         {r.status === 'in_use' && (
                           <button

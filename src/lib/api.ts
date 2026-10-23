@@ -714,6 +714,26 @@ export const api = {
   // ==========================================
   // 4. REZERVASYON İŞLEMLERİ (SUPABASE RESERVATIONS)
   // ==========================================
+  async getMemberActiveReservations(studentNumber: string): Promise<Reservation[]> {
+    if (!studentNumber) return [];
+    const cleanNum = studentNumber.trim();
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('reservations')
+          .select('*, equipment:equipment_id(*)')
+          .eq('student_number', cleanNum)
+          .in('status', ['pending', 'approved', 'in_use'])
+          .order('created_at', { ascending: false });
+        if (!error && data) return data as Reservation[];
+      } catch (err) {
+        console.warn('getMemberActiveReservations error:', err);
+      }
+    }
+    const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
+    return list.filter(r => r.student_number === cleanNum && ['pending', 'approved', 'in_use'].includes(r.status));
+  },
+
   async createReservation(payload: {
     equipment_id: string;
     student_number: string;
@@ -769,6 +789,79 @@ export const api = {
           success: false,
           message: 'Bu ekipman için onaylanmış aktif bir rezervasyon bulunmaktadır. Lütfen listeden başka bir ekipman seçiniz.'
         };
+      }
+
+      // 1. Mükerrer Talep Engeli: Aynı üyenin bu ekipman için zaten bekleyen veya aktif bir talebi var mı?
+      const { data: duplicateMemberRes } = await supabase
+        .from('reservations')
+        .select('id, reservation_code, status')
+        .eq('equipment_id', payload.equipment_id)
+        .eq('student_number', payload.student_number.trim())
+        .in('status', ['pending', 'approved', 'in_use']);
+
+      if (duplicateMemberRes && duplicateMemberRes.length > 0) {
+        const existing = duplicateMemberRes[0];
+        const statusLabel = existing.status === 'pending' ? 'onay bekleyen' : 'onaylanmış';
+        return {
+          success: false,
+          message: `Bu ekipman için zaten ${statusLabel} bir rezervasyon talebiniz bulunmaktadır (${existing.reservation_code}). Aynı ekipman için mükerrer talep açılamaz.`
+        };
+      }
+
+      // 2. Kamera Limiti: Bir üye aynı gezi/etkinlik için en fazla 1 adet kamera gövdesi alabilir
+      const isCamera = equipment.category === 'camera' || equipment.category === 'analog';
+      if (isCamera) {
+        let cameraQuery = supabase
+          .from('reservations')
+          .select('id, reservation_code, status, equipment_id, trip_id')
+          .eq('student_number', payload.student_number.trim())
+          .in('status', ['pending', 'approved', 'in_use']);
+
+        if (payload.trip_id) {
+          cameraQuery = cameraQuery.eq('trip_id', payload.trip_id);
+        }
+
+        const { data: userTripRes } = await cameraQuery;
+        if (userTripRes && userTripRes.length > 0) {
+          const allEq = await this.getEquipment();
+          const existingCameraRes = userTripRes.find((r) => {
+            const eq = allEq.find((e) => e.id === r.equipment_id);
+            return eq && (eq.category === 'camera' || eq.category === 'analog');
+          });
+
+          if (existingCameraRes) {
+            const existingEq = allEq.find((e) => e.id === existingCameraRes.equipment_id);
+            const statusText = existingCameraRes.status === 'pending' ? 'onay bekleyen' : 'onaylanmış';
+            return {
+              success: false,
+              message: `Bu gezi için zaten ${statusText} bir kamera talebiniz bulunmaktadır (${existingEq?.name || 'Kamera'} - ${existingCameraRes.reservation_code}). Aynı gezi için yalnızca 1 adet kamera gövdesi talep edilebilir.`
+            };
+          }
+        }
+      }
+    } else {
+      const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
+      const dup = list.find(r => r.equipment_id === equipment.id && r.student_number === payload.student_number.trim() && ['pending', 'approved', 'in_use'].includes(r.status));
+      if (dup) {
+        return {
+          success: false,
+          message: `Bu ekipman için zaten bekleyen/onaylı bir rezervasyon talebiniz bulunmaktadır (${dup.reservation_code}).`
+        };
+      }
+      const isCamera = equipment.category === 'camera' || equipment.category === 'analog';
+      if (isCamera) {
+        const existingCamera = list.find(r => 
+          r.student_number === payload.student_number.trim() && 
+          ['pending', 'approved', 'in_use'].includes(r.status) &&
+          (payload.trip_id ? r.trip_id === payload.trip_id : true) &&
+          (r.equipment?.category === 'camera' || r.equipment?.category === 'analog')
+        );
+        if (existingCamera) {
+          return {
+            success: false,
+            message: `Bu gezi için zaten bir kamera talebiniz bulunmaktadır (${existingCamera.equipment?.name || 'Kamera'} - ${existingCamera.reservation_code}). Aynı gezi için yalnızca 1 kamera gövdesi talep edilebilir.`
+          };
+        }
       }
     }
 

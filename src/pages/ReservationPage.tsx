@@ -23,6 +23,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const [verifying, setVerifying] = useState(false);
   const [verifiedMember, setVerifiedMember] = useState<Member | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [memberActiveReservations, setMemberActiveReservations] = useState<Reservation[]>([]);
 
   const formatPhoneNumberInput = (val: string) => {
     const digits = val.replace(/\D/g, '');
@@ -115,6 +116,27 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const hasActivePrivileges = memberTier === 'board' || memberTier === 'audit' || memberTier === 'active' || memberTier === 'honorary_active';
   const tripEligibility = selectedTrip ? checkTripBookingEligibility(selectedTrip.start_date, memberTier) : null;
 
+  // Active / Duplicate Reservation Checks
+  const isEquipmentAlreadyRequested = (eqId: string) => {
+    return memberActiveReservations.some(r => r.equipment_id === eqId);
+  };
+
+  const hasCameraAlreadyForTrip = () => {
+    return memberActiveReservations.some(r => {
+      const eq = equipmentList.find(e => e.id === r.equipment_id) || r.equipment;
+      const isCam = eq?.category === 'camera' || eq?.category === 'analog';
+      if (!isCam) return false;
+      if (usageType === 'trip' && selectedTrip) {
+        return r.trip_id === selectedTrip.id;
+      }
+      return true;
+    });
+  };
+
+  const isCurrentSelectionCamera = selectedEquipment?.category === 'camera' || selectedEquipment?.category === 'analog';
+  const isCurrentSelectionAlreadyRequested = selectedEquipment ? isEquipmentAlreadyRequested(selectedEquipment.id) : false;
+  const isCurrentSelectionCameraLimitBlocked = Boolean(isCurrentSelectionCamera && hasCameraAlreadyForTrip() && !isCurrentSelectionAlreadyRequested);
+
   // Apply trip dates & default purpose (Return date automatically set to first business day after trip)
   const applyTripDetails = (trip: Trip) => {
     setPickupDate(trip.start_date);
@@ -132,6 +154,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
     if (!studentNumber.trim()) {
       setVerificationError('Lütfen geçerli bir öğrenci numarası giriniz.');
       setVerifiedMember(null);
+      setMemberActiveReservations([]);
       return;
     }
 
@@ -146,13 +169,22 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
         if (result.member.phone && !result.member.phone.includes('XX')) {
           setPhoneNumber(formatPhoneNumberInput(result.member.phone));
         }
+        // Mevcut aktif / bekleyen rezervasyonları sorgula
+        try {
+          const activeRes = await api.getMemberActiveReservations(result.member.student_number);
+          setMemberActiveReservations(activeRes);
+        } catch {
+          setMemberActiveReservations([]);
+        }
       } else {
         setVerifiedMember(null);
         setVerificationError(result.message || 'Girdiğiniz öğrenci numarası kulüp üye listesinde bulunamadı.');
+        setMemberActiveReservations([]);
       }
     } catch {
       setVerificationError('Öğrenci numarası sorgulanırken hata oluştu.');
       setVerifiedMember(null);
+      setMemberActiveReservations([]);
     } finally {
       setVerifying(false);
     }
@@ -163,6 +195,16 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
     if (!verifiedMember) {
       alert('Lütfen önce öğrenci numaranızı doğrulayınız.');
+      return;
+    }
+
+    if (selectedEquipment && isCurrentSelectionAlreadyRequested) {
+      alert('Bu ekipman için zaten bekleyen veya onaylı bir rezervasyon talebiniz bulunmaktadır. Aynı ekipman için mükerrer talep oluşturamazsınız.');
+      return;
+    }
+
+    if (selectedEquipment && isCurrentSelectionCameraLimitBlocked) {
+      alert('Bu etkinlik için zaten bir kamera talebiniz bulunmaktadır. Kulüp kuralları gereğince aynı etkinlik için en fazla 1 adet kamera gövdesi talep edilebilir.');
       return;
     }
 
@@ -226,6 +268,9 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
 
       if (response.success && response.reservation) {
         setSubmittedReservation(response.reservation);
+        api.getMemberActiveReservations(verifiedMember.student_number).then(res => {
+          setMemberActiveReservations(res);
+        });
         api.getDashboardBundle().then(b => {
           setEquipmentList(b.equipmentList);
         });
@@ -416,6 +461,40 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                       Ekipman teslim saati koordinasyonu ve zimmet takibi için gereklidir.
                     </span>
                   </div>
+
+                  {/* Mevcut Aktif/Bekleyen Talepler Özeti */}
+                  {memberActiveReservations.length > 0 && (
+                    <div className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 text-xs space-y-2.5">
+                      <div className="font-semibold text-amber-300 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>Mevcut Aktif / Bekleyen Talepleriniz ({memberActiveReservations.length})</span>
+                        </span>
+                      </div>
+                      <div className="space-y-1.5">
+                        {memberActiveReservations.map((r) => (
+                          <div key={r.id} className="p-2.5 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
+                            <div>
+                              <strong className="text-white block font-mono text-[11px]">{r.reservation_code}</strong>
+                              <span className="text-white/60 text-[11px] block">{r.equipment?.name || 'Ekipman'}</span>
+                            </div>
+                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+                              r.status === 'pending'
+                                ? 'text-amber-300 border-amber-500/30 bg-amber-500/10'
+                                : r.status === 'approved'
+                                ? 'text-emerald-300 border-emerald-500/30 bg-emerald-500/10'
+                                : 'text-blue-300 border-blue-500/30 bg-blue-500/10'
+                            }`}>
+                              {r.status === 'pending' ? 'Onay Bekliyor' : r.status === 'approved' ? 'Onaylandı' : 'Zimmette'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-amber-200/70 block leading-relaxed font-light">
+                        Bilgi: Talep ettiğiniz ekipmanlar veya gezi başına 1 adet olan kamera kotanız için mükerrer talep açılamaz.
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -675,7 +754,15 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                 >
                   {equipmentList.map((item) => {
                     const isAvailable = item.status === 'available';
-                    const tag = item.status === 'reserved'
+                    const isDup = isEquipmentAlreadyRequested(item.id);
+                    const isCam = item.category === 'camera' || item.category === 'analog';
+                    const camBlocked = isCam && hasCameraAlreadyForTrip() && !isDup;
+                    const disabled = !isAvailable || isDup || camBlocked;
+                    const tag = isDup
+                      ? ' - [ZATEN TALEP ETTİNİZ]'
+                      : camBlocked
+                      ? ' - [1 KAMERA LİMİTİ DOLDU]'
+                      : item.status === 'reserved'
                       ? ' - [REZERVELİ]'
                       : item.status === 'in_use'
                       ? ' - [KULLANIMDA]'
@@ -686,8 +773,8 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                       <option 
                         key={item.id} 
                         value={item.id} 
-                        disabled={!isAvailable}
-                        className={!isAvailable ? 'text-white/30 bg-[#14020a]' : 'text-white bg-[#1c020d]'}
+                        disabled={disabled}
+                        className={disabled ? 'text-white/30 bg-[#14020a]' : 'text-white bg-[#1c020d]'}
                       >
                         {item.name} ({item.brand}) - [{item.serial_number}]{tag}
                       </option>
@@ -741,6 +828,32 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                 </div>
               )}
 
+              {/* Status Warning if duplicate requested */}
+              {selectedEquipment && isCurrentSelectionAlreadyRequested && (
+                <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-200 text-xs flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+                  <div>
+                    <strong className="block font-medium">Bu ekipman için zaten talebiniz var:</strong>
+                    <span className="text-rose-200/80 text-[11px] block mt-0.5 leading-relaxed">
+                      Bu ekipman için sistemde bekleyen veya onaylı bir rezervasyon talebiniz bulunmaktadır. Aynı ekipman için mükerrer talep açılamaz.
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Status Warning if camera limit reached */}
+              {selectedEquipment && isCurrentSelectionCameraLimitBlocked && (
+                <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-200 text-xs flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+                  <div>
+                    <strong className="block font-medium">Kamera Kotası (1 Adet):</strong>
+                    <span className="text-rose-200/80 text-[11px] block mt-0.5 leading-relaxed">
+                      Kulüp kuralları gereği bir gezi/etkinlik için en fazla 1 adet kamera gövdesi talep edebilirsiniz. Zaten bir kamera talebiniz bulunmaktadır. Lens veya tripod talep edebilirsiniz.
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Booking Dates Breakdown */}
               <div className="space-y-2.5 text-xs border-t border-white/[0.08] pt-4 divide-y divide-white/[0.04]">
                 <div className="flex justify-between text-white/50 pt-1">
@@ -786,6 +899,8 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     phoneNumber.replace(/\D/g, '').length < 10 ||
                     !selectedEquipment ||
                     selectedEquipment.status !== 'available' ||
+                    isCurrentSelectionAlreadyRequested ||
+                    isCurrentSelectionCameraLimitBlocked ||
                     (usageType === 'trip' && (trips.length === 0 || !selectedTrip || !selectedTrip.is_active || (tripEligibility ? !tripEligibility.isOpen : false))) ||
                     (usageType === 'custom' && !hasActivePrivileges) ||
                     (!hasActivePrivileges && trips.length === 0)
@@ -794,6 +909,10 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                 >
                   {submitting
                     ? 'Talebiniz Gönderiliyor...'
+                    : selectedEquipment && isCurrentSelectionAlreadyRequested
+                    ? 'Bu Ekipman İçin Zaten Talebiniz Var'
+                    : selectedEquipment && isCurrentSelectionCameraLimitBlocked
+                    ? '1 Kamera Limiti Doldu (Talep Edilemez)'
                     : selectedEquipment && selectedEquipment.status === 'reserved'
                     ? 'Ekipman Rezerveli (Talep Edilemez)'
                     : selectedEquipment && selectedEquipment.status === 'in_use'

@@ -123,8 +123,12 @@ export function App() {
     }
   }, []);
 
-  // Poll pending count for the admin badge
+  // Poll pending count for the admin badge (Yalnızca yetkili yönetici oturumu açıkken)
   useEffect(() => {
+    if (!activeAdmin) {
+      setPendingCount(0);
+      return;
+    }
     const fetchPending = async () => {
       try {
         const pending = await api.getPendingCount();
@@ -134,7 +138,7 @@ export function App() {
       }
     };
     fetchPending();
-  }, [activeTab]);
+  }, [activeTab, activeAdmin]);
 
   const handleSelectEquipmentToReserve = (equipmentId: string) => {
     setPreselectedEquipmentId(equipmentId);

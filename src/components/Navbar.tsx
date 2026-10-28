@@ -277,11 +277,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-white/60" />
                 <span>Yönetim</span>
-                {pendingCount > 0 && (
-                  <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded text-[10px] font-bold bg-[#568aa5] text-white">
-                    {pendingCount}
-                  </span>
-                )}
               </a>
             )}
           </div>
@@ -419,11 +414,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   draggable={false}
                 >
                   <ShieldCheck className="w-4 h-4 text-[#ded0d9]/70" />
-                  {pendingCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#568aa5] text-white text-[9px] font-bold flex items-center justify-center">
-                      {pendingCount}
-                    </span>
-                  )}
                 </a>
               )}
             </div>

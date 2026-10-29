@@ -455,8 +455,42 @@ export const api = {
       return { success: false, message: 'Lütfen öğrenci numaranızı giriniz.' };
     }
 
-    // 1. Doğrudan Güvenli Tekil Satır Sorgusu (member_type, role, status dahil tam üye verisi)
+    // 1. Güvenli PostgreSQL RPC Sorgusu (SECURITY DEFINER ile RLS aşımı ve güvenli tekil üye doğrulama)
     if (isSupabaseConfigured()) {
+      try {
+        const { data: rpcRes, error: rpcErr } = await supabase.rpc('verify_student_member', {
+          p_student_number: cleanNumber
+        });
+
+        if (!rpcErr && rpcRes) {
+          if (!rpcRes.success) {
+            return {
+              success: false,
+              member: rpcRes.member ? normalizeMemberRecord(rpcRes.member) : undefined,
+              message: rpcRes.message || 'Girdiğiniz öğrenci numarası kulüp üye listesinde bulunamadı.'
+            };
+          }
+
+          const member = normalizeMemberRecord(rpcRes.member);
+          const tierLabel = member.role === 'board' || member.role === 'admin' || member.member_type === 'board'
+            ? 'Yönetim Kurulu'
+            : member.role === 'audit' || member.member_type === 'audit'
+            ? 'Denetim Kurulu'
+            : member.member_type === 'active' || member.member_type === 'honorary_active'
+            ? 'Aktif Üye'
+            : 'Normal Üye';
+
+          return {
+            success: true,
+            member,
+            message: `Hoş geldiniz, ${member.full_name} (${member.department}). ${tierLabel} olarak doğrulandınız.`
+          };
+        }
+      } catch (err) {
+        console.warn('Supabase RPC verification error:', err);
+      }
+
+      // 1.2. Fallback Tekil Satır Sorgusu
       try {
         const { data, error } = await supabase
           .from('members')
@@ -496,7 +530,7 @@ export const api = {
           };
         }
       } catch (err) {
-        console.warn('Supabase verification error:', err);
+        console.warn('Supabase direct verification error:', err);
       }
     }
 
@@ -951,10 +985,22 @@ export const api = {
       }
     }
 
-    // Üyenin telefon numarasını veritabanında güncelle
-    if (payload.phone && member?.id && isSupabaseConfigured()) {
+    // Üyenin telefon numarasını veritabanında güvenli RPC ile güncelle
+    if (payload.phone && member?.student_number && isSupabaseConfigured()) {
       const cleanPhone = payload.phone.trim();
-      await supabase.from('members').update({ phone: cleanPhone }).eq('id', member.id);
+      try {
+        await supabase.rpc('update_member_contact_phone', {
+          p_student_number: member.student_number,
+          p_phone: cleanPhone
+        });
+      } catch {
+        // Fallback doğrudan update
+        try {
+          await supabase.from('members').update({ phone: cleanPhone }).eq('id', member.id);
+        } catch {
+          // ignore
+        }
+      }
       member.phone = cleanPhone;
     }
 

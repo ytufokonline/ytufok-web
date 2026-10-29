@@ -175,3 +175,24 @@ export function getNextBusinessDay(dateStr: string): string {
 
   return getLocalDateString(date);
 }
+
+/**
+ * Returns the first business day (Monday - Friday) strictly before the given date string.
+ * - If date is Saturday, Sunday, or Monday -> returns the previous Friday.
+ * - If date is Tuesday - Friday -> returns the very previous day (Monday - Thursday).
+ */
+export function getPreviousBusinessDay(dateStr: string): string {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
+
+  // Gezinin başladığı tarihten bir önceki güne geç
+  date.setDate(date.getDate() - 1);
+
+  // Hafta sonuna denk gelirse Cuma gününe gerilet (0: Pazar, 6: Cumartesi)
+  while (date.getDay() === 0 || date.getDay() === 6) {
+    date.setDate(date.getDate() - 1);
+  }
+
+  return getLocalDateString(date);
+}

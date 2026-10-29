@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, UserCheck, ShieldAlert, CheckCircle2, Copy, Check, FileText, MapPin, Compass, Clock, AlertTriangle, AlertCircle, UserPlus, Info, Sparkles, Lock, ChevronRight, Phone } from 'lucide-react';
 import { Equipment, Member, Reservation, Trip } from '../types';
 import { api } from '../lib/api';
-import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference, getNextBusinessDay, getWeekdayTr } from '../utils/tripUtils';
+import { checkTripBookingEligibility, resolveMemberTier, formatDateTr, formatDateRangeTr, getLocalDateString, parseDate, getDaysDifference, getPreviousBusinessDay, getNextBusinessDay, getWeekdayTr } from '../utils/tripUtils';
 import { AppleReveal } from '../components/AppleReveal';
 
 interface ReservationPageProps {
@@ -49,7 +49,9 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const defaultReturnDate = getLocalDateString(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000));
 
   const [pickupDate, setPickupDate] = useState(
-    initialSync.activeTrips[0]?.start_date || todayStr
+    initialSync.activeTrips[0]
+      ? getPreviousBusinessDay(initialSync.activeTrips[0].start_date)
+      : todayStr
   );
   const [returnDate, setReturnDate] = useState(
     initialSync.activeTrips[0]
@@ -137,9 +139,9 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
   const isCurrentSelectionAlreadyRequested = selectedEquipment ? isEquipmentAlreadyRequested(selectedEquipment.id) : false;
   const isCurrentSelectionCameraLimitBlocked = Boolean(isCurrentSelectionCamera && hasCameraAlreadyForTrip() && !isCurrentSelectionAlreadyRequested);
 
-  // Apply trip dates & default purpose (Return date automatically set to first business day after trip)
+  // Apply trip dates & default purpose (Pickup: 1 previous business day, Return: 1 next business day)
   const applyTripDetails = (trip: Trip) => {
-    setPickupDate(trip.start_date);
+    setPickupDate(getPreviousBusinessDay(trip.start_date));
     const firstBusinessDay = getNextBusinessDay(trip.end_date || trip.start_date);
     setReturnDate(firstBusinessDay);
     setPurpose(`Kulüp Gezisi: ${trip.title} (${trip.destination})`);
@@ -608,11 +610,16 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                               <strong className={`text-xs ${isSelected ? 'text-black font-semibold' : 'text-white'}`}>{trip.title}</strong>
                               <span className={`text-xs font-mono ${isSelected ? 'text-black/60' : 'text-white/40'}`}>{formatDateRangeTr(trip.start_date, trip.end_date)}</span>
                             </div>
-                            <div className="flex items-center justify-between text-[11px] mt-1.5 pt-1.5 border-t border-current/10">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] mt-1.5 pt-1.5 border-t border-current/10 gap-1">
                               <span className={isSelected ? 'text-black/70' : 'text-white/50'}>{trip.destination}</span>
-                              <span className={`font-mono text-[11px] ${isSelected ? 'text-black/80 font-medium' : 'text-emerald-400'}`}>
-                                İade: {formatDateTr(getNextBusinessDay(trip.end_date || trip.start_date))} ({getWeekdayTr(getNextBusinessDay(trip.end_date || trip.start_date))})
-                              </span>
+                              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                                <span className={`font-mono text-[11px] ${isSelected ? 'text-black/75' : 'text-white/60'}`}>
+                                  Teslim: {formatDateTr(getPreviousBusinessDay(trip.start_date))} ({getWeekdayTr(getPreviousBusinessDay(trip.start_date))})
+                                </span>
+                                <span className={`font-mono text-[11px] ${isSelected ? 'text-black/90 font-medium' : 'text-emerald-400 font-medium'}`}>
+                                  İade: {formatDateTr(getNextBusinessDay(trip.end_date || trip.start_date))} ({getWeekdayTr(getNextBusinessDay(trip.end_date || trip.start_date))})
+                                </span>
+                              </div>
                             </div>
                           </div>
                         );
@@ -860,9 +867,16 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                   <span>Kullanım Türü:</span>
                   <strong className="text-white font-medium">{usageType === 'trip' ? 'Kulüp Gezisi' : 'Bireysel Çekim'}</strong>
                 </div>
-                <div className="flex justify-between text-white/50 pt-2">
+                <div className="flex justify-between items-start text-white/50 pt-2">
                   <span>Teslim Alma:</span>
-                  <strong className="text-white font-mono">{pickupDate}</strong>
+                  <div className="text-right">
+                    <strong className="text-white font-mono block">{pickupDate}</strong>
+                    {usageType === 'trip' && (
+                      <span className="text-[10px] text-white/60 font-mono block mt-0.5">
+                        Geziden 1 önceki iş günü ({getWeekdayTr(pickupDate)})
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between items-start text-white/50 pt-2">
                   <span>İade Tarihi:</span>

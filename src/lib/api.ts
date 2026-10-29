@@ -25,7 +25,7 @@ import {
   INITIAL_DARKROOM_RESERVATIONS,
   INITIAL_TRIPS
 } from '../data/initialData';
-import { checkTripBookingEligibility, resolveMemberTier, getNextBusinessDay } from '../utils/tripUtils';
+import { checkTripBookingEligibility, resolveMemberTier, getNextBusinessDay, getPreviousBusinessDay } from '../utils/tripUtils';
 
 // Aktif yönetici oturumu
 let activeSessionAdminId: string | null = null;
@@ -958,7 +958,9 @@ export const api = {
       member.phone = cleanPhone;
     }
 
-    const effectivePickupDate = payload.trip_id && trip ? trip.start_date : payload.pickup_date;
+    const effectivePickupDate = payload.trip_id && trip
+      ? getPreviousBusinessDay(trip.start_date)
+      : payload.pickup_date;
     const effectiveReturnDate = payload.trip_id && trip
       ? getNextBusinessDay(trip.end_date || trip.start_date)
       : payload.return_date;

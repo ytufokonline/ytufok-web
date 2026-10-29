@@ -337,6 +337,29 @@ export const api = {
           member: memberById.get(r.member_id) || memberByNo.get(r.student_number),
           trip: r.trip_id ? tripById.get(r.trip_id) || null : null
         }));
+
+        // Bekleyen (pending), onaylı (approved) veya kullanımda (in_use) olan taleplere göre ekipman statülerini senkronize et
+        const activeResByEq = new Map<string, string[]>();
+        resRes.value.data.forEach((r: any) => {
+          if (['pending', 'approved', 'in_use'].includes(r.status)) {
+            const list = activeResByEq.get(r.equipment_id) || [];
+            list.push(r.status);
+            activeResByEq.set(r.equipment_id, list);
+          }
+        });
+
+        equipmentList.forEach((eq) => {
+          if (eq.status !== 'maintenance') {
+            const statuses = activeResByEq.get(eq.id);
+            if (statuses && statuses.length > 0) {
+              if (statuses.includes('in_use')) {
+                eq.status = 'in_use';
+              } else if (statuses.includes('approved') || statuses.includes('pending')) {
+                eq.status = 'reserved';
+              }
+            }
+          }
+        });
       }
 
       // 5. Announcements
@@ -776,18 +799,22 @@ export const api = {
       };
     }
 
-    // Ekipmanın onaylı veya kullanımda aktif rezervasyonu olup olmadığını veritabanından doğrudan doğrula
+    // Ekipmanın onaylı, bekleyen veya kullanımda aktif rezervasyonu olup olmadığını veritabanından doğrudan doğrula
     if (isSupabaseConfigured()) {
       const { data: activeRes } = await supabase
         .from('reservations')
         .select('id, reservation_code, pickup_date, return_date, status')
         .eq('equipment_id', payload.equipment_id)
-        .in('status', ['approved', 'in_use']);
+        .in('status', ['pending', 'approved', 'in_use']);
 
       if (activeRes && activeRes.length > 0) {
+        const resItem = activeRes[0];
+        const statusLabel = resItem.status === 'pending'
+          ? 'onay bekleyen bir rezervasyon talebi'
+          : 'onaylanmış aktif bir rezervasyon';
         return {
           success: false,
-          message: 'Bu ekipman için onaylanmış aktif bir rezervasyon bulunmaktadır. Lütfen listeden başka bir ekipman seçiniz.'
+          message: `Bu ekipman için şu anda ${statusLabel} bulunmaktadır (${resItem.reservation_code}). Lütfen listeden müsait başka bir ekipman seçiniz.`
         };
       }
 
@@ -841,6 +868,13 @@ export const api = {
       }
     } else {
       const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
+      const isReservedByAny = list.some(r => r.equipment_id === equipment.id && ['pending', 'approved', 'in_use'].includes(r.status));
+      if (isReservedByAny) {
+        return {
+          success: false,
+          message: 'Bu ekipman için şu anda onay bekleyen veya aktif bir rezervasyon talebi bulunmaktadır. Lütfen listeden başka bir ekipman seçiniz.'
+        };
+      }
       const dup = list.find(r => r.equipment_id === equipment.id && r.student_number === payload.student_number.trim() && ['pending', 'approved', 'in_use'].includes(r.status));
       if (dup) {
         return {
@@ -958,6 +992,7 @@ export const api = {
       const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
       list.unshift(newReservation);
       setLocalData('ytufok_local_reservations', list);
+      await this.updateEquipmentStatus(equipment.id, 'reserved');
       return {
         success: true,
         reservation: newReservation,
@@ -974,6 +1009,10 @@ export const api = {
     if (error) {
       throw new Error(`Supabase rezervasyon oluşturma hatası: ${error.message}`);
     }
+
+    // Ekipmanın statüsünü derhal rezerve edildi olarak güncelle
+    await this.updateEquipmentStatus(equipment.id, 'reserved');
+
     return {
       success: true,
       reservation: { ...newReservation, ...data },
@@ -1066,7 +1105,7 @@ export const api = {
         let nextEqStatus: EquipmentStatus = 'available';
         if (remaining.some(r => r.status === 'in_use')) {
           nextEqStatus = 'in_use';
-        } else if (remaining.some(r => r.status === 'approved')) {
+        } else if (remaining.some(r => r.status === 'approved' || r.status === 'pending')) {
           nextEqStatus = 'reserved';
         }
         await this.updateEquipmentStatus(resItem.equipment_id, nextEqStatus);
@@ -1099,7 +1138,7 @@ export const api = {
         let nextEqStatus: EquipmentStatus = 'available';
         if (allEqRes?.some(r => r.status === 'in_use')) {
           nextEqStatus = 'in_use';
-        } else if (allEqRes?.some(r => r.status === 'approved')) {
+        } else if (allEqRes?.some(r => r.status === 'approved' || r.status === 'pending')) {
           nextEqStatus = 'reserved';
         }
 
@@ -1119,7 +1158,7 @@ export const api = {
         const remaining = filtered.filter(r => r.equipment_id === target.equipment_id);
         let nextEqStatus: EquipmentStatus = 'available';
         if (remaining.some(r => r.status === 'in_use')) nextEqStatus = 'in_use';
-        else if (remaining.some(r => r.status === 'approved')) nextEqStatus = 'reserved';
+        else if (remaining.some(r => r.status === 'approved' || r.status === 'pending')) nextEqStatus = 'reserved';
         await this.updateEquipmentStatus(target.equipment_id, nextEqStatus);
       }
       return true;
@@ -1145,7 +1184,7 @@ export const api = {
         let nextEqStatus: EquipmentStatus = 'available';
         if (allEqRes?.some(r => r.status === 'in_use')) {
           nextEqStatus = 'in_use';
-        } else if (allEqRes?.some(r => r.status === 'approved')) {
+        } else if (allEqRes?.some(r => r.status === 'approved' || r.status === 'pending')) {
           nextEqStatus = 'reserved';
         }
         await this.updateEquipmentStatus(targetRes.equipment_id, nextEqStatus);

@@ -763,7 +763,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                       : camBlocked
                       ? ' - [1 KAMERA LİMİTİ DOLDU]'
                       : item.status === 'reserved'
-                      ? ' - [REZERVELİ]'
+                      ? ' - [TALEP EDİLDİ / REZERVELİ]'
                       : item.status === 'in_use'
                       ? ' - [KULLANIMDA]'
                       : item.status === 'maintenance'
@@ -818,7 +818,7 @@ export const ReservationPage: React.FC<ReservationPageProps> = ({ preselectedEqu
                     <strong className="block font-medium">Bu ekipman şu anda talep edilemez:</strong>
                     <span className="text-amber-200/80 text-[11px] block mt-0.5 leading-relaxed">
                       {selectedEquipment.status === 'reserved'
-                        ? 'Bu ekipmanın onaylanmış bir rezervasyonu bulunmaktadır.'
+                        ? 'Bu ekipman için şu anda onay bekleyen veya onaylanmış aktif bir rezervasyon bulunmaktadır.'
                         : selectedEquipment.status === 'in_use'
                         ? 'Bu ekipman şu anda bir kulüp üyemizde / çekimdedir.'
                         : 'Bu ekipman şu anda bakım ve onarımdadır.'}

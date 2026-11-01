@@ -25,7 +25,7 @@ import {
   INITIAL_DARKROOM_RESERVATIONS,
   INITIAL_TRIPS
 } from '../data/initialData';
-import { checkTripBookingEligibility, resolveMemberTier, getNextBusinessDay, getPreviousBusinessDay } from '../utils/tripUtils';
+import { checkTripBookingEligibility, resolveMemberTier, getNextBusinessDay, getPreviousBusinessDay, getLocalDateString } from '../utils/tripUtils';
 
 // Aktif yönetici oturumu
 let activeSessionAdminId: string | null = null;
@@ -1192,6 +1192,55 @@ export const api = {
 
         await this.updateEquipmentStatus(eqId, nextEqStatus);
       }
+    }
+    return true;
+  },
+
+  async updateReservationDates(
+    id: string,
+    pickupDate: string,
+    returnDate: string,
+    additionalNotes?: string
+  ): Promise<boolean> {
+    const today = getLocalDateString();
+    const isNewDateFuture = returnDate >= today;
+    
+    const updates: Record<string, any> = {
+      pickup_date: pickupDate,
+      return_date: returnDate,
+      updated_at: new Date().toISOString()
+    };
+
+    if (additionalNotes !== undefined) {
+      updates.additional_notes = additionalNotes;
+    }
+
+    if (!isSupabaseConfigured()) {
+      const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
+      const idx = list.findIndex(r => r.id === id);
+      if (idx !== -1) {
+        if (list[idx].status === 'overdue' && isNewDateFuture) {
+          updates.status = 'in_use';
+        }
+        list[idx] = { ...list[idx], ...updates };
+        setLocalData('ytufok_local_reservations', list);
+      }
+      return true;
+    }
+
+    const { data: targetRes } = await supabase
+      .from('reservations')
+      .select('id, status')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (targetRes?.status === 'overdue' && isNewDateFuture) {
+      updates.status = 'in_use';
+    }
+
+    const { error } = await supabase.from('reservations').update(updates).eq('id', id);
+    if (error) {
+      throw new Error(`Tarih güncelleme hatası: ${error.message}`);
     }
     return true;
   },

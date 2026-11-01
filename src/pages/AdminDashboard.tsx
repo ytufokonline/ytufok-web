@@ -91,6 +91,15 @@ export const AdminDashboard: React.FC = () => {
   const [returnModalData, setReturnModalData] = useState<{ id: string; equipmentName: string } | null>(null);
   const [returnConditionNote, setReturnConditionNote] = useState('Eksiksiz ve hasarsız teslim alındı.');
 
+  // Edit Reservation Dates Modal State
+  const [editDatesModalData, setEditDatesModalData] = useState<{
+    reservation: Reservation;
+    pickupDate: string;
+    returnDate: string;
+    note: string;
+  } | null>(null);
+  const [isSavingDates, setIsSavingDates] = useState(false);
+
   // Form modals
   const [showAddEquipmentModal, setShowAddEquipmentModal] = useState(false);
   const [newEquipName, setNewEquipName] = useState('');
@@ -442,6 +451,51 @@ export const AdminDashboard: React.FC = () => {
     } catch (err: any) {
       console.error('Rezervasyon red hatası:', err);
       alert(err?.message || 'Rezervasyon reddedilirken bir hata meydana geldi.');
+    }
+  };
+
+  const handleOpenEditDates = (r: Reservation) => {
+    setEditDatesModalData({
+      reservation: r,
+      pickupDate: r.pickup_date,
+      returnDate: r.return_date,
+      note: ''
+    });
+  };
+
+  const handleSaveReservationDates = async () => {
+    if (!editDatesModalData) return;
+    const { reservation, pickupDate, returnDate, note } = editDatesModalData;
+
+    if (!pickupDate || !returnDate) {
+      alert('Lütfen hem teslim alma hem de iade tarihini geçerli olarak seçiniz.');
+      return;
+    }
+
+    if (returnDate < pickupDate) {
+      alert('İade tarihi, teslim alma tarihinden önce olamaz.');
+      return;
+    }
+
+    setIsSavingDates(true);
+    try {
+      const stamp = getAdminStamp();
+      const notePart = note.trim()
+        ? `Tarih Revize (${cleanAdminName(stamp)}): ${note.trim()}`
+        : `Tarih Revize (${cleanAdminName(stamp)})`;
+
+      const newNotes = reservation.additional_notes
+        ? `${reservation.additional_notes} | [${notePart}]`
+        : `[${notePart}]`;
+
+      await api.updateReservationDates(reservation.id, pickupDate, returnDate, newNotes);
+      await loadAllData();
+      setEditDatesModalData(null);
+    } catch (err: any) {
+      console.error('Tarih güncelleme hatası:', err);
+      alert(err?.message || 'Tarihler güncellenirken bir hata meydana geldi.');
+    } finally {
+      setIsSavingDates(false);
     }
   };
 
@@ -844,13 +898,26 @@ export const AdminDashboard: React.FC = () => {
     setNewTripIsActive(true);
   };
 
+  const todayStr = getLocalDateString();
+  const isReservationOverdue = (r: Reservation) => {
+    if (r.status === 'overdue') return true;
+    if (r.status === 'in_use' && r.return_date) {
+      return r.return_date < todayStr;
+    }
+    return false;
+  };
+
   const pendingCount = reservations.filter(r => r.status === 'pending').length;
   const inUseCount = reservations.filter(r => r.status === 'in_use').length;
-  const overdueCount = reservations.filter(r => r.status === 'overdue' || (r.status === 'in_use' && new Date(r.return_date) < new Date())).length;
+  const overdueCount = reservations.filter(isReservationOverdue).length;
   const totalEquipment = equipmentList.length;
 
   const filteredReservations = reservations.filter(r => {
-    const matchesFilter = reservationFilter === 'all' || r.status === reservationFilter;
+    const matchesFilter = reservationFilter === 'all' 
+      ? true 
+      : reservationFilter === 'overdue'
+      ? isReservationOverdue(r)
+      : r.status === reservationFilter;
     const matchesSearch = 
       r.reservation_code.toLowerCase().includes(searchReservationQuery.toLowerCase()) ||
       r.student_number.includes(searchReservationQuery) ||
@@ -859,7 +926,7 @@ export const AdminDashboard: React.FC = () => {
     return matchesFilter && matchesSearch;
   });
 
-  const currentlyInUseList = reservations.filter(r => r.status === 'in_use');
+  const currentlyInUseList = reservations.filter(r => r.status === 'in_use' || r.status === 'overdue');
   const supabaseConfig = getSupabaseConfigStatus();
 
   const isBoardMemberObj = (m?: Member | null) =>
@@ -1110,7 +1177,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div 
-          onClick={() => { setActiveTab('reservations'); setReservationFilter('in_use'); }}
+          onClick={() => { setActiveTab('reservations'); setReservationFilter('overdue'); }}
           className="p-6 rounded-3xl bg-black/25 border border-white/10 cursor-pointer hover:border-rose-400 transition-all shadow-sm space-y-1.5"
         >
           <div className="flex items-center justify-between text-xs text-[#ded0d9]/80 font-semibold mb-2">
@@ -1236,15 +1303,33 @@ export const AdminDashboard: React.FC = () => {
               className="w-full sm:w-72 px-3 py-1.5 rounded-xl bg-black/35 border border-white/10 text-white text-xs"
             />
             <div className="flex flex-wrap gap-1 text-xs">
-              {['all', 'pending', 'approved', 'in_use', 'returned', 'rejected', 'cancelled'].map(f => (
+              {['all', 'pending', 'approved', 'in_use', 'overdue', 'returned', 'rejected', 'cancelled'].map(f => (
                 <button
                   key={f}
                   onClick={() => setReservationFilter(f)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold ${
-                    reservationFilter === f ? 'bg-white text-black font-bold' : 'bg-black/35 text-[#ded0d9] hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                    reservationFilter === f
+                      ? (f === 'overdue' ? 'bg-rose-500 text-white font-bold shadow' : 'bg-white text-black font-bold shadow')
+                      : (f === 'overdue' && overdueCount > 0
+                          ? 'bg-rose-950/40 text-rose-300 border border-rose-500/30 hover:bg-rose-900/50'
+                          : 'bg-black/35 text-[#ded0d9] hover:text-white')
                   }`}
                 >
-                  {f === 'all' ? 'Tümü' : f === 'pending' ? 'Onay Bekleyen' : f === 'approved' ? 'Onaylı' : f === 'in_use' ? 'Zimmette' : f === 'returned' ? 'İade' : f === 'rejected' ? 'Reddedilen' : 'İptal'}
+                  {f === 'all'
+                    ? 'Tümü'
+                    : f === 'pending'
+                    ? `Onay Bekleyen ${pendingCount > 0 ? `(${pendingCount})` : ''}`
+                    : f === 'approved'
+                    ? 'Onaylı'
+                    : f === 'in_use'
+                    ? `Zimmette (${inUseCount})`
+                    : f === 'overdue'
+                    ? `Geciken İadeler ${overdueCount > 0 ? `(${overdueCount})` : ''}`
+                    : f === 'returned'
+                    ? 'İade'
+                    : f === 'rejected'
+                    ? 'Reddedilen'
+                    : 'İptal'}
                 </button>
               ))}
             </div>
@@ -1337,8 +1422,34 @@ export const AdminDashboard: React.FC = () => {
                     <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 space-y-1.5 text-xs">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono uppercase tracking-wider text-white/40">Kullanım Tarihleri:</span>
-                        <strong className="text-white font-mono text-xs">{r.pickup_date} → {r.return_date}</strong>
+                        <div className="flex items-center gap-1.5">
+                          <strong className="text-white font-mono text-xs">{r.pickup_date} → {r.return_date}</strong>
+                          {['pending', 'approved', 'in_use', 'overdue'].includes(r.status) && (
+                            <button
+                              onClick={() => handleOpenEditDates(r)}
+                              title="Tarihleri Düzenle"
+                              className="p-1 rounded bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors cursor-pointer"
+                            >
+                              <Calendar className="w-3 h-3 text-emerald-400" />
+                            </button>
+                          )}
+                        </div>
                       </div>
+
+                      {isReservationOverdue(r) && (
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-200 text-[11px]">
+                          <span className="flex items-center gap-1.5 font-semibold">
+                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                            <span>İade Gecikmede ({r.return_date})</span>
+                          </span>
+                          <button
+                            onClick={() => handleOpenEditDates(r)}
+                            className="px-2 py-0.5 rounded bg-rose-500 text-white text-[10px] font-bold hover:bg-rose-400 transition-colors cursor-pointer"
+                          >
+                            İadeyi Uzat
+                          </button>
+                        </div>
+                      )}
 
                       {r.status === 'rejected' ? (
                         <div className="pt-1.5 border-t border-white/[0.06] text-rose-300 text-[11px]">
@@ -1511,7 +1622,30 @@ export const AdminDashboard: React.FC = () => {
                         )}
                       </td>
                       <td className="p-3.5">
-                        <div className="text-xs text-[#ded0d9] font-mono">{r.pickup_date} → {r.return_date}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs text-[#ded0d9] font-mono font-medium">{r.pickup_date} → {r.return_date}</div>
+                          {['pending', 'approved', 'in_use', 'overdue'].includes(r.status) && (
+                            <button
+                              onClick={() => handleOpenEditDates(r)}
+                              title="Teslim ve İade Tarihlerini Düzenle"
+                              className="p-1 rounded-md bg-white/[0.06] hover:bg-white/15 text-white/70 hover:text-white border border-white/10 transition-colors cursor-pointer"
+                            >
+                              <Calendar className="w-3 h-3 text-emerald-400" />
+                            </button>
+                          )}
+                        </div>
+                        {isReservationOverdue(r) && (
+                          <div className="mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[10px] font-bold">
+                            <AlertTriangle className="w-2.5 h-2.5 text-rose-400" />
+                            <span>İade Gecikti ({r.return_date})</span>
+                            <button
+                              onClick={() => handleOpenEditDates(r)}
+                              className="ml-1 underline text-white hover:text-rose-200 cursor-pointer"
+                            >
+                              Uzat
+                            </button>
+                          </div>
+                        )}
                         {r.status === 'rejected' ? (
                           <div className="mt-1 space-y-0.5">
                             <div className="text-[11px] text-rose-400 font-semibold">
@@ -1629,7 +1763,13 @@ export const AdminDashboard: React.FC = () => {
                 <div key={res.id} className="p-6 rounded-3xl bg-black/25 border border-white/10 space-y-3.5 shadow-sm">
                   <div className="flex justify-between items-center">
                     <span className="font-mono text-xs font-bold text-white">{res.reservation_code}</span>
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/35 border border-white/15 text-[#ded0d9]">Zimmette</span>
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                      isReservationOverdue(res)
+                        ? 'bg-rose-500/20 border border-rose-500/40 text-rose-300'
+                        : 'bg-black/35 border border-white/15 text-[#ded0d9]'
+                    }`}>
+                      {isReservationOverdue(res) ? 'İade Gecikti' : 'Zimmette'}
+                    </span>
                   </div>
                   <div>
                     <h4 className="font-bold text-[#ded0d9] text-base font-club">{res.equipment?.name}</h4>
@@ -1640,7 +1780,33 @@ export const AdminDashboard: React.FC = () => {
                       {res.member?.full_name} {!isBoardMemberObj(res.member) && `(${res.student_number})`}
                     </div>
                     <div className="text-white/70">Tel: {res.member?.phone}</div>
-                    <div className="text-[#ded0d9]">Teslim: <strong className="text-white">{res.pickup_date}</strong> → İade: <strong className="text-white">{res.return_date}</strong></div>
+                    
+                    <div className="flex items-center justify-between text-[#ded0d9] pt-1">
+                      <div>Teslim: <strong className="text-white">{res.pickup_date}</strong> → İade: <strong className="text-white">{res.return_date}</strong></div>
+                      <button
+                        onClick={() => handleOpenEditDates(res)}
+                        title="Teslim ve İade Tarihlerini Düzenle"
+                        className="p-1 rounded-md bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors cursor-pointer"
+                      >
+                        <Calendar className="w-3 h-3 text-emerald-400" />
+                      </button>
+                    </div>
+
+                    {isReservationOverdue(res) && (
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-200 text-xs mt-1">
+                        <div className="flex items-center gap-1.5 font-semibold text-[11px]">
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                          <span>İade Süresi Geçti</span>
+                        </div>
+                        <button
+                          onClick={() => handleOpenEditDates(res)}
+                          className="px-2 py-0.5 rounded-md bg-rose-500 text-white text-[10px] font-bold hover:bg-rose-400 transition-colors cursor-pointer"
+                        >
+                          İadeyi Uzat
+                        </button>
+                      </div>
+                    )}
+
                     {res.approved_by && (
                       <div className="text-[11px] pt-1 border-t border-white/[0.08]">
                         <span className="text-emerald-400 font-semibold">Onay: </span>
@@ -1653,12 +1819,21 @@ export const AdminDashboard: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <button
-                    onClick={() => setReturnModalData({ id: res.id, equipmentName: res.equipment?.name || 'Ekipman' })}
-                    className="w-full py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
-                  >
-                    İade Alındı Olarak İşaretle
-                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => handleOpenEditDates(res)}
+                      className="py-2 rounded-xl bg-black/35 hover:bg-black/50 text-[#ded0d9] hover:text-white border border-white/10 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      <Calendar className="w-3 h-3 text-emerald-400" />
+                      <span>Tarih Değiştir</span>
+                    </button>
+                    <button
+                      onClick={() => setReturnModalData({ id: res.id, equipmentName: res.equipment?.name || 'Ekipman' })}
+                      className="py-2 rounded-xl bg-white text-black font-semibold text-xs font-mono uppercase tracking-wider hover:bg-white/90 transition-all cursor-pointer shadow-sm text-center"
+                    >
+                      İade Al
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -3480,6 +3655,154 @@ export const AdminDashboard: React.FC = () => {
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => setReturnModalData(null)} className="px-4 py-2 rounded-xl bg-black/30 text-xs text-white/70 hover:text-white cursor-pointer">Vazgeç</button>
               <button onClick={handleConfirmReturn} className="px-4 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer">İadeyi Tamamla</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Reservation Dates Modal */}
+      {editDatesModalData && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#121115] border border-white/15 rounded-3xl max-w-lg w-full p-6 sm:p-7 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-white text-[10px] font-mono font-semibold mb-1">
+                  <Calendar className="w-3 h-3 text-emerald-400" />
+                  <span>{editDatesModalData.reservation.reservation_code}</span>
+                </div>
+                <h3 className="text-base font-bold text-white font-club">
+                  Teslim ve İade Tarihlerini Düzenle
+                </h3>
+                <p className="text-xs text-white/60 mt-0.5">
+                  {editDatesModalData.reservation.member?.full_name} ({editDatesModalData.reservation.student_number}) • {editDatesModalData.reservation.equipment?.name}
+                </p>
+              </div>
+              <button
+                onClick={() => setEditDatesModalData(null)}
+                className="p-1.5 rounded-xl bg-white/5 hover:bg-white/15 text-white/60 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Current status alert if overdue */}
+            {isReservationOverdue(editDatesModalData.reservation) && (
+              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs flex items-start gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block font-medium">Bu İade Gecikmede:</strong>
+                  <span className="text-[11px] text-rose-200/80 leading-relaxed block mt-0.5">
+                    Mevcut iade tarihi ({editDatesModalData.reservation.return_date}) geçtiği için sistemde gecikmiş olarak görünmektedir. İleri bir iade tarihi belirlediğinizde kayıt güncellenecek ve geciken durumundan çıkacaktır.
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Date inputs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-mono uppercase tracking-wider text-white/70">
+                  Teslim Alma Tarihi:
+                </label>
+                <input
+                  type="date"
+                  value={editDatesModalData.pickupDate}
+                  onChange={(e) => setEditDatesModalData({ ...editDatesModalData, pickupDate: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white text-xs font-mono focus:outline-none focus:border-white/40"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-mono uppercase tracking-wider text-white/70">
+                  İade Tarihi:
+                </label>
+                <input
+                  type="date"
+                  value={editDatesModalData.returnDate}
+                  min={editDatesModalData.pickupDate}
+                  onChange={(e) => setEditDatesModalData({ ...editDatesModalData, returnDate: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white text-xs font-mono focus:outline-none focus:border-white/40"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Quick date extend helpers */}
+            <div className="space-y-1.5 pt-1">
+              <label className="block text-[11px] font-mono uppercase tracking-wider text-white/50">
+                Hızlı İade Tarihi Uzat:
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { label: '+1 Gün', days: 1 },
+                  { label: '+2 Gün', days: 2 },
+                  { label: '+3 Gün', days: 3 },
+                  { label: '+5 Gün', days: 5 },
+                  { label: '+1 Hafta', days: 7 }
+                ].map(({ label, days }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => {
+                      const baseDateStr = editDatesModalData.returnDate >= todayStr ? editDatesModalData.returnDate : todayStr;
+                      const [y, m, d] = baseDateStr.split('-').map(Number);
+                      const nextD = new Date(y, (m || 1) - 1, (d || 1) + days);
+                      const nextStr = getLocalDateString(nextD);
+                      setEditDatesModalData({ ...editDatesModalData, returnDate: nextStr });
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/15 border border-white/10 text-white/80 hover:text-white text-[11px] font-mono transition-colors cursor-pointer"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Note input */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-mono uppercase tracking-wider text-white/70">
+                Yönetici İzni / Revize Notu (İsteğe bağlı):
+              </label>
+              <input
+                type="text"
+                placeholder="Örn: Kulüp çekimi için çarşamba teslim izni verildi"
+                value={editDatesModalData.note}
+                onChange={(e) => setEditDatesModalData({ ...editDatesModalData, note: e.target.value })}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white text-xs focus:outline-none focus:border-white/40"
+              />
+            </div>
+
+            {/* Live feedback */}
+            {editDatesModalData.returnDate >= todayStr ? (
+              <div className="text-[11px] text-emerald-400 font-mono flex items-center gap-1.5 bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span>Seçilen iade tarihi ({editDatesModalData.returnDate}) geçerli; kayıt geciken listesinden çıkarılacaktır.</span>
+              </div>
+            ) : (
+              <div className="text-[11px] text-amber-300 font-mono flex items-center gap-1.5 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <span>Seçilen iade tarihi bugünden ({todayStr}) önce olduğu için sistemde gecikmiş kalmaya devam edecektir.</span>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex justify-end items-center gap-2.5 pt-3 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setEditDatesModalData(null)}
+                className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Vazgeç
+              </button>
+              <button
+                type="button"
+                disabled={isSavingDates}
+                onClick={handleSaveReservationDates}
+                className="px-5 py-2.5 rounded-xl bg-white text-black font-semibold text-xs font-mono uppercase tracking-wider hover:bg-white/90 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              >
+                {isSavingDates ? 'Kaydediliyor...' : 'Tarihleri Güncelle'}
+              </button>
             </div>
           </div>
         </div>

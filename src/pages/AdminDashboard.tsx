@@ -3727,10 +3727,6 @@ export const AdminDashboard: React.FC = () => {
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-white/10">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/20 text-amber-300 text-[10px] font-mono font-semibold mb-1">
-                <Sparkles className="w-3 h-3" />
-                <span>Kulüp Kürsüsü</span>
-              </div>
               <h3 className="text-base sm:text-lg font-bold text-white font-club">
                 Üye & Ziyaretçi Etkinlik Önerileri
               </h3>

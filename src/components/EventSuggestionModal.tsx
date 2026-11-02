@@ -104,10 +104,6 @@ export const EventSuggestionModal: React.FC<EventSuggestionModalProps> = ({ isOp
           <>
             {/* Header */}
             <div className="space-y-1.5 pr-8">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-[11px] font-mono uppercase tracking-wider font-semibold mb-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>Kulüp Kürsüsü</span>
-              </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight">
                 Etkinlik / Gezi Öner
               </h2>

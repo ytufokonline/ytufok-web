@@ -463,10 +463,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
         <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left">
           <AppleReveal className="p-8 sm:p-10 rounded-3xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 border border-white/15 bg-gradient-to-r from-black/40 via-black/25 to-amber-950/20 shadow-xl">
             <div className="space-y-2.5 max-w-2xl">
-              <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full border border-amber-400/30 bg-amber-500/10 text-amber-300 font-semibold">
-                <Sparkles className="w-3 h-3" />
-                <span>Kulüp Kürsüsü</span>
-              </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight">
                 Aklında bir gezi, atölye veya sergi fikri mi var?
               </h3>

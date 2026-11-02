@@ -10,7 +10,8 @@ import {
   Plus,
   HelpCircle,
   Zap,
-  Check
+  Check,
+  Wrench
 } from 'lucide-react';
 import { Equipment } from '../types';
 import { api } from '../lib/api';
@@ -321,10 +322,6 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
     }).catch(console.error);
   }, []);
 
-  const activeScenario = GUIDE_SCENARIOS.find((sc) => sc.id === selectedScenarioId) || GUIDE_SCENARIOS[0];
-  const safeComboIndex = Math.min(selectedComboIndex, activeScenario.combos.length - 1);
-  const activeCombo = activeScenario.combos[safeComboIndex] || activeScenario.combos[0];
-
   const getEq = (key?: string): Equipment | undefined => {
     if (!key) return undefined;
     const targetSerial = EQUIPMENT_SERIAL_MAP[key] || key;
@@ -340,6 +337,76 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
       (e) => e.id === key || e.serial_number === key || e.serial_number === targetSerial || e.id === targetSerial
     );
   };
+
+  // Bakımda veya arızalı olan ekipmanları tespit et
+  const isEquipmentInMaintenance = (eq?: Equipment | null): boolean => {
+    if (!eq) return false;
+    if (eq.status === 'maintenance') return true;
+    if (eq.current_condition) {
+      const cond = eq.current_condition.toLowerCase();
+      if (cond.includes('bakım') || cond.includes('arız') || cond.includes('servis') || cond.includes('tamir')) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Clear Shot analog makinelerden 5 adet mevcuttur. Biri bakımdaysa diğer sağlam olana yönlendir.
+  const resolveBodyId = (bodyId: string): string => {
+    if (bodyId.startsWith('e-clearshot-')) {
+      const current = getEq(bodyId);
+      if (isEquipmentInMaintenance(current)) {
+        const clearShotKeys = ['e-clearshot-1', 'e-clearshot-2', 'e-clearshot-3', 'e-clearshot-4', 'e-clearshot-5'];
+        const workingKey = clearShotKeys.find((k) => !isEquipmentInMaintenance(getEq(k)));
+        if (workingKey) return workingKey;
+      }
+    }
+    return bodyId;
+  };
+
+  // Bir kombo önerilebilir mi? (Gövde, lens veya kritik aksesuarı bakımda/arızalı değilse)
+  const isComboAvailable = (combo: EquipmentCombo): boolean => {
+    const resolvedBodyId = resolveBodyId(combo.bodyId);
+    const body = getEq(resolvedBodyId);
+    if (!body || isEquipmentInMaintenance(body)) {
+      return false;
+    }
+
+    if (combo.lensId) {
+      const lens = getEq(combo.lensId);
+      if (!lens || isEquipmentInMaintenance(lens)) {
+        return false;
+      }
+    }
+
+    // Flaş kiti gibi temeli aksesuara dayalı kombolarda aksesuar arızalıysa önerme
+    if (combo.id === 'c-night-flash' && combo.accessoryId) {
+      const acc = getEq(combo.accessoryId);
+      if (!acc || isEquipmentInMaintenance(acc)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Senaryoya ait sadece bakımda/arızalı OLMAYAN komboları getir
+  const getAvailableCombosForScenario = (sc: GuideScenario): EquipmentCombo[] => {
+    return sc.combos
+      .filter(isComboAvailable)
+      .map((combo) => ({
+        ...combo,
+        bodyId: resolveBodyId(combo.bodyId)
+      }));
+  };
+
+  const activeScenario = GUIDE_SCENARIOS.find((sc) => sc.id === selectedScenarioId) || GUIDE_SCENARIOS[0];
+  const availableCombos = React.useMemo(() => {
+    return getAvailableCombosForScenario(activeScenario);
+  }, [activeScenario, equipmentList]);
+
+  const safeComboIndex = Math.min(selectedComboIndex, Math.max(0, availableCombos.length - 1));
+  const activeCombo = availableCombos.length > 0 ? availableCombos[safeComboIndex] : null;
 
   const handleScenarioChange = (scenarioId: string) => {
     setSelectedScenarioId(scenarioId);
@@ -393,8 +460,8 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
               <span className="text-white">Tam Uyumlu Gövde & Lensler</span>
             </div>
             <div>
-              <span className="text-white/30 uppercase mr-2 tracking-wider">Öneri:</span>
-              <span className="text-white">1 Gövde + 1 Lens Rezerve Edin</span>
+              <span className="text-white/30 uppercase mr-2 tracking-wider">Filtreleme:</span>
+              <span className="text-emerald-400 font-medium">Bakımdaki Ekipmanlar Gizlenir</span>
             </div>
           </div>
         </header>
@@ -435,6 +502,9 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-white/[0.08]">
           {GUIDE_SCENARIOS.map((sc) => {
             const isActive = sc.id === activeScenario.id;
+            const availableCount = getAvailableCombosForScenario(sc).length;
+            const isAllUnderMaintenance = availableCount === 0;
+
             return (
               <button
                 key={sc.id}
@@ -442,10 +512,17 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
                 className={`px-4 py-2.5 rounded-xl text-xs font-mono whitespace-nowrap transition-all border flex items-center gap-2 cursor-pointer ${
                   isActive
                     ? 'bg-white text-black border-white shadow-md font-semibold'
+                    : isAllUnderMaintenance
+                    ? 'border-white/5 text-white/35 hover:text-white/60 bg-black/20'
                     : 'border-white/10 text-white/60 hover:text-white hover:border-white/25 bg-black/30'
                 }`}
               >
                 <span>{sc.title}</span>
+                {isAllUnderMaintenance && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded border border-amber-400/20 text-amber-300/80 bg-amber-500/10 font-normal">
+                    Bakımda
+                  </span>
+                )}
               </button>
             );
           })}
@@ -471,35 +548,72 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
           </div>
 
           <div className="shrink-0">
-            <span className="text-xs font-mono text-white/40 border border-white/10 px-3 py-1.5 rounded-full">
-              {activeScenario.combos.length} Önerilen Kombo
+            <span className={`text-xs font-mono border px-3 py-1.5 rounded-full ${
+              availableCombos.length === 0
+                ? 'border-amber-400/25 bg-amber-500/10 text-amber-300'
+                : 'text-white/40 border border-white/10'
+            }`}>
+              {availableCombos.length === 0 ? 'Ekipmanlar Bakımda' : `${availableCombos.length} Önerilen Kombo`}
             </span>
           </div>
         </div>
 
-        {/* Combo Switcher Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {activeScenario.combos.map((combo, idx) => {
-            const isSelected = idx === safeComboIndex;
-            return (
+        {availableCombos.length === 0 || !activeCombo ? (
+          <div className="p-8 sm:p-12 rounded-3xl border border-white/10 bg-black/25 text-center space-y-4 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 mx-auto flex items-center justify-center">
+              <Wrench className="w-6 h-6" />
+            </div>
+            <div className="space-y-1.5 max-w-md mx-auto">
+              <h3 className="text-lg font-bold text-white font-club">
+                Bu Çekim Türüne Ait Ekipmanlar Bakımda
+              </h3>
+              <p className="text-xs sm:text-sm text-white/60 font-light leading-relaxed">
+                Bu kategori için önerilen gövde veya lensler şu an bakım/servis sürecinde olduğu için önerilmemektedir. Ekipmanlar kulüp havuzuna döndüğünde otomatik olarak tekrar önerilecektir.
+              </p>
+            </div>
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
               <button
-                key={combo.id}
-                onClick={() => setSelectedComboIndex(idx)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-mono whitespace-nowrap transition-all border cursor-pointer flex items-center gap-1.5 ${
-                  isSelected
-                    ? 'bg-white text-black border-white font-semibold shadow-sm'
-                    : 'border-white/10 text-white/50 hover:text-white hover:border-white/25 bg-black/30'
-                }`}
+                onClick={() => onNavigate('equipment')}
+                className="px-5 py-2.5 rounded-xl bg-white text-black text-xs font-mono font-semibold hover:bg-white/90 transition-all cursor-pointer shadow-sm"
               >
-                <span className={isSelected ? 'text-black/60 font-bold' : 'text-white/40 font-bold'}>{idx + 1}.</span>
-                <span>{combo.name}</span>
+                Tüm Ekipman Durumlarını Gör
               </button>
-            );
-          })}
-        </div>
+              <button
+                onClick={() => {
+                  const firstWithCombos = GUIDE_SCENARIOS.find((sc) => getAvailableCombosForScenario(sc).length > 0);
+                  if (firstWithCombos) handleScenarioChange(firstWithCombos.id);
+                }}
+                className="px-5 py-2.5 rounded-xl border border-white/10 hover:border-white/25 text-white/80 hover:text-white text-xs font-mono transition-all cursor-pointer bg-white/5"
+              >
+                Diğer Çekim Türlerine Göz At
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Combo Switcher Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {availableCombos.map((combo, idx) => {
+                const isSelected = idx === safeComboIndex;
+                return (
+                  <button
+                    key={combo.id}
+                    onClick={() => setSelectedComboIndex(idx)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-mono whitespace-nowrap transition-all border cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-white text-black border-white font-semibold shadow-sm'
+                        : 'border-white/10 text-white/50 hover:text-white hover:border-white/25 bg-black/30'
+                    }`}
+                  >
+                    <span className={isSelected ? 'text-black/60 font-bold' : 'text-white/40 font-bold'}>{idx + 1}.</span>
+                    <span>{combo.name}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* SELECTED COMBO MAIN CARD */}
-        <div className="p-6 sm:p-8 rounded-3xl border border-white/10 bg-black/25 space-y-6 shadow-sm">
+            {/* SELECTED COMBO MAIN CARD */}
+            <div className="p-6 sm:p-8 rounded-3xl border border-white/10 bg-black/25 space-y-6 shadow-sm">
           
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
             <div>
@@ -654,7 +768,7 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
           {/* Optional Accessory Box */}
           {activeCombo.accessoryId && (() => {
             const acc = getEq(activeCombo.accessoryId);
-            if (!acc) return null;
+            if (!acc || isEquipmentInMaintenance(acc)) return null;
             return (
               <div className="p-4 rounded-xl border border-white/10 bg-black/30 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
@@ -709,8 +823,10 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
             </div>
           </div>
 
-          </div>
         </div>
+          </>
+        )}
+      </div>
       </AppleReveal>
 
     </div>

@@ -658,8 +658,8 @@ export const EquipmentGuidePage: React.FC<EquipmentGuidePageProps> = ({
               <span className="text-white">Tam Uyumlu Gövde & Lensler</span>
             </div>
             <div>
-              <span className="text-white/30 uppercase mr-2 tracking-wider">Filtreleme:</span>
-              <span className="text-emerald-400 font-medium">Bakımdaki Ekipmanlar Gizlenir</span>
+              <span className="text-white/30 uppercase mr-2 tracking-wider">Öneri:</span>
+              <span className="text-white">1 Gövde + 1 Lens Rezerve Edin</span>
             </div>
           </div>
         </header>

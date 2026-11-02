@@ -11,7 +11,8 @@ import {
   DarkroomReservation,
   DarkroomSlotTemplate,
   Trip,
-  MemberType
+  MemberType,
+  EventSuggestion
 } from '../types';
 import {
   INITIAL_EQUIPMENT,
@@ -172,7 +173,8 @@ const defaultInitialState = {
   darkroomSlots: DARKROOM_SLOTS,
   darkroomReservations: INITIAL_DARKROOM_RESERVATIONS,
   announcements: INITIAL_ANNOUNCEMENTS,
-  gallery: INITIAL_GALLERY
+  gallery: INITIAL_GALLERY,
+  eventSuggestions: [] as EventSuggestion[]
 };
 
 export const api = {
@@ -200,6 +202,7 @@ export const api = {
       const darkroomSlots = getLocalData<DarkroomSlot[]>('ytufok_local_darkroom_slots', defaultInitialState.darkroomSlots);
       const darkroomReservations = getLocalData<DarkroomReservation[]>('ytufok_local_darkroom_reservations', defaultInitialState.darkroomReservations);
       const announcements = getLocalData<Announcement[]>('ytufok_local_announcements', defaultInitialState.announcements);
+      const eventSuggestions = getLocalData<EventSuggestion[]>('ytufok_local_suggestions', []);
 
       const adminId = getActiveSessionAdminId();
       const activeAdmin = adminId
@@ -217,7 +220,8 @@ export const api = {
         darkroomSlots,
         darkroomReservations,
         announcements,
-        gallery: INITIAL_GALLERY
+        gallery: INITIAL_GALLERY,
+        eventSuggestions
       };
     }
 
@@ -228,14 +232,16 @@ export const api = {
         tripRes,
         annRes,
         darkSlotRes,
-        darkResRes
+        darkResRes,
+        sugRes
       ] = await Promise.allSettled([
         supabase.from('equipment').select('*').order('name', { ascending: true }),
         supabase.from('reservations').select('*').order('created_at', { ascending: false }),
         supabase.from('trips').select('*').order('start_date', { ascending: true }),
         supabase.from('announcements').select('*').order('created_at', { ascending: false }),
         supabase.from('darkroom_slots').select('*').order('date', { ascending: true }),
-        supabase.from('darkroom_reservations').select('*').order('created_at', { ascending: false })
+        supabase.from('darkroom_reservations').select('*').order('created_at', { ascending: false }),
+        supabase.from('event_suggestions').select('*').order('created_at', { ascending: false })
       ]);
 
       const baseBySerial = new Map<string, Equipment>();
@@ -407,6 +413,16 @@ export const api = {
         }));
       }
 
+      // 9. Event Suggestions
+      let eventSuggestions: EventSuggestion[] = getLocalData<EventSuggestion[]>('ytufok_local_suggestions', []);
+      if (
+        sugRes.status === 'fulfilled' &&
+        !sugRes.value.error &&
+        Array.isArray(sugRes.value.data)
+      ) {
+        eventSuggestions = sugRes.value.data as EventSuggestion[];
+      }
+
       return {
         equipmentList,
         members,
@@ -418,7 +434,8 @@ export const api = {
         darkroomSlots,
         darkroomReservations,
         announcements,
-        gallery: INITIAL_GALLERY
+        gallery: INITIAL_GALLERY,
+        eventSuggestions
       };
     } catch (err) {
       console.error('Supabase getDashboardBundle hatası:', err);
@@ -2068,6 +2085,137 @@ export const api = {
     } catch (err: any) {
       return { success: false, count: 0, error: err?.message || String(err) };
     }
+  },
+
+  // ==========================================
+  // 12. ETKİNLİK ÖNERİLERİ (EVENT SUGGESTIONS)
+  // ==========================================
+  async getEventSuggestions(): Promise<EventSuggestion[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('event_suggestions')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (!error && Array.isArray(data)) {
+          return data as EventSuggestion[];
+        }
+      } catch (err) {
+        console.warn('Supabase getEventSuggestions error:', err);
+      }
+    }
+
+    // Serverless API fallback
+    try {
+      const res = await fetch('/api/suggestions', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json)) return json as EventSuggestion[];
+      }
+    } catch {
+      // ignore
+    }
+
+    const list = getLocalData<EventSuggestion[]>('ytufok_local_suggestions', []);
+    list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return list;
+  },
+
+  async createEventSuggestion(data: Omit<EventSuggestion, 'id' | 'created_at'>): Promise<EventSuggestion> {
+    const newId = `sug-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const payload: EventSuggestion = {
+      ...data,
+      id: newId,
+      status: data.status || 'pending',
+      suggested_by: data.suggested_by && data.suggested_by.trim() ? data.suggested_by.trim() : 'Anonim Üye',
+      created_at: new Date().toISOString()
+    };
+
+    // 1. Serverless API
+    try {
+      fetch('/api/suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    } catch {
+      // ignore
+    }
+
+    // 2. Supabase
+    if (isSupabaseConfigured()) {
+      try {
+        const { data: insData, error } = await supabase
+          .from('event_suggestions')
+          .insert([payload])
+          .select()
+          .single();
+        if (!error && insData) {
+          return insData as EventSuggestion;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // 3. Local fallback
+    const list = getLocalData<EventSuggestion[]>('ytufok_local_suggestions', []);
+    list.unshift(payload);
+    setLocalData('ytufok_local_suggestions', list);
+    return payload;
+  },
+
+  async updateEventSuggestion(id: string, updates: Partial<EventSuggestion>): Promise<boolean> {
+    try {
+      fetch('/api/suggestions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...updates })
+      }).catch(() => {});
+    } catch {
+      // ignore
+    }
+
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('event_suggestions').update(updates).eq('id', id);
+      } catch {
+        // ignore
+      }
+    }
+
+    const list = getLocalData<EventSuggestion[]>('ytufok_local_suggestions', []);
+    const idx = list.findIndex(s => s.id === id);
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...updates };
+      setLocalData('ytufok_local_suggestions', list);
+    }
+    return true;
+  },
+
+  async deleteEventSuggestion(id: string): Promise<boolean> {
+    try {
+      fetch('/api/suggestions', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      }).catch(() => {});
+    } catch {
+      // ignore
+    }
+
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('event_suggestions').delete().eq('id', id);
+      } catch {
+        // ignore
+      }
+    }
+
+    const list = getLocalData<EventSuggestion[]>('ytufok_local_suggestions', []);
+    const filtered = list.filter(s => s.id !== id);
+    setLocalData('ytufok_local_suggestions', filtered);
+    return true;
   }
 };
 

@@ -5,6 +5,7 @@ import { api } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { formatDateRangeTr } from '../utils/tripUtils';
 import { AppleReveal } from '../components/AppleReveal';
+import { EventSuggestionModal } from '../components/EventSuggestionModal';
 
 interface HomePageProps {
   onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin' | 'darkroom' | 'guide' | 'tips') => void;
@@ -16,6 +17,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
   const [announcements, setAnnouncements] = useState<Announcement[]>(initialSync.announcements);
   const [activeTrips, setActiveTrips] = useState<Trip[]>(initialSync.activeTrips);
   const [featuredEquipment, setFeaturedEquipment] = useState<Equipment[]>(initialSync.equipmentList.slice(0, 3));
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -91,6 +93,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
             >
               <Droplets className="w-3.5 h-3.5 text-[#ded0d9]/50 group-hover:text-white transition-colors" />
               <span>Karanlık Oda Randevusu</span>
+            </button>
+
+            <button
+              onClick={() => setShowSuggestionModal(true)}
+              className="px-4 py-2 rounded-full border border-amber-400/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-mono uppercase tracking-wider inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95 group"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-300 group-hover:scale-110 transition-transform" />
+              <span>Etkinlik Öner</span>
             </button>
           </AppleReveal>
 
@@ -447,6 +457,39 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectEquipmen
           </div>
         </section>
       )}
+
+      {/* 7. ETKİNLİK ÖNER BANNERI */}
+      <section className="py-12 sm:py-16 border-t border-white/[0.08]">
+        <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-16 text-left">
+          <AppleReveal className="p-8 sm:p-10 rounded-3xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 border border-white/15 bg-gradient-to-r from-black/40 via-black/25 to-amber-950/20 shadow-xl">
+            <div className="space-y-2.5 max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full border border-amber-400/30 bg-amber-500/10 text-amber-300 font-semibold">
+                <Sparkles className="w-3 h-3" />
+                <span>Kulüp Kürsüsü</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight">
+                Aklında bir gezi, atölye veya sergi fikri mi var?
+              </h3>
+              <p className="text-xs sm:text-sm text-white/60 font-light leading-relaxed">
+                Kulübümüzün sonraki rotasını birlikte çizelim. İster tamamen anonim kal, ister adınla öner; tüm öneriler doğrudan yönetim kurulumuzun haftalık gündemine alınır.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowSuggestionModal(true)}
+              className="px-7 py-3.5 rounded-full bg-white text-black hover:bg-white/90 text-xs font-mono uppercase tracking-wider font-semibold shadow-xl transition-all duration-150 cursor-pointer active:scale-95 inline-flex items-center gap-2 self-start md:self-center shrink-0 group"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-600 group-hover:rotate-12 transition-transform" />
+              <span>Etkinlik Öner</span>
+            </button>
+          </AppleReveal>
+        </div>
+      </section>
+
+      {/* Event Suggestion Pop-up Modal */}
+      <EventSuggestionModal
+        isOpen={showSuggestionModal}
+        onClose={() => setShowSuggestionModal(false)}
+      />
 
     </div>
   );

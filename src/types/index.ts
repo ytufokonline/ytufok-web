@@ -205,3 +205,18 @@ export interface DarkroomReservation {
   created_at: string;
   member?: Member;
 }
+
+export type EventSuggestionStatus = 'pending' | 'reviewed' | 'approved' | 'archived';
+
+export interface EventSuggestion {
+  id: string;
+  title: string;                 // Etkinlik / Gezi / Atölye Başlığı
+  description: string;           // Açıklama / Fikir / Neler yapılabilir
+  category?: string;             // örn: 'gezi', 'atolye', 'soylesi', 'diger'
+  location?: string | null;      // Önerilen mekan / rota
+  suggested_by?: string | null;  // Anonim ise "Anonim Üye", doldurulduysa ad soyad
+  contact_info?: string | null;  // İsteğe bağlı iletişim (telefon / e-posta / instagram)
+  status?: EventSuggestionStatus; // Yönetim inceleme durumu
+  admin_notes?: string | null;   // Yönetim notu
+  created_at: string;
+}

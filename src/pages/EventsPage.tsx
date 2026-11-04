@@ -447,13 +447,15 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
                     
                     {/* Left Actions: Evaluate & Suggest specifically */}
                     <div className="flex flex-wrap items-center gap-2">
-                      <button
-                        onClick={() => setSelectedEventForEvaluation(event)}
-                        className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/25 text-amber-300 text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
-                      >
-                        <Star className="w-3.5 h-3.5 fill-amber-300/40 text-amber-300" />
-                        <span>Etkinliği Değerlendir</span>
-                      </button>
+                      {!isUpcoming && (
+                        <button
+                          onClick={() => setSelectedEventForEvaluation(event)}
+                          className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/25 text-amber-300 text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+                        >
+                          <Star className="w-3.5 h-3.5 fill-amber-300/40 text-amber-300" />
+                          <span>Etkinliği Değerlendir</span>
+                        </button>
+                      )}
 
                       <button
                         onClick={() => setSelectedEventForSuggestion(event)}

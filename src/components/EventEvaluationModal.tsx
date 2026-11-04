@@ -33,17 +33,33 @@ export const EventEvaluationModal: React.FC<EventEvaluationModalProps> = ({
   event,
   onSuccess
 }) => {
-  const [rating, setRating] = useState<number>(5);
+  const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [evaluatorName, setEvaluatorName] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [studentNumber, setStudentNumber] = useState('');
   const [comment, setComment] = useState('');
-  const [likedAspects, setLikedAspects] = useState<string[]>(['📸 Fotoğraf Rotası & Işık', '🤝 Samimi Ortam & Sosyalleşme']);
+  const [likedAspects, setLikedAspects] = useState<string[]>([]);
   const [improvement, setImprovement] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Modal her açıldığında veya etkinlik değiştiğinde formu temizle (hiçbir şey seçili gelmesin)
+  React.useEffect(() => {
+    if (isOpen) {
+      setRating(0);
+      setHoverRating(0);
+      setEvaluatorName('');
+      setIsAnonymous(true);
+      setStudentNumber('');
+      setComment('');
+      setLikedAspects([]);
+      setImprovement('');
+      setSubmitted(false);
+      setError(null);
+    }
+  }, [isOpen, event]);
 
   if (!isOpen || !event) return null;
 
@@ -90,13 +106,13 @@ export const EventEvaluationModal: React.FC<EventEvaluationModalProps> = ({
   };
 
   const handleResetAndClose = () => {
-    setRating(5);
+    setRating(0);
     setHoverRating(0);
     setEvaluatorName('');
     setIsAnonymous(true);
     setStudentNumber('');
     setComment('');
-    setLikedAspects(['📸 Fotoğraf Rotası & Işık', '🤝 Samimi Ortam & Sosyalleşme']);
+    setLikedAspects([]);
     setImprovement('');
     setSubmitted(false);
     setError(null);
@@ -199,13 +215,21 @@ export const EventEvaluationModal: React.FC<EventEvaluationModalProps> = ({
                   })}
                 </div>
 
-                <div className="space-y-0.5">
-                  <div className={`text-sm font-bold font-mono ${RATING_LABELS[currentScore]?.color || 'text-white'}`}>
-                    {RATING_LABELS[currentScore]?.text}
-                  </div>
-                  <div className="text-[11px] text-white/50 font-light">
-                    {RATING_LABELS[currentScore]?.desc}
-                  </div>
+                <div className="space-y-0.5 min-h-[44px] flex flex-col justify-center">
+                  {currentScore > 0 ? (
+                    <>
+                      <div className={`text-sm font-bold font-mono ${RATING_LABELS[currentScore]?.color || 'text-white'}`}>
+                        {RATING_LABELS[currentScore]?.text}
+                      </div>
+                      <div className="text-[11px] text-white/50 font-light">
+                        {RATING_LABELS[currentScore]?.desc}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-xs font-mono text-white/40">
+                      Puan vermek için yıldızlardan birini seçin
+                    </div>
+                  )}
                 </div>
               </div>
 

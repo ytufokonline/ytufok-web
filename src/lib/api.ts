@@ -12,7 +12,9 @@ import {
   DarkroomSlotTemplate,
   Trip,
   MemberType,
-  EventSuggestion
+  EventSuggestion,
+  ClubEvent,
+  EventEvaluation
 } from '../types';
 import {
   INITIAL_EQUIPMENT,
@@ -24,7 +26,9 @@ import {
   DARKROOM_SLOTS,
   STANDARD_DARKROOM_TEMPLATES,
   INITIAL_DARKROOM_RESERVATIONS,
-  INITIAL_TRIPS
+  INITIAL_TRIPS,
+  INITIAL_EVENTS,
+  INITIAL_EVALUATIONS
 } from '../data/initialData';
 import { checkTripBookingEligibility, resolveMemberTier, getNextBusinessDay, getPreviousBusinessDay, getLocalDateString } from '../utils/tripUtils';
 
@@ -174,7 +178,9 @@ const defaultInitialState = {
   darkroomReservations: INITIAL_DARKROOM_RESERVATIONS,
   announcements: INITIAL_ANNOUNCEMENTS,
   gallery: INITIAL_GALLERY,
-  eventSuggestions: [] as EventSuggestion[]
+  eventSuggestions: [] as EventSuggestion[],
+  events: INITIAL_EVENTS,
+  eventEvaluations: INITIAL_EVALUATIONS
 };
 
 export const api = {
@@ -2215,6 +2221,158 @@ export const api = {
     const list = getLocalData<EventSuggestion[]>('ytufok_local_suggestions', []);
     const filtered = list.filter(s => s.id !== id);
     setLocalData('ytufok_local_suggestions', filtered);
+    return true;
+  },
+
+  // ==========================================
+  // 13. KULÜP ETKİNLİKLERİ & DEĞERLENDİRMELERİ
+  // ==========================================
+  async getEvents(): Promise<ClubEvent[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('club_events')
+          .select('*')
+          .order('date', { ascending: false });
+        if (!error && Array.isArray(data) && data.length > 0) {
+          return data as ClubEvent[];
+        }
+      } catch (err) {
+        console.warn('Supabase getEvents error:', err);
+      }
+    }
+
+    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
+    return list;
+  },
+
+  async createEvent(data: Omit<ClubEvent, 'id' | 'created_at'>): Promise<ClubEvent> {
+    const newId = `event-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const payload: ClubEvent = {
+      ...data,
+      id: newId,
+      created_at: new Date().toISOString()
+    };
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data: insData, error } = await supabase
+          .from('club_events')
+          .insert([payload])
+          .select()
+          .single();
+        if (!error && insData) {
+          return insData as ClubEvent;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
+    list.unshift(payload);
+    setLocalData('ytufok_local_club_events', list);
+    return payload;
+  },
+
+  async updateEvent(id: string, updates: Partial<ClubEvent>): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('club_events').update(updates).eq('id', id);
+      } catch {
+        // ignore
+      }
+    }
+
+    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
+    const idx = list.findIndex(e => e.id === id);
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...updates };
+      setLocalData('ytufok_local_club_events', list);
+    }
+    return true;
+  },
+
+  async deleteEvent(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('club_events').delete().eq('id', id);
+      } catch {
+        // ignore
+      }
+    }
+
+    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
+    const filtered = list.filter(e => e.id !== id);
+    setLocalData('ytufok_local_club_events', filtered);
+    return true;
+  },
+
+  async getEventEvaluations(eventId?: string): Promise<EventEvaluation[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        let query = supabase.from('event_evaluations').select('*').order('created_at', { ascending: false });
+        if (eventId) {
+          query = query.eq('event_id', eventId);
+        }
+        const { data, error } = await query;
+        if (!error && Array.isArray(data) && data.length > 0) {
+          return data as EventEvaluation[];
+        }
+      } catch (err) {
+        console.warn('Supabase getEventEvaluations error:', err);
+      }
+    }
+
+    const list = getLocalData<EventEvaluation[]>('ytufok_local_event_evaluations', INITIAL_EVALUATIONS);
+    list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    if (eventId) {
+      return list.filter(e => e.event_id === eventId);
+    }
+    return list;
+  },
+
+  async createEventEvaluation(data: Omit<EventEvaluation, 'id' | 'created_at'>): Promise<EventEvaluation> {
+    const newId = `eval-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const payload: EventEvaluation = {
+      ...data,
+      id: newId,
+      evaluator_name: data.evaluator_name && data.evaluator_name.trim() ? data.evaluator_name.trim() : 'Anonim Katılımcı',
+      created_at: new Date().toISOString()
+    };
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data: insData, error } = await supabase
+          .from('event_evaluations')
+          .insert([payload])
+          .select()
+          .single();
+        if (!error && insData) {
+          return insData as EventEvaluation;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const list = getLocalData<EventEvaluation[]>('ytufok_local_event_evaluations', INITIAL_EVALUATIONS);
+    list.unshift(payload);
+    setLocalData('ytufok_local_event_evaluations', list);
+    return payload;
+  },
+
+  async deleteEventEvaluation(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('event_evaluations').delete().eq('id', id);
+      } catch {
+        // ignore
+      }
+    }
+    const list = getLocalData<EventEvaluation[]>('ytufok_local_event_evaluations', INITIAL_EVALUATIONS);
+    const filtered = list.filter(e => e.id !== id);
+    setLocalData('ytufok_local_event_evaluations', filtered);
     return true;
   }
 };

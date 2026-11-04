@@ -6,9 +6,10 @@ import { StatusBadge } from '../components/StatusBadge';
 import { formatDateRangeTr } from '../utils/tripUtils';
 import { AppleReveal } from '../components/AppleReveal';
 import { EventSuggestionModal } from '../components/EventSuggestionModal';
+import { TabType } from '../lib/routes';
 
 interface HomePageProps {
-  onNavigate: (tab: 'home' | 'equipment' | 'reserve' | 'status' | 'admin' | 'darkroom' | 'guide' | 'tips') => void;
+  onNavigate: (tab: TabType, extraParam?: string) => void;
   onSelectEquipmentToReserve: (equipmentId: string) => void;
 }
 

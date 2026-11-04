@@ -5,9 +5,10 @@ import { api } from '../lib/api';
 interface EventSuggestionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  targetEvent?: { id: string; title: string } | null;
 }
 
-export const EventSuggestionModal: React.FC<EventSuggestionModalProps> = ({ isOpen, onClose }) => {
+export const EventSuggestionModal: React.FC<EventSuggestionModalProps> = ({ isOpen, onClose, targetEvent }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('gezi');
@@ -18,6 +19,12 @@ export const EventSuggestionModal: React.FC<EventSuggestionModalProps> = ({ isOp
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (targetEvent) {
+      setTitle(`${targetEvent.title} İçin Öneri`);
+    }
+  }, [targetEvent]);
 
   if (!isOpen) return null;
 
@@ -38,7 +45,9 @@ export const EventSuggestionModal: React.FC<EventSuggestionModalProps> = ({ isOp
         category,
         location: location.trim() || null,
         suggested_by: isAnonymous || !authorName.trim() ? 'Anonim Üye' : authorName.trim(),
-        contact_info: contactInfo.trim() || null
+        contact_info: contactInfo.trim() || null,
+        event_id: targetEvent?.id || null,
+        event_title: targetEvent?.title || null
       });
 
       setSubmitted(true);
@@ -104,11 +113,19 @@ export const EventSuggestionModal: React.FC<EventSuggestionModalProps> = ({ isOp
           <>
             {/* Header */}
             <div className="space-y-1.5 pr-8">
+              {targetEvent && (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/20 text-amber-300 text-[11px] font-mono mb-1">
+                  <Compass className="w-3.5 h-3.5" />
+                  <span>Etkinlik: {targetEvent.title}</span>
+                </div>
+              )}
               <h2 className="text-2xl sm:text-3xl font-bold text-white font-club tracking-tight">
-                Etkinlik / Gezi Öner
+                {targetEvent ? 'Etkinliğe Özel Öneri / Fikir İlet' : 'Etkinlik / Gezi Öner'}
               </h2>
               <p className="text-xs sm:text-sm text-white/60 font-light leading-relaxed">
-                Kulübün sonraki çekim gezisi, atölyesi veya sergisi senin fikrin olabilir. İster tamamen <strong>anonim</strong> olarak, ister adınla birlikte paylaşabilirsin.
+                {targetEvent 
+                  ? 'Bu etkinlik için rota, durak, konu veya zamanlama önerilerini kulüp yönetimine doğrudan iletebilirsin.' 
+                  : 'Kulübün sonraki çekim gezisi, atölyesi veya sergisi senin fikrin olabilir. İster tamamen anonim olarak, ister adınla birlikte paylaşabilirsin.'}
               </p>
             </div>
 

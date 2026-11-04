@@ -10,6 +10,7 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { SwitchProfileModal } from './components/SwitchProfileModal';
 import { EquipmentGuidePage } from './pages/EquipmentGuidePage';
 import { UsefulInfoPage } from './pages/UsefulInfoPage';
+import { EventsPage } from './pages/EventsPage';
 import { AdminProfile } from './types';
 import { api } from './lib/api';
 import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
@@ -184,6 +185,12 @@ export function App() {
             onNavigate={handleNavigate}
             onSelectEquipmentToReserve={handleSelectEquipmentToReserve}
             isAdmin={Boolean(activeAdmin)}
+          />
+        )}
+
+        {activeTab === 'events' && (
+          <EventsPage
+            onNavigate={handleNavigate}
           />
         )}
 

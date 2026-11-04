@@ -218,5 +218,50 @@ export interface EventSuggestion {
   contact_info?: string | null;  // İsteğe bağlı iletişim (telefon / e-posta / instagram)
   status?: EventSuggestionStatus; // Yönetim inceleme durumu
   admin_notes?: string | null;   // Yönetim notu
+  event_id?: string | null;      // Belirli bir etkinliğe bağlı ise etkinlik id'si
+  event_title?: string | null;   // Belirli bir etkinliğe bağlı ise etkinlik başlığı
+  created_at: string;
+}
+
+// ==========================================
+// ETKİNLİKLER (CLUB EVENTS & EVALUATIONS)
+// ==========================================
+
+export type EventCategory = 'trip' | 'workshop' | 'exhibition' | 'talk' | 'photowalk';
+export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
+
+export interface ClubEvent {
+  id: string;
+  title: string;                 // örn: "Büyükada Sonbahar Fotoğraf Gezisi"
+  category: EventCategory;       // trip, workshop, exhibition, talk, photowalk
+  category_label: string;        // "Fotoğraf Gezisi", "Atölye", "Sergi & Söyleşi", "Photowalk"
+  status: EventStatus;           // 'upcoming' (Gelecek) | 'completed' (Yaptığımız)
+  date: string;                  // "YYYY-MM-DD" veya gösterim tarihi
+  end_date?: string | null;      // Bitiş tarihi (varsa)
+  time?: string | null;          // örn: "10:00 - 17:00"
+  location: string;              // Mekan / Rota
+  description: string;           // Kısa tanıtım
+  long_description?: string;     // Detaylı program / rota bilgisi
+  image_url: string;             // Kapak görseli
+  quota?: number | null;         // Kontenjan (opsiyonel)
+  registered_count?: number | null; // Katılımcı sayısı
+  is_featured?: boolean;         // Öne çıkan mı
+  trip_id?: string | null;       // Rezervasyon Trip entegrasyonu
+  organizer?: string;            // Sorumlu yönetici / kulüp birimi
+  created_at: string;
+}
+
+export interface EventEvaluation {
+  id: string;
+  event_id: string;              // Değerlendirilen etkinlik id
+  event_title: string;           // Etkinlik başlığı
+  rating: number;                // 1 - 5 yıldız puanı
+  evaluator_name?: string | null;// İsim veya "Anonim Katılımcı"
+  student_number?: string | null;
+  comment?: string | null;       // Yorum / Geri bildirim
+  liked_aspects?: string[];      // örn: ['Fotoğraf Rotası', 'Rehberlik & Eğitim', 'Ekipman Desteği', 'Kulüp Ortamı']
+  aspects?: string[];            // alias for liked_aspects
+  improvement_suggestions?: string | null; // Geliştirilebilir noktalar
+  is_anonymous?: boolean;
   created_at: string;
 }

@@ -91,6 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navItems = [
     { id: 'home' as const, label: 'Ana Sayfa', path: TAB_PATHS.home },
     { id: 'equipment' as const, label: 'Ekipmanlar', path: TAB_PATHS.equipment },
+    { id: 'events' as const, label: 'Etkinlikler', path: TAB_PATHS.events },
     { id: 'guide' as const, label: 'Çekim Rehberi', path: TAB_PATHS.guide },
     { id: 'tips' as const, label: 'Faydalı Bilgiler', path: TAB_PATHS.tips },
     { id: 'reserve' as const, label: 'Rezervasyon', path: TAB_PATHS.reserve },

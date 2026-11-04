@@ -6,9 +6,9 @@ import {
   User, FileText, CheckCircle2, ChevronRight,
   ArrowRightLeft, LogOut, Award, Sparkles, Droplets,
   Trash2, Calendar, CalendarPlus, Info, Compass, MapPin,
-  KeyRound, Bell, Pencil, Phone, Lightbulb, MessageSquare, Lock
+  KeyRound, Bell, Pencil, Phone, Lightbulb, MessageSquare, Lock, Star
 } from 'lucide-react';
-import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement, EventSuggestion } from '../types';
+import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement, EventSuggestion, EventEvaluation } from '../types';
 import { api } from '../lib/api';
 import { 
   getSupabaseConfigStatus, 
@@ -65,6 +65,9 @@ export const AdminDashboard: React.FC = () => {
   const [equipmentList, setEquipmentList] = useState<Equipment[]>(initialSync.equipmentList);
   const [members, setMembers] = useState<Member[]>(initialSync.members);
   const [eventSuggestions, setEventSuggestions] = useState<EventSuggestion[]>(initialSync.eventSuggestions || []);
+  const [eventEvaluations, setEventEvaluations] = useState<EventEvaluation[]>(initialSync.eventEvaluations || []);
+  const [suggestionSubTab, setSuggestionSubTab] = useState<'suggestions' | 'evaluations'>('suggestions');
+  const [evalEventFilter, setEvalEventFilter] = useState<string>('all');
   const [suggestionFilter, setSuggestionFilter] = useState<'all' | 'pending' | 'reviewed' | 'approved' | 'archived'>('all');
   const [searchSuggestionQuery, setSearchSuggestionQuery] = useState('');
   const [editingSuggestionNotesId, setEditingSuggestionNotesId] = useState<string | null>(null);
@@ -247,6 +250,16 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleDeleteEvaluation = async (id: string) => {
+    if (!window.confirm('Bu etkinlik değerlendirmesini silmek istediğinize emin misiniz?')) return;
+    try {
+      await api.deleteEventEvaluation(id);
+      setEventEvaluations(prev => prev.filter(e => e.id !== id));
+    } catch (err: any) {
+      alert(err?.message || 'Değerlendirme silinirken hata oluştu.');
+    }
+  };
+
   const handleCreateTripFromSuggestion = (s: EventSuggestion) => {
     setNewTripTitle(s.title);
     setNewTripDestination(s.location || 'İstanbul');
@@ -271,6 +284,10 @@ export const AdminDashboard: React.FC = () => {
       if (bundle.eventSuggestions) {
         setEventSuggestions(bundle.eventSuggestions);
       }
+      try {
+        const evals = await api.getEventEvaluations();
+        setEventEvaluations(evals);
+      } catch {}
     } catch (e) {
       console.error('Veri yükleme hatası:', e);
     } finally {
@@ -307,11 +324,14 @@ export const AdminDashboard: React.FC = () => {
     }
   }, [activeAdmin, activeTab, members.length]);
 
-  // Etkinlik önerileri sekmesi açıldığında en güncel veriyi çek
+  // Etkinlik önerileri & değerlendirmeleri sekmesi açıldığında en güncel veriyi çek
   useEffect(() => {
     if (activeAdmin && activeTab === 'suggestions') {
       api.getEventSuggestions().then((res) => {
         setEventSuggestions(res);
+      }).catch(() => {});
+      api.getEventEvaluations().then((res) => {
+        setEventEvaluations(res);
       }).catch(() => {});
     }
   }, [activeAdmin, activeTab]);
@@ -1360,7 +1380,7 @@ export const AdminDashboard: React.FC = () => {
           }`}
         >
           <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-          <span>Etkinlik Önerileri {eventSuggestions.length > 0 && `(${eventSuggestions.length})`}</span>
+          <span>Öneriler & Değerlendirme {(eventSuggestions.length > 0 || eventEvaluations.length > 0) && `(${eventSuggestions.length + eventEvaluations.length})`}</span>
         </button>
         <button
           onClick={() => setActiveTab('supabase')}
@@ -3721,280 +3741,541 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 8: EVENT SUGGESTIONS (ETKİNLİK ÖNERİLERİ) */}
+      {/* TAB 8: EVENT SUGGESTIONS (ETKİNLİK ÖNERİLERİ) & EVALUATIONS */}
       {activeTab === 'suggestions' && (
         <div className="space-y-6">
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-white/10">
             <div>
               <h3 className="text-base sm:text-lg font-bold text-white font-club">
-                Üye & Ziyaretçi Etkinlik Önerileri
+                Öneriler & Etkinlik Değerlendirmeleri
               </h3>
               <p className="text-xs text-[#ded0d9]/70 mt-0.5">
-                Topluluk tarafından ana sayfadan anonim veya isimli olarak iletilen tüm gezi, atölye ve proje fikirleri (Tarihe göre sıralı).
+                Topluluk tarafından ana sayfadan veya etkinlik detaylarından iletilen gezi fikirleri ve 5 yıldızlı üye değerlendirmeleri.
               </p>
             </div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/35 border border-white/10 text-xs text-white/70">
-              <MessageSquare className="w-3.5 h-3.5 text-amber-300" />
-              <span>Toplam <strong>{eventSuggestions.length}</strong> Öneri</span>
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/35 border border-white/10 text-xs text-white/70">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>{eventSuggestions.length} Öneri</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/35 border border-white/10 text-xs text-white/70">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span>{eventEvaluations.length} Değerlendirme</span>
+              </div>
             </div>
           </div>
 
-          {/* Search & Status Filters */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-black/25 border border-white/10">
-            <input
-              type="text"
-              placeholder="Başlık, fikir, mekan veya öneren ara..."
-              value={searchSuggestionQuery}
-              onChange={(e) => setSearchSuggestionQuery(e.target.value)}
-              className="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-black/35 border border-white/10 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/25"
-            />
-            <div className="flex flex-wrap gap-1 text-xs">
-              {[
-                { id: 'all', label: `Tümü (${eventSuggestions.length})` },
-                { id: 'pending', label: `Beklemede (${eventSuggestions.filter(s => (s.status || 'pending') === 'pending').length})` },
-                { id: 'approved', label: `Gündeme Alındı (${eventSuggestions.filter(s => s.status === 'approved').length})` },
-                { id: 'reviewed', label: `İncelendi (${eventSuggestions.filter(s => s.status === 'reviewed').length})` },
-                { id: 'archived', label: `Arşiv (${eventSuggestions.filter(s => s.status === 'archived').length})` }
-              ].map(f => (
-                <button
-                  key={f.id}
-                  onClick={() => setSuggestionFilter(f.id as any)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
-                    suggestionFilter === f.id
-                      ? 'bg-white text-black font-bold shadow-sm'
-                      : 'bg-black/35 text-[#ded0d9] hover:text-white'
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
+          {/* Sub-tab Switcher: Öneriler vs Değerlendirmeler */}
+          <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+            <button
+              onClick={() => setSuggestionSubTab('suggestions')}
+              className={`px-4 py-2 rounded-xl text-xs font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                suggestionSubTab === 'suggestions'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Gelen Etkinlik Önerileri ({eventSuggestions.length})</span>
+            </button>
+            <button
+              onClick={() => setSuggestionSubTab('evaluations')}
+              className={`px-4 py-2 rounded-xl text-xs font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                suggestionSubTab === 'evaluations'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span>Etkinlik Değerlendirmeleri ({eventEvaluations.length})</span>
+            </button>
           </div>
 
-          {/* Suggestions List (Sorted Chronologically) */}
-          {filteredSuggestions.length === 0 ? (
-            <div className="p-12 text-center rounded-3xl bg-black/25 border border-white/10 space-y-2">
-              <Sparkles className="w-8 h-8 text-white/30 mx-auto" />
-              <div className="text-white font-medium text-sm">Bu filtreye uygun etkinlik önerisi bulunamadı.</div>
-              <p className="text-xs text-white/40">
-                Ana sayfadaki "Etkinlik Öner" butonu üzerinden iletilen tüm öneriler anında buraya düşer.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredSuggestions.map((sug) => {
-                const isAnon = !sug.suggested_by || sug.suggested_by === 'Anonim Üye';
-                const createdDate = new Date(sug.created_at);
-                const dateFormatted = !isNaN(createdDate.getTime())
-                  ? `${createdDate.toLocaleDateString('tr-TR')} ${createdDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`
-                  : sug.created_at;
+          {/* SUBTAB 1: SUGGESTIONS */}
+          {suggestionSubTab === 'suggestions' && (
+            <div className="space-y-6">
+              {/* Search & Status Filters */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-black/25 border border-white/10">
+                <input
+                  type="text"
+                  placeholder="Başlık, fikir, mekan veya öneren ara..."
+                  value={searchSuggestionQuery}
+                  onChange={(e) => setSearchSuggestionQuery(e.target.value)}
+                  className="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-black/35 border border-white/10 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/25"
+                />
+                <div className="flex flex-wrap gap-1 text-xs">
+                  {[
+                    { id: 'all', label: `Tümü (${eventSuggestions.length})` },
+                    { id: 'pending', label: `Beklemede (${eventSuggestions.filter(s => (s.status || 'pending') === 'pending').length})` },
+                    { id: 'approved', label: `Gündeme Alındı (${eventSuggestions.filter(s => s.status === 'approved').length})` },
+                    { id: 'reviewed', label: `İncelendi (${eventSuggestions.filter(s => s.status === 'reviewed').length})` },
+                    { id: 'archived', label: `Arşiv (${eventSuggestions.filter(s => s.status === 'archived').length})` }
+                  ].map(f => (
+                    <button
+                      key={f.id}
+                      onClick={() => setSuggestionFilter(f.id as any)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                        suggestionFilter === f.id
+                          ? 'bg-white text-black font-bold shadow-sm'
+                          : 'bg-black/35 text-[#ded0d9] hover:text-white'
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                return (
-                  <div
-                    key={sug.id}
-                    className="p-6 rounded-3xl bg-black/25 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-4 shadow-sm"
-                  >
-                    <div className="space-y-3">
-                      {/* Top Badges */}
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-black/35 text-amber-200 border border-amber-400/20">
-                            {sug.category === 'gezi'
-                              ? '📸 Fotoğraf Gezisi'
-                              : sug.category === 'atolye'
-                              ? '🧪 Atölye / Karanlık Oda'
-                              : sug.category === 'soylesi'
-                              ? '🎙️ Söyleşi / Sunum'
-                              : '✨ Genel Fikir'}
-                          </span>
+              {/* Suggestions List (Sorted Chronologically) */}
+              {filteredSuggestions.length === 0 ? (
+                <div className="p-12 text-center rounded-3xl bg-black/25 border border-white/10 space-y-2">
+                  <Sparkles className="w-8 h-8 text-white/30 mx-auto" />
+                  <div className="text-white font-medium text-sm">Bu filtreye uygun etkinlik önerisi bulunamadı.</div>
+                  <p className="text-xs text-white/40">
+                    Ana sayfadaki "Etkinlik Öner" butonu üzerinden iletilen tüm öneriler anında buraya düşer.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredSuggestions.map((sug) => {
+                    const isAnon = !sug.suggested_by || sug.suggested_by === 'Anonim Üye';
+                    const createdDate = new Date(sug.created_at);
+                    const dateFormatted = !isNaN(createdDate.getTime())
+                      ? `${createdDate.toLocaleDateString('tr-TR')} ${createdDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`
+                      : sug.created_at;
 
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-                            sug.status === 'approved'
-                              ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                              : sug.status === 'reviewed'
-                              ? 'bg-blue-500/15 text-blue-300 border-blue-500/30'
-                              : sug.status === 'archived'
-                              ? 'bg-white/5 text-white/50 border-white/10'
-                              : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                          }`}>
-                            {sug.status === 'approved'
-                              ? '📌 Gündeme Alındı'
-                              : sug.status === 'reviewed'
-                              ? '✓ İncelendi'
-                              : sug.status === 'archived'
-                              ? '📁 Arşivlendi'
-                              : '⏳ Yeni Öneri'}
-                          </span>
-                        </div>
+                    return (
+                      <div
+                        key={sug.id}
+                        className="p-6 rounded-3xl bg-black/25 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-4 shadow-sm"
+                      >
+                        <div className="space-y-3">
+                          {/* Top Badges */}
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full bg-black/35 text-amber-200 border border-amber-400/20">
+                                {sug.category === 'gezi'
+                                  ? '📸 Fotoğraf Gezisi'
+                                  : sug.category === 'atolye'
+                                  ? '🧪 Atölye / Karanlık Oda'
+                                  : sug.category === 'soylesi'
+                                  ? '🎙️ Söyleşi / Sunum'
+                                  : '✨ Genel Fikir'}
+                              </span>
 
-                        <div className="text-[11px] font-mono text-white/50 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-white/40" />
-                          <span>{dateFormatted}</span>
-                        </div>
-                      </div>
+                              {sug.event_title && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                                  <Sparkles className="w-2.5 h-2.5" />
+                                  <span>Etkinlik: {sug.event_title}</span>
+                                </span>
+                              )}
 
-                      {/* Title & Location */}
-                      <div className="space-y-1">
-                        <h4 className="text-base sm:text-lg font-bold text-white font-club leading-snug">
-                          {sug.title}
-                        </h4>
-                        {sug.location && (
-                          <div className="flex items-center gap-1.5 text-xs text-sky-200/80 font-mono">
-                            <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                            <span>{sug.location}</span>
+                              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                                sug.status === 'approved'
+                                  ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                                  : sug.status === 'reviewed'
+                                  ? 'bg-blue-500/15 text-blue-300 border-blue-500/30'
+                                  : sug.status === 'archived'
+                                  ? 'bg-white/5 text-white/50 border-white/10'
+                                  : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                              }`}>
+                                {sug.status === 'approved'
+                                  ? '📌 Gündeme Alındı'
+                                  : sug.status === 'reviewed'
+                                  ? '✓ İncelendi'
+                                  : sug.status === 'archived'
+                                  ? '📁 Arşivlendi'
+                                  : '⏳ Yeni Öneri'}
+                              </span>
+                            </div>
+
+                            <div className="text-[11px] font-mono text-white/50 flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-white/40" />
+                              <span>{dateFormatted}</span>
+                            </div>
                           </div>
-                        )}
-                      </div>
 
-                      {/* Description */}
-                      <p className="text-xs sm:text-sm text-white/80 font-light leading-relaxed whitespace-pre-line bg-black/30 p-3.5 rounded-2xl border border-white/[0.06]">
-                        {sug.description}
-                      </p>
+                          {/* Title & Location */}
+                          <div className="space-y-1">
+                            <h4 className="text-base sm:text-lg font-bold text-white font-club leading-snug">
+                              {sug.title}
+                            </h4>
+                            {sug.location && (
+                              <div className="flex items-center gap-1.5 text-xs text-sky-200/80 font-mono">
+                                <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                                <span>{sug.location}</span>
+                              </div>
+                            )}
+                          </div>
 
-                      {/* Author Info */}
-                      <div className="flex flex-wrap items-center justify-between text-xs pt-1 border-t border-white/[0.06] gap-2">
-                        <div className="flex items-center gap-1.5">
-                          {isAnon ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-mono text-white/60 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/10">
-                              <Lock className="w-2.5 h-2.5 text-white/40" />
-                              <span>Anonim Üye</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-mono text-white/90 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
-                              <User className="w-3 h-3 text-sky-300" />
-                              <strong>{sug.suggested_by}</strong>
-                            </span>
+                          {/* Description */}
+                          <p className="text-xs sm:text-sm text-white/80 font-light leading-relaxed whitespace-pre-line bg-black/30 p-3.5 rounded-2xl border border-white/[0.06]">
+                            {sug.description}
+                          </p>
+
+                          {/* Author Info */}
+                          <div className="flex flex-wrap items-center justify-between text-xs pt-1 border-t border-white/[0.06] gap-2">
+                            <div className="flex items-center gap-1.5">
+                              {isAnon ? (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-mono text-white/60 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/10">
+                                  <Lock className="w-2.5 h-2.5 text-white/40" />
+                                  <span>Anonim Üye</span>
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-mono text-white/90 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
+                                  <User className="w-3 h-3 text-sky-300" />
+                                  <strong>{sug.suggested_by}</strong>
+                                </span>
+                              )}
+                            </div>
+
+                            {sug.contact_info && (
+                              <div className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                                <Phone className="w-3 h-3" />
+                                <span>İletişim: <strong>{sug.contact_info}</strong></span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Admin Note Section */}
+                          {sug.admin_notes && editingSuggestionNotesId !== sug.id && (
+                            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex items-start justify-between gap-2">
+                              <div>
+                                <span className="font-semibold block text-[10px] uppercase font-mono tracking-wider text-amber-300">Yönetim Notu:</span>
+                                <span className="text-[11px] mt-0.5 block">{sug.admin_notes}</span>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  setEditingSuggestionNotesId(sug.id);
+                                  setSuggestionAdminNoteText(sug.admin_notes || '');
+                                }}
+                                className="text-[10px] underline text-amber-300/80 hover:text-amber-100 cursor-pointer"
+                              >
+                                Düzenle
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Editing Admin Note Input */}
+                          {editingSuggestionNotesId === sug.id && (
+                            <div className="p-3 rounded-2xl bg-black/40 border border-white/15 space-y-2">
+                              <label className="block text-[10px] font-mono uppercase tracking-wider text-white/60">
+                                Yönetici Notu:
+                              </label>
+                              <textarea
+                                rows={2}
+                                placeholder="Toplantıda görüşülecek not, karar veya koordinasyon detayı..."
+                                value={suggestionAdminNoteText}
+                                onChange={(e) => setSuggestionAdminNoteText(e.target.value)}
+                                className="w-full p-2 rounded-xl bg-black/50 border border-white/15 text-white text-xs focus:outline-none focus:border-white/30"
+                              />
+                              <div className="flex justify-end gap-2">
+                                <button
+                                  onClick={() => { setEditingSuggestionNotesId(null); setSuggestionAdminNoteText(''); }}
+                                  className="px-2.5 py-1 rounded-lg text-[11px] text-white/60 hover:text-white cursor-pointer"
+                                >
+                                  Vazgeç
+                                </button>
+                                <button
+                                  onClick={() => handleSaveSuggestionAdminNote(sug.id)}
+                                  className="px-3 py-1 rounded-lg bg-white text-black font-semibold text-[11px] cursor-pointer"
+                                >
+                                  Kaydet
+                                </button>
+                              </div>
+                            </div>
                           )}
                         </div>
 
-                        {sug.contact_info && (
-                          <div className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
-                            <Phone className="w-3 h-3" />
-                            <span>İletişim: <strong>{sug.contact_info}</strong></span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Admin Note Section */}
-                      {sug.admin_notes && editingSuggestionNotesId !== sug.id && (
-                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex items-start justify-between gap-2">
-                          <div>
-                            <span className="font-semibold block text-[10px] uppercase font-mono tracking-wider text-amber-300">Yönetim Notu:</span>
-                            <span className="text-[11px] mt-0.5 block">{sug.admin_notes}</span>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setEditingSuggestionNotesId(sug.id);
-                              setSuggestionAdminNoteText(sug.admin_notes || '');
-                            }}
-                            className="text-[10px] underline text-amber-300/80 hover:text-amber-100 cursor-pointer"
-                          >
-                            Düzenle
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Editing Admin Note Input */}
-                      {editingSuggestionNotesId === sug.id && (
-                        <div className="p-3 rounded-2xl bg-black/40 border border-white/15 space-y-2">
-                          <label className="block text-[10px] font-mono uppercase tracking-wider text-white/60">
-                            Yönetici Notu:
-                          </label>
-                          <textarea
-                            rows={2}
-                            placeholder="Toplantıda görüşülecek not, karar veya koordinasyon detayı..."
-                            value={suggestionAdminNoteText}
-                            onChange={(e) => setSuggestionAdminNoteText(e.target.value)}
-                            className="w-full p-2 rounded-xl bg-black/50 border border-white/15 text-white text-xs focus:outline-none focus:border-white/30"
-                          />
-                          <div className="flex justify-end gap-2">
+                        {/* Action Bar */}
+                        <div className="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
                             <button
-                              onClick={() => { setEditingSuggestionNotesId(null); setSuggestionAdminNoteText(''); }}
-                              className="px-2.5 py-1 rounded-lg text-[11px] text-white/60 hover:text-white cursor-pointer"
+                              onClick={() => handleUpdateSuggestionStatus(sug.id, 'approved')}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer ${
+                                sug.status === 'approved'
+                                  ? 'bg-emerald-500 text-white font-bold'
+                                  : 'bg-black/35 hover:bg-black/50 text-white/70 hover:text-emerald-300 border border-white/10'
+                              }`}
                             >
-                              Vazgeç
+                              📌 Gündeme Al
                             </button>
                             <button
-                              onClick={() => handleSaveSuggestionAdminNote(sug.id)}
-                              className="px-3 py-1 rounded-lg bg-white text-black font-semibold text-[11px] cursor-pointer"
+                              onClick={() => handleUpdateSuggestionStatus(sug.id, 'reviewed')}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer ${
+                                sug.status === 'reviewed'
+                                  ? 'bg-blue-500 text-white font-bold'
+                                  : 'bg-black/35 hover:bg-black/50 text-white/70 hover:text-blue-300 border border-white/10'
+                              }`}
                             >
-                              Kaydet
+                              ✓ İncelendi
+                            </button>
+                            <button
+                              onClick={() => handleUpdateSuggestionStatus(sug.id, 'archived')}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer ${
+                                sug.status === 'archived'
+                                  ? 'bg-white/20 text-white font-bold'
+                                  : 'bg-black/35 hover:bg-black/50 text-white/50 hover:text-white border border-white/10'
+                              }`}
+                            >
+                              📁 Arşivle
+                            </button>
+                            {!sug.admin_notes && editingSuggestionNotesId !== sug.id && (
+                              <button
+                                onClick={() => {
+                                  setEditingSuggestionNotesId(sug.id);
+                                  setSuggestionAdminNoteText('');
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-black/35 hover:bg-black/50 text-amber-300 text-[11px] font-mono border border-white/10 cursor-pointer"
+                              >
+                                + Not Ekle
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 ml-auto">
+                            <button
+                              onClick={() => handleCreateTripFromSuggestion(sug)}
+                              className="px-2.5 py-1 rounded-lg bg-sky-950/60 hover:bg-sky-900/70 text-sky-300 border border-sky-500/30 text-[11px] font-mono transition-colors cursor-pointer inline-flex items-center gap-1"
+                              title="Bu öneriden resmi kulüp gezisi oluştur"
+                            >
+                              <Compass className="w-3 h-3" />
+                              <span>Gezi Yap</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteSuggestion(sug)}
+                              className="p-1 rounded-lg bg-black/35 hover:bg-rose-950/60 text-white/50 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-colors cursor-pointer"
+                              title="Öneriyi Sil"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Action Bar */}
-                    <div className="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <button
-                          onClick={() => handleUpdateSuggestionStatus(sug.id, 'approved')}
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer ${
-                            sug.status === 'approved'
-                              ? 'bg-emerald-500 text-white font-bold'
-                              : 'bg-black/35 hover:bg-black/50 text-white/70 hover:text-emerald-300 border border-white/10'
-                          }`}
-                        >
-                          📌 Gündeme Al
-                        </button>
-                        <button
-                          onClick={() => handleUpdateSuggestionStatus(sug.id, 'reviewed')}
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer ${
-                            sug.status === 'reviewed'
-                              ? 'bg-blue-500 text-white font-bold'
-                              : 'bg-black/35 hover:bg-black/50 text-white/70 hover:text-blue-300 border border-white/10'
-                          }`}
-                        >
-                          ✓ İncelendi
-                        </button>
-                        <button
-                          onClick={() => handleUpdateSuggestionStatus(sug.id, 'archived')}
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer ${
-                            sug.status === 'archived'
-                              ? 'bg-white/20 text-white font-bold'
-                              : 'bg-black/35 hover:bg-black/50 text-white/50 hover:text-white border border-white/10'
-                          }`}
-                        >
-                          📁 Arşivle
-                        </button>
-                        {!sug.admin_notes && editingSuggestionNotesId !== sug.id && (
-                          <button
-                            onClick={() => {
-                              setEditingSuggestionNotesId(sug.id);
-                              setSuggestionAdminNoteText('');
-                            }}
-                            className="px-2.5 py-1 rounded-lg bg-black/35 hover:bg-black/50 text-amber-300 text-[11px] font-mono border border-white/10 cursor-pointer"
-                          >
-                            + Not Ekle
-                          </button>
-                        )}
                       </div>
-
-                      <div className="flex items-center gap-1.5 ml-auto">
-                        <button
-                          onClick={() => handleCreateTripFromSuggestion(sug)}
-                          className="px-2.5 py-1 rounded-lg bg-sky-950/60 hover:bg-sky-900/70 text-sky-300 border border-sky-500/30 text-[11px] font-mono transition-colors cursor-pointer inline-flex items-center gap-1"
-                          title="Bu öneriden resmi kulüp gezisi oluştur"
-                        >
-                          <Compass className="w-3 h-3" />
-                          <span>Gezi Yap</span>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSuggestion(sug)}
-                          className="p-1 rounded-lg bg-black/35 hover:bg-rose-950/60 text-white/50 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-colors cursor-pointer"
-                          title="Öneriyi Sil"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
+
+          {/* SUBTAB 2: EVENT EVALUATIONS (5 ÜZERİNDEN PUANLAMA & YORUMLAR) */}
+          {suggestionSubTab === 'evaluations' && (() => {
+            const avgRating = eventEvaluations.length > 0
+              ? (eventEvaluations.reduce((acc, e) => acc + (e.rating || 5), 0) / eventEvaluations.length).toFixed(1)
+              : '5.0';
+            const fiveStarCount = eventEvaluations.filter(e => e.rating === 5).length;
+            const fiveStarPercent = eventEvaluations.length > 0
+              ? Math.round((fiveStarCount / eventEvaluations.length) * 100)
+              : 100;
+
+            // Unique event titles for filter
+            const eventTitles = Array.from(new Set(eventEvaluations.map(e => e.event_title).filter(Boolean)));
+            const filteredEvaluations = evalEventFilter === 'all'
+              ? eventEvaluations
+              : eventEvaluations.filter(e => e.event_title === evalEventFilter);
+
+            return (
+              <div className="space-y-6">
+                {/* Metric Summary Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-2xl bg-black/25 border border-white/10 flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] font-mono text-white/50 uppercase tracking-wider">Kulüp Genel Puanı</div>
+                      <div className="text-2xl font-bold text-white font-mono mt-1 flex items-center gap-2">
+                        <span>{avgRating}</span>
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              className={`w-3.5 h-3.5 ${
+                                s <= Math.round(Number(avgRating))
+                                  ? 'fill-amber-400 text-amber-400'
+                                  : 'text-white/20'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-400/20 flex items-center justify-center">
+                      <Award className="w-5 h-5 text-amber-400" />
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-black/25 border border-white/10 flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] font-mono text-white/50 uppercase tracking-wider">Toplam Katılımcı Değerlendirmesi</div>
+                      <div className="text-2xl font-bold text-white font-mono mt-1">
+                        {eventEvaluations.length} <span className="text-xs font-normal text-white/40">Geri Bildirim</span>
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-400/20 flex items-center justify-center">
+                      <MessageSquare className="w-5 h-5 text-sky-400" />
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-black/25 border border-white/10 flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] font-mono text-white/50 uppercase tracking-wider">5 Yıldız Memnuniyet Oranı</div>
+                      <div className="text-2xl font-bold text-emerald-400 font-mono mt-1">
+                        %{fiveStarPercent} <span className="text-xs font-normal text-white/40">({fiveStarCount} kişi)</span>
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Event Filter Pills */}
+                {eventTitles.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 p-3 rounded-2xl bg-black/25 border border-white/10 text-xs">
+                    <span className="text-white/40 text-[11px] font-mono uppercase tracking-wider mr-1">Etkinlik Filtresi:</span>
+                    <button
+                      onClick={() => setEvalEventFilter('all')}
+                      className={`px-3 py-1 rounded-xl text-xs font-mono transition-all cursor-pointer ${
+                        evalEventFilter === 'all'
+                          ? 'bg-white text-black font-semibold shadow-sm'
+                          : 'bg-black/35 text-white/60 hover:text-white'
+                      }`}
+                    >
+                      Tüm Etkinlikler ({eventEvaluations.length})
+                    </button>
+                    {eventTitles.map((title) => {
+                      const count = eventEvaluations.filter(e => e.event_title === title).length;
+                      return (
+                        <button
+                          key={title}
+                          onClick={() => setEvalEventFilter(title)}
+                          className={`px-3 py-1 rounded-xl text-xs font-mono transition-all cursor-pointer ${
+                            evalEventFilter === title
+                              ? 'bg-white text-black font-semibold shadow-sm'
+                              : 'bg-black/35 text-white/60 hover:text-white'
+                          }`}
+                        >
+                          {title} ({count})
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Evaluations Grid */}
+                {filteredEvaluations.length === 0 ? (
+                  <div className="p-12 text-center rounded-3xl bg-black/25 border border-white/10 space-y-2">
+                    <Star className="w-8 h-8 text-white/30 mx-auto" />
+                    <div className="text-white font-medium text-sm">Henüz bu filtrede değerlendirme bulunmuyor.</div>
+                    <p className="text-xs text-white/40">
+                      Üyeler "Etkinlikler" sekmesinde tamamlanan etkinlikleri 5 üzerinden puanlayıp yorum bıraktığında burada listelenir.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredEvaluations.map((evalItem) => {
+                      const createdDate = new Date(evalItem.created_at);
+                      const dateFormatted = !isNaN(createdDate.getTime())
+                        ? `${createdDate.toLocaleDateString('tr-TR')} ${createdDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`
+                        : evalItem.created_at;
+
+                      return (
+                        <div
+                          key={evalItem.id}
+                          className="p-6 rounded-3xl bg-black/25 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-4 shadow-sm"
+                        >
+                          <div className="space-y-3">
+                            {/* Card Top: Event Badge & Stars */}
+                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                              <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-white/10 text-white font-semibold border border-white/15">
+                                {evalItem.event_title}
+                              </span>
+
+                              <div className="flex items-center gap-1.5 bg-black/30 px-2.5 py-1 rounded-full border border-white/10">
+                                <div className="flex items-center gap-0.5">
+                                  {[1, 2, 3, 4, 5].map((s) => (
+                                    <Star
+                                      key={s}
+                                      className={`w-3.5 h-3.5 ${
+                                        s <= evalItem.rating
+                                          ? 'fill-amber-400 text-amber-400'
+                                          : 'text-white/20'
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-xs font-mono font-bold text-amber-300 ml-1">
+                                  {evalItem.rating}/5
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Aspect Tags */}
+                            {((evalItem.aspects || evalItem.liked_aspects || []).length > 0) && (
+                              <div className="flex flex-wrap gap-1.5 pt-1">
+                                {(evalItem.aspects || evalItem.liked_aspects || []).map((aspect: string, i: number) => (
+                                  <span
+                                    key={i}
+                                    className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300/90 border border-amber-500/20"
+                                  >
+                                    ✓ {aspect}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Comment */}
+                            {evalItem.comment && (
+                              <p className="text-xs sm:text-sm text-white/90 font-light leading-relaxed whitespace-pre-line bg-black/30 p-3.5 rounded-2xl border border-white/[0.06]">
+                                "{evalItem.comment}"
+                              </p>
+                            )}
+
+                            {/* Evaluator info & Date */}
+                            <div className="flex flex-wrap items-center justify-between text-xs pt-2 border-t border-white/[0.06] gap-2">
+                              <div className="flex items-center gap-1.5">
+                                {(evalItem.is_anonymous || !evalItem.evaluator_name || evalItem.evaluator_name === 'Anonim Katılımcı') ? (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-mono text-white/60 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/10">
+                                    <Lock className="w-2.5 h-2.5 text-white/40" />
+                                    <span>Anonim Katılımcı</span>
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-mono text-white/90 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
+                                    <User className="w-3 h-3 text-sky-300" />
+                                    <strong>{evalItem.evaluator_name || 'Kulüp Üyesi'}</strong>
+                                    {evalItem.student_number && (
+                                      <span className="text-white/40 text-[10px]">({evalItem.student_number})</span>
+                                    )}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="text-[11px] font-mono text-white/40 flex items-center gap-1">
+                                <Clock className="w-3 h-3 text-white/30" />
+                                <span>{dateFormatted}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Footer Action */}
+                          <div className="pt-2 border-t border-white/[0.06] flex justify-end">
+                            <button
+                              onClick={() => handleDeleteEvaluation(evalItem.id)}
+                              className="px-2.5 py-1 rounded-lg bg-black/35 hover:bg-rose-950/60 text-white/40 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 text-[11px] font-mono transition-colors cursor-pointer inline-flex items-center gap-1"
+                              title="Değerlendirmeyi Sil"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Değerlendirmeyi Kaldır</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 

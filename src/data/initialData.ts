@@ -1,4 +1,4 @@
-import { Equipment, Member, Reservation, Announcement, GalleryItem, AdminProfile, DarkroomSlot, DarkroomSlotTemplate, DarkroomReservation, Trip } from '../types';
+import { Equipment, Member, Reservation, Announcement, GalleryItem, AdminProfile, DarkroomSlot, DarkroomSlotTemplate, DarkroomReservation, Trip, ClubEvent, EventEvaluation } from '../types';
 
 export const INITIAL_ADMIN_PROFILES: AdminProfile[] = [
   {
@@ -733,6 +733,223 @@ export const INITIAL_TRIPS: Trip[] = [
     is_active: false,
     created_at: '2026-10-05T12:00:00Z',
     created_by: 'Alara Tezelli'
+  }
+];
+
+// ==========================================
+// KULÜP ETKİNLİKLERİ (CLUB EVENTS)
+// ==========================================
+export const INITIAL_EVENTS: ClubEvent[] = [
+  // GELECEK ETKİNLİKLER (UPCOMING)
+  {
+    id: 'event-kapadokya-2026',
+    title: 'Kapadokya Peri Bacaları & Gün Doğumu Balon Fotoğraf Gezisi',
+    category: 'trip',
+    category_label: 'Fotoğraf Gezisi',
+    status: 'upcoming',
+    date: '2026-11-21',
+    end_date: '2026-11-23',
+    time: '3 Gün / 2 Gece',
+    location: 'Göreme & Paşabağ Vadisi / Nevşehir',
+    description: 'Sabah gün doğumunda yüzlerce sıcak hava balonunun gökyüzünü kapladığı anları, peri bacalarının mistik silüetlerini ve gece vadi astro-fotoğrafçılığını yakalayacağımız sezonun en büyük gezisi.',
+    long_description: 'Gezi boyunca kulübümüzün Full Frame gövdeleri ve geniş açı L serisi lensleri katılımcılara rotasyonla kullandırılacaktır. Tripod ve ND filtre desteği sağlanacaktır.',
+    image_url: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=80&w=1200&auto=format&fit=crop',
+    quota: 35,
+    registered_count: 28,
+    is_featured: true,
+    trip_id: 'trip-kapadokya-2026',
+    organizer: 'İlayda Sudem Güneş (Gezi Koord.)',
+    created_at: '2026-11-01T10:00:00Z'
+  },
+  {
+    id: 'event-gece-atolyesi-2026',
+    title: 'Analog & Dijital Gece Çekimi / Uzun Pozlama Atölyesi',
+    category: 'workshop',
+    category_label: 'Teknik Atölye',
+    status: 'upcoming',
+    date: '2026-11-15',
+    end_date: '2026-11-15',
+    time: '18:30 - 22:30',
+    location: 'Karaköy Rıhtımı & Galata Köprüsü',
+    description: 'Şehir ışıklarının su üzerindeki yansımaları, hafif vapur izleri ve tripod üzerinde Bulb modunda uzun pozlama teknikleri üzerine uygulamalı akşam atölyesi.',
+    long_description: 'Katılımcılara kulübümüzün ND filtreleri ve kablolu deklanşörleri dağıtılacaktır. ISO yönetimi ve noise azaltma taktikleri anlatılacaktır.',
+    image_url: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=1200&auto=format&fit=crop',
+    quota: 20,
+    registered_count: 14,
+    is_featured: false,
+    organizer: 'Yavuz Selim Bahadır (Başkan Yrd.)',
+    created_at: '2026-11-02T14:00:00Z'
+  },
+  {
+    id: 'event-studyo-portre-2026',
+    title: 'Stüdyo Paraflaş & Model Işıklandırma Atölyesi',
+    category: 'workshop',
+    category_label: 'Stüdyo Atölyesi',
+    status: 'upcoming',
+    date: '2026-11-29',
+    end_date: '2026-11-29',
+    time: '13:00 - 17:30',
+    location: 'YTÜ Beşiktaş Kampüsü / Fotoğraf Stüdyosu',
+    description: 'Rembrandt ışığı, kelebek ışık düzeni, softbox ve reflektör kullanımı ile model yönlendirme psikolojisi üzerine kapsamlı stüdyo eğitimi.',
+    long_description: 'Kulübümüzün Speedlite flaşları ve Canon 85mm f/1.8 portre lensi stüdyoda hazır bulunacaktır.',
+    image_url: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop',
+    quota: 15,
+    registered_count: 11,
+    is_featured: false,
+    organizer: 'Sıla Dönmez (Kulüp Başkanı)',
+    created_at: '2026-11-03T11:00:00Z'
+  },
+  {
+    id: 'event-guz-sergisi-2026',
+    title: '2026 Güz Dönemi "Işığın Peşinde" Kulüp Fotoğraf Sergisi',
+    category: 'exhibition',
+    category_label: 'Sergi & Söyleşi',
+    status: 'upcoming',
+    date: '2026-12-02',
+    end_date: '2026-12-06',
+    time: '10:00 - 18:00',
+    location: 'Davutpaşa Otağ-ı Hümayun Sergi Salonu',
+    description: 'Kulüp üyelerimizin dönem boyunca analog ve dijital makinelerle ürettiği en seçkin karelerin yer aldığı geleneksel dönem karma sergisi.',
+    long_description: 'Açılış kokteyli 2 Aralık saat 14:00\'te gerçekleştirilecek olup, usta fotoğrafçılarla söyleşiler düzenlenecektir.',
+    image_url: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1200&auto=format&fit=crop',
+    quota: null,
+    registered_count: null,
+    is_featured: true,
+    organizer: 'YTÜFOK Yönetim Kurulu',
+    created_at: '2026-11-01T09:00:00Z'
+  },
+
+  // GEÇMİŞ / YAPTIĞIMIZ ETKİNLİKLER (COMPLETED)
+  {
+    id: 'event-buyukada-2026',
+    title: 'Büyükada Sonbahar Gezisi & Portre Atölyesi',
+    category: 'trip',
+    category_label: 'Fotoğraf Gezisi',
+    status: 'completed',
+    date: '2026-10-17',
+    end_date: '2026-10-17',
+    time: '09:30 - 18:00',
+    location: 'Büyükada, İstanbul',
+    description: 'Ada sokakları, tarihi ahşap köşkler, sonbahar yaprakları ve sahil şeridinde doğal ışık portre çekimleri gerçekleştirdiğimiz dopdolu bir ada günü.',
+    long_description: 'Kulüp ekipmanlarımızla 40\'tan fazla üyemiz adanın tarihi mekanlarında analog ve dijital çekimler yaptı.',
+    image_url: 'https://images.unsplash.com/photo-1527838832700-5059252407fa?q=80&w=1200&auto=format&fit=crop',
+    quota: 45,
+    registered_count: 43,
+    is_featured: false,
+    trip_id: 'trip-eskisehir-2026',
+    organizer: 'Alara Tezelli (Başkan Yrd.)',
+    created_at: '2026-10-05T12:00:00Z'
+  },
+  {
+    id: 'event-darkroom-atolye-2026',
+    title: 'Karanlık Oda Siyah-Beyaz Film Yıkama & Baskı Atölyesi',
+    category: 'workshop',
+    category_label: 'Karanlık Oda',
+    status: 'completed',
+    date: '2026-10-24',
+    end_date: '2026-10-24',
+    time: '11:00 - 16:30',
+    location: 'Davutpaşa Kulüpler Vadisi Karanlık Odası',
+    description: 'Üyelerimizin çektikleri 35mm siyah-beyaz filmleri D-76 kimyasallarıyla tanklarda banyo ettiği ve agrandizör başında gümüş jelatin karta basarak kendi fotoğraflarını çıkardığı pratik eğitim.',
+    long_description: 'Karanlık oda kimyası oranları, durdurma, sabitleme ve kurutma aşamaları birebir uygulandı.',
+    image_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop',
+    quota: 12,
+    registered_count: 12,
+    is_featured: false,
+    organizer: 'Duru Anlar (Sayman)',
+    created_at: '2026-10-10T12:00:00Z'
+  },
+  {
+    id: 'event-balat-photowalk-2026',
+    title: 'Balat & Fener Sokak Fotoğrafçılığı Yürüyüşü (Photowalk)',
+    category: 'photowalk',
+    category_label: 'Photowalk',
+    status: 'completed',
+    date: '2026-10-05',
+    end_date: '2026-10-05',
+    time: '13:00 - 18:00',
+    location: 'Fener & Balat / Haliç',
+    description: 'Tarihi sokak dokusu, renkli cumbalı evler, merdivenli yokuşlar ve sokak esnafı portreleriyle kadraj ve kompozisyon pratikleri.',
+    long_description: 'Sokakta insanlarla iletişim kurma, anı dondurma ve sert ışıkla gölge kontrastını kullanma teknikleri uygulandı.',
+    image_url: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=80&w=1200&auto=format&fit=crop',
+    quota: 30,
+    registered_count: 29,
+    is_featured: false,
+    organizer: 'Yağmur Dursun (Genel Sekreter)',
+    created_at: '2026-09-25T12:00:00Z'
+  },
+  {
+    id: 'event-tanisma-egitim-2026',
+    title: '2026 Güz Dönemi Tanışma & Temel Fotoğrafçılık Eğitimi',
+    category: 'talk',
+    category_label: 'Eğitim & Söyleşi',
+    status: 'completed',
+    date: '2026-09-28',
+    end_date: '2026-09-28',
+    time: '17:00 - 20:00',
+    location: 'Yıldız Kampüsü Oditoryum',
+    description: 'Yeni dönem üyelerimizle tanışma, kulüp demirbaş ekipman havuzunun tanıtımı ve diyafram, enstantane, ISO üçgeninin mantığı üzerine giriş eğitimi.',
+    long_description: 'Dönem boyunca planlanan geziler, karanlık oda atölyeleri ve sergi takvimi paylaşıldı.',
+    image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop',
+    quota: 100,
+    registered_count: 94,
+    is_featured: false,
+    organizer: 'YTÜFOK Yönetim Kurulu',
+    created_at: '2026-09-15T12:00:00Z'
+  }
+];
+
+export const INITIAL_EVALUATIONS: EventEvaluation[] = [
+  {
+    id: 'eval-1',
+    event_id: 'event-buyukada-2026',
+    event_title: 'Büyükada Sonbahar Gezisi & Portre Atölyesi',
+    rating: 5,
+    evaluator_name: 'Deniz A.',
+    comment: 'Harika bir geziydi! Yönetim kurulunun fotoğraf noktalarında üyelere tek tek makine ayarlarını göstermesi çok faydalı oldu. 85mm portre lensiyle çok güzel kareler yakaladım.',
+    liked_aspects: ['Fotoğraf Rotası', 'Rehberlik & Eğitim', 'Ekipman Desteği', 'Kulüp Ortamı'],
+    created_at: '2026-10-18T14:20:00Z'
+  },
+  {
+    id: 'eval-2',
+    event_id: 'event-buyukada-2026',
+    event_title: 'Büyükada Sonbahar Gezisi & Portre Atölyesi',
+    rating: 5,
+    evaluator_name: 'Anonim Üye',
+    comment: 'Köşkler rotası ve Aya Yorgi inişindeki gün batımı ışığı tek kelimeyle mükemmeldi. Her şey saat gibi işledi.',
+    liked_aspects: ['Fotoğraf Rotası', 'Kulüp Ortamı'],
+    created_at: '2026-10-18T16:45:00Z'
+  },
+  {
+    id: 'eval-3',
+    event_id: 'event-buyukada-2026',
+    event_title: 'Büyükada Sonbahar Gezisi & Portre Atölyesi',
+    rating: 4,
+    evaluator_name: 'Berk K.',
+    comment: 'Çok keyifliydi, tek önerim serbest zaman biraz daha uzun tutulabilir. Ekipman temini için kulübe teşekkürler.',
+    liked_aspects: ['Ekipman Desteği', 'Kulüp Ortamı'],
+    improvement_suggestions: 'Öğle molasında serbest zaman 30 dk daha fazla olabilir.',
+    created_at: '2026-10-19T10:15:00Z'
+  },
+  {
+    id: 'eval-4',
+    event_id: 'event-darkroom-atolye-2026',
+    event_title: 'Karanlık Oda Siyah-Beyaz Film Yıkama & Baskı Atölyesi',
+    rating: 5,
+    evaluator_name: 'Selin Y.',
+    comment: 'Hayatımda ilk defa kendi çektiğim filmi kırmızı ışık altında banyo edip kağıda bastım, büyüleyici bir deneyimdi!',
+    liked_aspects: ['Rehberlik & Eğitim', 'Kulüp Ortamı'],
+    created_at: '2026-10-25T11:00:00Z'
+  },
+  {
+    id: 'eval-5',
+    event_id: 'event-balat-photowalk-2026',
+    event_title: 'Balat & Fener Sokak Fotoğrafçılığı Yürüyüşü (Photowalk)',
+    rating: 5,
+    evaluator_name: 'Mert T.',
+    comment: 'Balat sokaklarında ışık ve gölge kontrastı üzerine yapılan pratikler fotoğraf bakış açımı değiştirdi.',
+    liked_aspects: ['Fotoğraf Rotası', 'Rehberlik & Eğitim'],
+    created_at: '2026-10-06T18:00:00Z'
   }
 ];
 

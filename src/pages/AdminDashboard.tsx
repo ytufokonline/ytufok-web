@@ -8,7 +8,7 @@ import {
   Trash2, Calendar, CalendarPlus, Info, Compass, MapPin,
   KeyRound, Bell, Pencil, Phone, Lightbulb, MessageSquare, Lock, Star
 } from 'lucide-react';
-import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement, EventSuggestion, EventEvaluation } from '../types';
+import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement, EventSuggestion, EventEvaluation, ClubEvent, EventCategory, EventStatus } from '../types';
 import { api } from '../lib/api';
 import { 
   getSupabaseConfigStatus, 
@@ -27,7 +27,7 @@ const cleanAdminName = (name?: string | null) => name ? name.replace(/\s*\([Rr]e
 
 export const AdminDashboard: React.FC = () => {
   const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
-  const [activeTab, setActiveTab] = useState<'reservations' | 'tracking' | 'equipment' | 'members' | 'history' | 'darkroom' | 'supabase' | 'trips' | 'announcements' | 'suggestions'>('reservations');
+  const [activeTab, setActiveTab] = useState<'reservations' | 'tracking' | 'equipment' | 'members' | 'history' | 'darkroom' | 'supabase' | 'trips' | 'events' | 'announcements' | 'suggestions'>('reservations');
   const [loading, setLoading] = useState(false);
 
   // Board Member Accounts & Active Profile
@@ -170,6 +170,140 @@ export const AdminDashboard: React.FC = () => {
   const [newTripDescription, setNewTripDescription] = useState('');
   const [newTripIsActive, setNewTripIsActive] = useState(true);
 
+  // Events (Etkinlikler) State
+  const [events, setEvents] = useState<ClubEvent[]>(initialSync.events || []);
+  const [showAddEventModal, setShowAddEventModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<ClubEvent | null>(null);
+  const [eventSearchQuery, setEventSearchQuery] = useState('');
+  const [eventStatusFilter, setEventStatusFilter] = useState<'all' | 'upcoming' | 'completed'>('all');
+
+  // Event Form State
+  const [eventFormTitle, setEventFormTitle] = useState('');
+  const [eventFormCategory, setEventFormCategory] = useState<EventCategory>('trip');
+  const [eventFormCategoryLabel, setEventFormCategoryLabel] = useState('Fotoğraf Gezisi');
+  const [eventFormStatus, setEventFormStatus] = useState<EventStatus>('upcoming');
+  const [eventFormDate, setEventFormDate] = useState(() => new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10));
+  const [eventFormEndDate, setEventFormEndDate] = useState('');
+  const [eventFormTime, setEventFormTime] = useState('10:00 - 18:00');
+  const [eventFormLocation, setEventFormLocation] = useState('');
+  const [eventFormDescription, setEventFormDescription] = useState('');
+  const [eventFormLongDescription, setEventFormLongDescription] = useState('');
+  const [eventFormImageUrl, setEventFormImageUrl] = useState('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80');
+  const [eventFormQuota, setEventFormQuota] = useState<string>('25');
+  const [eventFormRegisteredCount, setEventFormRegisteredCount] = useState<string>('0');
+  const [eventFormIsFeatured, setEventFormIsFeatured] = useState(false);
+  const [eventFormOrganizer, setEventFormOrganizer] = useState('YTÜFOK Yönetim Kurulu');
+
+  const resetEventForm = () => {
+    setEditingEvent(null);
+    setEventFormTitle('');
+    setEventFormCategory('trip');
+    setEventFormCategoryLabel('Fotoğraf Gezisi');
+    setEventFormStatus('upcoming');
+    setEventFormDate(new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10));
+    setEventFormEndDate('');
+    setEventFormTime('10:00 - 18:00');
+    setEventFormLocation('');
+    setEventFormDescription('');
+    setEventFormLongDescription('');
+    setEventFormImageUrl('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80');
+    setEventFormQuota('25');
+    setEventFormRegisteredCount('0');
+    setEventFormIsFeatured(false);
+    setEventFormOrganizer(activeAdmin?.full_name ? `${activeAdmin.full_name} (${activeAdmin.short_title})` : 'YTÜFOK Yönetim Kurulu');
+  };
+
+  const openEditEventModal = (event: ClubEvent) => {
+    setEditingEvent(event);
+    setEventFormTitle(event.title);
+    setEventFormCategory(event.category);
+    setEventFormCategoryLabel(event.category_label);
+    setEventFormStatus(event.status);
+    setEventFormDate(event.date);
+    setEventFormEndDate(event.end_date || '');
+    setEventFormTime(event.time || '');
+    setEventFormLocation(event.location);
+    setEventFormDescription(event.description);
+    setEventFormLongDescription(event.long_description || '');
+    setEventFormImageUrl(event.image_url);
+    setEventFormQuota(event.quota ? String(event.quota) : '');
+    setEventFormRegisteredCount(event.registered_count ? String(event.registered_count) : '0');
+    setEventFormIsFeatured(!!event.is_featured);
+    setEventFormOrganizer(event.organizer || 'YTÜFOK Yönetim Kurulu');
+    setShowAddEventModal(true);
+  };
+
+  const handleSaveEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!eventFormTitle.trim()) {
+      alert('Lütfen etkinlik başlığını girin.');
+      return;
+    }
+    if (!eventFormLocation.trim()) {
+      alert('Lütfen mekan / rota bilgisini girin.');
+      return;
+    }
+
+    try {
+      const payload: Omit<ClubEvent, 'id' | 'created_at'> = {
+        title: eventFormTitle.trim(),
+        category: eventFormCategory,
+        category_label: eventFormCategoryLabel.trim() || (
+          eventFormCategory === 'trip' ? 'Fotoğraf Gezisi' :
+          eventFormCategory === 'workshop' ? 'Atölye' :
+          eventFormCategory === 'photowalk' ? 'Photowalk' :
+          eventFormCategory === 'exhibition' ? 'Sergi' : 'Söyleşi'
+        ),
+        status: eventFormStatus,
+        date: eventFormDate,
+        end_date: eventFormEndDate.trim() ? eventFormEndDate.trim() : null,
+        time: eventFormTime.trim() ? eventFormTime.trim() : null,
+        location: eventFormLocation.trim(),
+        description: eventFormDescription.trim(),
+        long_description: eventFormLongDescription.trim() || undefined,
+        image_url: eventFormImageUrl.trim() || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80',
+        quota: eventFormQuota.trim() ? Number(eventFormQuota) : null,
+        registered_count: eventFormRegisteredCount.trim() ? Number(eventFormRegisteredCount) : 0,
+        is_featured: eventFormIsFeatured,
+        organizer: eventFormOrganizer.trim() || 'YTÜFOK Yönetim Kurulu'
+      };
+
+      if (editingEvent) {
+        await api.updateEvent(editingEvent.id, payload);
+      } else {
+        await api.createEvent(payload);
+      }
+
+      setShowAddEventModal(false);
+      resetEventForm();
+      const updatedEvents = await api.getEvents();
+      setEvents(updatedEvents);
+    } catch (err: any) {
+      console.error('Etkinlik kaydedilirken hata:', err);
+      alert(err?.message || 'Etkinlik kaydedilirken bir hata oluştu.');
+    }
+  };
+
+  const handleToggleEventStatus = async (event: ClubEvent) => {
+    const nextStatus: EventStatus = event.status === 'upcoming' ? 'completed' : 'upcoming';
+    try {
+      await api.updateEvent(event.id, { status: nextStatus });
+      setEvents(prev => prev.map(e => e.id === event.id ? { ...e, status: nextStatus } : e));
+    } catch (err: any) {
+      alert(err?.message || 'Durum değiştirilemedi.');
+    }
+  };
+
+  const handleDeleteEvent = async (event: ClubEvent) => {
+    if (!window.confirm(`"${event.title}" etkinliğini silmek istediğinize emin misiniz?`)) return;
+    try {
+      await api.deleteEvent(event.id);
+      setEvents(prev => prev.filter(e => e.id !== event.id));
+    } catch (err: any) {
+      alert(err?.message || 'Etkinlik silinemedi.');
+    }
+  };
+
   // Announcements State
   const [announcements, setAnnouncements] = useState<Announcement[]>(initialSync.announcements);
   const [showAddAnnouncementModal, setShowAddAnnouncementModal] = useState(false);
@@ -288,6 +422,10 @@ export const AdminDashboard: React.FC = () => {
         const evals = await api.getEventEvaluations();
         setEventEvaluations(evals);
       } catch {}
+      try {
+        const evList = await api.getEvents();
+        setEvents(evList);
+      } catch {}
     } catch (e) {
       console.error('Veri yükleme hatası:', e);
     } finally {
@@ -332,6 +470,15 @@ export const AdminDashboard: React.FC = () => {
       }).catch(() => {});
       api.getEventEvaluations().then((res) => {
         setEventEvaluations(res);
+      }).catch(() => {});
+    }
+  }, [activeAdmin, activeTab]);
+
+  // Etkinlikler sekmesi açıldığında en güncel etkinlik verilerini çek
+  useEffect(() => {
+    if (activeAdmin && activeTab === 'events') {
+      api.getEvents().then((res) => {
+        setEvents(res);
       }).catch(() => {});
     }
   }, [activeAdmin, activeTab]);
@@ -1359,6 +1506,17 @@ export const AdminDashboard: React.FC = () => {
         >
           <Compass className="w-3.5 h-3.5" />
           <span>Kulüp Gezileri ({trips.length})</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('events')}
+          className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            activeTab === 'events'
+              ? 'bg-white text-black font-semibold shadow-sm'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          <span>Etkinlik Yönetimi ({events.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('announcements')}
@@ -3585,6 +3743,266 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
 
+      {/* TAB: CLUB EVENTS (ETKİNLİKLER YÖNETİMİ) */}
+      {activeTab === 'events' && (
+        <div className="space-y-6">
+          {/* Header & Quick Action */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-white/60" />
+                <h2 className="text-xl font-bold text-white font-club">Kulüp Etkinlikleri Yönetimi</h2>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-black/35 text-[#ded0d9] border border-white/15">
+                  {events.length} Etkinlik
+                </span>
+              </div>
+              <p className="text-xs text-white/70">
+                Web sitesindeki "Etkinlikler" sekmesinde yer alan gelecek gezileri ve tamamlanan kulüp çalışmalarını buradan yönetebilirsiniz.
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                resetEventForm();
+                setShowAddEventModal(true);
+              }}
+              className="px-4 py-2.5 rounded-xl bg-white text-black font-semibold hover:bg-white/90 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Yeni Etkinlik Ekle</span>
+            </button>
+          </div>
+
+          {/* Stats Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10 flex items-center justify-between">
+              <div>
+                <div className="text-[11px] font-mono text-white/50 uppercase tracking-wider">Toplam Etkinlik</div>
+                <div className="text-2xl font-bold text-white font-mono mt-1">
+                  {events.length} <span className="text-xs font-normal text-white/40">Kayıt</span>
+                </div>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-white/70" />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10 flex items-center justify-between">
+              <div>
+                <div className="text-[11px] font-mono text-emerald-400/80 uppercase tracking-wider">Gelecek Etkinlikler</div>
+                <div className="text-2xl font-bold text-emerald-400 font-mono mt-1">
+                  {events.filter(e => e.status === 'upcoming').length} <span className="text-xs font-normal text-white/40">Aktif</span>
+                </div>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-emerald-400" />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10 flex items-center justify-between">
+              <div>
+                <div className="text-[11px] font-mono text-sky-400/80 uppercase tracking-wider">Yaptığımız Etkinlikler</div>
+                <div className="text-2xl font-bold text-sky-400 font-mono mt-1">
+                  {events.filter(e => e.status === 'completed').length} <span className="text-xs font-normal text-white/40">Tamamlanan</span>
+                </div>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-400/20 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-sky-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* Search & Status Filters */}
+          <div className="p-3.5 rounded-2xl bg-black/25 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="relative w-full sm:w-80">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+              <input
+                type="text"
+                placeholder="Başlık, rota veya kategori ara..."
+                value={eventSearchQuery}
+                onChange={(e) => setEventSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-black/35 border border-white/10 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-1 text-xs">
+              {[
+                { id: 'all', label: `Tümü (${events.length})` },
+                { id: 'upcoming', label: `Gelecek (${events.filter(e => e.status === 'upcoming').length})` },
+                { id: 'completed', label: `Tamamlanan (${events.filter(e => e.status === 'completed').length})` }
+              ].map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setEventStatusFilter(f.id as any)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
+                    eventStatusFilter === f.id
+                      ? 'bg-white text-black font-semibold shadow-sm'
+                      : 'bg-black/35 text-white/60 hover:text-white'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Events Grid */}
+          {(() => {
+            const filteredEvents = events.filter(e => {
+              const matchesSearch = !eventSearchQuery.trim() ||
+                e.title.toLowerCase().includes(eventSearchQuery.toLowerCase()) ||
+                e.location.toLowerCase().includes(eventSearchQuery.toLowerCase()) ||
+                e.category_label.toLowerCase().includes(eventSearchQuery.toLowerCase());
+              const matchesStatus = eventStatusFilter === 'all' || e.status === eventStatusFilter;
+              return matchesSearch && matchesStatus;
+            });
+
+            if (filteredEvents.length === 0) {
+              return (
+                <div className="p-12 text-center rounded-3xl bg-black/25 border border-white/10 space-y-3">
+                  <Calendar className="w-8 h-8 text-white/30 mx-auto" />
+                  <div className="text-white font-medium text-sm">Filtreye uygun etkinlik bulunamadı.</div>
+                  <button
+                    onClick={() => {
+                      resetEventForm();
+                      setShowAddEventModal(true);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-white text-black font-semibold text-xs cursor-pointer inline-flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Yeni Etkinlik Tanımla</span>
+                  </button>
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredEvents.map((event) => {
+                  const isUpcoming = event.status === 'upcoming';
+                  return (
+                    <div
+                      key={event.id}
+                      className="rounded-3xl bg-black/25 border border-white/10 hover:border-white/20 transition-all overflow-hidden flex flex-col justify-between shadow-sm group"
+                    >
+                      <div>
+                        {/* Cover image thumbnail */}
+                        <div className="relative h-44 w-full overflow-hidden bg-black/40">
+                          <img
+                            src={event.image_url}
+                            alt={event.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => {
+                              // fallback image
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                          {/* Category Badge & Status Badge */}
+                          <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+                            <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/15">
+                              {event.category_label}
+                            </span>
+
+                            <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full backdrop-blur-md border font-semibold flex items-center gap-1 ${
+                              isUpcoming
+                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                                : 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${isUpcoming ? 'bg-emerald-400' : 'bg-sky-400'}`} />
+                              <span>{isUpcoming ? 'Gelecek' : 'Tamamlandı'}</span>
+                            </span>
+                          </div>
+
+                          {/* Title over thumbnail bottom */}
+                          <div className="absolute bottom-3 left-3 right-3">
+                            <h3 className="text-base font-bold text-white font-club leading-snug drop-shadow-md line-clamp-2">
+                              {event.title}
+                            </h3>
+                          </div>
+                        </div>
+
+                        {/* Card Body */}
+                        <div className="p-4 space-y-3">
+                          {/* Info chips */}
+                          <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                            <div className="flex items-center gap-1.5 text-white/70">
+                              <Calendar className="w-3.5 h-3.5 text-white/40 shrink-0" />
+                              <span className="truncate">{event.date}</span>
+                            </div>
+                            {event.time && (
+                              <div className="flex items-center gap-1.5 text-white/70">
+                                <Clock className="w-3.5 h-3.5 text-white/40 shrink-0" />
+                                <span className="truncate">{event.time}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 text-[11px] text-sky-300/80 font-mono">
+                            <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                            <span className="truncate">{event.location}</span>
+                          </div>
+
+                          <p className="text-xs text-white/70 line-clamp-2 leading-relaxed">
+                            {event.description}
+                          </p>
+
+                          <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] text-[11px] font-mono text-white/50">
+                            <span>
+                              {isUpcoming
+                                ? (event.quota ? `Kontenjan: ${event.quota} kişi` : 'Açık Katılım')
+                                : `Katılımcı: ${event.registered_count || 0} kişi`}
+                            </span>
+                            {event.organizer && (
+                              <span className="truncate max-w-[120px] text-right text-white/40">
+                                {event.organizer}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Footer Actions */}
+                      <div className="p-3 bg-black/40 border-t border-white/10 flex items-center justify-between gap-1.5">
+                        <button
+                          onClick={() => handleToggleEventStatus(event)}
+                          className={`px-2.5 py-1 rounded-xl text-[11px] font-mono transition-colors cursor-pointer border ${
+                            isUpcoming
+                              ? 'bg-sky-500/10 text-sky-300 border-sky-500/30 hover:bg-sky-500/20'
+                              : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20'
+                          }`}
+                          title={isUpcoming ? 'Etkinliği tamamlandı (yaptığımız) olarak işaretle' : 'Etkinliği gelecek etkinliklere geri al'}
+                        >
+                          {isUpcoming ? '✓ Tamamlandı Yap' : '⏳ Gelecek Yap'}
+                        </button>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => openEditEventModal(event)}
+                            className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-mono transition-colors cursor-pointer flex items-center gap-1"
+                          >
+                            <Pencil className="w-3 h-3" />
+                            <span>Düzenle</span>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEvent(event)}
+                            className="p-1 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-colors cursor-pointer"
+                            title="Etkinliği Sil"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
       {/* TAB: ANNOUNCEMENTS & NOTES */}
       {activeTab === 'announcements' && (
         <div className="space-y-6">
@@ -5647,6 +6065,313 @@ export const AdminDashboard: React.FC = () => {
                   className="px-5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                 >
                   {editingTrip ? 'Geziyi Güncelle' : 'Geziyi Kaydet & Yayınla'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add / Edit Event Modal */}
+      {showAddEventModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-black/35 border border-white/15 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl animate-in fade-in max-h-[90vh] overflow-y-auto my-8">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2.5 rounded-xl bg-white/10 text-white border border-white/15">
+                  <Calendar className="w-5 h-5 text-amber-300" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white font-club">
+                    {editingEvent ? 'Kulüp Etkinliğini Düzenle' : 'Yeni Kulüp Etkinliği Yayınla'}
+                  </h3>
+                  <p className="text-[11px] text-white/60">
+                    Sitede "Etkinlikler" sekmesinde ve ana sayfada listelenir.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddEventModal(false);
+                  resetEventForm();
+                }}
+                className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEvent} className="space-y-4 text-xs">
+              {/* Event Title */}
+              <div>
+                <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                  Etkinlik Başlığı *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Örn: Büyükada Sonbahar Fotoğraf Gezisi"
+                  value={eventFormTitle}
+                  onChange={(e) => setEventFormTitle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
+                  required
+                />
+              </div>
+
+              {/* Category & Status Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                    Kategori *
+                  </label>
+                  <select
+                    value={eventFormCategory}
+                    onChange={(e) => {
+                      const cat = e.target.value as EventCategory;
+                      setEventFormCategory(cat);
+                      setEventFormCategoryLabel(
+                        cat === 'trip' ? 'Fotoğraf Gezisi' :
+                        cat === 'workshop' ? 'Atölye' :
+                        cat === 'photowalk' ? 'Photowalk' :
+                        cat === 'exhibition' ? 'Sergi' : 'Söyleşi'
+                      );
+                    }}
+                    className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white text-xs focus:outline-none focus:border-white/30"
+                  >
+                    <option value="trip" className="bg-[#121212] text-white">📸 Fotoğraf Gezisi</option>
+                    <option value="workshop" className="bg-[#121212] text-white">🧪 Atölye / Karanlık Oda</option>
+                    <option value="photowalk" className="bg-[#121212] text-white">🚶‍♂️ Sokak Photowalk</option>
+                    <option value="exhibition" className="bg-[#121212] text-white">🖼️ Sergi & Galeri</option>
+                    <option value="talk" className="bg-[#121212] text-white">🎙️ Söyleşi & Seminer</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                    Yayın Durumu *
+                  </label>
+                  <select
+                    value={eventFormStatus}
+                    onChange={(e) => setEventFormStatus(e.target.value as EventStatus)}
+                    className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white text-xs focus:outline-none focus:border-white/30"
+                  >
+                    <option value="upcoming" className="bg-[#121212] text-emerald-300">⏳ Gelecek Etkinlik (Katılım Açık)</option>
+                    <option value="completed" className="bg-[#121212] text-sky-300">✓ Yaptığımız Etkinlik (Tamamlandı & Puanlamaya Açık)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Date, End Date, Time */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                    Başlangıç Tarihi *
+                  </label>
+                  <input
+                    type="date"
+                    value={eventFormDate}
+                    onChange={(e) => setEventFormDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs focus:outline-none focus:border-white/30"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                    Bitiş Tarihi (Opsiyonel)
+                  </label>
+                  <input
+                    type="date"
+                    value={eventFormEndDate}
+                    onChange={(e) => setEventFormEndDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs focus:outline-none focus:border-white/30"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                    Saat Aralığı
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Örn: 10:00 - 18:00"
+                    value={eventFormTime}
+                    onChange={(e) => setEventFormTime(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
+                  />
+                </div>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                  Mekan / Rota / Buluşma Noktası *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Örn: Büyükada İskele Meydanı & Rum Yetimhanesi Çevresi"
+                  value={eventFormLocation}
+                  onChange={(e) => setEventFormLocation(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
+                  required
+                />
+              </div>
+
+              {/* Short Description */}
+              <div>
+                <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                  Kısa Tanıtım Açıklaması *
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Etkinliğin amacını ve katılımcıların ne bekleyebileceğini kısaca özetleyin..."
+                  value={eventFormDescription}
+                  onChange={(e) => setEventFormDescription(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30 leading-relaxed"
+                  required
+                />
+              </div>
+
+              {/* Long Description (Program & Route) */}
+              <div>
+                <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                  Detaylı Program & Rota Bilgisi (Opsiyonel)
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Saat saat akış, yanınızda getirmeniz önerilen ekipmanlar veya buluşma notları..."
+                  value={eventFormLongDescription}
+                  onChange={(e) => setEventFormLongDescription(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30 leading-relaxed"
+                />
+              </div>
+
+              {/* Cover Image URL & Presets */}
+              <div className="space-y-2">
+                <label className="block text-[11px] font-semibold text-white/80">
+                  Kapak Görseli URL
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/..."
+                  value={eventFormImageUrl}
+                  onChange={(e) => setEventFormImageUrl(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
+                />
+
+                {/* Quick Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider mr-1">Hızlı Şablonlar:</span>
+                  {[
+                    { label: '🏔️ Gezi / Doğa', url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80' },
+                    { label: '🧪 Karanlık Oda', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80' },
+                    { label: '💡 Stüdyo & Portre', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200&q=80' },
+                    { label: '🚶 Sokak & Şehir', url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&q=80' },
+                    { label: '🖼️ Sergi & Galeri', url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80' }
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setEventFormImageUrl(preset.url)}
+                      className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-white/70 hover:text-white text-[10px] font-mono border border-white/10 transition-colors cursor-pointer"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Live Preview */}
+                {eventFormImageUrl && (
+                  <div className="relative h-24 w-full rounded-xl overflow-hidden border border-white/10 mt-2 bg-black/30">
+                    <img
+                      src={eventFormImageUrl}
+                      alt="Önizleme"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <span className="text-[10px] font-mono bg-black/60 px-2 py-0.5 rounded text-white/80">Kapak Önizlemesi</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Quota, Registered Count, Organizer */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                    Kontenjan (Kişi)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Örn: 25 (Boş = Sınırsız)"
+                    value={eventFormQuota}
+                    onChange={(e) => setEventFormQuota(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                    Katılımcı Sayısı (Tamamlananlar İçin)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Örn: 28"
+                    value={eventFormRegisteredCount}
+                    onChange={(e) => setEventFormRegisteredCount(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
+                    Sorumlu / Düzenleyen
+                  </label>
+                  <input
+                    type="text"
+                    value={eventFormOrganizer}
+                    onChange={(e) => setEventFormOrganizer(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
+                  />
+                </div>
+              </div>
+
+              {/* Featured toggle */}
+              <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                <input
+                  type="checkbox"
+                  id="eventIsFeatured"
+                  checked={eventFormIsFeatured}
+                  onChange={(e) => setEventFormIsFeatured(e.target.checked)}
+                  className="rounded bg-black/40 border-white/20 text-white cursor-pointer"
+                />
+                <label htmlFor="eventIsFeatured" className="text-xs text-white/80 cursor-pointer">
+                  Bu etkinliği <strong>Öne Çıkan</strong> vitrin etkinliği yap (Etkinlikler sayfasının en üstünde büyük banner olarak gösterilir)
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddEventModal(false);
+                    resetEventForm();
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Vazgeç
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-white text-black font-semibold hover:bg-white/90 text-xs font-mono uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                >
+                  {editingEvent ? 'Değişiklikleri Kaydet' : 'Etkinliği Yayınla'}
                 </button>
               </div>
             </form>

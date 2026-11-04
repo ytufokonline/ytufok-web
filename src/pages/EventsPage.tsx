@@ -132,13 +132,24 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
               </p>
             </div>
 
-            <button
-              onClick={() => setShowGeneralSuggestionModal(true)}
-              className="self-start md:self-auto px-5 py-3 rounded-2xl bg-white text-black font-semibold text-xs font-mono uppercase tracking-wider flex items-center gap-2 hover:bg-white/90 transition-all cursor-pointer shadow-lg active:scale-95 shrink-0"
-            >
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>Yeni Etkinlik Öner</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto shrink-0">
+              <button
+                onClick={() => onNavigate('admin')}
+                className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer border border-white/15 active:scale-95"
+                title="Yönetim Paneline gidip yeni etkinlik ekle veya mevcutları düzenle"
+              >
+                <Plus className="w-4 h-4 text-emerald-400" />
+                <span>Etkinlik Yönetimi (+ Ekle)</span>
+              </button>
+
+              <button
+                onClick={() => setShowGeneralSuggestionModal(true)}
+                className="px-5 py-3 rounded-2xl bg-white text-black font-semibold text-xs font-mono uppercase tracking-wider flex items-center gap-2 hover:bg-white/90 transition-all cursor-pointer shadow-lg active:scale-95"
+              >
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>Yeni Etkinlik Öner</span>
+              </button>
+            </div>
           </div>
 
           {/* Quick Metrics Strip */}

@@ -2247,6 +2247,11 @@ export const api = {
   },
 
   async createEvent(data: Omit<ClubEvent, 'id' | 'created_at'>): Promise<ClubEvent> {
+    const adminId = getActiveSessionAdminId();
+    if (!adminId) {
+      throw new Error('Yetkisiz işlem: Yalnızca kulüp yöneticileri etkinlik oluşturabilir.');
+    }
+
     const newId = `event-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const payload: ClubEvent = {
       ...data,
@@ -2276,6 +2281,11 @@ export const api = {
   },
 
   async updateEvent(id: string, updates: Partial<ClubEvent>): Promise<boolean> {
+    const adminId = getActiveSessionAdminId();
+    if (!adminId) {
+      throw new Error('Yetkisiz işlem: Yalnızca kulüp yöneticileri etkinlik düzenleyebilir.');
+    }
+
     if (isSupabaseConfigured()) {
       try {
         await supabase.from('club_events').update(updates).eq('id', id);
@@ -2294,6 +2304,11 @@ export const api = {
   },
 
   async deleteEvent(id: string): Promise<boolean> {
+    const adminId = getActiveSessionAdminId();
+    if (!adminId) {
+      throw new Error('Yetkisiz işlem: Yalnızca kulüp yöneticileri etkinlik silebilir.');
+    }
+
     if (isSupabaseConfigured()) {
       try {
         await supabase.from('club_events').delete().eq('id', id);

@@ -183,12 +183,34 @@ const defaultInitialState = {
   eventEvaluations: INITIAL_EVALUATIONS
 };
 
+// Eski mock etkinliklerin ID'leri (Kullanıcının isteğiyle tamamen temizlendi, geri yüklenmez)
+const MOCK_EVENT_IDS = new Set([
+  'event-kapadokya-2026',
+  'event-gece-atolyesi-2026',
+  'event-studyo-portre-2026',
+  'event-guz-sergisi-2026',
+  'event-buyukada-2026',
+  'event-eskisehir-2026',
+  'event-darkroom-atolye-2026',
+  'event-balat-photowalk-2026',
+  'event-tanisma-egitim-2026'
+]);
+
+const MOCK_EVAL_IDS = new Set(['eval-1', 'eval-2', 'eval-3', 'eval-4', 'eval-5', 'eval-6']);
+
 export const api = {
   // Anında (0ms) senkron başlangıç verisi (İlk React render için)
   getInitialSyncState() {
     const adminId = getActiveSessionAdminId();
+    const rawEvents = getLocalData<ClubEvent[]>('ytufok_local_club_events', []);
+    const cleanEvents = rawEvents.filter(e => !MOCK_EVENT_IDS.has(e.id));
+    const rawEvals = getLocalData<EventEvaluation[]>('ytufok_local_event_evaluations', []);
+    const cleanEvals = rawEvals.filter(e => !MOCK_EVAL_IDS.has(e.id) && !MOCK_EVENT_IDS.has(e.event_id));
+
     return {
       ...defaultInitialState,
+      events: cleanEvents,
+      eventEvaluations: cleanEvals,
       activeAdmin: (adminId
         ? INITIAL_ADMIN_PROFILES.find((p) => p.id === adminId || p.student_number === adminId) || null
         : null) as AdminProfile | null
@@ -2245,27 +2267,20 @@ export const api = {
           .from('club_events')
           .select('*')
           .order('date', { ascending: false });
-        if (!error && Array.isArray(data) && data.length > 0) {
-          return data as ClubEvent[];
+        if (!error && Array.isArray(data)) {
+          return (data as ClubEvent[]).filter(e => !MOCK_EVENT_IDS.has(e.id));
         }
       } catch (err) {
         console.warn('Supabase getEvents error:', err);
       }
     }
 
-    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
-    const existingIds = new Set(list.map(e => e.id));
-    let hasNew = false;
-    for (const init of INITIAL_EVENTS) {
-      if (!existingIds.has(init.id)) {
-        list.push(init);
-        hasNew = true;
-      }
+    const rawList = getLocalData<ClubEvent[]>('ytufok_local_club_events', []);
+    const cleaned = rawList.filter(e => !MOCK_EVENT_IDS.has(e.id));
+    if (cleaned.length !== rawList.length) {
+      setLocalData('ytufok_local_club_events', cleaned);
     }
-    if (hasNew) {
-      setLocalData('ytufok_local_club_events', list);
-    }
-    return list;
+    return cleaned;
   },
 
   async createEvent(data: Omit<ClubEvent, 'id' | 'created_at'>): Promise<ClubEvent> {
@@ -2296,7 +2311,7 @@ export const api = {
       }
     }
 
-    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
+    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', []);
     list.unshift(payload);
     setLocalData('ytufok_local_club_events', list);
     return payload;
@@ -2316,7 +2331,7 @@ export const api = {
       }
     }
 
-    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
+    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', []);
     const idx = list.findIndex(e => e.id === id);
     if (idx !== -1) {
       list[idx] = { ...list[idx], ...updates };
@@ -2334,14 +2349,20 @@ export const api = {
     if (isSupabaseConfigured()) {
       try {
         await supabase.from('club_events').delete().eq('id', id);
+        await supabase.from('event_evaluations').delete().eq('event_id', id);
       } catch {
         // ignore
       }
     }
 
-    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
+    const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', []);
     const filtered = list.filter(e => e.id !== id);
     setLocalData('ytufok_local_club_events', filtered);
+
+    const evals = getLocalData<EventEvaluation[]>('ytufok_local_event_evaluations', []);
+    const filteredEvals = evals.filter(e => e.event_id !== id);
+    setLocalData('ytufok_local_event_evaluations', filteredEvals);
+
     return true;
   },
 
@@ -2353,31 +2374,24 @@ export const api = {
           query = query.eq('event_id', eventId);
         }
         const { data, error } = await query;
-        if (!error && Array.isArray(data) && data.length > 0) {
-          return data as EventEvaluation[];
+        if (!error && Array.isArray(data)) {
+          return (data as EventEvaluation[]).filter(e => !MOCK_EVAL_IDS.has(e.id) && !MOCK_EVENT_IDS.has(e.event_id));
         }
       } catch (err) {
         console.warn('Supabase getEventEvaluations error:', err);
       }
     }
 
-    const list = getLocalData<EventEvaluation[]>('ytufok_local_event_evaluations', INITIAL_EVALUATIONS);
-    const existingIds = new Set(list.map(e => e.id));
-    let hasNew = false;
-    for (const init of INITIAL_EVALUATIONS) {
-      if (!existingIds.has(init.id)) {
-        list.push(init);
-        hasNew = true;
-      }
+    const rawList = getLocalData<EventEvaluation[]>('ytufok_local_event_evaluations', []);
+    const cleaned = rawList.filter(e => !MOCK_EVAL_IDS.has(e.id) && !MOCK_EVENT_IDS.has(e.event_id));
+    if (cleaned.length !== rawList.length) {
+      setLocalData('ytufok_local_event_evaluations', cleaned);
     }
-    if (hasNew) {
-      setLocalData('ytufok_local_event_evaluations', list);
-    }
-    list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    cleaned.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     if (eventId) {
-      return list.filter(e => e.event_id === eventId);
+      return cleaned.filter(e => e.event_id === eventId);
     }
-    return list;
+    return cleaned;
   },
 
   async createEventEvaluation(data: Omit<EventEvaluation, 'id' | 'created_at'>): Promise<EventEvaluation> {

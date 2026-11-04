@@ -6,7 +6,8 @@ import {
   User, FileText, CheckCircle2, ChevronRight,
   ArrowRightLeft, LogOut, Award, Sparkles, Droplets,
   Trash2, Calendar, CalendarPlus, Info, Compass, MapPin,
-  KeyRound, Bell, Pencil, Phone, Lightbulb, MessageSquare, Lock, Star
+  KeyRound, Bell, Pencil, Phone, Lightbulb, MessageSquare, Lock, Star,
+  UploadCloud, Upload, Image as ImageIcon
 } from 'lucide-react';
 import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement, EventSuggestion, EventEvaluation, ClubEvent, EventCategory, EventStatus } from '../types';
 import { api } from '../lib/api';
@@ -193,6 +194,79 @@ export const AdminDashboard: React.FC = () => {
   const [eventFormRegisteredCount, setEventFormRegisteredCount] = useState<string>('0');
   const [eventFormIsFeatured, setEventFormIsFeatured] = useState(false);
   const [eventFormOrganizer, setEventFormOrganizer] = useState('YTÜFOK Yönetim Kurulu');
+  const [uploadedBannerFileName, setUploadedBannerFileName] = useState<string | null>(null);
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  const bannerFileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleBannerFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Lütfen geçerli bir görsel dosyası seçin (PNG, JPG, WEBP).');
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      alert('Seçtiğiniz dosya çok büyük (maksimum 15MB). Lütfen daha küçük bir görsel seçin.');
+      return;
+    }
+
+    setIsUploadingBanner(true);
+    setUploadedBannerFileName(file.name);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const rawDataUrl = event.target?.result as string;
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1400;
+          const MAX_HEIGHT = 900;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL('image/jpeg', 0.85);
+            setEventFormImageUrl(compressed);
+          } else {
+            setEventFormImageUrl(rawDataUrl);
+          }
+        } catch {
+          setEventFormImageUrl(rawDataUrl);
+        } finally {
+          setIsUploadingBanner(false);
+        }
+      };
+      img.onerror = () => {
+        setIsUploadingBanner(false);
+        alert('Görsel okunamadı.');
+      };
+      img.src = rawDataUrl;
+    };
+    reader.onerror = () => {
+      setIsUploadingBanner(false);
+      alert('Dosya yüklenirken bir hata oluştu.');
+    };
+    reader.readAsDataURL(file);
+  };
 
   const resetEventForm = () => {
     setEditingEvent(null);
@@ -207,6 +281,8 @@ export const AdminDashboard: React.FC = () => {
     setEventFormDescription('');
     setEventFormLongDescription('');
     setEventFormImageUrl('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80');
+    setUploadedBannerFileName(null);
+    if (bannerFileInputRef.current) bannerFileInputRef.current.value = '';
     setEventFormQuota('25');
     setEventFormRegisteredCount('0');
     setEventFormIsFeatured(false);
@@ -226,6 +302,8 @@ export const AdminDashboard: React.FC = () => {
     setEventFormDescription(event.description);
     setEventFormLongDescription(event.long_description || '');
     setEventFormImageUrl(event.image_url);
+    setUploadedBannerFileName(null);
+    if (bannerFileInputRef.current) bannerFileInputRef.current.value = '';
     setEventFormQuota(event.quota ? String(event.quota) : '');
     setEventFormRegisteredCount(event.registered_count ? String(event.registered_count) : '0');
     setEventFormIsFeatured(!!event.is_featured);
@@ -6246,56 +6324,134 @@ export const AdminDashboard: React.FC = () => {
                 />
               </div>
 
-              {/* Cover Image URL & Presets */}
-              <div className="space-y-2">
-                <label className="block text-[11px] font-semibold text-white/80">
-                  Kapak Görseli URL
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://images.unsplash.com/..."
-                  value={eventFormImageUrl}
-                  onChange={(e) => setEventFormImageUrl(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
-                />
-
-                {/* Quick Presets */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider mr-1">Hızlı Şablonlar:</span>
-                  {[
-                    { label: '🏔️ Gezi / Doğa', url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80' },
-                    { label: '🧪 Karanlık Oda', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80' },
-                    { label: '💡 Stüdyo & Portre', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200&q=80' },
-                    { label: '🚶 Sokak & Şehir', url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&q=80' },
-                    { label: '🖼️ Sergi & Galeri', url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80' }
-                  ].map((preset) => (
-                    <button
-                      key={preset.label}
-                      type="button"
-                      onClick={() => setEventFormImageUrl(preset.url)}
-                      className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-white/70 hover:text-white text-[10px] font-mono border border-white/10 transition-colors cursor-pointer"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
+              {/* Cover Image / Banner File Upload Section */}
+              <div className="space-y-3 p-4 rounded-2xl bg-black/30 border border-white/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-amber-300" />
+                    <label className="text-[11px] font-semibold text-white/90">
+                      Etkinlik Fotoğrafı & Banner Yükleme *
+                    </label>
+                  </div>
+                  <span className="text-[10px] font-mono text-white/40">1 Adet Fotoğraf</span>
                 </div>
 
-                {/* Live Preview */}
-                {eventFormImageUrl && (
-                  <div className="relative h-24 w-full rounded-xl overflow-hidden border border-white/10 mt-2 bg-black/30">
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  ref={bannerFileInputRef}
+                  accept="image/png, image/jpeg, image/jpg, image/webp"
+                  onChange={handleBannerFileUpload}
+                  className="hidden"
+                />
+
+                {/* Upload Dropzone or Live Banner Preview */}
+                {eventFormImageUrl ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-white/15 bg-black/40 group">
                     <img
                       src={eventFormImageUrl}
-                      alt="Önizleme"
-                      className="w-full h-full object-cover"
+                      alt="Banner Önizleme"
+                      className="w-full h-44 object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80';
                       }}
                     />
-                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                      <span className="text-[10px] font-mono bg-black/60 px-2 py-0.5 rounded text-white/80">Kapak Önizlemesi</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-between p-3.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          <span>{uploadedBannerFileName ? `Yüklendi: ${uploadedBannerFileName}` : 'Fotoğraf / Banner Seçildi'}</span>
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEventFormImageUrl('');
+                            setUploadedBannerFileName(null);
+                            if (bannerFileInputRef.current) bannerFileInputRef.current.value = '';
+                          }}
+                          className="p-1.5 rounded-lg bg-black/60 hover:bg-rose-950/80 text-white/70 hover:text-rose-300 border border-white/15 transition-colors cursor-pointer"
+                          title="Görseli Kaldır"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => bannerFileInputRef.current?.click()}
+                          className="px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-[11px] font-mono flex items-center gap-1.5 transition-colors cursor-pointer border border-white/20"
+                        >
+                          <UploadCloud className="w-3.5 h-3.5" />
+                          <span>{isUploadingBanner ? 'Yükleniyor...' : 'Farklı Fotoğraf Yükle'}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
+                ) : (
+                  <div
+                    onClick={() => bannerFileInputRef.current?.click()}
+                    className="border-2 border-dashed border-white/20 hover:border-white/40 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-black/20 hover:bg-black/35 group"
+                  >
+                    <div className="p-3 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-white/10 group-hover:scale-105 transition-all mb-2">
+                      <UploadCloud className="w-6 h-6 text-amber-300" />
+                    </div>
+                    <div className="text-xs font-semibold text-white">
+                      Cihazınızdan 1 Adet Fotoğraf / Banner Yükleyin
+                    </div>
+                    <p className="text-[11px] text-white/40 mt-1">
+                      PNG, JPG veya WEBP (Maks 15MB • Web için otomatik optimize edilir)
+                    </p>
+                    <button
+                      type="button"
+                      className="mt-3 px-4 py-1.5 rounded-xl bg-white text-black font-semibold text-[11px] font-mono shadow-sm pointer-events-none"
+                    >
+                      {isUploadingBanner ? 'Yükleniyor...' : 'Fotoğraf Seç & Yükle'}
+                    </button>
+                  </div>
                 )}
+
+                {/* Optional URL input & quick presets */}
+                <div className="pt-2 border-t border-white/[0.06] space-y-2">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-white/40">
+                    <span>Veya Harici Görsel Bağlantısı (URL):</span>
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="https://images.unsplash.com/..."
+                    value={eventFormImageUrl}
+                    onChange={(e) => {
+                      setEventFormImageUrl(e.target.value);
+                      setUploadedBannerFileName(null);
+                    }}
+                    className="w-full px-3 py-1.5 rounded-xl bg-black/40 border border-white/10 text-white text-[11px] placeholder:text-white/30 focus:outline-none focus:border-white/25"
+                  />
+
+                  {/* Quick Presets */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[10px] font-mono text-white/35 uppercase tracking-wider mr-1">Hazır Şablonlar:</span>
+                    {[
+                      { label: '🏔️ Gezi / Doğa', url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80' },
+                      { label: '🧪 Karanlık Oda', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80' },
+                      { label: '💡 Stüdyo & Portre', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200&q=80' },
+                      { label: '🚶 Sokak & Şehir', url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&q=80' },
+                      { label: '🖼️ Sergi & Galeri', url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80' }
+                    ].map((preset) => (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        onClick={() => {
+                          setEventFormImageUrl(preset.url);
+                          setUploadedBannerFileName(null);
+                        }}
+                        className="px-2 py-0.5 rounded-lg bg-white/5 hover:bg-white/15 text-white/60 hover:text-white text-[10px] font-mono border border-white/10 transition-colors cursor-pointer"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Quota, Registered Count, Organizer */}

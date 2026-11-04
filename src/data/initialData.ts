@@ -724,12 +724,23 @@ export const INITIAL_DARKROOM_RESERVATIONS: DarkroomReservation[] = [];
 // ==========================================
 export const INITIAL_TRIPS: Trip[] = [
   {
-    id: 'trip-eskisehir-2026',
+    id: 'trip-buyukada-2026',
     title: 'Büyükada Gezisi',
     destination: 'Büyükada, İstanbul',
     start_date: '2026-10-17',
     end_date: '2026-10-17',
     description: 'Gezi kapsamında yeni üyelerimize Büyükada tanıtılacak ve fotoğraf yerleri gösterilecektir.',
+    is_active: false,
+    created_at: '2026-10-05T12:00:00Z',
+    created_by: 'Alara Tezelli'
+  },
+  {
+    id: 'trip-eskisehir-2026',
+    title: 'Eskişehir Kültür & Mimari Gezisi',
+    destination: 'Odunpazarı, Eskişehir',
+    start_date: '2026-10-23',
+    end_date: '2026-10-25',
+    description: 'Tarihi Odunpazarı ahşap konakları, cam ve lületaşı atölyeleri ile Porsuk Çayı çevresi mimari çekimler.',
     is_active: false,
     created_at: '2026-10-05T12:00:00Z',
     created_by: 'Alara Tezelli'
@@ -835,6 +846,26 @@ export const INITIAL_EVENTS: ClubEvent[] = [
     image_url: 'https://images.unsplash.com/photo-1527838832700-5059252407fa?q=80&w=1200&auto=format&fit=crop',
     quota: 45,
     registered_count: 43,
+    is_featured: false,
+    trip_id: 'trip-buyukada-2026',
+    organizer: 'Alara Tezelli (Başkan Yrd.)',
+    created_at: '2026-10-05T12:00:00Z'
+  },
+  {
+    id: 'event-eskisehir-2026',
+    title: 'Eskişehir Odunpazarı Kültür & Mimari Fotoğraf Gezisi',
+    category: 'trip',
+    category_label: 'Fotoğraf Gezisi',
+    status: 'completed',
+    date: '2026-10-23',
+    end_date: '2026-10-25',
+    time: '3 Gün / 2 Gece',
+    location: 'Odunpazarı & Porsuk Çayı, Eskişehir',
+    description: 'Tarihi Odunpazarı ahşap konakları, lületaşı ve cam atölyeleri ile Porsuk Çayı çevresinde mimari, sokak ve gece uzun pozlama çekimleri gerçekleştirdiğimiz gezi.',
+    long_description: 'Katılımcı üyelerimizle sokak portreleri ve tarihi konakların mimari detayları fotoğraflanmış, kulüp gövde ve geniş açı lensleriyle gece çekimleri yapılmıştır.',
+    image_url: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=80&w=1200&auto=format&fit=crop',
+    quota: 30,
+    registered_count: 28,
     is_featured: false,
     trip_id: 'trip-eskisehir-2026',
     organizer: 'Alara Tezelli (Başkan Yrd.)',
@@ -950,6 +981,16 @@ export const INITIAL_EVALUATIONS: EventEvaluation[] = [
     comment: 'Balat sokaklarında ışık ve gölge kontrastı üzerine yapılan pratikler fotoğraf bakış açımı değiştirdi.',
     liked_aspects: ['Fotoğraf Rotası', 'Rehberlik & Eğitim'],
     created_at: '2026-10-06T18:00:00Z'
+  },
+  {
+    id: 'eval-6',
+    event_id: 'event-eskisehir-2026',
+    event_title: 'Eskişehir Odunpazarı Kültür & Mimari Fotoğraf Gezisi',
+    rating: 5,
+    evaluator_name: 'Kerem B.',
+    comment: 'Odunpazarı sokaklarındaki çekimler inanılmaz verimli geçti. Kulübün geniş açı lensini deneyimleme fırsatım oldu. Emeği geçen yönetim kuruluna teşekkürler!',
+    liked_aspects: ['Fotoğraf Rotası', 'Rehberlik & Eğitim', 'Ekipman Desteği', 'Kulüp Ortamı'],
+    created_at: '2026-10-26T14:30:00Z'
   }
 ];
 

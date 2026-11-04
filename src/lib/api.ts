@@ -203,6 +203,17 @@ export const api = {
       const equipmentList = getLocalData<Equipment[]>('ytufok_local_equipment', defaultInitialState.equipmentList);
       const members = getLocalData<Member[]>('ytufok_local_members', defaultInitialState.members);
       const trips = getLocalData<Trip[]>('ytufok_local_trips', defaultInitialState.trips);
+      const existingTripIds = new Set(trips.map(t => t.id));
+      let tripsUpdated = false;
+      for (const t of INITIAL_TRIPS) {
+        if (!existingTripIds.has(t.id)) {
+          trips.push(t);
+          tripsUpdated = true;
+        }
+      }
+      if (tripsUpdated) {
+        setLocalData('ytufok_local_trips', trips);
+      }
       const reservations = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
       const adminProfiles = getLocalData<AdminProfile[]>('ytufok_local_admin_profiles', defaultInitialState.adminProfiles);
       const darkroomSlots = getLocalData<DarkroomSlot[]>('ytufok_local_darkroom_slots', defaultInitialState.darkroomSlots);
@@ -2243,6 +2254,17 @@ export const api = {
     }
 
     const list = getLocalData<ClubEvent[]>('ytufok_local_club_events', INITIAL_EVENTS);
+    const existingIds = new Set(list.map(e => e.id));
+    let hasNew = false;
+    for (const init of INITIAL_EVENTS) {
+      if (!existingIds.has(init.id)) {
+        list.push(init);
+        hasNew = true;
+      }
+    }
+    if (hasNew) {
+      setLocalData('ytufok_local_club_events', list);
+    }
     return list;
   },
 
@@ -2340,6 +2362,17 @@ export const api = {
     }
 
     const list = getLocalData<EventEvaluation[]>('ytufok_local_event_evaluations', INITIAL_EVALUATIONS);
+    const existingIds = new Set(list.map(e => e.id));
+    let hasNew = false;
+    for (const init of INITIAL_EVALUATIONS) {
+      if (!existingIds.has(init.id)) {
+        list.push(init);
+        hasNew = true;
+      }
+    }
+    if (hasNew) {
+      setLocalData('ytufok_local_event_evaluations', list);
+    }
     list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     if (eventId) {
       return list.filter(e => e.event_id === eventId);

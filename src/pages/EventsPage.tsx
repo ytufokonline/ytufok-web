@@ -362,30 +362,30 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
                         </p>
                       )}
 
-                      {/* Rating Summary Strip */}
-                      <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className="flex items-center text-amber-400">
-                            {[1, 2, 3, 4, 5].map((starIdx) => (
-                              <Star
-                                key={starIdx}
-                                className={`w-3.5 h-3.5 ${
-                                  starIdx <= Math.round(stats.average || 5)
-                                    ? 'fill-amber-400 text-amber-400'
-                                    : 'text-white/20'
-                                }`}
-                              />
-                            ))}
+                      {/* Rating Summary Strip - Sadece gerçek üye değerlendirmesi varsa gösterilir */}
+                      {stats.count > 0 && (
+                        <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="flex items-center text-amber-400">
+                              {[1, 2, 3, 4, 5].map((starIdx) => (
+                                <Star
+                                  key={starIdx}
+                                  className={`w-3.5 h-3.5 ${
+                                    starIdx <= Math.round(stats.average)
+                                      ? 'fill-amber-400 text-amber-400'
+                                      : 'text-white/20'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs font-mono font-bold text-white">
+                              {stats.average} / 5.0
+                            </span>
+                            <span className="text-[11px] text-white/40 font-mono">
+                              ({stats.count} Değerlendirme)
+                            </span>
                           </div>
-                          <span className="text-xs font-mono font-bold text-white">
-                            {stats.count > 0 ? `${stats.average} / 5.0` : '5.0 / 5.0'}
-                          </span>
-                          <span className="text-[11px] text-white/40 font-mono">
-                            ({stats.count > 0 ? `${stats.count} Değerlendirme` : 'Yeni Etkinlik'})
-                          </span>
-                        </div>
 
-                        {stats.count > 0 && (
                           <button
                             type="button"
                             onClick={() => toggleReviews(event.id)}
@@ -394,8 +394,8 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
                             <span>{isExpanded ? 'Yorumları Gizle' : 'Yorumları Gör'}</span>
                             {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                           </button>
-                        )}
-                      </div>
+                        </div>
+                      )}
 
                       {/* Expandable Member Reviews */}
                       {isExpanded && stats.evals.length > 0 && (
@@ -452,7 +452,7 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
                         className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/25 text-amber-300 text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
                       >
                         <Star className="w-3.5 h-3.5 fill-amber-300/40 text-amber-300" />
-                        <span>Etkinliği Değerlendir (5 Üzerinden)</span>
+                        <span>Etkinliği Değerlendir</span>
                       </button>
 
                       <button

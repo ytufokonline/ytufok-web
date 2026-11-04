@@ -4563,13 +4563,14 @@ export const AdminDashboard: React.FC = () => {
 
           {/* SUBTAB 2: EVENT EVALUATIONS (5 ÜZERİNDEN PUANLAMA & YORUMLAR) */}
           {suggestionSubTab === 'evaluations' && (() => {
-            const avgRating = eventEvaluations.length > 0
-              ? (eventEvaluations.reduce((acc, e) => acc + (e.rating || 5), 0) / eventEvaluations.length).toFixed(1)
-              : '5.0';
+            const hasEvals = eventEvaluations.length > 0;
+            const avgRating = hasEvals
+              ? (eventEvaluations.reduce((acc, e) => acc + (e.rating || 0), 0) / eventEvaluations.length).toFixed(1)
+              : '-';
             const fiveStarCount = eventEvaluations.filter(e => e.rating === 5).length;
-            const fiveStarPercent = eventEvaluations.length > 0
+            const fiveStarPercent = hasEvals
               ? Math.round((fiveStarCount / eventEvaluations.length) * 100)
-              : 100;
+              : 0;
 
             // Unique event titles for filter
             const eventTitles = Array.from(new Set(eventEvaluations.map(e => e.event_title).filter(Boolean)));

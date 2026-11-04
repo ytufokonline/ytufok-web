@@ -84,19 +84,9 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
   const upcomingCount = useMemo(() => events.filter(e => e.status === 'upcoming').length, [events]);
   const completedCount = useMemo(() => events.filter(e => e.status === 'completed').length, [events]);
 
-  // Overall average rating
-  const overallStats = useMemo(() => {
-    if (evaluations.length === 0) return { avg: 5.0, count: 0 };
-    const sum = evaluations.reduce((acc, c) => acc + c.rating, 0);
-    return {
-      avg: Math.round((sum / evaluations.length) * 10) / 10,
-      count: evaluations.length
-    };
-  }, [evaluations]);
-
-  // Filtered Events
+  // Filtered Events (tarihe göre sıralı: gelecek etkinlikler en yakın tarihten uzağa, geçmiş etkinlikler en yeni tarihten eskiye)
   const filteredEvents = useMemo(() => {
-    return events.filter(e => {
+    const list = events.filter(e => {
       // Status filter
       if (statusFilter !== 'all' && e.status !== statusFilter) return false;
       // Category filter
@@ -110,6 +100,24 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
         if (!matchTitle && !matchLoc && !matchDesc) return false;
       }
       return true;
+    });
+
+    return list.sort((a, b) => {
+      const timeA = new Date(a.date).getTime() || 0;
+      const timeB = new Date(b.date).getTime() || 0;
+      if (statusFilter === 'upcoming') {
+        // En yakın tarihli gelecek etkinlik ilk sırada
+        return timeA - timeB;
+      }
+      if (statusFilter === 'completed') {
+        // En son gerçekleştirilen etkinlik ilk sırada
+        return timeB - timeA;
+      }
+      // 'all': Gelecek etkinlikler önce kronolojik, sonra geçmiş etkinlikler ters kronolojik
+      if (a.status === 'upcoming' && b.status !== 'upcoming') return -1;
+      if (a.status !== 'upcoming' && b.status === 'upcoming') return 1;
+      if (a.status === 'upcoming') return timeA - timeB;
+      return timeB - timeA;
     });
   }, [events, statusFilter, categoryFilter, searchQuery]);
 
@@ -150,13 +158,6 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
             <div>
               <span className="text-white/30 uppercase mr-2 tracking-wider">Yaptığımız Etkinlik:</span>
               <span className="text-white font-semibold">{completedCount} Tamamlandı</span>
-            </div>
-            <div>
-              <span className="text-white/30 uppercase mr-2 tracking-wider">Üye Memnuniyeti:</span>
-              <span className="text-amber-300 font-semibold inline-flex items-center gap-1">
-                <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
-                {overallStats.avg} / 5.0 ({overallStats.count} Değerlendirme)
-              </span>
             </div>
           </div>
         </header>
@@ -231,10 +232,11 @@ export const EventsPage: React.FC<EventsPageProps> = ({ onNavigate }) => {
           {[
             { id: 'all', label: 'Tüm Kategoriler' },
             { id: 'trip', label: '📸 Fotoğraf Gezileri' },
+            { id: 'training', label: '📚 Eğitimler' },
             { id: 'workshop', label: '🧪 Atölyeler' },
             { id: 'photowalk', label: '🚶 Photowalk Yürüyüşleri' },
             { id: 'exhibition', label: '🖼️ Sergiler' },
-            { id: 'talk', label: '🎙️ Söyleşi & Eğitim' }
+            { id: 'talk', label: '🎙️ Söyleşiler' }
           ].map((cat) => {
             const isSelected = categoryFilter === cat.id;
             return (

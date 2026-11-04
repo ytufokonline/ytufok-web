@@ -227,7 +227,7 @@ export interface EventSuggestion {
 // ETKİNLİKLER (CLUB EVENTS & EVALUATIONS)
 // ==========================================
 
-export type EventCategory = 'trip' | 'workshop' | 'exhibition' | 'talk' | 'photowalk';
+export type EventCategory = 'trip' | 'workshop' | 'training' | 'exhibition' | 'talk' | 'photowalk';
 export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
 
 export interface ClubEvent {

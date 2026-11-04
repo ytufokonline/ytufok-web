@@ -329,6 +329,7 @@ export const AdminDashboard: React.FC = () => {
         category_label: eventFormCategoryLabel.trim() || (
           eventFormCategory === 'trip' ? 'Fotoğraf Gezisi' :
           eventFormCategory === 'workshop' ? 'Atölye' :
+          eventFormCategory === 'training' ? 'Eğitim' :
           eventFormCategory === 'photowalk' ? 'Photowalk' :
           eventFormCategory === 'exhibition' ? 'Sergi' : 'Söyleşi'
         ),
@@ -3933,6 +3934,15 @@ export const AdminDashboard: React.FC = () => {
                 e.category_label.toLowerCase().includes(eventSearchQuery.toLowerCase());
               const matchesStatus = eventStatusFilter === 'all' || e.status === eventStatusFilter;
               return matchesSearch && matchesStatus;
+            }).sort((a, b) => {
+              const timeA = new Date(a.date).getTime() || 0;
+              const timeB = new Date(b.date).getTime() || 0;
+              if (eventStatusFilter === 'upcoming') return timeA - timeB;
+              if (eventStatusFilter === 'completed') return timeB - timeA;
+              if (a.status === 'upcoming' && b.status !== 'upcoming') return -1;
+              if (a.status !== 'upcoming' && b.status === 'upcoming') return 1;
+              if (a.status === 'upcoming') return timeA - timeB;
+              return timeB - timeA;
             });
 
             if (filteredEvents.length === 0) {
@@ -4032,11 +4042,6 @@ export const AdminDashboard: React.FC = () => {
                                 ? (event.quota ? `Kontenjan: ${event.quota} kişi` : 'Açık Katılım')
                                 : `Katılımcı: ${event.registered_count || 0} kişi`}
                             </span>
-                            {event.organizer && (
-                              <span className="truncate max-w-[120px] text-right text-white/40">
-                                {event.organizer}
-                              </span>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -6210,6 +6215,7 @@ export const AdminDashboard: React.FC = () => {
                       setEventFormCategoryLabel(
                         cat === 'trip' ? 'Fotoğraf Gezisi' :
                         cat === 'workshop' ? 'Atölye' :
+                        cat === 'training' ? 'Eğitim' :
                         cat === 'photowalk' ? 'Photowalk' :
                         cat === 'exhibition' ? 'Sergi' : 'Söyleşi'
                       );
@@ -6218,6 +6224,7 @@ export const AdminDashboard: React.FC = () => {
                   >
                     <option value="trip" className="bg-[#121212] text-white">📸 Fotoğraf Gezisi</option>
                     <option value="workshop" className="bg-[#121212] text-white">🧪 Atölye / Karanlık Oda</option>
+                    <option value="training" className="bg-[#121212] text-white">📚 Eğitim</option>
                     <option value="photowalk" className="bg-[#121212] text-white">🚶‍♂️ Sokak Photowalk</option>
                     <option value="exhibition" className="bg-[#121212] text-white">🖼️ Sergi & Galeri</option>
                     <option value="talk" className="bg-[#121212] text-white">🎙️ Söyleşi & Seminer</option>
@@ -6454,8 +6461,8 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Quota, Registered Count, Organizer */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Quota & Registered Count */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-semibold text-white/80 mb-1">
                     Kontenjan (Kişi)
@@ -6480,18 +6487,6 @@ export const AdminDashboard: React.FC = () => {
                     placeholder="Örn: 28"
                     value={eventFormRegisteredCount}
                     onChange={(e) => setEventFormRegisteredCount(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/80 mb-1">
-                    Sorumlu / Düzenleyen
-                  </label>
-                  <input
-                    type="text"
-                    value={eventFormOrganizer}
-                    onChange={(e) => setEventFormOrganizer(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-white/30"
                   />
                 </div>

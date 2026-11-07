@@ -70,18 +70,18 @@ export const MaintenancePage: React.FC<MaintenancePageProps> = ({ onAdminBypass 
             </div>
             
             <p className="text-xs text-white/70 leading-relaxed font-light">
-              Acil kulüp işleri, ekipman ve karanlık oda talepleriniz için Instagram üzerinden Yönetim Kurulumuza doğrudan ulaşabilirsiniz.
+              Acil kulüp işleri, ekipman ve karanlık oda talepleriniz için Instagram (@ytufokonline) üzerinden Yönetim Kurulumuza doğrudan ulaşabilirsiniz.
             </p>
 
             <div className="pt-3 flex items-center justify-between border-t border-white/[0.08]">
               <a
-                href="https://instagram.com/ytufok"
+                href="https://instagram.com/ytufokonline"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-xs font-mono text-amber-300 hover:text-amber-200 transition-colors group cursor-pointer"
               >
                 <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                <span>@ytufok</span>
+                <span>@ytufokonline</span>
               </a>
               <span className="text-[11px] font-mono text-white/40">Yıldız Teknik Üniversitesi</span>
             </div>

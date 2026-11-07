@@ -5,10 +5,194 @@
 -- Kapsam: Salih Yiğit Elitok - SKYSEC Penetrasyon Testi Raporu'ndaki tüm bulguları
 -- (BULGU-01, BULGU-02, BULGU-04, BULGU-08) kesin olarak çözer ve veritabanını kilitler.
 --
--- Talimat: Bu betiği Supabase Dashboard -> SQL Editor alanına yapıştırıp "RUN" ediniz.
+-- Talimat: Bu betiğin tamamını kopyalayıp Supabase Dashboard -> SQL Editor alanına
+-- yapıştırarak "RUN" butonuna basınız. Hata vermeyecek şekilde tasarlanmıştır.
 -- ==============================================================================
 
+-- 0. GEREKLİ TÜM TABLOLARIN MEVCUT OLDUĞUNDAN EMİN OL (YOKSA GÜVENLE OLUŞTUR)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS public.members (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    student_number VARCHAR(20) UNIQUE NOT NULL,
+    full_name VARCHAR(150) NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(30),
+    department VARCHAR(150),
+    membership_year INTEGER DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'passive')),
+    penalty_count INTEGER DEFAULT 0,
+    penalty_reason TEXT,
+    role VARCHAR(20) DEFAULT 'member' CHECK (role IN ('member', 'admin', 'board')),
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.equipment (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(150) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    brand VARCHAR(50),
+    model VARCHAR(100),
+    serial_number VARCHAR(100) UNIQUE,
+    description TEXT,
+    specs JSONB DEFAULT '{}'::jsonb,
+    package_contents TEXT[] DEFAULT ARRAY[]::TEXT[],
+    image_url TEXT,
+    status VARCHAR(30) DEFAULT 'available',
+    current_condition TEXT DEFAULT 'Kusursuz / Temiz',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.reservations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    reservation_code VARCHAR(30) UNIQUE NOT NULL,
+    equipment_id UUID,
+    member_id UUID,
+    student_number VARCHAR(20) NOT NULL,
+    pickup_date DATE NOT NULL,
+    return_date DATE NOT NULL,
+    purpose TEXT NOT NULL,
+    additional_notes TEXT,
+    status VARCHAR(30) DEFAULT 'pending',
+    approved_by VARCHAR(150),
+    approved_at TIMESTAMPTZ,
+    checked_out_at TIMESTAMPTZ,
+    returned_at TIMESTAMPTZ,
+    return_condition_notes TEXT,
+    rejection_reason TEXT,
+    trip_id VARCHAR(100),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.announcements (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    category VARCHAR(50) DEFAULT 'Duyuru',
+    is_pinned BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.trips (
+    id VARCHAR(100) PRIMARY KEY,
+    title VARCHAR(255),
+    destination VARCHAR(255),
+    start_date DATE,
+    end_date DATE,
+    description TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_by VARCHAR(150),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.club_events (
+    id VARCHAR(100) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(50) DEFAULT 'trip',
+    category_label VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'upcoming',
+    date VARCHAR(50) NOT NULL,
+    end_date VARCHAR(50),
+    time VARCHAR(50),
+    location VARCHAR(255),
+    description TEXT,
+    long_description TEXT,
+    image_url TEXT,
+    quota INTEGER,
+    registered_count INTEGER DEFAULT 0,
+    is_featured BOOLEAN DEFAULT false,
+    trip_id VARCHAR(100),
+    organizer VARCHAR(150),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.event_suggestions (
+    id VARCHAR(100) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    category VARCHAR(100) DEFAULT 'gezi',
+    location VARCHAR(255),
+    suggested_by VARCHAR(150) DEFAULT 'Anonim Üye',
+    contact_info VARCHAR(150),
+    status VARCHAR(50) DEFAULT 'pending',
+    admin_notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.event_evaluations (
+    id VARCHAR(100) PRIMARY KEY,
+    event_id VARCHAR(100) NOT NULL,
+    event_title VARCHAR(255),
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    evaluator_name VARCHAR(150) DEFAULT 'Anonim Katılımcı',
+    student_number VARCHAR(50),
+    comment TEXT,
+    liked_aspects TEXT[],
+    aspects TEXT[],
+    improvement_suggestions TEXT,
+    is_anonymous BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.gallery_items (
+    id VARCHAR(100) PRIMARY KEY,
+    title VARCHAR(150),
+    photographer_name VARCHAR(150),
+    camera_used VARCHAR(100),
+    location VARCHAR(100),
+    image_url TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.darkroom_slots (
+    id VARCHAR(100) PRIMARY KEY,
+    date DATE,
+    start_time VARCHAR(10),
+    end_time VARCHAR(10),
+    label VARCHAR(100),
+    is_active BOOLEAN DEFAULT true,
+    created_by VARCHAR(150),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.darkroom_reservations (
+    id VARCHAR(100) PRIMARY KEY,
+    reservation_code VARCHAR(30) UNIQUE,
+    member_id VARCHAR(100),
+    student_number VARCHAR(20),
+    date DATE,
+    slot_id VARCHAR(100),
+    slot_label VARCHAR(150),
+    process_type VARCHAR(30),
+    film_type VARCHAR(150),
+    film_roll_count INTEGER DEFAULT 1,
+    paper_count INTEGER,
+    chemicals_needed TEXT[],
+    enlarger_needed BOOLEAN DEFAULT false,
+    experience_level VARCHAR(50),
+    companion_names TEXT,
+    notes TEXT,
+    status VARCHAR(30) DEFAULT 'pending',
+    approved_by VARCHAR(150),
+    approved_at TIMESTAMPTZ,
+    rejection_reason TEXT,
+    supervisor VARCHAR(150),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.admin_profiles (
+    id VARCHAR(50) PRIMARY KEY,
+    pin VARCHAR(100) NOT NULL DEFAULT '19111994',
+    pin_updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ==============================================================================
 -- 1. TÜM TABLOLARDA ROW LEVEL SECURITY (RLS) AKTİF ET
+-- ==============================================================================
 ALTER TABLE IF EXISTS public.members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.reservations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.equipment ENABLE ROW LEVEL SECURITY;
@@ -22,7 +206,9 @@ ALTER TABLE IF EXISTS public.darkroom_slots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.darkroom_reservations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.admin_profiles ENABLE ROW LEVEL SECURITY;
 
+-- ==============================================================================
 -- 2. MEVCUT GEVŞEK / TEHLİKELİ TÜM POLİTİKALARI TEMİZLE
+-- ==============================================================================
 DO $$ 
 DECLARE 
     r RECORD;
@@ -39,215 +225,136 @@ END $$;
 -- ==============================================================================
 -- 3. MEMBERS TABLOSU (KVKK KORUMASI & BULGU-02 / BULGU-04 ÇÖZÜMÜ)
 -- ==============================================================================
--- Anonim kullanıcılar üyelerin listesini (SELECT * FROM members) ASLA okuyamaz!
--- Anonim kullanıcılar yeni üye oluşturamaz (role: 'admin' yetki yükseltme engellendi).
--- Anonim kullanıcılar üye güncelleyemez veya silemez.
--- Sadece service_role (sunucu API'si) veya SECURITY DEFINER RPC fonksiyonları erişebilir.
-
-CREATE POLICY "Deny anon select members" ON public.members
-    FOR SELECT TO anon
-    USING (false);
-
-CREATE POLICY "Deny anon insert members" ON public.members
-    FOR INSERT TO anon
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon update members" ON public.members
-    FOR UPDATE TO anon
-    USING (false)
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon delete members" ON public.members
-    FOR DELETE TO anon
-    USING (false);
-
--- Authenticated (Supabase Auth) kullanıcılar sadece kendi profilini görebilir
-CREATE POLICY "Auth users see own member record" ON public.members
-    FOR SELECT TO authenticated
-    USING (auth.uid() = id);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'members') THEN
+        EXECUTE 'CREATE POLICY "Deny anon select members" ON public.members FOR SELECT TO anon USING (false)';
+        EXECUTE 'CREATE POLICY "Deny anon insert members" ON public.members FOR INSERT TO anon WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon update members" ON public.members FOR UPDATE TO anon USING (false) WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon delete members" ON public.members FOR DELETE TO anon USING (false)';
+        EXECUTE 'CREATE POLICY "Auth users see own member record" ON public.members FOR SELECT TO authenticated USING (auth.uid() = id)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 4. RESERVATIONS TABLOSU (KİŞİSEL VERİ VE TELEFON KORUMASI - BULGU-08 ÇÖZÜMÜ)
 -- ==============================================================================
--- Anonim kullanıcıların toplu rezervasyon listesi çekmesi (GET /rest/v1/reservations) ENGELLENDİ!
--- Yalnızca bekleyen rezervasyon açılabilir ve sadece kendi bekleyen rezervasyonu iptal edilebilir.
-
-CREATE POLICY "Deny anon bulk select reservations" ON public.reservations
-    FOR SELECT TO anon
-    USING (false);
-
--- Public sadece 'pending' statüsünde talep gönderebilir
-CREATE POLICY "Public insert pending reservation" ON public.reservations
-    FOR INSERT TO anon, authenticated
-    WITH CHECK (status = 'pending');
-
--- Public sadece beklemedeki kendi rezervasyonunu iptal edebilir (approved yapılamaz!)
-CREATE POLICY "Public cancel own pending reservation" ON public.reservations
-    FOR UPDATE TO anon, authenticated
-    USING (status = 'pending')
-    WITH CHECK (status = 'cancelled');
-
-CREATE POLICY "Deny anon delete reservations" ON public.reservations
-    FOR DELETE TO anon
-    USING (false);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'reservations') THEN
+        EXECUTE 'CREATE POLICY "Deny anon bulk select reservations" ON public.reservations FOR SELECT TO anon USING (false)';
+        EXECUTE 'CREATE POLICY "Public insert pending reservation" ON public.reservations FOR INSERT TO anon, authenticated WITH CHECK (status = ''pending'')';
+        EXECUTE 'CREATE POLICY "Public cancel own pending reservation" ON public.reservations FOR UPDATE TO anon, authenticated USING (status = ''pending'') WITH CHECK (status = ''cancelled'')';
+        EXECUTE 'CREATE POLICY "Deny anon delete reservations" ON public.reservations FOR DELETE TO anon USING (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 5. ANNOUNCEMENTS TABLOSU (TAHRİFAT ENGELİ - BULGU-02 CTF_TEST ÇÖZÜMÜ)
 -- ==============================================================================
--- Herkes duyuruları okuyabilir (SELECT).
--- Anonim kullanıcılar duyuru ekleyemez, güncelleyemez (PATCH CTF_TEST engellendi!), silemez.
-
-CREATE POLICY "Public view announcements" ON public.announcements
-    FOR SELECT TO anon, authenticated
-    USING (true);
-
-CREATE POLICY "Deny anon modify announcements" ON public.announcements
-    FOR INSERT TO anon
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon update announcements" ON public.announcements
-    FOR UPDATE TO anon
-    USING (false)
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon delete announcements" ON public.announcements
-    FOR DELETE TO anon
-    USING (false);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'announcements') THEN
+        EXECUTE 'CREATE POLICY "Public view announcements" ON public.announcements FOR SELECT TO anon, authenticated USING (true)';
+        EXECUTE 'CREATE POLICY "Deny anon modify announcements" ON public.announcements FOR INSERT TO anon WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon update announcements" ON public.announcements FOR UPDATE TO anon USING (false) WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon delete announcements" ON public.announcements FOR DELETE TO anon USING (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 6. EQUIPMENT TABLOSU (EKİPMAN KATALOĞU)
 -- ==============================================================================
--- Ekipmanlar herkese açıktır (SELECT). Yazma işlemleri anonimlere kapalıdır.
-
-CREATE POLICY "Public view equipment" ON public.equipment
-    FOR SELECT TO anon, authenticated
-    USING (true);
-
-CREATE POLICY "Deny anon modify equipment" ON public.equipment
-    FOR INSERT TO anon
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon update equipment" ON public.equipment
-    FOR UPDATE TO anon
-    USING (false)
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon delete equipment" ON public.equipment
-    FOR DELETE TO anon
-    USING (false);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'equipment') THEN
+        EXECUTE 'CREATE POLICY "Public view equipment" ON public.equipment FOR SELECT TO anon, authenticated USING (true)';
+        EXECUTE 'CREATE POLICY "Deny anon modify equipment" ON public.equipment FOR INSERT TO anon WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon update equipment" ON public.equipment FOR UPDATE TO anon USING (false) WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon delete equipment" ON public.equipment FOR DELETE TO anon USING (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 7. TRIPS & CLUB_EVENTS (GEZİLER VE ETKİNLİKLER)
 -- ==============================================================================
-CREATE POLICY "Public view trips" ON public.trips
-    FOR SELECT TO anon, authenticated
-    USING (true);
-
-CREATE POLICY "Deny anon write trips" ON public.trips
-    FOR ALL TO anon
-    USING (false)
-    WITH CHECK (false);
-
-CREATE POLICY "Public view club events" ON public.club_events
-    FOR SELECT TO anon, authenticated
-    USING (true);
-
-CREATE POLICY "Deny anon write club events" ON public.club_events
-    FOR ALL TO anon
-    USING (false)
-    WITH CHECK (false);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'trips') THEN
+        EXECUTE 'CREATE POLICY "Public view trips" ON public.trips FOR SELECT TO anon, authenticated USING (true)';
+        EXECUTE 'CREATE POLICY "Deny anon write trips" ON public.trips FOR ALL TO anon USING (false) WITH CHECK (false)';
+    END IF;
+    
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'club_events') THEN
+        EXECUTE 'CREATE POLICY "Public view club events" ON public.club_events FOR SELECT TO anon, authenticated USING (true)';
+        EXECUTE 'CREATE POLICY "Deny anon write club events" ON public.club_events FOR ALL TO anon USING (false) WITH CHECK (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
--- 8. EVENT_SUGGESTIONS (ETKİNLİK VE ROTA ÖNERİLERİ)
+-- 8. EVENT_SUGGESTIONS (ETKİNLİK VE GEZİ ÖNERİLERİ)
 -- ==============================================================================
--- Herkes yeni öneri gönderebilir (INSERT).
--- Ancak diğer üyelerin önerilerini ve iletişim bilgilerini sadece yönetim görebilir (Anon SELECT engellendi).
-
-CREATE POLICY "Public insert suggestion" ON public.event_suggestions
-    FOR INSERT TO anon, authenticated
-    WITH CHECK (true);
-
-CREATE POLICY "Deny anon read suggestions" ON public.event_suggestions
-    FOR SELECT TO anon
-    USING (false);
-
-CREATE POLICY "Deny anon update suggestions" ON public.event_suggestions
-    FOR UPDATE TO anon
-    USING (false)
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon delete suggestions" ON public.event_suggestions
-    FOR DELETE TO anon
-    USING (false);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'event_suggestions') THEN
+        EXECUTE 'CREATE POLICY "Public insert suggestions" ON public.event_suggestions FOR INSERT TO anon, authenticated WITH CHECK (true)';
+        EXECUTE 'CREATE POLICY "Deny anon select suggestions" ON public.event_suggestions FOR SELECT TO anon USING (false)';
+        EXECUTE 'CREATE POLICY "Deny anon modify suggestions" ON public.event_suggestions FOR UPDATE TO anon USING (false) WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon delete suggestions" ON public.event_suggestions FOR DELETE TO anon USING (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 9. EVENT_EVALUATIONS (ETKİNLİK DEĞERLENDİRMELERİ)
 -- ==============================================================================
-CREATE POLICY "Public view evaluations" ON public.event_evaluations
-    FOR SELECT TO anon, authenticated
-    USING (true);
-
-CREATE POLICY "Public insert evaluation" ON public.event_evaluations
-    FOR INSERT TO anon, authenticated
-    WITH CHECK (rating >= 1 AND rating <= 5);
-
-CREATE POLICY "Deny anon modify evaluations" ON public.event_evaluations
-    FOR UPDATE TO anon
-    USING (false)
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon delete evaluations" ON public.event_evaluations
-    FOR DELETE TO anon
-    USING (false);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'event_evaluations') THEN
+        EXECUTE 'CREATE POLICY "Public view evaluations" ON public.event_evaluations FOR SELECT TO anon, authenticated USING (true)';
+        EXECUTE 'CREATE POLICY "Public insert evaluation" ON public.event_evaluations FOR INSERT TO anon, authenticated WITH CHECK (rating >= 1 AND rating <= 5)';
+        EXECUTE 'CREATE POLICY "Deny anon modify evaluations" ON public.event_evaluations FOR UPDATE TO anon USING (false) WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon delete evaluations" ON public.event_evaluations FOR DELETE TO anon USING (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 10. GALLERY_ITEMS (GALERİ FOTOĞRAFLARI)
 -- ==============================================================================
-CREATE POLICY "Public view gallery" ON public.gallery_items
-    FOR SELECT TO anon, authenticated
-    USING (true);
-
-CREATE POLICY "Deny anon write gallery" ON public.gallery_items
-    FOR ALL TO anon
-    USING (false)
-    WITH CHECK (false);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'gallery_items') THEN
+        EXECUTE 'CREATE POLICY "Public view gallery" ON public.gallery_items FOR SELECT TO anon, authenticated USING (true)';
+        EXECUTE 'CREATE POLICY "Deny anon write gallery" ON public.gallery_items FOR ALL TO anon USING (false) WITH CHECK (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 11. DARKROOM_SLOTS & DARKROOM_RESERVATIONS (KARANLIK ODA)
 -- ==============================================================================
-CREATE POLICY "Public view darkroom slots" ON public.darkroom_slots
-    FOR SELECT TO anon, authenticated
-    USING (true);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'darkroom_slots') THEN
+        EXECUTE 'CREATE POLICY "Public view darkroom slots" ON public.darkroom_slots FOR SELECT TO anon, authenticated USING (true)';
+        EXECUTE 'CREATE POLICY "Deny anon write darkroom slots" ON public.darkroom_slots FOR ALL TO anon USING (false) WITH CHECK (false)';
+    END IF;
 
-CREATE POLICY "Deny anon write darkroom slots" ON public.darkroom_slots
-    FOR ALL TO anon
-    USING (false)
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon bulk select darkroom reservations" ON public.darkroom_reservations
-    FOR SELECT TO anon
-    USING (false);
-
-CREATE POLICY "Public insert pending darkroom reservation" ON public.darkroom_reservations
-    FOR INSERT TO anon, authenticated
-    WITH CHECK (status = 'pending');
-
-CREATE POLICY "Deny anon modify darkroom reservations" ON public.darkroom_reservations
-    FOR UPDATE TO anon
-    USING (false)
-    WITH CHECK (false);
-
-CREATE POLICY "Deny anon delete darkroom reservations" ON public.darkroom_reservations
-    FOR DELETE TO anon
-    USING (false);
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'darkroom_reservations') THEN
+        EXECUTE 'CREATE POLICY "Deny anon bulk select darkroom reservations" ON public.darkroom_reservations FOR SELECT TO anon USING (false)';
+        EXECUTE 'CREATE POLICY "Public insert pending darkroom reservation" ON public.darkroom_reservations FOR INSERT TO anon, authenticated WITH CHECK (status = ''pending'')';
+        EXECUTE 'CREATE POLICY "Deny anon modify darkroom reservations" ON public.darkroom_reservations FOR UPDATE TO anon USING (false) WITH CHECK (false)';
+        EXECUTE 'CREATE POLICY "Deny anon delete darkroom reservations" ON public.darkroom_reservations FOR DELETE TO anon USING (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 12. ADMIN_PROFILES TABLOSU
 -- ==============================================================================
-CREATE POLICY "Deny anon all admin profiles" ON public.admin_profiles
-    FOR ALL TO anon
-    USING (false)
-    WITH CHECK (false);
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'admin_profiles') THEN
+        EXECUTE 'CREATE POLICY "Deny anon all admin profiles" ON public.admin_profiles FOR ALL TO anon USING (false) WITH CHECK (false)';
+    END IF;
+END $$;
 
 -- ==============================================================================
 -- 13. GÜVENLİ SECURITY DEFINER RPC FONKSİYONU

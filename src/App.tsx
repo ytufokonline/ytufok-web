@@ -21,7 +21,7 @@ import { AtmosphericBackground } from './components/AtmosphericBackground';
 import { MaintenancePage } from './pages/MaintenancePage';
 
 // Site Bakım Modu Bayrağı (Canlıya alma veya bakıma alma tek bir bayrakla yönetilir)
-export const IS_MAINTENANCE_MODE = true;
+export const IS_MAINTENANCE_MODE = false;
 
 export function App() {
   const initialRoute = parseCurrentLocation();

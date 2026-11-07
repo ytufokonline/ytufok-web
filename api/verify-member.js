@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { checkRateLimit, getClientIp } from './_security.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
@@ -17,33 +18,50 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
+  // 1. Rate Limiting: Öğrenci no numarası taramasını engelle (BULGU-07)
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`verify-member:${clientIp}`, { maxRequests: 15, windowMs: 60000, lockoutMs: 180000 });
+  if (!rateLimit.allowed) {
+    return res.status(429).json({
+      success: false,
+      message: 'Çok fazla sorgu yapıldı. Lütfen birkaç dakika sonra tekrar deneyiniz.'
+    });
+  }
+
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    const { studentNumber } = body || {};
+    const { studentNumber, student_number } = body || {};
 
-    const cleanNumber = String(studentNumber || '').trim();
-    if (!cleanNumber) {
+    const cleanNumber = String(studentNumber || student_number || '').trim();
+    if (!cleanNumber || cleanNumber.length < 5) {
       return res.status(400).json({ success: false, message: 'Lütfen geçerli bir öğrenci numarası giriniz.' });
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Try secure PostgreSQL RPC first (bypasses RLS safely)
+    // 2. Güvenli RPC dene
     try {
       const { data: rpcData, error: rpcErr } = await supabase.rpc('verify_student_member', {
         p_student_number: cleanNumber
       });
       if (!rpcErr && rpcData) {
-        return res.status(200).json(rpcData);
+        // GÜVENLİK (BULGU-06): role, member_type ve notes alanlarını ASLA dışarı sızdırma!
+        return res.status(200).json({
+          success: Boolean(rpcData.success),
+          full_name: rpcData.member?.full_name || '',
+          department: rpcData.member?.department || '',
+          is_active: rpcData.member?.status === 'active',
+          message: rpcData.message || (rpcData.success ? 'Kulüp üyeliğiniz doğrulandı.' : 'Üyelik bulunamadı.')
+        });
       }
     } catch {
       // ignore and fallback
     }
 
-    // 2. Safe single row lookup (pulls member_type, status, role, etc. without exposure of sensitive bulk lists)
+    // 3. Güvenli tekil satır sorgusu
     const { data, error } = await supabase
       .from('members')
-      .select('id, student_number, full_name, department, status, role, member_type, penalty_count, penalty_reason')
+      .select('id, student_number, full_name, department, status')
       .ilike('student_number', cleanNumber)
       .maybeSingle();
 
@@ -57,33 +75,30 @@ export default async function handler(req, res) {
     if (data.status === 'suspended') {
       return res.status(200).json({
         success: false,
-        member: data,
-        message: `Rezervasyon yapamazsınız: Üyeliğiniz kısıtlanmıştır/cezalıdır. Gerekçe: ${data.penalty_reason || 'İade gecikmesi veya hasar.'}`
+        is_active: false,
+        full_name: data.full_name,
+        message: 'Kulüp üyeliğiniz geçici olarak askıya alınmıştır. Detaylı bilgi için kulüp odamıza uğrayınız.'
       });
     }
 
     if (data.status === 'passive') {
       return res.status(200).json({
         success: false,
-        member: data,
+        is_active: false,
+        full_name: data.full_name,
         message: 'Üyeliğiniz pasif durumdadır. Yeniden aktif etmek için kulüp odamıza uğrayınız.'
       });
     }
 
-    const tierLabel = data.role === 'board' || data.role === 'admin' 
-      ? 'Yönetim Kurulu' 
-      : data.role === 'audit' 
-        ? 'Denetim Kurulu' 
-        : data.member_type === 'active' || data.member_type === 'honorary_active'
-          ? 'Aktif Üye' 
-          : 'Normal Üye';
-
+    // GÜVENLİK (BULGU-06): role ve member_type response'dan tamamen kaldırıldı!
     return res.status(200).json({
       success: true,
-      member: data,
-      message: `Hoş geldiniz, ${data.full_name} (${data.department}). ${tierLabel} olarak doğrulandınız.`
+      is_active: true,
+      full_name: data.full_name,
+      department: data.department,
+      message: `Hoş geldiniz, ${data.full_name} (${data.department}). Üyeliğiniz doğrulandı.`
     });
-  } catch (err) {
+  } catch {
     return res.status(500).json({ success: false, message: 'Doğrulama sunucu hatası.' });
   }
 }

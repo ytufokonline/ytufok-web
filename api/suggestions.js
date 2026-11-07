@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
+import { getAuthenticatedAdmin, checkRateLimit, getClientIp, sanitizeString } from './_security.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
@@ -35,15 +36,69 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
+  const clientIp = getClientIp(req);
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // GET: Tüm önerileri tarihe göre sıralı (yeniden eskiye) döndür
+  // POST: Yeni etkinlik önerisi oluştur (Herkes önerebilir, rate-limitli ve sterilize)
+  if (req.method === 'POST') {
+    const rateLimit = checkRateLimit(`suggestion-post:${clientIp}`, { maxRequests: 5, windowMs: 600000, lockoutMs: 600000 });
+    if (!rateLimit.allowed) {
+      return res.status(429).json({ success: false, message: rateLimit.message });
+    }
+
+    try {
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      const { title, description, category, location, suggested_by, contact_info } = body || {};
+
+      if (!title || !description) {
+        return res.status(400).json({ success: false, message: 'Etkinlik başlığı ve açıklaması zorunludur.' });
+      }
+
+      const newSuggestion = {
+        id: `sug-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        title: sanitizeString(title, 120),
+        description: sanitizeString(description, 1000),
+        category: sanitizeString(category || 'gezi', 40),
+        location: location ? sanitizeString(location, 120) : null,
+        suggested_by: suggested_by && String(suggested_by).trim() ? sanitizeString(suggested_by, 60) : 'Anonim Üye',
+        contact_info: contact_info ? sanitizeString(contact_info, 80) : null,
+        status: 'pending',
+        admin_notes: null,
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        await supabase.from('event_suggestions').insert([newSuggestion]);
+      } catch {
+        // ignore
+      }
+
+      const localList = readLocalTmp();
+      localList.unshift(newSuggestion);
+      writeLocalTmp(localList.slice(0, 100));
+
+      return res.status(201).json({ success: true, message: 'Öneriniz yönetime iletildi!', suggestion: newSuggestion });
+    } catch {
+      return res.status(500).json({ success: false, message: 'Öneri kaydedilirken sunucu hatası oluştu.' });
+    }
+  }
+
+  // GET, PATCH, DELETE: SADECE YETKİLİ YÖNETİCİLER ERİŞEBİLİR (BULGU-02 / BULGU-08 KORUMASI)
+  const authenticatedAdmin = getAuthenticatedAdmin(req);
+  if (!authenticatedAdmin) {
+    return res.status(401).json({
+      success: false,
+      message: 'Bu işlem için yetkili yönetici oturumu gereklidir.'
+    });
+  }
+
+  // GET: Tüm önerileri listele (Yalnızca yetkili yöneticiye açık)
   if (req.method === 'GET') {
     try {
       const { data, error } = await supabase
@@ -56,7 +111,7 @@ export default async function handler(req, res) {
         return res.status(200).json(data);
       }
     } catch {
-      // Supabase tablosu henüz yoksa yerel önbellekten oku
+      // ignore
     }
 
     const localList = readLocalTmp();
@@ -64,71 +119,19 @@ export default async function handler(req, res) {
     return res.status(200).json(localList);
   }
 
-  // POST: Yeni etkinlik önerisi oluştur (Anonim veya isimli)
-  if (req.method === 'POST') {
-    try {
-      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const { title, description, category, location, suggested_by, contact_info } = body || {};
-
-      if (!title || !description) {
-        return res.status(400).json({ success: false, message: 'Etkinlik başlığı ve açıklaması zorunludur.' });
-      }
-
-      const newSuggestion = {
-        id: `sug-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        title: String(title).trim(),
-        description: String(description).trim(),
-        category: category ? String(category).trim() : 'gezi',
-        location: location ? String(location).trim() : null,
-        suggested_by: suggested_by && String(suggested_by).trim() ? String(suggested_by).trim() : 'Anonim Üye',
-        contact_info: contact_info ? String(contact_info).trim() : null,
-        status: 'pending',
-        admin_notes: null,
-        created_at: new Date().toISOString()
-      };
-
-      // 1. Supabase tablosuna yazmayı dene
-      let supabaseSuccess = false;
-      try {
-        const { error: insErr } = await supabase
-          .from('event_suggestions')
-          .insert([newSuggestion]);
-        if (!insErr) {
-          supabaseSuccess = true;
-        }
-      } catch {
-        // Tablo yoksa fallback yap
-      }
-
-      // 2. Yerel ve hafıza önbelleğine ekle
-      const currentList = readLocalTmp();
-      currentList.unshift(newSuggestion);
-      writeLocalTmp(currentList);
-
-      return res.status(201).json({
-        success: true,
-        message: 'Etkinlik öneriniz başarıyla iletildi! Yönetim kurulu olarak değerlendireceğiz.',
-        suggestion: newSuggestion,
-        synced: supabaseSuccess
-      });
-    } catch (err) {
-      return res.status(500).json({ success: false, message: err?.message || 'Öneri kaydedilemedi.' });
-    }
-  }
-
-  // PATCH: Yönetim tarafından durum veya not güncelleme
+  // PATCH: Öneri durumunu veya yönetim notunu güncelle
   if (req.method === 'PATCH') {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const { id, status, admin_notes } = body || {};
 
       if (!id) {
-        return res.status(400).json({ success: false, message: 'ID gereklidir.' });
+        return res.status(400).json({ success: false, message: 'Öneri ID gereklidir.' });
       }
 
       const updates = {};
-      if (status !== undefined) updates.status = status;
-      if (admin_notes !== undefined) updates.admin_notes = admin_notes;
+      if (status) updates.status = sanitizeString(status, 30);
+      if (admin_notes !== undefined) updates.admin_notes = sanitizeString(admin_notes, 500);
 
       try {
         await supabase.from('event_suggestions').update(updates).eq('id', id);
@@ -136,27 +139,25 @@ export default async function handler(req, res) {
         // ignore
       }
 
-      const currentList = readLocalTmp();
-      const idx = currentList.findIndex(s => s.id === id);
+      const localList = readLocalTmp();
+      const idx = localList.findIndex((s) => s.id === id);
       if (idx !== -1) {
-        currentList[idx] = { ...currentList[idx], ...updates };
-        writeLocalTmp(currentList);
+        localList[idx] = { ...localList[idx], ...updates };
+        writeLocalTmp(localList);
       }
 
       return res.status(200).json({ success: true, message: 'Öneri güncellendi.' });
-    } catch (err) {
-      return res.status(500).json({ success: false, message: err?.message || 'Güncelleme hatası.' });
+    } catch {
+      return res.status(500).json({ success: false, message: 'Güncelleme sunucu hatası.' });
     }
   }
 
-  // DELETE: Öneriyi silme
+  // DELETE: Öneriyi sil
   if (req.method === 'DELETE') {
     try {
-      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const { id } = body || req.query || {};
-
+      const id = req.query?.id || (typeof req.body === 'object' ? req.body?.id : null);
       if (!id) {
-        return res.status(400).json({ success: false, message: 'ID gereklidir.' });
+        return res.status(400).json({ success: false, message: 'Silinecek ID belirtilmedi.' });
       }
 
       try {
@@ -165,13 +166,12 @@ export default async function handler(req, res) {
         // ignore
       }
 
-      const currentList = readLocalTmp();
-      const filtered = currentList.filter(s => s.id !== id);
-      writeLocalTmp(filtered);
+      const localList = readLocalTmp().filter((s) => s.id !== id);
+      writeLocalTmp(localList);
 
       return res.status(200).json({ success: true, message: 'Öneri silindi.' });
-    } catch (err) {
-      return res.status(500).json({ success: false, message: err?.message || 'Silme hatası.' });
+    } catch {
+      return res.status(500).json({ success: false, message: 'Silme işlemi hatası.' });
     }
   }
 

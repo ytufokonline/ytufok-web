@@ -32,18 +32,18 @@ import {
 } from '../data/initialData';
 import { checkTripBookingEligibility, resolveMemberTier, getNextBusinessDay, getPreviousBusinessDay, getLocalDateString } from '../utils/tripUtils';
 
-// Aktif yönetici oturumu
-let activeSessionAdminId: string | null = null;
+// Kriptografik Yönetici Oturumu ve Önbellek (BULGU-05 Fix: Client-side sessionStorage manipülasyonu engellendi)
+let cachedAdminToken: string | null = null;
+let cachedActiveAdmin: AdminProfile | null = null;
+let cachedAdminProfiles: AdminProfile[] = [];
 
-export function getActiveSessionAdminId(): string | null {
-  if (activeSessionAdminId) return activeSessionAdminId;
+export function getAdminToken(): string | null {
+  if (cachedAdminToken) return cachedAdminToken;
   try {
     if (typeof window !== 'undefined') {
-      const stored =
-        window.sessionStorage.getItem('ytufok_session_admin_id') ||
-        window.localStorage.getItem('ytufok_session_admin_id');
+      const stored = window.sessionStorage.getItem('ytufok_admin_token');
       if (stored) {
-        activeSessionAdminId = stored;
+        cachedAdminToken = stored;
         return stored;
       }
     }
@@ -53,14 +53,37 @@ export function getActiveSessionAdminId(): string | null {
   return null;
 }
 
-try {
-  if (typeof window !== 'undefined') {
-    activeSessionAdminId =
-      window.sessionStorage.getItem('ytufok_session_admin_id') ||
-      window.localStorage.getItem('ytufok_session_admin_id');
+export function getActiveSessionAdminId(): string | null {
+  return cachedActiveAdmin?.id || null;
+}
+
+export async function callAdminAction(action: string, payload?: any): Promise<any> {
+  const token = getAdminToken();
+  if (!token) {
+    throw new Error('Yönetici oturumu bulunamadı. Lütfen tekrar giriş yapınız.');
   }
-} catch {
-  // ignore
+
+  const res = await fetch('/api/admin-action', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    cache: 'no-store',
+    body: JSON.stringify({ action, payload })
+  });
+
+  if (res.status === 401) {
+    await api.signOut();
+    throw new Error('Oturum süresi doldu veya yetkisiz işlem. Lütfen tekrar giriş yapınız.');
+  }
+
+  const json = await res.json().catch(() => null);
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message || `Sunucu işlem hatası: ${res.statusText}`);
+  }
+
+  return json.data !== undefined ? json.data : json;
 }
 
 type AuthListener = (admin: AdminProfile | null) => void;
@@ -265,22 +288,20 @@ export const api = {
     }
 
     try {
+      const adminToken = getAdminToken();
+      const isAdmin = Boolean(adminToken);
+
+      // Kamuya açık veriler (Ekipman, Geziler, Duyurular, Karanlık Oda Seansları)
       const [
         eqRes,
-        resRes,
         tripRes,
         annRes,
-        darkSlotRes,
-        darkResRes,
-        sugRes
+        darkSlotRes
       ] = await Promise.allSettled([
         supabase.from('equipment').select('*').order('name', { ascending: true }),
-        supabase.from('reservations').select('*').order('created_at', { ascending: false }),
         supabase.from('trips').select('*').order('start_date', { ascending: true }),
         supabase.from('announcements').select('*').order('created_at', { ascending: false }),
-        supabase.from('darkroom_slots').select('*').order('date', { ascending: true }),
-        supabase.from('darkroom_reservations').select('*').order('created_at', { ascending: false }),
-        supabase.from('event_suggestions').select('*').order('created_at', { ascending: false })
+        supabase.from('darkroom_slots').select('*').order('date', { ascending: true })
       ]);
 
       const baseBySerial = new Map<string, Equipment>();
@@ -332,28 +353,7 @@ export const api = {
         }
       });
 
-      // 2. Members (Güvenlik: Halka açık pano isteklerinde veya giriş yapılmamışken üye listesi asla çekilmez)
-      const currentAdminId = getActiveSessionAdminId();
-      let members: Member[] = [];
-      if (currentAdminId) {
-        try {
-          const memRes = await supabase.from('members').select('*');
-          if (memRes.data && Array.isArray(memRes.data)) {
-            members = (memRes.data as Member[]).map(normalizeMemberRecord);
-          }
-        } catch (e) {
-          console.warn('Üye listesi çekilemedi:', e);
-        }
-      }
-
-      const memberById = new Map<string, Member>();
-      const memberByNo = new Map<string, Member>();
-      members.forEach((m) => {
-        if (m.id) memberById.set(m.id, m);
-        if (m.student_number) memberByNo.set(m.student_number, m);
-      });
-
-      // 3. Trips
+      // 2. Trips
       let trips: Trip[] = defaultInitialState.trips;
       if (
         tripRes.status === 'fulfilled' &&
@@ -368,46 +368,7 @@ export const api = {
       const tripById = new Map<string, Trip>();
       trips.forEach((t) => tripById.set(t.id, t));
 
-      // 4. Reservations
-      let reservations: Reservation[] = defaultInitialState.reservations;
-      if (
-        resRes.status === 'fulfilled' &&
-        !resRes.value.error &&
-        Array.isArray(resRes.value.data) &&
-        resRes.value.data.length > 0
-      ) {
-        reservations = resRes.value.data.map((r: any) => ({
-          ...r,
-          equipment: equipById.get(r.equipment_id),
-          member: memberById.get(r.member_id) || memberByNo.get(r.student_number),
-          trip: r.trip_id ? tripById.get(r.trip_id) || null : null
-        }));
-
-        // Bekleyen (pending), onaylı (approved) veya kullanımda (in_use) olan taleplere göre ekipman statülerini senkronize et
-        const activeResByEq = new Map<string, string[]>();
-        resRes.value.data.forEach((r: any) => {
-          if (['pending', 'approved', 'in_use'].includes(r.status)) {
-            const list = activeResByEq.get(r.equipment_id) || [];
-            list.push(r.status);
-            activeResByEq.set(r.equipment_id, list);
-          }
-        });
-
-        equipmentList.forEach((eq) => {
-          if (eq.status !== 'maintenance') {
-            const statuses = activeResByEq.get(eq.id);
-            if (statuses && statuses.length > 0) {
-              if (statuses.includes('in_use')) {
-                eq.status = 'in_use';
-              } else if (statuses.includes('approved') || statuses.includes('pending')) {
-                eq.status = 'reserved';
-              }
-            }
-          }
-        });
-      }
-
-      // 5. Announcements
+      // 3. Announcements
       let announcements: Announcement[] = defaultInitialState.announcements;
       if (
         annRes.status === 'fulfilled' &&
@@ -421,13 +382,7 @@ export const api = {
         });
       }
 
-      // 6. Admin Profiles (Güvenlik: Şifreler client tarafına asla çekilmez)
-      const adminProfiles: AdminProfile[] = INITIAL_ADMIN_PROFILES;
-      const activeAdmin = currentAdminId
-        ? adminProfiles.find((p) => p.id === currentAdminId) || null
-        : null;
-
-      // 7. Darkroom Slots
+      // 4. Darkroom Slots
       let darkroomSlots: DarkroomSlot[] = defaultInitialState.darkroomSlots;
       if (
         darkSlotRes.status === 'fulfilled' &&
@@ -438,29 +393,54 @@ export const api = {
         darkroomSlots = darkSlotRes.value.data as DarkroomSlot[];
       }
 
-      // 8. Darkroom Reservations
-      let darkroomReservations: DarkroomReservation[] = defaultInitialState.darkroomReservations;
-      if (
-        darkResRes.status === 'fulfilled' &&
-        !darkResRes.value.error &&
-        Array.isArray(darkResRes.value.data) &&
-        darkResRes.value.data.length > 0
-      ) {
-        darkroomReservations = darkResRes.value.data.map((r: any) => ({
-          ...r,
-          member: memberById.get(r.member_id) || memberByNo.get(r.student_number)
-        }));
+      // 5. Yöneticiye Özel Veriler (BULGU-02 & BULGU-08 KVKK Koruması)
+      // Normal ziyaretçilere üyelerin veya rezervasyonların listesi ASLA gönderilmez!
+      let members: Member[] = [];
+      let reservations: Reservation[] = [];
+      let darkroomReservations: DarkroomReservation[] = [];
+      let eventSuggestions: EventSuggestion[] = [];
+
+      if (isAdmin) {
+        try {
+          const adminBundle = await callAdminAction('get_admin_bundle');
+          if (adminBundle) {
+            if (Array.isArray(adminBundle.members)) {
+              members = adminBundle.members.map(normalizeMemberRecord);
+            }
+            const memberById = new Map<string, Member>();
+            const memberByNo = new Map<string, Member>();
+            members.forEach((m) => {
+              if (m.id) memberById.set(m.id, m);
+              if (m.student_number) memberByNo.set(m.student_number, m);
+            });
+
+            if (Array.isArray(adminBundle.reservations)) {
+              reservations = adminBundle.reservations.map((r: any) => ({
+                ...r,
+                equipment: equipById.get(r.equipment_id),
+                member: memberById.get(r.member_id) || memberByNo.get(r.student_number),
+                trip: r.trip_id ? tripById.get(r.trip_id) || null : null
+              }));
+            }
+
+            if (Array.isArray(adminBundle.darkroomReservations)) {
+              darkroomReservations = adminBundle.darkroomReservations.map((r: any) => ({
+                ...r,
+                member: memberById.get(r.member_id) || memberByNo.get(r.student_number)
+              }));
+            }
+
+            if (Array.isArray(adminBundle.eventSuggestions)) {
+              eventSuggestions = adminBundle.eventSuggestions;
+            }
+          }
+        } catch (adminErr) {
+          console.warn('Yönetici verileri yüklenemedi:', adminErr);
+        }
       }
 
-      // 9. Event Suggestions
-      let eventSuggestions: EventSuggestion[] = getLocalData<EventSuggestion[]>('ytufok_local_suggestions', []);
-      if (
-        sugRes.status === 'fulfilled' &&
-        !sugRes.value.error &&
-        Array.isArray(sugRes.value.data)
-      ) {
-        eventSuggestions = sugRes.value.data as EventSuggestion[];
-      }
+      const adminProfiles: AdminProfile[] = cachedAdminProfiles;
+      const activeAdmin = cachedActiveAdmin;
 
       return {
         equipmentList,
@@ -757,6 +737,13 @@ export const api = {
     if (updates.status !== undefined) payload.status = updates.status;
     if (updates.current_condition !== undefined) payload.current_condition = updates.current_condition;
 
+    if (getAdminToken()) {
+      if (targetId) {
+        await callAdminAction('update_equipment', { id: targetId, updates: payload });
+        return true;
+      }
+    }
+
     if (targetId) {
       const { error } = await supabase.from('equipment').update(payload).eq('id', targetId);
       if (error) {
@@ -786,6 +773,11 @@ export const api = {
         current_condition: updates.current_condition ?? currentItem?.current_condition ?? 'değerlendirilecek'
       };
 
+      if (getAdminToken()) {
+        await callAdminAction('create_equipment', insertPayload);
+        return true;
+      }
+
       const { error: insErr } = await supabase.from('equipment').insert([insertPayload]);
       if (insErr) {
         throw new Error(`Supabase ekipman ekleme hatası: ${insErr.message}`);
@@ -795,6 +787,11 @@ export const api = {
   },
 
   async deleteEquipment(id: string): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('delete_equipment', { id });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Equipment[]>('ytufok_local_equipment', defaultInitialState.equipmentList);
       setLocalData('ytufok_local_equipment', list.filter(e => e.id !== id && e.serial_number !== id));
@@ -827,24 +824,49 @@ export const api = {
   // ==========================================
   // 4. REZERVASYON İŞLEMLERİ (SUPABASE RESERVATIONS)
   // ==========================================
+  async lookupReservation(query: string): Promise<{ equipment: Reservation[]; darkroom: DarkroomReservation[] }> {
+    const res = await fetch('/api/lookup-reservation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: query.trim() })
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json?.success) {
+      throw new Error(json?.message || 'Rezervasyon sorgulanırken hata oluştu.');
+    }
+    return {
+      equipment: Array.isArray(json.equipment) ? json.equipment : [],
+      darkroom: Array.isArray(json.darkroom) ? json.darkroom : []
+    };
+  },
+
+  async cancelReservationPublic(id: string, reservationCode: string, type: 'equipment' | 'darkroom' = 'equipment'): Promise<boolean> {
+    const res = await fetch('/api/lookup-reservation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'cancel',
+        id,
+        reservation_code: reservationCode,
+        type
+      })
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json?.success) {
+      throw new Error(json?.message || 'İptal işlemi gerçekleştirilemedi.');
+    }
+    return true;
+  },
+
   async getMemberActiveReservations(studentNumber: string): Promise<Reservation[]> {
     if (!studentNumber) return [];
-    const cleanNum = studentNumber.trim();
-    if (isSupabaseConfigured()) {
-      try {
-        const { data, error } = await supabase
-          .from('reservations')
-          .select('*, equipment:equipment_id(*)')
-          .eq('student_number', cleanNum)
-          .in('status', ['pending', 'approved', 'in_use'])
-          .order('created_at', { ascending: false });
-        if (!error && data) return data as Reservation[];
-      } catch (err) {
-        console.warn('getMemberActiveReservations error:', err);
-      }
+    try {
+      const data = await this.lookupReservation(studentNumber.trim());
+      return data.equipment.filter(r => ['pending', 'approved', 'in_use'].includes(r.status));
+    } catch {
+      const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
+      return list.filter(r => r.student_number === studentNumber.trim() && ['pending', 'approved', 'in_use'].includes(r.status));
     }
-    const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
-    return list.filter(r => r.student_number === cleanNum && ['pending', 'approved', 'in_use'].includes(r.status));
   },
 
   async createReservation(payload: {
@@ -857,6 +879,32 @@ export const api = {
     trip_id?: string;
     additional_notes?: string;
   }): Promise<{ success: boolean; reservation?: Reservation; message: string }> {
+    // 1. Sunucu Tarafı Güvenli Endpoint (BULGU-07, BULGU-08 & RLS Koruması)
+    try {
+      const apiRes = await fetch('/api/create-reservation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const apiJson = await apiRes.json().catch(() => null);
+      if (apiJson) {
+        if (apiJson.success) {
+          return {
+            success: true,
+            reservation: apiJson.reservation,
+            message: apiJson.message
+          };
+        } else {
+          return {
+            success: false,
+            message: apiJson.message || 'Rezervasyon oluşturulamadı.'
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('API create-reservation fallback:', e);
+    }
+
     const verification = await this.verifyStudentNumber(payload.student_number);
     if (!verification.success || !verification.member) {
       return { success: false, message: verification.message };
@@ -1125,42 +1173,30 @@ export const api = {
   },
 
   async getReservations(): Promise<Reservation[]> {
-    if (isSupabaseConfigured()) {
-      try {
-        const { data, error } = await supabase
-          .from('reservations')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (!error && data) {
-          const bundle = await this.getDashboardBundle();
-          const equipMap = new Map(bundle.equipmentList.map((e) => [e.id, e]));
-          const memberMap = new Map(bundle.members.map((m) => [m.id, m]));
-          const tripMap = new Map(bundle.trips.map((t) => [t.id, t]));
-
-          return (data as any[]).map((r) => {
-            const mem = memberMap.get(r.member_id) || bundle.members.find((m) => m.student_number === r.student_number);
-            let phone = (mem?.phone && !mem.phone.includes('XX')) ? mem.phone : undefined;
-            if (!phone && r.additional_notes && r.additional_notes.includes('Tel:')) {
-              const match = r.additional_notes.match(/Tel:\s*([^|]+)/);
-              if (match) phone = match[1].trim();
-            }
-            return {
-              ...r,
-              phone,
-              equipment: equipMap.get(r.equipment_id),
-              member: mem,
-              trip: r.trip_id ? tripMap.get(r.trip_id) || null : null
-            };
-          });
-        }
-      } catch (err) {
-        console.warn('Supabase getReservations error:', err);
-      }
+    const token = getAdminToken();
+    if (!token) {
+      return []; // Anonim kullanıcıların tüm rezervasyonları listelemesi engellendi (BULGU-08 Fix)
     }
 
-    const bundle = await this.getDashboardBundle();
-    return bundle.reservations;
+    try {
+      const data = await callAdminAction('get_reservations');
+      if (Array.isArray(data)) {
+        const bundle = await this.getDashboardBundle();
+        const equipMap = new Map(bundle.equipmentList.map((e) => [e.id, e]));
+        const memberMap = new Map(bundle.members.map((m) => [m.id, m]));
+        const tripMap = new Map(bundle.trips.map((t) => [t.id, t]));
+
+        return data.map((r: any) => ({
+          ...r,
+          equipment: equipMap.get(r.equipment_id),
+          member: memberMap.get(r.member_id) || bundle.members.find((m) => m.student_number === r.student_number),
+          trip: r.trip_id ? tripMap.get(r.trip_id) || null : null
+        }));
+      }
+    } catch (err) {
+      console.warn('Admin getReservations error:', err);
+    }
+    return [];
   },
 
   async updateReservationStatus(
@@ -1196,6 +1232,11 @@ export const api = {
       if (options?.approved_by) updates.approved_by = options.approved_by;
     }
 
+    if (getAdminToken()) {
+      await callAdminAction('update_reservation', { id, updates });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
       const idx = list.findIndex(r => r.id === id);
@@ -1203,51 +1244,12 @@ export const api = {
         list[idx] = { ...list[idx], ...updates };
         setLocalData('ytufok_local_reservations', list);
       }
-      const resItem = list[idx];
-      if (resItem?.equipment_id) {
-        const remaining = list.filter(r => r.equipment_id === resItem.equipment_id);
-        let nextEqStatus: EquipmentStatus = 'available';
-        if (remaining.some(r => r.status === 'in_use')) {
-          nextEqStatus = 'in_use';
-        } else if (remaining.some(r => r.status === 'approved' || r.status === 'pending')) {
-          nextEqStatus = 'reserved';
-        }
-        await this.updateEquipmentStatus(resItem.equipment_id, nextEqStatus);
-      }
       return true;
     }
-
-    // Hedef rezervasyonun ekipman id'sini al
-    const { data: targetRes } = await supabase
-      .from('reservations')
-      .select('equipment_id')
-      .eq('id', id)
-      .maybeSingle();
 
     const { error } = await supabase.from('reservations').update(updates).eq('id', id);
     if (error) {
       throw new Error(`Supabase rezervasyon güncelleme hatası: ${error.message}`);
-    }
-
-    // İlgili ekipmanın durumunu, o ekipmana ait TÜM rezervasyonları inceleyerek güncelle
-    const eqId = targetRes?.equipment_id;
-    if (eqId) {
-      const currentEq = await this.getEquipmentById(eqId);
-      if (currentEq && currentEq.status !== 'maintenance') {
-        const { data: allEqRes } = await supabase
-          .from('reservations')
-          .select('id, status')
-          .eq('equipment_id', eqId);
-
-        let nextEqStatus: EquipmentStatus = 'available';
-        if (allEqRes?.some(r => r.status === 'in_use')) {
-          nextEqStatus = 'in_use';
-        } else if (allEqRes?.some(r => r.status === 'approved' || r.status === 'pending')) {
-          nextEqStatus = 'reserved';
-        }
-
-        await this.updateEquipmentStatus(eqId, nextEqStatus);
-      }
     }
     return true;
   },
@@ -1258,9 +1260,6 @@ export const api = {
     returnDate: string,
     additionalNotes?: string
   ): Promise<boolean> {
-    const today = getLocalDateString();
-    const isNewDateFuture = returnDate >= today;
-    
     const updates: Record<string, any> = {
       pickup_date: pickupDate,
       return_date: returnDate,
@@ -1271,27 +1270,19 @@ export const api = {
       updates.additional_notes = additionalNotes;
     }
 
+    if (getAdminToken()) {
+      await callAdminAction('update_reservation', { id, updates });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
       const idx = list.findIndex(r => r.id === id);
       if (idx !== -1) {
-        if (list[idx].status === 'overdue' && isNewDateFuture) {
-          updates.status = 'in_use';
-        }
         list[idx] = { ...list[idx], ...updates };
         setLocalData('ytufok_local_reservations', list);
       }
       return true;
-    }
-
-    const { data: targetRes } = await supabase
-      .from('reservations')
-      .select('id, status')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (targetRes?.status === 'overdue' && isNewDateFuture) {
-      updates.status = 'in_use';
     }
 
     const { error } = await supabase.from('reservations').update(updates).eq('id', id);
@@ -1302,51 +1293,29 @@ export const api = {
   },
 
   async deleteReservation(id: string): Promise<boolean> {
-    if (!isSupabaseConfigured()) {
-      const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
-      const target = list.find(r => r.id === id);
-      const filtered = list.filter(r => r.id !== id);
-      setLocalData('ytufok_local_reservations', filtered);
-      if (target?.equipment_id) {
-        const remaining = filtered.filter(r => r.equipment_id === target.equipment_id);
-        let nextEqStatus: EquipmentStatus = 'available';
-        if (remaining.some(r => r.status === 'in_use')) nextEqStatus = 'in_use';
-        else if (remaining.some(r => r.status === 'approved' || r.status === 'pending')) nextEqStatus = 'reserved';
-        await this.updateEquipmentStatus(target.equipment_id, nextEqStatus);
-      }
+    if (getAdminToken()) {
+      await callAdminAction('delete_reservation', { id });
       return true;
     }
 
-    const { data: targetRes } = await supabase
-      .from('reservations')
-      .select('equipment_id')
-      .eq('id', id)
-      .maybeSingle();
+    if (!isSupabaseConfigured()) {
+      const list = getLocalData<Reservation[]>('ytufok_local_reservations', defaultInitialState.reservations);
+      const filtered = list.filter(r => r.id !== id);
+      setLocalData('ytufok_local_reservations', filtered);
+      return true;
+    }
 
     const { error } = await supabase.from('reservations').delete().eq('id', id);
     if (error) throw new Error(`Supabase rezervasyon silme hatası: ${error.message}`);
-
-    if (targetRes?.equipment_id) {
-      const currentEq = await this.getEquipmentById(targetRes.equipment_id);
-      if (currentEq && currentEq.status !== 'maintenance') {
-        const { data: allEqRes } = await supabase
-          .from('reservations')
-          .select('id, status')
-          .eq('equipment_id', targetRes.equipment_id);
-
-        let nextEqStatus: EquipmentStatus = 'available';
-        if (allEqRes?.some(r => r.status === 'in_use')) {
-          nextEqStatus = 'in_use';
-        } else if (allEqRes?.some(r => r.status === 'approved' || r.status === 'pending')) {
-          nextEqStatus = 'reserved';
-        }
-        await this.updateEquipmentStatus(targetRes.equipment_id, nextEqStatus);
-      }
-    }
     return true;
   },
 
   async clearReservations(): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('clear_all_reservations');
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       setLocalData('ytufok_local_reservations', []);
       return true;
@@ -1358,18 +1327,69 @@ export const api = {
   },
 
   // ==========================================
-  // 5. YÖNETİCİ PROFİLLERİ & PIN ŞİFRELERİ
+  // 5. YÖNETİCİ PROFİLLERİ & PIN ŞİFRELERİ (GÜVENLİ SERVER-SIDE AUTH)
   // ==========================================
-  async getAdminProfiles(_forceFresh = false): Promise<AdminProfile[]> {
-    // Güvenlik: PIN şifresi asla istemciye getirilmez, sadece genel profil bilgileri döndürülür
-    return INITIAL_ADMIN_PROFILES;
+  getAdminToken(): string | null {
+    return getAdminToken();
   },
 
-  async getActiveAdmin(): Promise<AdminProfile | null> {
-    const adminId = getActiveSessionAdminId();
-    if (!adminId) return null;
-    const profiles = await this.getAdminProfiles();
-    return profiles.find((p) => p.id === adminId || p.student_number === adminId) || null;
+  async getAdminProfiles(_forceFresh = false): Promise<AdminProfile[]> {
+    if (cachedAdminProfiles && cachedAdminProfiles.length > 0) {
+      return cachedAdminProfiles;
+    }
+    try {
+      if (typeof window !== 'undefined') {
+        const stored = window.sessionStorage.getItem('ytufok_admin_profiles');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            cachedAdminProfiles = parsed;
+            return parsed;
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return cachedActiveAdmin ? [cachedActiveAdmin] : [];
+  },
+
+  async getActiveAdmin(forceVerify = false): Promise<AdminProfile | null> {
+    const token = this.getAdminToken();
+    if (!token) {
+      cachedActiveAdmin = null;
+      return null;
+    }
+
+    if (cachedActiveAdmin && !forceVerify) {
+      return cachedActiveAdmin;
+    }
+
+    // Sunucu tarafında kriptografik imza ve geçerlilik kontrolü (BULGU-05 Fix)
+    try {
+      const res = await fetch('/api/verify-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        cache: 'no-store'
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.valid && data?.admin) {
+          cachedActiveAdmin = data.admin;
+          return data.admin;
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    // Oturum sahte veya süresi dolmuşsa oturumu temizle
+    await this.signOut();
+    return null;
   },
 
   async loginAdmin(
@@ -1382,7 +1402,6 @@ export const api = {
       return { success: false, message: 'Lütfen öğrenci numaranızı ve şifrenizi giriniz.' };
     }
 
-    // 1. Canlı Veritabanı ve Kriptografik Doğrulama (Vercel Serverless - Asla Önbellek Tutmaz)
     try {
       const res = await fetch('/api/verify-admin-login', {
         method: 'POST',
@@ -1391,17 +1410,20 @@ export const api = {
         body: JSON.stringify({ studentNumber: cleanNo, pin: cleanPin })
       });
       const json = await res.json().catch(() => null);
-      if (json) {
+      if (json && json.success && json.token && json.admin) {
+        await this.setAdminSession(json.token, json.admin, json.profiles);
         return json;
       }
+      return json || {
+        success: false,
+        message: 'Öğrenci numarası veya şifre hatalı.'
+      };
     } catch {
-      // ignore
+      return {
+        success: false,
+        message: 'Sunucu bağlantısı sağlanamadı. Lütfen daha sonra tekrar deneyiniz.'
+      };
     }
-
-    return {
-      success: false,
-      message: 'Öğrenci numarası veya şifre hatalı.'
-    };
   },
 
   async verifyAdminPin(adminId: string, pin: string): Promise<{ success: boolean; message: string }> {
@@ -1410,26 +1432,58 @@ export const api = {
       return { success: false, message: 'Lütfen PIN şifrenizi giriniz.' };
     }
 
-    // Canlı Veritabanı Doğrulaması (Asla Önbellek Tutmaz)
     try {
       const res = await fetch('/api/verify-admin-pin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.getAdminToken() || ''}`
+        },
         cache: 'no-store',
         body: JSON.stringify({ adminId, pin: cleanPin })
       });
       const json = await res.json().catch(() => null);
-      if (json) {
+      if (json && json.success && json.token && json.admin) {
+        await this.setAdminSession(json.token, json.admin);
         return json;
+      }
+      return json || {
+        success: false,
+        message: 'Hatalı PIN kodu veya sunucuya ulaşılamadı.'
+      };
+    } catch {
+      return {
+        success: false,
+        message: 'Hatalı PIN kodu veya sunucuya ulaşılamadı.'
+      };
+    }
+  },
+
+  async setAdminSession(token: string, admin: AdminProfile, profiles?: AdminProfile[]): Promise<void> {
+    cachedAdminToken = token;
+    cachedActiveAdmin = admin;
+    if (profiles && profiles.length > 0) {
+      cachedAdminProfiles = profiles;
+    } else {
+      cachedAdminProfiles = [admin];
+    }
+
+    try {
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem('ytufok_admin_token', token);
+        window.sessionStorage.setItem('ytufok_admin_profile', JSON.stringify(admin));
+        if (profiles) {
+          window.sessionStorage.setItem('ytufok_admin_profiles', JSON.stringify(profiles));
+        }
+        // Eski güvensiz anahtarları temizle
+        window.sessionStorage.removeItem('ytufok_session_admin_id');
+        window.localStorage.removeItem('ytufok_session_admin_id');
       }
     } catch {
       // ignore
     }
 
-    return {
-      success: false,
-      message: 'Hatalı PIN kodu veya sunucuya ulaşılamadı.'
-    };
+    this.notifyAuthChange(admin);
   },
 
   async setActiveAdmin(adminId: string | null): Promise<void> {
@@ -1437,48 +1491,41 @@ export const api = {
       await this.signOut();
       return;
     }
-    activeSessionAdminId = adminId;
+
+    const profiles = await this.getAdminProfiles();
+    const resolved = profiles.find((p) => p.id === adminId || p.student_number === adminId) || null;
+    if (resolved && cachedAdminToken) {
+      cachedActiveAdmin = resolved;
+      this.notifyAuthChange(resolved);
+    } else {
+      await this.signOut();
+    }
+  },
+
+  async signOut(): Promise<void> {
+    cachedAdminToken = null;
+    cachedActiveAdmin = null;
+    cachedAdminProfiles = [];
+
     try {
       if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem('ytufok_session_admin_id', adminId);
-        window.localStorage.setItem('ytufok_session_admin_id', adminId);
+        window.sessionStorage.removeItem('ytufok_admin_token');
+        window.sessionStorage.removeItem('ytufok_admin_profile');
+        window.sessionStorage.removeItem('ytufok_admin_profiles');
+        window.sessionStorage.removeItem('ytufok_session_admin_id');
+        window.localStorage.removeItem('ytufok_session_admin_id');
+        window.localStorage.removeItem('ytufok_active_admin_profile');
       }
     } catch {
       // ignore
     }
 
-    const profiles = await this.getAdminProfiles();
-    const resolved = profiles.find((p) => p.id === adminId || p.student_number === adminId) || null;
-    this.notifyAuthChange(resolved);
-  },
-
-  async signOut(): Promise<void> {
     try {
       if (isSupabaseConfigured()) {
         await supabase.auth.signOut();
       }
-    } catch (err) {
-      console.warn('Supabase auth.signOut error:', err);
-    }
-
-    activeSessionAdminId = null;
-    try {
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.removeItem('ytufok_session_admin_id');
-        window.localStorage.removeItem('ytufok_session_admin_id');
-
-        // Clean Supabase Auth storage tokens without deleting Supabase project URL / key credentials
-        const keysToRemove: string[] = [];
-        for (let i = 0; i < window.localStorage.length; i++) {
-          const k = window.localStorage.key(i);
-          if (k && (k.startsWith('sb-') || k.includes('auth-token') || k.includes('supabase.auth.token'))) {
-            keysToRemove.push(k);
-          }
-        }
-        keysToRemove.forEach((k) => window.localStorage.removeItem(k));
-      }
-    } catch (e) {
-      console.warn('LocalStorage cleanup error:', e);
+    } catch {
+      // ignore
     }
 
     this.notifyAuthChange(null);
@@ -1578,6 +1625,11 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
+    if (getAdminToken()) {
+      const data = await callAdminAction('add_member', payload);
+      return normalizeMemberRecord(data as Member);
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Member[]>('ytufok_local_members', defaultInitialState.members);
       const normalized = normalizeMemberRecord(payload as Member);
@@ -1610,6 +1662,11 @@ export const api = {
     };
     if (status) updates.status = status;
 
+    if (getAdminToken()) {
+      await callAdminAction('update_member', { id, updates });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Member[]>('ytufok_local_members', defaultInitialState.members);
       const idx = list.findIndex(m => m.id === id || m.student_number === id);
@@ -1626,6 +1683,11 @@ export const api = {
   },
 
   async updateMember(id: string, updates: Partial<Member>): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('update_member', { id, updates });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Member[]>('ytufok_local_members', defaultInitialState.members);
       const idx = list.findIndex(m => m.id === id || m.student_number === id);
@@ -1642,6 +1704,11 @@ export const api = {
   },
 
   async deleteMember(id: string, studentNumber?: string): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('delete_member', { id });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Member[]>('ytufok_local_members', defaultInitialState.members);
       setLocalData('ytufok_local_members', list.filter(m => m.id !== id && m.student_number !== studentNumber));
@@ -1661,6 +1728,11 @@ export const api = {
     let role = 'member';
     if (memberType === 'board') role = 'admin';
     else if (memberType === 'audit') role = 'audit';
+
+    if (getAdminToken()) {
+      await callAdminAction('update_member', { id, updates: { role, member_type: memberType } });
+      return true;
+    }
 
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Member[]>('ytufok_local_members', defaultInitialState.members);
@@ -1747,6 +1819,11 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
+    if (getAdminToken()) {
+      const data = await callAdminAction('create_announcement', payload);
+      return data as Announcement;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Announcement[]>('ytufok_local_announcements', defaultInitialState.announcements);
       list.unshift(payload);
@@ -1768,6 +1845,11 @@ export const api = {
     id: string,
     updates: Partial<Announcement>
   ): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('update_announcement', { id, updates });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Announcement[]>('ytufok_local_announcements', defaultInitialState.announcements);
       const idx = list.findIndex(a => a.id === id);
@@ -1784,6 +1866,11 @@ export const api = {
   },
 
   async deleteAnnouncement(id: string): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('delete_announcement', { id });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Announcement[]>('ytufok_local_announcements', defaultInitialState.announcements);
       setLocalData('ytufok_local_announcements', list.filter(a => a.id !== id));
@@ -1839,6 +1926,11 @@ export const api = {
     const newId = `slot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const payload: DarkroomSlot = { ...slot, id: newId };
 
+    if (getAdminToken()) {
+      const data = await callAdminAction('create_slot', payload);
+      return (data || payload) as DarkroomSlot;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<DarkroomSlot[]>('ytufok_local_darkroom_slots', defaultInitialState.darkroomSlots);
       list.push(payload);
@@ -1859,6 +1951,11 @@ export const api = {
       id: `slot-${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 6)}`
     }));
 
+    if (getAdminToken()) {
+      const data = await callAdminAction('create_slots_batch', payloads);
+      return (data || payloads) as DarkroomSlot[];
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<DarkroomSlot[]>('ytufok_local_darkroom_slots', defaultInitialState.darkroomSlots);
       list.push(...payloads);
@@ -1872,6 +1969,11 @@ export const api = {
   },
 
   async deleteDarkroomSlot(id: string): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('delete_slot', { id });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<DarkroomSlot[]>('ytufok_local_darkroom_slots', defaultInitialState.darkroomSlots);
       setLocalData('ytufok_local_darkroom_slots', list.filter(s => s.id !== id));
@@ -1884,6 +1986,11 @@ export const api = {
   },
 
   async toggleDarkroomSlot(id: string, is_active: boolean): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('update_slot', { id, updates: { is_active } });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<DarkroomSlot[]>('ytufok_local_darkroom_slots', defaultInitialState.darkroomSlots);
       const idx = list.findIndex(s => s.id === id);
@@ -1900,22 +2007,18 @@ export const api = {
   },
 
   async getDarkroomReservations(): Promise<DarkroomReservation[]> {
-    if (isSupabaseConfigured()) {
-      try {
-        const { data, error } = await supabase
-          .from('darkroom_reservations')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (!error && data) {
-          return data as DarkroomReservation[];
-        }
-      } catch (err) {
-        console.warn('Supabase getDarkroomReservations error:', err);
-      }
+    const token = getAdminToken();
+    if (!token) {
+      return []; // Anonim kullanıcıların karanlık oda rezervasyonlarını listelemesi engellendi (BULGU-08 Fix)
     }
-    const bundle = await this.getDashboardBundle();
-    return bundle.darkroomReservations;
+
+    try {
+      const data = await callAdminAction('get_darkroom_reservations');
+      if (Array.isArray(data)) return data as DarkroomReservation[];
+    } catch (err) {
+      console.warn('getDarkroomReservations error:', err);
+    }
+    return [];
   },
 
   async getDarkroomReservationsByDate(date: string): Promise<DarkroomReservation[]> {
@@ -1926,6 +2029,20 @@ export const api = {
   async createDarkroomReservation(
     payload: Omit<DarkroomReservation, 'id' | 'reservation_code' | 'created_at'>
   ): Promise<DarkroomReservation> {
+    try {
+      const res = await fetch('/api/create-darkroom-reservation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success && json?.reservation) {
+        return json.reservation;
+      }
+    } catch {
+      // API erişilemezse yerel/doğrudan akışa devam et
+    }
+
     const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
     const reservation_code = `KO-${new Date().getFullYear()}-${randomSuffix}`;
     const newReservation: DarkroomReservation = {
@@ -1971,6 +2088,11 @@ export const api = {
     }
     if (options?.supervisor) updates.supervisor = options.supervisor;
 
+    if (getAdminToken()) {
+      await callAdminAction('update_darkroom_reservation', { id, updates });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<DarkroomReservation[]>('ytufok_local_darkroom_reservations', defaultInitialState.darkroomReservations);
       const idx = list.findIndex(r => r.id === id);
@@ -1987,6 +2109,11 @@ export const api = {
   },
 
   async deleteDarkroomReservation(id: string): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('delete_darkroom_reservation', { id });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<DarkroomReservation[]>('ytufok_local_darkroom_reservations', defaultInitialState.darkroomReservations);
       setLocalData('ytufok_local_darkroom_reservations', list.filter(r => r.id !== id));
@@ -2032,6 +2159,11 @@ export const api = {
       created_at: new Date().toISOString()
     };
 
+    if (getAdminToken()) {
+      const data = await callAdminAction('create_trip', payload);
+      return (data || payload) as Trip;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Trip[]>('ytufok_local_trips', defaultInitialState.trips);
       list.push(payload);
@@ -2045,6 +2177,11 @@ export const api = {
   },
 
   async updateTrip(id: string, updates: Partial<Trip>): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('update_trip', { id, updates });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Trip[]>('ytufok_local_trips', defaultInitialState.trips);
       const idx = list.findIndex(t => t.id === id);
@@ -2061,6 +2198,11 @@ export const api = {
   },
 
   async deleteTrip(id: string): Promise<boolean> {
+    if (getAdminToken()) {
+      await callAdminAction('delete_trip', { id });
+      return true;
+    }
+
     if (!isSupabaseConfigured()) {
       const list = getLocalData<Trip[]>('ytufok_local_trips', defaultInitialState.trips);
       setLocalData('ytufok_local_trips', list.filter(t => t.id !== id));
@@ -2284,17 +2426,17 @@ export const api = {
   },
 
   async createEvent(data: Omit<ClubEvent, 'id' | 'created_at'>): Promise<ClubEvent> {
-    const adminId = getActiveSessionAdminId();
-    if (!adminId) {
-      throw new Error('Yetkisiz işlem: Yalnızca kulüp yöneticileri etkinlik oluşturabilir.');
-    }
-
     const newId = `event-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const payload: ClubEvent = {
       ...data,
       id: newId,
       created_at: new Date().toISOString()
     };
+
+    if (getAdminToken()) {
+      const created = await callAdminAction('create_event', payload);
+      return (created || payload) as ClubEvent;
+    }
 
     if (isSupabaseConfigured()) {
       try {
@@ -2318,9 +2460,9 @@ export const api = {
   },
 
   async updateEvent(id: string, updates: Partial<ClubEvent>): Promise<boolean> {
-    const adminId = getActiveSessionAdminId();
-    if (!adminId) {
-      throw new Error('Yetkisiz işlem: Yalnızca kulüp yöneticileri etkinlik düzenleyebilir.');
+    if (getAdminToken()) {
+      await callAdminAction('update_event', { id, updates });
+      return true;
     }
 
     if (isSupabaseConfigured()) {
@@ -2341,9 +2483,9 @@ export const api = {
   },
 
   async deleteEvent(id: string): Promise<boolean> {
-    const adminId = getActiveSessionAdminId();
-    if (!adminId) {
-      throw new Error('Yetkisiz işlem: Yalnızca kulüp yöneticileri etkinlik silebilir.');
+    if (getAdminToken()) {
+      await callAdminAction('delete_event', { id });
+      return true;
     }
 
     if (isSupabaseConfigured()) {

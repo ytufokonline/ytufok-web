@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { getAuthenticatedAdmin } from './_security.js';
 
 const TMP_FILE = '/tmp/ytufok_unified_state_v6.json';
 const NTFY_TOPIC = 'ytufok_unified_state_v6_948172';
@@ -170,10 +171,18 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Güvenlik: Yazma işlemleri (POST / PUT) SADECE imzalı yönetici token'ı ile yapılabilir!
+  if (req.method === 'POST' || req.method === 'PUT') {
+    const admin = getAuthenticatedAdmin(req);
+    if (!admin) {
+      return res.status(401).json({ ok: false, error: 'Yetkisiz erişim: Bu işlem için yönetici oturumu gereklidir.' });
+    }
   }
 
   if (req.method === 'GET') {

@@ -4,12 +4,20 @@
       "source": "/(.*)",
       "headers": [
         {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://api.fontshare.com; font-src 'self' data: https://cdn.fontshare.com https://api.fontshare.com; img-src 'self' data: blob: https:; connect-src 'self' https://hqmwlrilmtblnsumwcmr.supabase.co https://*.supabase.co wss://*.supabase.co https:; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
+        },
+        {
           "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
+          "value": "DENY"
         },
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
         },
         {
           "key": "Referrer-Policy",

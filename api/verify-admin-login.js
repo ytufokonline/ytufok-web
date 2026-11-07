@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { createAdminSessionToken, checkRateLimit, getClientIp } from './_security.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
@@ -15,7 +16,8 @@ function verifyPin(pin, hash, salt) {
   }
 }
 
-const FALLBACK_ADMINS = [
+// Sunucu tarafında saklanan yönetim kurulu profilleri (Client JS bundle'a ASLA dahil edilmez)
+const SERVER_ADMIN_PROFILES = [
   { id: 'admin-baskan', role: 'president', title: 'Kulüp Başkanı', short_title: 'Başkan', full_name: 'Sıla Dönmez', student_number: '24084005', phone: '', avatar_color: 'from-[#4b253b] via-[#301322] to-[#657796]' },
   { id: 'admin-by1', role: 'vice_president_1', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Yavuz Selim Bahadır', student_number: '21065054', phone: '', avatar_color: 'from-[#657796] via-[#4e3b52] to-[#301322]' },
   { id: 'admin-by2', role: 'vice_president_2', title: 'Başkan Yardımcısı', short_title: 'Başkan Yrd.', full_name: 'Alara Tezelli', student_number: '23084041', phone: '', avatar_color: 'from-[#584964] via-[#4b253b] to-[#8193b2]' },
@@ -32,7 +34,7 @@ export default async function handler(req, res) {
   res.setHeader('Expires', '0');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -40,6 +42,16 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
+  }
+
+  // 1. IP ve Kullanıcı bazlı Rate Limiting (Kaba kuvvet koruması - BULGU-07)
+  const clientIp = getClientIp(req);
+  const ipLimit = checkRateLimit(`login-ip:${clientIp}`, { maxRequests: 5, windowMs: 300000, lockoutMs: 300000 });
+  if (!ipLimit.allowed) {
+    return res.status(429).json({
+      success: false,
+      message: ipLimit.message
+    });
   }
 
   try {
@@ -53,17 +65,26 @@ export default async function handler(req, res) {
     const cleanNo = String(studentNumber).trim().toLowerCase().replace(/\s+/g, '');
     const cleanPin = String(pin).trim();
 
+    // Öğrenci numarasına özel rate limiting
+    const accountLimit = checkRateLimit(`login-acc:${cleanNo}`, { maxRequests: 5, windowMs: 300000, lockoutMs: 300000 });
+    if (!accountLimit.allowed) {
+      return res.status(429).json({
+        success: false,
+        message: accountLimit.message
+      });
+    }
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Canlı veritabanından üyeyi sorgula (Asla önbellekten okuma)
-    const { data: member, error } = await supabase
+    // 2. Canlı veritabanından üyeyi sorgula (Asla önbellekten okuma)
+    const { data: member } = await supabase
       .from('members')
       .select('id, student_number, full_name, department, role, member_type, status, notes')
       .eq('student_number', cleanNo)
       .maybeSingle();
 
     // Yönetici kontrolü
-    const matchedProfile = FALLBACK_ADMINS.find(
+    const matchedProfile = SERVER_ADMIN_PROFILES.find(
       (a) => a.student_number.toLowerCase().replace(/\s+/g, '') === cleanNo
     );
 
@@ -79,7 +100,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 2. Veritabanındaki güncel şifre verisini kontrol et
+    // 3. Veritabanındaki güncel şifre verisini kontrol et
     let authData = null;
     if (member?.notes) {
       try {
@@ -99,13 +120,10 @@ export default async function handler(req, res) {
     let isPasswordValid = false;
 
     if (authData && authData.hash && authData.salt) {
-      // KULLANICI ŞİFRESİNİ DEĞİŞTİRMİŞSE:
-      // Eski şifre veya YTUFOK19 ASLA kabul edilmez; sadece güncel hash geçerlidir!
       isPasswordValid = verifyPin(cleanPin, authData.hash, authData.salt);
     } else if (authData && authData.plain_pin) {
       isPasswordValid = (cleanPin === authData.plain_pin);
     } else {
-      // Kullanıcı henüz özel şifre belirlememiş; ilk giriş bootstrap şifresi geçerlidir
       isPasswordValid = (cleanPin === DEFAULT_BOOTSTRAP_PIN || cleanPin.toUpperCase() === DEFAULT_BOOTSTRAP_PIN);
     }
 
@@ -116,7 +134,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 3. Giriş başarılı: Profil nesnesini oluştur ve döndür
+    // 4. Giriş başarılı: Profil nesnesi oluştur ve İMZALI OTURUM TOKENI (JWT/HMAC) üret
     const profileToReturn = matchedProfile || {
       id: member.id,
       role: member.role || 'board',
@@ -128,12 +146,27 @@ export default async function handler(req, res) {
       avatar_color: 'from-[#4e3b52] via-[#301322] to-[#8193b2]'
     };
 
+    // Sunucu imzalı oturum token'ı oluştur (Client-side manipülasyonu imkansızdır - BULGU-05)
+    const token = createAdminSessionToken(profileToReturn);
+
+    // Profil listesini sadece giriş yapan yetkiliye döndür (Bundle'da sızmaz - BULGU-03)
+    const sanitizedProfiles = SERVER_ADMIN_PROFILES.map(p => ({
+      id: p.id,
+      role: p.role,
+      title: p.title,
+      short_title: p.short_title,
+      full_name: p.full_name,
+      avatar_color: p.avatar_color
+    }));
+
     return res.status(200).json({
       success: true,
       message: 'Giriş başarılı.',
-      admin: profileToReturn
+      token: token,
+      admin: profileToReturn,
+      profiles: sanitizedProfiles
     });
-  } catch (err) {
+  } catch {
     return res.status(500).json({ success: false, message: 'Sunucu doğrulama hatası oluştu.' });
   }
 }

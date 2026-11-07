@@ -23,25 +23,12 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
     setHasSearched(true);
 
     try {
-      const [allReservations, allDarkroom] = await Promise.all([
-        api.getReservations(),
-        api.getDarkroomReservations()
-      ]);
-
-      const matchedEquip = allReservations.filter((r) => 
-        r.reservation_code.toUpperCase().includes(cleanQuery) ||
-        r.student_number.includes(cleanQuery)
-      );
-
-      const matchedDark = allDarkroom.filter((r) => 
-        r.reservation_code.toUpperCase().includes(cleanQuery) ||
-        r.student_number.includes(cleanQuery)
-      );
-
-      setEquipmentResults(matchedEquip);
-      setDarkroomResults(matchedDark);
-    } catch (err) {
+      const data = await api.lookupReservation(cleanQuery);
+      setEquipmentResults(data.equipment || []);
+      setDarkroomResults(data.darkroom || []);
+    } catch (err: any) {
       console.error(err);
+      alert(err?.message || 'Sorgulama esnasında bir hata oluştu.');
       setEquipmentResults([]);
       setDarkroomResults([]);
     } finally {
@@ -77,10 +64,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
 
     setCancellingId(res.id);
     try {
-      await api.updateReservationStatus(res.id, 'cancelled', {
-        rejection_reason: 'Üye tarafından takip ekranından iptal edildi',
-        approved_by: 'İptal (Üye Talebi)'
-      });
+      await api.cancelReservationPublic(res.id, res.reservation_code, 'equipment');
       alert('Rezervasyonunuz başarıyla iptal edildi.');
       const currentQuery = query.trim().toUpperCase();
       if (currentQuery) {
@@ -102,10 +86,7 @@ export const ReservationStatusPage: React.FC<ReservationStatusPageProps> = ({ on
 
     setCancellingId(ko.id);
     try {
-      await api.updateDarkroomReservationStatus(ko.id, 'cancelled', {
-        rejection_reason: 'Üye tarafından takip ekranından iptal edildi',
-        approved_by: 'İptal (Üye Talebi)'
-      });
+      await api.cancelReservationPublic(ko.id, ko.reservation_code, 'darkroom');
       alert('Karanlık oda randevunuz başarıyla iptal edildi.');
       const currentQuery = query.trim().toUpperCase();
       if (currentQuery) {

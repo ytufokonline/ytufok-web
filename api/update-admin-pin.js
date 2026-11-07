@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { checkRateLimit, getClientIp, getAuthenticatedAdmin } from './_security.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
@@ -21,13 +22,24 @@ function verifyPin(pin, hash, salt) {
   }
 }
 
+const ADMIN_ID_TO_STUDENT = {
+  'admin-baskan': '24084005',
+  'admin-by1': '21065054',
+  'admin-by2': '23084041',
+  'admin-sayman': '23084006',
+  'admin-sekreter': '24084023',
+  'admin-sosyal-medya': '24084024',
+  'admin-gezi': '24084602',
+  'admin-sponsorluk': '24084025'
+};
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -36,6 +48,19 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
+
+  // Rate Limiting (Kaba kuvvet koruması - BULGU-07)
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`pin-update-ip:${clientIp}`, { maxRequests: 5, windowMs: 600000, lockoutMs: 600000 });
+  if (!rateLimit.allowed) {
+    return res.status(429).json({
+      success: false,
+      message: rateLimit.message
+    });
+  }
+
+  // Güvenlik: Oturum doğrulaması (Yetkisiz şifre değiştirme engeli)
+  const authenticatedAdmin = getAuthenticatedAdmin(req);
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
@@ -53,31 +78,17 @@ export default async function handler(req, res) {
     }
 
     const cleanAdminId = String(adminId).trim();
-    const ADMIN_ID_TO_STUDENT = {
-      'admin-baskan': '24084005',
-      'admin-by1': '21065054',
-      'admin-by2': '23084041',
-      'admin-sayman': '23084006',
-      'admin-sekreter': '24084023',
-      'admin-sosyal-medya': '24084024',
-      'admin-gezi': '24084602',
-      'admin-sponsorluk': '24084025'
-    };
 
-    const FALLBACK_ADMINS = [
-      { id: 'admin-baskan', full_name: 'Sıla Dönmez', student_number: '24084005' },
-      { id: 'admin-by1', full_name: 'Yavuz Selim Bahadır', student_number: '21065054' },
-      { id: 'admin-by2', full_name: 'Alara Tezelli', student_number: '23084041' },
-      { id: 'admin-sayman', full_name: 'Duru Anlar', student_number: '23084006' },
-      { id: 'admin-sekreter', full_name: 'Yağmur Dursun', student_number: '24084023' },
-      { id: 'admin-sosyal-medya', full_name: 'Sümeyra Sever', student_number: '24084024' },
-      { id: 'admin-gezi', full_name: 'İlayda Sudem Güneş', student_number: '24084602' },
-      { id: 'admin-sponsorluk', full_name: 'Öykü Aydın', student_number: '24084025' }
-    ];
+    // Oturum sahibi yalnızca kendi şifresini değiştirebilir
+    if (authenticatedAdmin && authenticatedAdmin.id !== cleanAdminId && authenticatedAdmin.student_number !== cleanAdminId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Yalnızca kendi yönetici şifrenizi güncelleyebilirsiniz.'
+      });
+    }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Canlı veritabanından güncel yönetici kaydını esnek şekilde çek
     let member = null;
 
     // A. Slug haritalamasından öğrenci numarası ile kontrol
@@ -91,7 +102,7 @@ export default async function handler(req, res) {
       if (data) member = data;
     }
 
-    // B. UUID ise doğrudan ID üzerinden kontrol
+    // B. UUID kontrolü
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanAdminId);
     if (!member && isUuid) {
       const { data } = await supabase
@@ -102,7 +113,7 @@ export default async function handler(req, res) {
       if (data) member = data;
     }
 
-    // C. Öğrenci numarası olarak kontrol
+    // C. Doğrudan öğrenci numarası kontrolü
     if (!member) {
       const cleanNo = cleanAdminId.toLowerCase().replace(/\s+/g, '');
       const { data } = await supabase
@@ -113,35 +124,23 @@ export default async function handler(req, res) {
       if (data) member = data;
     }
 
-    // D. FALLBACK_ADMINS eşleşmesi üzerinden kontrol
     if (!member) {
-      const fallback = FALLBACK_ADMINS.find(
-        (a) => a.id === cleanAdminId || a.student_number === cleanAdminId || a.full_name.toLowerCase() === cleanAdminId.toLowerCase()
-      );
-      if (fallback) {
-        const { data } = await supabase
-          .from('members')
-          .select('id, student_number, full_name, role, member_type, notes')
-          .eq('student_number', fallback.student_number)
-          .maybeSingle();
-        if (data) member = data;
-      }
+      return res.status(404).json({
+        success: false,
+        message: 'Yönetici üye kaydı bulunamadı.'
+      });
     }
 
-    if (!member) {
-      return res.status(404).json({ success: false, message: 'Yönetici hesabı bulunamadı.' });
-    }
-
-    // 2. Mevcut şifreyi doğrula (Eski şifre kontrolü)
+    // 2. Mevcut şifreyi doğrula
     let authData = null;
+    let existingNotesObj = {};
     if (member.notes) {
       try {
-        const parsed = JSON.parse(member.notes);
-        if (parsed.auth && parsed.auth.hash && parsed.auth.salt) {
-          authData = parsed.auth;
-        } else if (parsed.admin_pin) {
-          // Eski düz metin formatından migrasyon desteği
-          authData = { plain_pin: parsed.admin_pin };
+        existingNotesObj = JSON.parse(member.notes);
+        if (existingNotesObj.auth && existingNotesObj.auth.hash && existingNotesObj.auth.salt) {
+          authData = existingNotesObj.auth;
+        } else if (existingNotesObj.admin_pin) {
+          authData = { plain_pin: existingNotesObj.admin_pin };
         }
       } catch {
         if (member.notes.startsWith('pin:')) {
@@ -150,66 +149,48 @@ export default async function handler(req, res) {
       }
     }
 
-    let isCurrentValid = false;
+    let isCurrentPinValid = false;
     if (authData && authData.hash && authData.salt) {
-      // Kullanıcı daha önce şifre değiştirmiş; sadece veritabanındaki hash ile doğrulanır
-      // (Eski varsayılan şifre YTUFOK19 bu kullanıcı için kesinlikle geçersizdir)
-      isCurrentValid = verifyPin(cleanCurrent, authData.hash, authData.salt);
+      isCurrentPinValid = verifyPin(cleanCurrent, authData.hash, authData.salt);
     } else if (authData && authData.plain_pin) {
-      isCurrentValid = (cleanCurrent === authData.plain_pin);
+      isCurrentPinValid = (cleanCurrent === authData.plain_pin);
     } else {
-      // Kullanıcı ilk defa şifre belirliyor; başlangıç bootstrap şifresi geçerlidir
-      isCurrentValid = (cleanCurrent === DEFAULT_BOOTSTRAP_PIN || cleanCurrent.toUpperCase() === DEFAULT_BOOTSTRAP_PIN);
+      isCurrentPinValid = (cleanCurrent === DEFAULT_BOOTSTRAP_PIN || cleanCurrent.toUpperCase() === DEFAULT_BOOTSTRAP_PIN);
     }
 
-    if (!isCurrentValid) {
-      return res.status(400).json({ success: false, message: 'Mevcut şifreniz hatalı.' });
+    if (!isCurrentPinValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Girdiğiniz mevcut şifre hatalıdır.'
+      });
     }
 
-    // 3. Yeni şifreyi PBKDF2 + tuzlama (salt) ile kriptografik olarak hash'le
-    const { hash, salt } = hashPin(cleanNewPin);
-
-    // 4. Veritabanındaki üyeyi yeni hash ile güncelle (Eski şifre tamamen geçersiz kılınır)
-    const newAuthPayload = {
-      auth: {
-        hash,
-        salt,
-        has_custom_password: true,
-        updated_at: new Date().toISOString()
-      }
+    // 3. Yeni şifre için tuzlu kriptografik hash oluştur
+    const newAuthHash = hashPin(cleanNewPin);
+    const updatedNotesObj = {
+      ...existingNotesObj,
+      auth: newAuthHash,
+      admin_pin_updated_at: new Date().toISOString()
     };
+    delete updatedNotesObj.admin_pin; // Düz metin şifreyi kesinlikle sil
 
     const { error: updateError } = await supabase
       .from('members')
-      .update({
-        notes: JSON.stringify(newAuthPayload),
-        updated_at: new Date().toISOString()
-      })
+      .update({ notes: JSON.stringify(updatedNotesObj) })
       .eq('id', member.id);
 
     if (updateError) {
-      return res.status(500).json({ success: false, message: 'Yeni şifre veritabanına kaydedilirken hata oluştu.' });
-    }
-
-    // admin_profiles tablosu mevcutsa senkron tutmaya çalış
-    try {
-      const profileId = mappedStudentNo ? cleanAdminId : (ADMIN_ID_TO_STUDENT[cleanAdminId] ? cleanAdminId : member.id);
-      await supabase
-        .from('admin_profiles')
-        .upsert({
-          id: profileId,
-          pin: hash,
-          pin_updated_at: new Date().toISOString()
-        });
-    } catch {
-      // ignore
+      return res.status(500).json({
+        success: false,
+        message: 'Şifre güncellenirken veritabanı hatası oluştu.'
+      });
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Şifreniz güvenli bir şekilde güncellendi. Eski şifrenizin geçerliliği tamamen sonlandırıldı.'
+      message: 'Yönetici şifreniz başarıyla güncellendi.'
     });
-  } catch (err) {
-    return res.status(500).json({ success: false, message: 'Sunucu hatası oluştu.' });
+  } catch {
+    return res.status(500).json({ success: false, message: 'İşlem sırasında sunucu hatası oluştu.' });
   }
 }

@@ -18,6 +18,10 @@ import { BookOpen } from 'lucide-react';
 import { initAppleScrollReveal } from './utils/scrollReveal';
 import { initMediaProtection } from './utils/mediaProtection';
 import { AtmosphericBackground } from './components/AtmosphericBackground';
+import { MaintenancePage } from './pages/MaintenancePage';
+
+// Site Bakım Modu Bayrağı (Canlıya alma veya bakıma alma tek bir bayrakla yönetilir)
+export const IS_MAINTENANCE_MODE = true;
 
 export function App() {
   const initialRoute = parseCurrentLocation();
@@ -25,15 +29,31 @@ export function App() {
   const [preselectedEquipmentId, setPreselectedEquipmentId] = useState<string | undefined>(initialRoute.equipmentId);
   const [pendingCount, setPendingCount] = useState<number>(0);
 
+  // Yönetici önizleme bypass kontrolü (yalnızca yöneticilerin bakım sırasında panele erişmesi için)
+  const [adminBypass, setAdminBypass] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    return (
+      params.get('admin') === 'true' ||
+      params.get('admin') === '1' ||
+      window.location.pathname.startsWith('/admin') ||
+      window.location.hash === '#admin'
+    );
+  });
+
   // Global Auth State for Active Admin Profile
   const [activeAdmin, setActiveAdmin] = useState<AdminProfile | null>(null);
   const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>([]);
   const [showSwitchProfileModal, setShowSwitchProfileModal] = useState<boolean>(false);
 
-  // Synchronize document title with active tab
+  // Synchronize document title with active tab or maintenance mode
   useEffect(() => {
-    document.title = TAB_TITLES[activeTab] || 'YTÜFOK | Fotoğraf Kulübü Rezervasyon & Ekipman Sistemi';
-  }, [activeTab]);
+    if (IS_MAINTENANCE_MODE && !adminBypass) {
+      document.title = 'Sitemiz Bakımdadır | YTÜFOK';
+    } else {
+      document.title = TAB_TITLES[activeTab] || 'YTÜFOK | Fotoğraf Kulübü Rezervasyon & Ekipman Sistemi';
+    }
+  }, [activeTab, adminBypass]);
 
   // Global Image Protection (Sağ Tık, Sürükleme ve Kaydetme Engeli)
   useEffect(() => {
@@ -156,10 +176,39 @@ export function App() {
     }
   };
 
+  // Ziyaretçiler için Bakım Ekranı (Admin bypass aktif değilse doğrudan gösterilir)
+  if (IS_MAINTENANCE_MODE && !adminBypass) {
+    return (
+      <MaintenancePage
+        onAdminBypass={() => {
+          setAdminBypass(true);
+          setActiveTab('admin');
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-transparent text-[#ded0d9] selection:bg-[#568aa5]/40 selection:text-white font-sans relative">
       {/* Apple-style atmospheric cursor spotlight background */}
       <AtmosphericBackground />
+
+      {/* Yönetici Önizlemesi Bildirim Çubuğu */}
+      {IS_MAINTENANCE_MODE && adminBypass && (
+        <div className="bg-amber-500/20 border-b border-amber-500/40 text-amber-200 text-xs px-4 py-2 flex items-center justify-between z-50 sticky top-0 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span className="font-semibold">BAKIM MODU AKTİF (Yönetici Önizlemesi):</span>
+            <span className="text-amber-300/80 hidden sm:inline">Normal ziyaretçiler yalnızca bakım ekranını görmektedir.</span>
+          </div>
+          <button
+            onClick={() => setAdminBypass(false)}
+            className="text-[11px] underline hover:text-white cursor-pointer ml-3 font-mono"
+          >
+            Bakım Ekranını Gör
+          </button>
+        </div>
+      )}
 
       {/* Main Navigation Bar with Active Profile & Sign Out */}
       <Navbar

@@ -3,7 +3,9 @@ import crypto from 'crypto';
 import { checkRateLimit, getClientIp, createAdminSessionToken } from './_security.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
-const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
 const DEFAULT_BOOTSTRAP_PIN = 'YTUFOK19';
 
 function verifyPin(pin, hash, salt) {

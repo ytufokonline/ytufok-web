@@ -3,7 +3,9 @@ import fs from 'fs';
 import { getAuthenticatedAdmin, checkRateLimit, getClientIp, sanitizeString } from './_security.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hqmwlrilmtblnsumwcmr.supabase.co';
-const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  'sb_publishable_FprSN-yF3DLUu8MRs-g7Yg_gSC9TQvj';
 const TMP_FILE = '/tmp/ytufok_suggestions_v1.json';
 
 function readLocalTmp() {

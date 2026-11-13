@@ -99,32 +99,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'status' as const, label: 'Talep Takibi', path: TAB_PATHS.status },
   ];
 
-  const logoClickCountRef = useRef<number>(0);
-  const logoClickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleLogoClick = (e: React.MouseEvent) => {
-    handleNavClick('home', e);
-
-    logoClickCountRef.current += 1;
-    if (logoClickTimerRef.current) {
-      clearTimeout(logoClickTimerRef.current);
-    }
-
-    if (logoClickCountRef.current >= 5) {
-      logoClickCountRef.current = 0;
-      if (!isAdminHost()) {
-        window.location.href = 'https://admin.ytufok.com';
-      } else {
-        setActiveTab('admin');
-      }
-      return;
-    }
-
-    logoClickTimerRef.current = setTimeout(() => {
-      logoClickCountRef.current = 0;
-    }, 2000);
-  };
-
   const handleNavClick = (tab: TabType, e?: React.MouseEvent) => {
     if (e) {
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) {
@@ -147,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Brand - Apple style minimal brand mark */}
             <a 
               href={TAB_PATHS.home}
-              onClick={handleLogoClick}
+              onClick={(e) => handleNavClick('home', e)}
               className="flex items-center cursor-pointer group select-none py-1"
               aria-label="YTÜFOK Ana Sayfa"
             >
@@ -326,7 +300,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Logo */}
             <a 
               href={TAB_PATHS.home}
-              onClick={handleLogoClick}
+              onClick={(e) => handleNavClick('home', e)}
               className="shrink-0 flex items-center select-none py-1 cursor-pointer active:opacity-75 transition-opacity"
               aria-label="YTÜFOK Ana Sayfa"
               draggable={false}

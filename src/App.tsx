@@ -13,7 +13,7 @@ import { UsefulInfoPage } from './pages/UsefulInfoPage';
 import { EventsPage } from './pages/EventsPage';
 import { AdminProfile } from './types';
 import { api } from './lib/api';
-import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES } from './lib/routes';
+import { TabType, parseCurrentLocation, getUrlForTab, TAB_TITLES, isAdminHost } from './lib/routes';
 import { BookOpen } from 'lucide-react';
 import { initAppleScrollReveal } from './utils/scrollReveal';
 import { initMediaProtection } from './utils/mediaProtection';
@@ -32,6 +32,7 @@ export function App() {
   // Yönetici önizleme bypass kontrolü (yalnızca yöneticilerin bakım sırasında panele erişmesi için)
   const [adminBypass, setAdminBypass] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
+    if (isAdminHost()) return true;
     const params = new URLSearchParams(window.location.search);
     return (
       params.get('admin') === 'true' ||
@@ -50,6 +51,8 @@ export function App() {
   useEffect(() => {
     if (IS_MAINTENANCE_MODE && !adminBypass) {
       document.title = 'Sitemiz Bakımdadır | YTÜFOK';
+    } else if (isAdminHost() || activeTab === 'admin') {
+      document.title = 'YTÜFOK Yönetim Portalı';
     } else {
       document.title = TAB_TITLES[activeTab] || 'YTÜFOK | Fotoğraf Kulübü Rezervasyon & Ekipman Sistemi';
     }

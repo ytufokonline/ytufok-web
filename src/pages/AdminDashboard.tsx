@@ -7,7 +7,7 @@ import {
   ArrowRightLeft, LogOut, Award, Sparkles, Droplets,
   Trash2, Calendar, CalendarPlus, Info, Compass, MapPin,
   KeyRound, Bell, Pencil, Phone, Lightbulb, MessageSquare, Lock, Star,
-  UploadCloud, Upload, Image as ImageIcon
+  UploadCloud, Upload, Image as ImageIcon, ExternalLink
 } from 'lucide-react';
 import { Reservation, Equipment, EquipmentCategory, EquipmentStatus, Member, MemberType, AdminProfile, DarkroomReservation, DarkroomSlot, DarkroomSlotProcessPermission, Trip, Announcement, EventSuggestion, EventEvaluation, ClubEvent, EventCategory, EventStatus } from '../types';
 import { api } from '../lib/api';
@@ -1447,6 +1447,17 @@ export const AdminDashboard: React.FC = () => {
                   <LogOut className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Güvenli Çıkış</span>
                 </button>
+
+                <a
+                  href="https://www.ytufok.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white/80 hover:text-white border border-white/10 text-[11px] font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
+                  title="YTÜFOK Ana Sitesini Aç"
+                >
+                  <span className="hidden sm:inline">Kulüp Sitesi</span>
+                  <ExternalLink className="w-3 h-3 opacity-60" />
+                </a>
               </div>
             </div>
           )}

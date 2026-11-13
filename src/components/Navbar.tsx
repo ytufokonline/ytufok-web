@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ShieldCheck, X, ChevronRight, ChevronDown, LogOut, ArrowRightLeft, UserCheck, BookOpen } from 'lucide-react';
-import { TabType, TAB_PATHS } from '../lib/routes';
+import { ShieldCheck, X, ChevronRight, ChevronDown, LogOut, ArrowRightLeft, UserCheck, BookOpen, ExternalLink } from 'lucide-react';
+import { TabType, TAB_PATHS, isAdminHost } from '../lib/routes';
 import { AdminProfile } from '../types';
 
 interface NavbarProps {
@@ -99,6 +99,32 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'status' as const, label: 'Talep Takibi', path: TAB_PATHS.status },
   ];
 
+  const logoClickCountRef = useRef<number>(0);
+  const logoClickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    handleNavClick('home', e);
+
+    logoClickCountRef.current += 1;
+    if (logoClickTimerRef.current) {
+      clearTimeout(logoClickTimerRef.current);
+    }
+
+    if (logoClickCountRef.current >= 5) {
+      logoClickCountRef.current = 0;
+      if (!isAdminHost()) {
+        window.location.href = 'https://admin.ytufok.com';
+      } else {
+        setActiveTab('admin');
+      }
+      return;
+    }
+
+    logoClickTimerRef.current = setTimeout(() => {
+      logoClickCountRef.current = 0;
+    }, 2000);
+  };
+
   const handleNavClick = (tab: TabType, e?: React.MouseEvent) => {
     if (e) {
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) {
@@ -121,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Brand - Apple style minimal brand mark */}
             <a 
               href={TAB_PATHS.home}
-              onClick={(e) => handleNavClick('home', e)}
+              onClick={handleLogoClick}
               className="flex items-center cursor-pointer group select-none py-1"
               aria-label="YTÜFOK Ana Sayfa"
             >
@@ -168,6 +194,19 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Desktop Admin / User Profile Area */}
           <div className="hidden md:flex items-center gap-3">
+            {isAdminHost() && (
+              <a
+                href="https://www.ytufok.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] text-[#ded0d9]/60 hover:text-white hover:bg-white/5 border border-white/10 transition-colors"
+                title="ytufok.com Kulüp Ana Sayfasına Git"
+              >
+                <span>ytufok.com</span>
+                <ExternalLink className="w-3 h-3 opacity-70" />
+              </a>
+            )}
+
             {activeAdmin ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -266,7 +305,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 )}
               </div>
-            ) : (
+            ) : isAdminHost() ? (
               <a
                 href={TAB_PATHS.admin}
                 onClick={(e) => handleNavClick('admin', e)}
@@ -277,9 +316,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-white/60" />
-                <span>Yönetim</span>
+                <span>Yönetici Girişi</span>
               </a>
-            )}
+            ) : null}
           </div>
 
           {/* Mobile Header: All tabs placed horizontally, fixed & sticky at top */}
@@ -287,7 +326,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Logo */}
             <a 
               href={TAB_PATHS.home}
-              onClick={(e) => handleNavClick('home', e)}
+              onClick={handleLogoClick}
               className="shrink-0 flex items-center select-none py-1 cursor-pointer active:opacity-75 transition-opacity"
               aria-label="YTÜFOK Ana Sayfa"
               draggable={false}
@@ -402,7 +441,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
                   )}
                 </>
-              ) : (
+              ) : isAdminHost() ? (
                 <a
                   href={TAB_PATHS.admin}
                   onClick={(e) => handleNavClick('admin', e)}
@@ -416,7 +455,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <ShieldCheck className="w-4 h-4 text-[#ded0d9]/70" />
                 </a>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

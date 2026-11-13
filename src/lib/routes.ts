@@ -72,6 +72,23 @@ export interface RouteState {
 }
 
 /**
+ * Detects whether the current site is accessed via an admin host/subdomain
+ * (e.g. admin.ytufok.com or admin.localhost) or an explicit developer/admin query override.
+ */
+export function isAdminHost(): boolean {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname.toLowerCase();
+  if (host === 'admin.ytufok.com' || host.startsWith('admin.')) {
+    return true;
+  }
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('portal') === 'admin' || params.get('admin_portal') === 'true' || params.get('admin') === 'portal') {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Parses current window location (pathname, query params, and hash fallback)
  */
 export function parseCurrentLocation(): RouteState {
@@ -83,7 +100,30 @@ export function parseCurrentLocation(): RouteState {
     rawPath = hash;
   }
 
-  const tab = PATH_TO_TAB[rawPath] || 'home';
+  const onAdminHost = isAdminHost();
+  let tab: TabType;
+
+  if (onAdminHost) {
+    // When visiting admin.ytufok.com root, open admin portal directly
+    if (rawPath === '/' || rawPath === '') {
+      tab = 'admin';
+    } else {
+      tab = PATH_TO_TAB[rawPath] || 'admin';
+    }
+  } else {
+    tab = PATH_TO_TAB[rawPath] || 'home';
+    // When on public domain (ytufok.com / www.ytufok.com), hide /admin routes from visitors
+    // unless an active authenticated admin session already exists
+    if (tab === 'admin') {
+      const hasActiveSession = typeof window !== 'undefined' && Boolean(
+        window.sessionStorage.getItem('ytufok_admin_token') ||
+        window.localStorage.getItem('ytufok_active_admin')
+      );
+      if (!hasActiveSession) {
+        tab = 'home';
+      }
+    }
+  }
 
   const params = new URLSearchParams(window.location.search);
   const equipmentId = params.get('ekipman') || params.get('id') || undefined;
@@ -96,7 +136,10 @@ export function parseCurrentLocation(): RouteState {
  * Builds the canonical URL for a given tab and options
  */
 export function getUrlForTab(tab: TabType, equipmentId?: string, searchCode?: string): string {
-  const path = TAB_PATHS[tab] || '/';
+  let path = TAB_PATHS[tab] || '/';
+  if (tab === 'admin' && isAdminHost()) {
+    path = '/';
+  }
   const params = new URLSearchParams();
 
   if (tab === 'reserve' && equipmentId) {

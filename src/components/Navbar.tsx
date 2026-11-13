@@ -120,10 +120,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="hidden md:flex items-center gap-6 lg:gap-8">
             {/* Brand - Apple style minimal brand mark */}
             <a 
-              href={TAB_PATHS.home}
-              onClick={(e) => handleNavClick('home', e)}
+              href={isAdminHost() ? TAB_PATHS.admin : TAB_PATHS.home}
+              onClick={(e) => handleNavClick(isAdminHost() ? 'admin' : 'home', e)}
               className="flex items-center cursor-pointer group select-none py-1"
-              aria-label="YTÜFOK Ana Sayfa"
+              aria-label="YTÜFOK"
             >
               <img 
                 src="/logo.png" 
@@ -132,38 +132,50 @@ export const Navbar: React.FC<NavbarProps> = ({
               />
             </a>
 
-            {/* Desktop Nav - Minimalist text links with sliding underline */}
-            <nav ref={navRef} className="hidden md:flex items-center gap-5 lg:gap-7 relative py-1">
-              {navItems.map((item) => {
-                const isActive = activeTab === item.id;
-                return (
-                  <a
-                    key={item.id}
-                    ref={(el) => { linkRefs.current[item.id] = el; }}
-                    href={item.path}
-                    onClick={(e) => handleNavClick(item.id, e)}
-                    className={`text-[13px] tracking-tight transition-colors duration-150 relative py-1 ${
-                      isActive
-                        ? 'text-white font-medium'
-                        : 'text-white/60 hover:text-white'
-                    }`}
-                  >
-                    {item.label}
-                  </a>
-                );
-              })}
+            {/* If on admin host, show clean Admin branding; otherwise show public nav links */}
+            {isAdminHost() ? (
+              <div className="flex items-center gap-3">
+                <span className="h-4 w-px bg-white/20" />
+                <span className="text-xs sm:text-sm font-semibold tracking-wide text-white uppercase font-mono">
+                  Yönetim Portalı
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#568aa5]/25 text-[#a9b9d3] border border-[#568aa5]/40">
+                  ADMIN
+                </span>
+              </div>
+            ) : (
+              <nav ref={navRef} className="hidden md:flex items-center gap-5 lg:gap-7 relative py-1">
+                {navItems.map((item) => {
+                  const isActive = activeTab === item.id;
+                  return (
+                    <a
+                      key={item.id}
+                      ref={(el) => { linkRefs.current[item.id] = el; }}
+                      href={item.path}
+                      onClick={(e) => handleNavClick(item.id, e)}
+                      className={`text-[13px] tracking-tight transition-colors duration-150 relative py-1 ${
+                        isActive
+                          ? 'text-white font-medium'
+                          : 'text-white/60 hover:text-white'
+                      }`}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                })}
 
-              {/* Dynamic Sliding Underline Indicator */}
-              <span
-                className="absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-sky-200 to-white rounded-full pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
-                style={{
-                  transform: `translateX(${indicatorStyle.left}px)`,
-                  width: `${indicatorStyle.width}px`,
-                  opacity: indicatorStyle.opacity,
-                }}
-                aria-hidden="true"
-              />
-            </nav>
+                {/* Dynamic Sliding Underline Indicator */}
+                <span
+                  className="absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-sky-200 to-white rounded-full pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                  style={{
+                    transform: `translateX(${indicatorStyle.left}px)`,
+                    width: `${indicatorStyle.width}px`,
+                    opacity: indicatorStyle.opacity,
+                  }}
+                  aria-hidden="true"
+                />
+              </nav>
+            )}
           </div>
 
           {/* Desktop Admin / User Profile Area */}
@@ -299,10 +311,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex md:hidden items-center justify-between h-14 gap-2 w-full select-none no-tap-highlight">
             {/* Mobile Logo */}
             <a 
-              href={TAB_PATHS.home}
-              onClick={(e) => handleNavClick('home', e)}
+              href={isAdminHost() ? TAB_PATHS.admin : TAB_PATHS.home}
+              onClick={(e) => handleNavClick(isAdminHost() ? 'admin' : 'home', e)}
               className="shrink-0 flex items-center select-none py-1 cursor-pointer active:opacity-75 transition-opacity"
-              aria-label="YTÜFOK Ana Sayfa"
+              aria-label="YTÜFOK"
               draggable={false}
             >
               <img 
@@ -313,35 +325,58 @@ export const Navbar: React.FC<NavbarProps> = ({
               />
             </a>
 
-            {/* Mobile Horizontal Navigation Strip (All tabs horizontally in top bar) */}
-            <nav 
-              ref={mobileNavRef}
-              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1 min-w-0 flex-1 select-none overscroll-x-contain"
-              style={{ WebkitOverflowScrolling: 'touch' }}
-            >
-              {navItems.map((item) => {
-                const isActive = activeTab === item.id;
-                return (
-                  <a
-                    key={item.id}
-                    ref={(el) => { mobileLinkRefs.current[item.id] = el; }}
-                    href={item.path}
-                    onClick={(e) => handleNavClick(item.id, e)}
-                    draggable={false}
-                    className={`shrink-0 px-2.5 py-1 rounded-full text-[12px] font-medium tracking-tight transition-all duration-150 select-none whitespace-nowrap cursor-pointer ${
-                      isActive
-                        ? 'bg-white/[0.14] text-[#ded0d9] border border-white/25 shadow-[0_1px_6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]'
-                        : 'text-[#ded0d9]/65 hover:text-[#ded0d9] active:text-[#ded0d9] border border-transparent'
-                    }`}
-                  >
-                    {item.label}
-                  </a>
-                );
-              })}
-            </nav>
+            {/* If on admin host, show clean Admin branding; otherwise show public horizontal nav */}
+            {isAdminHost() ? (
+              <div className="flex items-center gap-2 min-w-0 flex-1 pl-1">
+                <span className="text-xs font-semibold tracking-wide text-white font-mono truncate">
+                  Yönetim Portalı
+                </span>
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#568aa5]/25 text-[#a9b9d3] border border-[#568aa5]/40 shrink-0">
+                  ADMIN
+                </span>
+              </div>
+            ) : (
+              <nav 
+                ref={mobileNavRef}
+                className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1 min-w-0 flex-1 select-none overscroll-x-contain"
+                style={{ WebkitOverflowScrolling: 'touch' }}
+              >
+                {navItems.map((item) => {
+                  const isActive = activeTab === item.id;
+                  return (
+                    <a
+                      key={item.id}
+                      ref={(el) => { mobileLinkRefs.current[item.id] = el; }}
+                      href={item.path}
+                      onClick={(e) => handleNavClick(item.id, e)}
+                      draggable={false}
+                      className={`shrink-0 px-2.5 py-1 rounded-full text-[12px] font-medium tracking-tight transition-all duration-150 select-none whitespace-nowrap cursor-pointer ${
+                        isActive
+                          ? 'bg-white/[0.14] text-[#ded0d9] border border-white/25 shadow-[0_1px_6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]'
+                          : 'text-[#ded0d9]/65 hover:text-[#ded0d9] active:text-[#ded0d9] border border-transparent'
+                      }`}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                })}
+              </nav>
+            )}
 
-            {/* Mobile Admin Profile / Quick Action */}
-            <div className="shrink-0 relative" ref={mobileDropdownRef}>
+            {/* Mobile Actions: Public site link on admin host + Admin Profile */}
+            <div className="shrink-0 flex items-center gap-2 relative" ref={mobileDropdownRef}>
+              {isAdminHost() && (
+                <a
+                  href="https://www.ytufok.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] text-[#ded0d9]/70 hover:text-white bg-white/[0.06] border border-white/10 shrink-0 select-none"
+                  title="Kulüp Ana Sayfasına Git"
+                >
+                  <span>ytufok.com</span>
+                  <ExternalLink className="w-3 h-3 opacity-70" />
+                </a>
+              )}
               {activeAdmin ? (
                 <>
                   <button

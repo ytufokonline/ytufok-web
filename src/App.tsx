@@ -295,11 +295,17 @@ export function App() {
         onSignOut={handleSignOut}
       />
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer: Public footer for main website, clean minimal footer for admin portal */}
+      {!isAdminHost() ? (
+        <Footer />
+      ) : (
+        <footer className="relative z-20 border-t border-white/10 bg-[rgba(20,2,9,0.75)] backdrop-blur-xl text-[#ded0d9]/60 text-xs py-4 text-center font-mono">
+          <span>YTÜFOK Yönetim Portalı • Yıldız Teknik Üniversitesi Fotoğraf Kulübü</span>
+        </footer>
+      )}
 
-      {/* Floating Link to Guide Page (hidden when already on guide page) */}
-      {activeTab !== 'guide' && (
+      {/* Floating Link to Guide Page (hidden when already on guide page or on admin portal) */}
+      {activeTab !== 'guide' && !isAdminHost() && (
         <button
           type="button"
           onClick={() => navigate('guide')}

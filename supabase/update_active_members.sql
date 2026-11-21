@@ -11,7 +11,7 @@ ALTER TABLE IF EXISTS public.members ADD COLUMN IF NOT EXISTS member_type VARCHA
 ALTER TABLE IF EXISTS public.members ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active';
 
 -- 2. Toplu Güncelleme / Ekleme
-DO 28116
+DO $$
 DECLARE
     v_numbers text[] := ARRAY[
         '25093029',
@@ -182,4 +182,4 @@ BEGIN
 
     RAISE NOTICE 'İşlem tamamlandı: % üye güncellendi, % yeni üye eklendi. Toplam: %', 
         v_updated_count, v_inserted_count, (v_updated_count + v_inserted_count);
-END 28116;
+END $$;

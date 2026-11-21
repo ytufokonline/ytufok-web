@@ -2,6 +2,7 @@ import { supabase, isSupabaseConfigured } from './supabase';
 import {
   Equipment,
   Member,
+  MemberStatus,
   Reservation,
   Announcement,
   GalleryItem,
@@ -1750,6 +1751,23 @@ export const api = {
       .eq('id', id);
     if (error) throw new Error(`Supabase üye rolü güncelleme hatası: ${error.message}`);
     return true;
+  },
+
+  async bulkUpsertMembers(
+    studentNumbers: string[],
+    targetStatus: MemberStatus = 'active',
+    targetMemberType: MemberType = 'active'
+  ): Promise<{ success: boolean; message: string; data?: any }> {
+    try {
+      const res = await callAdminAction('bulk_upsert_members', {
+        studentNumbers,
+        targetStatus,
+        targetMemberType
+      });
+      return res;
+    } catch (err: any) {
+      return { success: false, message: err.message || 'Toplu üye işlemi başarısız oldu.' };
+    }
   },
 
   async quickRegisterNormalMember(

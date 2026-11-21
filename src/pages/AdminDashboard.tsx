@@ -26,6 +26,134 @@ import { checkTripBookingEligibility, formatDateTr, formatDateRangeTr, getReserv
 
 const cleanAdminName = (name?: string | null) => name ? name.replace(/\s*\([Rr]ed\)/gi, '').trim() : '';
 
+const DEFAULT_ACTIVE_MEMBERS_LIST = `25093029
+25035705
+26046070
+2408A032
+2605C004
+26046027
+23028704
+24089053
+25033602
+23065601
+2,50E+10
+25014017
+24036029
+2508A018
+2505A007
+24089052
+24033616
+26084012
+26034015
+25049039
+24033079
+24024016
+24015050
+26054020
+24084042
+26041804
+25084016
+26084010
+2308A051
+24033033
+23011079
+25051010
+2608B007
+26840019
+26056033
+23065036
+26015028
+25028058
+26037022
+Teknopark
+26027015
+24037055
+26018021
+26084016
+25061007
+2605B015
+26084007
+26051002
+25056033
+25033052
+2505A020
+25023019
+26037030
+26141401011
+25084011
+26012073
+25046613
+25084028
+25037013
+24084017
+2608A010
+26065013
+26028019
+25094610
+24012059
+25049013
+12042119
+26084015
+26099006
+2608B604
+2502E045
+26096016
+26073021
+2605A001
+23084602
+25056017
+23052001
+26065078
+25058063
+25033057
+25035060
+2605A071
+25098010
+26084603
+26094025
+26084605
+23094029
+24091034
+25025011
+26061607
+26037611
+26036040
+25012020
+G2410.0151017
+25035057
+2602E019
+2602D029
+23017019
+26084006
+2408A015
+25037036
+260B037
+26028048
+2608B026
+24041501
+25033009
+25049036
+25022501
+2508A035
+25022024
+22058602
+25015610
+26011065
+Kunt
+25065127
+26028043
+2608B019
+19065214
+26024608
+26073014
+250A3610
+26034612
+26058027
+26056007
+26072030
+26011026
+2609A801`;
+
 export const AdminDashboard: React.FC = () => {
   const initialSync = React.useMemo(() => api.getInitialSyncState(), []);
   const [activeTab, setActiveTab] = useState<'reservations' | 'tracking' | 'equipment' | 'members' | 'history' | 'darkroom' | 'supabase' | 'trips' | 'events' | 'announcements' | 'suggestions'>('reservations');
@@ -139,6 +267,11 @@ export const AdminDashboard: React.FC = () => {
   const [supabaseFeedback, setSupabaseFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [showBulkMemberModal, setShowBulkMemberModal] = useState(false);
+  const [bulkMemberText, setBulkMemberText] = useState(DEFAULT_ACTIVE_MEMBERS_LIST);
+  const [bulkMemberType, setBulkMemberType] = useState<MemberType>('active');
+  const [isBulkSubmitting, setIsBulkSubmitting] = useState(false);
+  const [bulkResultMsg, setBulkResultMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [newMemberNo, setNewMemberNo] = useState('');
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberDept, setNewMemberDept] = useState('Yıldız Teknik Üniversitesi');
@@ -1020,6 +1153,36 @@ export const AdminDashboard: React.FC = () => {
     } catch (err: any) {
       console.error('Üye ekleme hatası:', err);
       alert(err?.message || 'Üye eklenirken bir hata meydana geldi.');
+    }
+  };
+
+  const handleBulkUpsertMembers = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const rawList = bulkMemberText
+      .split(/[\n,;]+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    if (rawList.length === 0) {
+      setBulkResultMsg({ type: 'error', text: 'Lütfen en az bir öğrenci numarası giriniz.' });
+      return;
+    }
+
+    setIsBulkSubmitting(true);
+    setBulkResultMsg(null);
+
+    try {
+      const res = await api.bulkUpsertMembers(rawList, 'active', bulkMemberType);
+      if (res.success) {
+        setBulkResultMsg({ type: 'success', text: res.message });
+        await loadAllData();
+      } else {
+        setBulkResultMsg({ type: 'error', text: res.message });
+      }
+    } catch (err: any) {
+      setBulkResultMsg({ type: 'error', text: err.message || 'Bir hata oluştu.' });
+    } finally {
+      setIsBulkSubmitting(false);
     }
   };
 
@@ -2283,13 +2446,27 @@ export const AdminDashboard: React.FC = () => {
               <h3 className="text-sm font-bold text-white font-club">Aktif Üyeler & Whitelist</h3>
               <p className="text-xs text-white/70">Öğrenci numarası doğrulanan kulüp üyeleri ve zimmet geçmişleri.</p>
             </div>
-            <button
-              onClick={() => setShowAddMemberModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <UserPlus className="w-3.5 h-3.5" />
-              <span>Üye Ekle</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => {
+                  setBulkResultMsg(null);
+                  setShowBulkMemberModal(true);
+                }}
+                className="px-3.5 py-2 rounded-xl bg-[#568aa5]/25 hover:bg-[#568aa5]/40 text-sky-200 border border-[#568aa5]/40 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                title="Toplu Öğrenci Numarası Tanımla"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-sky-300" />
+                <span>Toplu Aktif Üye Yükle</span>
+              </button>
+
+              <button
+                onClick={() => setShowAddMemberModal(true)}
+                className="px-3.5 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Tek Üye Ekle</span>
+              </button>
+            </div>
           </div>
 
           {/* Members Search & Filter Toolbar */}
@@ -5199,6 +5376,133 @@ export const AdminDashboard: React.FC = () => {
                 >
                   {isSavingEquipment && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   {isSavingEquipment ? 'Veritabanına Kaydediliyor...' : 'Değişiklikleri Kaydet'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Add/Update Active Members Modal */}
+      {showBulkMemberModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-black/50 border border-white/15 rounded-3xl max-w-xl w-full p-6 sm:p-7 space-y-4 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#568aa5]/20 flex items-center justify-center text-sky-300 border border-[#568aa5]/30">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white font-club">Toplu Aktif Üye Tanımlama & Whitelist</h3>
+                  <p className="text-[11px] text-white/60">Öğrenci numaralarını alt alta yapıştırıp tek tıkla aktif yapın.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBulkMemberModal(false)}
+                className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {bulkResultMsg && (
+              <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
+                bulkResultMsg.type === 'success'
+                  ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
+                  : 'bg-rose-500/15 border border-rose-500/30 text-rose-300'
+              }`}>
+                {bulkResultMsg.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertTriangle className="w-4 h-4 shrink-0" />}
+                <span>{bulkResultMsg.text}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleBulkUpsertMembers} className="space-y-4 text-xs">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-medium text-white/70">
+                    Öğrenci Numaraları Listesi ({bulkMemberText.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean).length} numara girildi):
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setBulkMemberText(DEFAULT_ACTIVE_MEMBERS_LIST)}
+                    className="text-[10px] text-sky-400 hover:text-sky-300 underline cursor-pointer"
+                  >
+                    127 Kişilik Güncel Listeyi Yükle
+                  </button>
+                </div>
+                <textarea
+                  rows={8}
+                  value={bulkMemberText}
+                  onChange={(e) => setBulkMemberText(e.target.value)}
+                  placeholder="25093029&#10;25035705&#10;26046070..."
+                  className="w-full p-3 rounded-2xl bg-black/45 border border-white/15 text-white font-mono text-xs focus:outline-none focus:border-[#568aa5]/60 transition-all shadow-inner leading-relaxed"
+                  required
+                />
+                <span className="text-[10px] text-white/40 block">
+                  İpucu: Listenizdeki mevcut numaraların üyelikleri 'Aktif'e çevrilir, henüz kaydı olmayanlar otomatik olarak eklenir.
+                </span>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-white/70">Uygulanacak Statü:</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setBulkMemberType('active')}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      bulkMemberType === 'active'
+                        ? 'bg-[#568aa5]/25 border-[#568aa5] text-white font-semibold'
+                        : 'bg-black/25 border-white/10 text-white/60 hover:text-white'
+                    }`}
+                  >
+                    <div className="font-bold text-xs flex items-center gap-1.5">
+                      <Star className="w-3.5 h-3.5 text-amber-300" />
+                      ★ Aktif Üye
+                    </div>
+                    <div className="text-[10px] text-white/50 mt-0.5">Geziden 5 gün önce & Bireysel Çekim</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setBulkMemberType('normal')}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      bulkMemberType === 'normal'
+                        ? 'bg-white/20 border-white text-white font-semibold'
+                        : 'bg-black/25 border-white/10 text-white/60 hover:text-white'
+                    }`}
+                  >
+                    <div className="font-bold text-xs">Normal Üye</div>
+                    <div className="text-[10px] text-white/50 mt-0.5">Geziden 3 gün önce rezervasyon hakkı</div>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2.5 pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  disabled={isBulkSubmitting}
+                  onClick={() => setShowBulkMemberModal(false)}
+                  className="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-white/70 hover:text-white cursor-pointer text-xs transition-colors"
+                >
+                  Kapat
+                </button>
+                <button
+                  type="submit"
+                  disabled={isBulkSubmitting}
+                  className="px-5 py-2 rounded-xl bg-[#568aa5] hover:bg-[#689bb6] text-white font-semibold text-xs transition-all shadow-lg shadow-[#568aa5]/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isBulkSubmitting ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>İşleniyor ({bulkMemberText.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean).length} Üye)...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Hepsini Aktif Yap</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

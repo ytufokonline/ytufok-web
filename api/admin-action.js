@@ -116,6 +116,57 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Üye silindi.' });
     }
 
+    if (action === 'bulk_upsert_members') {
+      const { studentNumbers, targetStatus = 'active', targetMemberType = 'active' } = payload || {};
+      if (!Array.isArray(studentNumbers) || studentNumbers.length === 0) {
+        return res.status(400).json({ success: false, message: 'Öğrenci numaraları listesi gereklidir.' });
+      }
+
+      let updatedCount = 0;
+      let insertedCount = 0;
+
+      for (const rawNum of studentNumbers) {
+        const cleanNum = String(rawNum).trim();
+        if (!cleanNum) continue;
+
+        const { data: existing } = await supabase
+          .from('members')
+          .select('id, student_number, full_name')
+          .ilike('student_number', cleanNum)
+          .maybeSingle();
+
+        if (existing) {
+          await supabase
+            .from('members')
+            .update({
+              status: targetStatus,
+              member_type: targetMemberType,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existing.id);
+          updatedCount++;
+        } else {
+          await supabase
+            .from('members')
+            .insert([{
+              student_number: cleanNum,
+              full_name: `Kulüp Üyesi (${cleanNum})`,
+              department: 'Yıldız Teknik Üniversitesi',
+              status: targetStatus,
+              member_type: targetMemberType,
+              role: 'member'
+            }]);
+          insertedCount++;
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `${updatedCount} üye güncellendi, ${insertedCount} yeni üye eklendi. Toplam ${updatedCount + insertedCount} üye aktif yapıldı.`,
+        data: { updatedCount, insertedCount, total: updatedCount + insertedCount }
+      });
+    }
+
     // ==========================================
     // 2. REZERVASYON YÖNETİMİ (RESERVATIONS)
     // ==========================================

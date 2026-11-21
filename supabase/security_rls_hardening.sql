@@ -371,13 +371,14 @@ AS $$
 DECLARE
     v_clean text;
     v_member record;
+    v_eff_member_type text;
 BEGIN
     v_clean := lower(replace(trim(p_student_number), ' ', ''));
     IF v_clean = '' THEN
         RETURN jsonb_build_object('success', false, 'message', 'Lütfen geçerli bir öğrenci numarası giriniz.');
     END IF;
 
-    SELECT id, student_number, full_name, department, status
+    SELECT id, student_number, full_name, department, status, role, member_type
     INTO v_member
     FROM public.members
     WHERE lower(replace(student_number, ' ', '')) = v_clean
@@ -395,7 +396,15 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'message', 'Üyeliğiniz pasif durumdadır. Yeniden aktif etmek için kulüp odamıza uğrayınız.');
     END IF;
 
-    -- GÜVENLİK: role ve member_type alanları dışarıya döndürülmez (BULGU-06 Fix)
+    -- BULGU-06 Güvenlik Kuralı: Admin veya Yönetim Kurulu rolleri dışarı ASLA sızdırılmaz (role alanı gizlenir).
+    -- Ancak üyenin rezervasyon önceliği (Aktif vs Normal) için member_type güvenli şekilde döndürülür:
+    v_eff_member_type := CASE 
+        WHEN v_member.role = 'board' OR v_member.role = 'admin' OR v_member.member_type = 'board' THEN 'board'
+        WHEN v_member.role = 'audit' OR v_member.member_type = 'audit' THEN 'audit'
+        WHEN v_member.member_type = 'active' OR v_member.member_type = 'honorary_active' THEN 'active'
+        ELSE 'normal'
+    END;
+
     RETURN jsonb_build_object(
         'success', true,
         'member', jsonb_build_object(
@@ -403,7 +412,8 @@ BEGIN
             'student_number', v_member.student_number,
             'full_name', v_member.full_name,
             'department', v_member.department,
-            'status', v_member.status
+            'status', v_member.status,
+            'member_type', v_eff_member_type
         ),
         'message', 'Kulüp üyeliğiniz doğrulandı.'
     );

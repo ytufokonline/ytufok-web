@@ -183,3 +183,65 @@ BEGIN
     RAISE NOTICE 'İşlem tamamlandı: % üye güncellendi, % yeni üye eklendi. Toplam: %', 
         v_updated_count, v_inserted_count, (v_updated_count + v_inserted_count);
 END $$;
+
+-- 3. GÜVENLİ SECURITY DEFINER RPC FONKSİYONUNU GÜNCELLE
+-- BULGU-06 uyumlu: Yönetici rolünü ASLA dışarı sızdırmaz, ancak üyenin rezervasyon türünü (Aktif vs Normal) güvenle döndürür.
+CREATE OR REPLACE FUNCTION public.verify_student_member(p_student_number text)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_clean text;
+    v_member record;
+    v_eff_member_type text;
+BEGIN
+    v_clean := lower(replace(trim(p_student_number), ' ', ''));
+    IF v_clean = '' THEN
+        RETURN jsonb_build_object('success', false, 'message', 'Lütfen geçerli bir öğrenci numarası giriniz.');
+    END IF;
+
+    SELECT id, student_number, full_name, department, status, role, member_type
+    INTO v_member
+    FROM public.members
+    WHERE lower(replace(student_number, ' ', '')) = v_clean
+    LIMIT 1;
+
+    IF NOT FOUND THEN
+        RETURN jsonb_build_object('success', false, 'message', 'Girdiğiniz öğrenci numarası kulüp üye listesinde bulunamadı.');
+    END IF;
+
+    IF v_member.status = 'suspended' THEN
+        RETURN jsonb_build_object('success', false, 'message', 'Üyeliğiniz askıya alınmıştır. Detay için kulüp odasına uğrayınız.');
+    END IF;
+
+    IF v_member.status = 'passive' THEN
+        RETURN jsonb_build_object('success', false, 'message', 'Üyeliğiniz pasif durumdadır. Yeniden aktif etmek için kulüp odamıza uğrayınız.');
+    END IF;
+
+    -- BULGU-06 Güvenlik Kuralı: Admin veya Yönetim Kurulu rolleri dışarı ASLA sızdırılmaz (role alanı gizlenir).
+    -- Ancak üyenin rezervasyon önceliği (Aktif vs Normal) için member_type güvenli şekilde döndürülür:
+    v_eff_member_type := CASE 
+        WHEN v_member.role = 'board' OR v_member.role = 'admin' OR v_member.member_type = 'board' THEN 'board'
+        WHEN v_member.role = 'audit' OR v_member.member_type = 'audit' THEN 'audit'
+        WHEN v_member.member_type = 'active' OR v_member.member_type = 'honorary_active' THEN 'active'
+        ELSE 'normal'
+    END;
+
+    RETURN jsonb_build_object(
+        'success', true,
+        'member', jsonb_build_object(
+            'id', v_member.id,
+            'student_number', v_member.student_number,
+            'full_name', v_member.full_name,
+            'department', v_member.department,
+            'status', v_member.status,
+            'member_type', v_eff_member_type
+        ),
+        'message', 'Kulüp üyeliğiniz doğrulandı.'
+    );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.verify_student_member(text) TO anon, authenticated;

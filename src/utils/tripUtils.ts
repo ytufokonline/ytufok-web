@@ -41,6 +41,39 @@ export function getReservationOpenDate(tripStartDateStr: string, daysBefore: num
 }
 
 /**
+ * Aktif Kulüp Üyeleri Beyaz Listesi (127 Üye)
+ * Bu listedeki üyeler 5 gün erken rezervasyon ve bireysel çekim haklarına sahiptir.
+ */
+export const ACTIVE_STUDENT_NUMBERS_LIST = [
+  '25093029', '25035705', '26046070', '2408a032', '2605c004', '26046027', '23028704', '24089053',
+  '25033602', '23065601', '2,50e+10', '25014017', '24036029', '2508a018', '2505a007', '24089052',
+  '24033616', '26084012', '26034015', '25049039', '24033079', '24024016', '24015050', '26054020',
+  '24084042', '26041804', '25084016', '26084010', '2308a051', '24033033', '23011079', '25051010',
+  '2608b007', '26840019', '26056033', '23065036', '26015028', '25028058', '26037022', 'teknopark',
+  '26027015', '24037055', '26018021', '26084016', '25061007', '2605b015', '26084007', '26051002',
+  '25056033', '25033052', '2505a020', '25023019', '26037030', '26141401011', '25084011', '26012073',
+  '25046613', '25084028', '25037013', '24084017', '2608a010', '26065013', '26028019', '25094610',
+  '24012059', '25049013', '12042119', '26084015', '26099006', '2608b604', '2502e045', '26096016',
+  '26073021', '2605a001', '23084602', '25056017', '23052001', '26065078', '25058063', '25033057',
+  '25035060', '2605a071', '25098010', '26084603', '26094025', '26084605', '23094029', '24091034',
+  '25025011', '26061607', '26037611', '26036040', '25012020', 'g2410.0151017', '25035057', '2602e019',
+  '2602d029', '23017019', '26084006', '2408a015', '25037036', '260b037', '26028048', '2608b026',
+  '24041501', '25033009', '25049036', '25022501', '2508a035', '25022024', '22058602', '25015610',
+  '26011065', 'kunt', '25065127', '26028043', '2608b019', '19065214', '26024608', '26073014',
+  '250a3610', '26034612', '26058027', '26056007', '26072030', '26011026', '2609a801'
+];
+
+export const ACTIVE_STUDENT_NUMBERS_SET = new Set(
+  ACTIVE_STUDENT_NUMBERS_LIST.map((n) => n.toLowerCase().trim().replace(/\s+/g, ''))
+);
+
+export function isStudentInActiveWhitelist(studentNumber?: string | null): boolean {
+  if (!studentNumber) return false;
+  const clean = String(studentNumber).toLowerCase().trim().replace(/\s+/g, '');
+  return ACTIVE_STUDENT_NUMBERS_SET.has(clean);
+}
+
+/**
  * Determines whether a member is considered 'active' or 'normal'
  */
 export function resolveMemberTier(member?: Member | null): MemberType {
@@ -49,6 +82,7 @@ export function resolveMemberTier(member?: Member | null): MemberType {
   if (member.role === 'audit' || member.member_type === 'audit') return 'audit';
   if (member.member_type === 'honorary_active') return 'honorary_active';
   if (member.member_type === 'honorary') return 'honorary';
+  if (isStudentInActiveWhitelist(member.student_number)) return 'active';
   if (member.member_type === 'active') return 'active';
   if (member.member_type === 'normal') return 'normal';
   return 'normal'; // Varsayılan kulüp üyeliği normal üyeliktir

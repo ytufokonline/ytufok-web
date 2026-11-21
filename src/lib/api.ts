@@ -31,7 +31,7 @@ import {
   INITIAL_EVENTS,
   INITIAL_EVALUATIONS
 } from '../data/initialData';
-import { checkTripBookingEligibility, resolveMemberTier, getNextBusinessDay, getPreviousBusinessDay, getLocalDateString } from '../utils/tripUtils';
+import { checkTripBookingEligibility, resolveMemberTier, isStudentInActiveWhitelist, getNextBusinessDay, getPreviousBusinessDay, getLocalDateString } from '../utils/tripUtils';
 
 // Kriptografik Yönetici Oturumu ve Önbellek (BULGU-05 Fix: Client-side sessionStorage manipülasyonu engellendi)
 let cachedAdminToken: string | null = null;
@@ -115,6 +115,9 @@ function normalizeMemberRecord(m: Member): Member {
   }
   if (m.role === 'audit') {
     return { ...m, member_type: 'audit' };
+  }
+  if (isStudentInActiveWhitelist(m.student_number)) {
+    return { ...m, member_type: 'active', status: 'active' };
   }
   return m;
 }
@@ -509,17 +512,19 @@ export const api = {
           }
 
           const member = normalizeMemberRecord(rpcRes.member);
-          const tierLabel = member.role === 'board' || member.role === 'admin' || member.member_type === 'board'
+          const tier = resolveMemberTier(member);
+          const effectiveMember: Member = { ...member, member_type: tier };
+          const tierLabel = tier === 'board'
             ? 'Yönetim Kurulu'
-            : member.role === 'audit' || member.member_type === 'audit'
+            : tier === 'audit'
             ? 'Denetim Kurulu'
-            : member.member_type === 'active' || member.member_type === 'honorary_active'
+            : tier === 'active' || tier === 'honorary_active'
             ? 'Aktif Üye'
             : 'Normal Üye';
 
           return {
             success: true,
-            member,
+            member: effectiveMember,
             message: `Hoş geldiniz, ${member.full_name} (${member.department}). ${tierLabel} olarak doğrulandınız.`
           };
         }
@@ -537,32 +542,34 @@ export const api = {
 
         if (!error && data) {
           const member = normalizeMemberRecord(data as Member);
+          const tier = resolveMemberTier(member);
+          const effectiveMember: Member = { ...member, member_type: tier };
           if (member.status === 'suspended') {
             return {
               success: false,
-              member,
+              member: effectiveMember,
               message: `Rezervasyon yapamazsınız: Üyeliğiniz kısıtlanmıştır/cezalıdır. Gerekçe: ${member.penalty_reason || 'İade gecikmesi veya hasar.'}`
             };
           }
           if (member.status === 'passive') {
             return {
               success: false,
-              member,
+              member: effectiveMember,
               message: 'Üyeliğiniz pasif durumdadır. Yeniden aktif etmek için kulüp odamıza uğrayınız.'
             };
           }
 
-          const tierLabel = member.role === 'board' || member.role === 'admin' || member.member_type === 'board'
+          const tierLabel = tier === 'board'
             ? 'Yönetim Kurulu'
-            : member.role === 'audit' || member.member_type === 'audit'
+            : tier === 'audit'
             ? 'Denetim Kurulu'
-            : member.member_type === 'active' || member.member_type === 'honorary_active'
+            : tier === 'active' || tier === 'honorary_active'
             ? 'Aktif Üye'
             : 'Normal Üye';
 
           return {
             success: true,
-            member,
+            member: effectiveMember,
             message: `Hoş geldiniz, ${member.full_name} (${member.department}). ${tierLabel} olarak doğrulandınız.`
           };
         }
@@ -580,8 +587,31 @@ export const api = {
       });
       if (res.ok) {
         const json = await res.json();
-        if (json && json.member) {
-          json.member = normalizeMemberRecord(json.member);
+        if (json && json.success) {
+          const rawMember: Member = json.member || {
+            id: json.id || cleanNumber,
+            student_number: cleanNumber,
+            full_name: json.full_name || 'Kulüp Üyesi',
+            department: json.department || 'Yıldız Teknik Üniversitesi',
+            status: json.is_active ? 'active' : 'normal',
+            member_type: json.member_type || 'normal'
+          };
+          const member = normalizeMemberRecord(rawMember);
+          const tier = resolveMemberTier(member);
+          const effectiveMember: Member = { ...member, member_type: tier };
+          const tierLabel = tier === 'board'
+            ? 'Yönetim Kurulu'
+            : tier === 'audit'
+            ? 'Denetim Kurulu'
+            : tier === 'active' || tier === 'honorary_active'
+            ? 'Aktif Üye'
+            : 'Normal Üye';
+
+          return {
+            success: true,
+            member: effectiveMember,
+            message: json.message || `Hoş geldiniz, ${member.full_name} (${member.department}). ${tierLabel} olarak doğrulandınız.`
+          };
         }
         return json;
       }
